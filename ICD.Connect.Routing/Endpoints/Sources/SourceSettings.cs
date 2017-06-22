@@ -1,0 +1,42 @@
+﻿using ICD.Common.Properties;
+using ICD.Connect.Settings;
+using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Core;
+
+namespace ICD.Connect.Routing.Endpoints.Sources
+{
+	public sealed class SourceSettings : AbstractSourceSettings
+	{
+		private const string FACTORY_NAME = "Source";
+
+		/// <summary>
+		/// Gets the originator factory name.
+		/// </summary>
+		public override string FactoryName { get { return FACTORY_NAME; } }
+
+		/// <summary>
+		/// Creates a new originator instance from the settings.
+		/// </summary>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		public override IOriginator ToOriginator(IDeviceFactory factory)
+		{
+			Source source = new Source();
+			source.ApplySettings(this, factory);
+			return source;
+		}
+
+		/// <summary>
+		/// Loads the settings from XML.
+		/// </summary>
+		/// <param name="xml"></param>
+		/// <returns></returns>
+		[PublicAPI, XmlSourceSettingsFactoryMethod(FACTORY_NAME)]
+		public static SourceSettings FromXml(string xml)
+		{
+			SourceSettings output = new SourceSettings();
+			ParseXml(output, xml);
+			return output;
+		}
+	}
+}

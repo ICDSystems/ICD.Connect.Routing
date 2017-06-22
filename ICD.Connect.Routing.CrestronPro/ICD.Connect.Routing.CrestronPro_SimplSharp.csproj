@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E5E544B8-7483-4708-84BF-1C2CE8B962EB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ICD.Connect.Routing.CrestronPro</RootNamespace>
+    <AssemblyName>ICD.Connect.Routing.CrestronPro</AssemblyName>
+    <ProjectTypeGuids>{0B4745B0-194B-4BB6-8E21-E9057CA92300};{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <PlatformFamilyName>WindowsCE</PlatformFamilyName>
+    <PlatformID>E2BECB1F-8C8C-41ba-B736-9BE7D946A398</PlatformID>
+    <OSVersion>5.0</OSVersion>
+    <DeployDirSuffix>SmartDeviceProject1</DeployDirSuffix>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <NativePlatformName>Windows CE</NativePlatformName>
+    <FormFactorID>
+    </FormFactorID>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <AllowedReferenceRelatedFileExtensions>.allowedReferenceRelatedFileExtensions</AllowedReferenceRelatedFileExtensions>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <FileAlignment>512</FileAlignment>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <AllowedReferenceRelatedFileExtensions>.allowedReferenceRelatedFileExtensions</AllowedReferenceRelatedFileExtensions>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <FileAlignment>512</FileAlignment>
+    <NoStdLib>true</NoStdLib>
+    <NoConfig>true</NoConfig>
+    <GenerateSerializationAssemblies>off</GenerateSerializationAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Crestron.SimplSharpPro.DeviceSupport, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\Crestron\SDK\SSPDevices\Crestron.SimplSharpPro.DeviceSupport.dll</HintPath>
+    </Reference>
+    <Reference Include="Crestron.SimplSharpPro.DM, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\Crestron\SDK\SSPDevices\Crestron.SimplSharpPro.DM.dll</HintPath>
+    </Reference>
+    <Reference Include="Crestron.SimplSharpPro.GeneralIO, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\Crestron\SDK\SSPDevices\Crestron.SimplSharpPro.GeneralIO.dll</HintPath>
+    </Reference>
+    <Reference Include="Crestron.SimplSharpPro.ThreeSeriesCards, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\Crestron\SDK\SSPDevices\Crestron.SimplSharpPro.ThreeSeriesCards.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="SimplSharpCustomAttributesInterface, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\Crestron\SDK\SimplSharpCustomAttributesInterface.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SimplSharpHelperInterface, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\Crestron\SDK\SimplSharpHelperInterface.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SimplSharpPro, Version=1.5.2.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\Crestron\SDK\SimplSharpPro.exe</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SimplSharpReflectionInterface, Version=1.0.5583.25238, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\ProgramData\Crestron\SDK\SimplSharpReflectionInterface.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ControlSystem\ControlSystemDevice.cs" />
+    <Compile Include="ControlSystem\ControlSystemDeviceSettings.cs" />
+    <Compile Include="ControlSystem\ControlSystemSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd8X8\DmMd8X8Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd8X8\DmMd8X8AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMdNXN\AbstractDmMdMNXNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMdNXN\DmMdMNXNSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\DmMdNXN\AbstractDmMdMNXNAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMdNXN\IDmMdMNXNAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMdNXN\IDmMdNXNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd4X24kE\HdMd4X24kESwitcherControl.cs" />
+    <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2Adapter.cs" />
+    <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2SwitcherControl.cs" />
+    <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCRouteControl.cs" />
+    <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GAdapter.cs" />
+    <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GSourceControl.cs" />
+    <Compile Include="Transmitters\DmTx201C\DmTx201CAdapter.cs" />
+    <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCAdapter.cs" />
+    <Compile Include="Transmitters\DmTx201C\DmTx201CAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd4X24kE\HdMd4X24kEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd4X24kE\HdMd4X24kEAdapterSettings.cs" />
+    <None Include="ObfuscationSettings.cs" />
+    <Compile Include="Transmitters\DmTx200Base\AbstractDmTxBaseSourceControl.cs" />
+    <Compile Include="Transmitters\DmTx201C\DmTx201CSourceControl.cs" />
+    <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CRouteControl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <None Include="Properties\ControlSystem.cfg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ICD.Connect.API\ICD.Connect.API_SimplSharp.csproj">
+      <Project>{727F5820-5A61-440D-8899-E454FE8238D7}</Project>
+      <Name>ICD.Connect.API</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ICD.Common\ICD.Common_SimplSharp.csproj">
+      <Project>{CB4055C6-D59E-479E-9C56-2C92335A7D9A}</Project>
+      <Name>ICD.SimplSharp.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ICD.Connect.Devices\ICD.Connect.Devices_SimplSharp.csproj">
+      <Project>{FD46A717-5836-4B73-ADD0-2706639DA8ED}</Project>
+      <Name>ICD.Connect.Devices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ICD.Connect.Misc.CrestronPro\ICD.Connect.Misc.CrestronPro_SimplSharp.csproj">
+      <Project>{46CD87DE-F3EF-41D4-8783-9ECF21183765}</Project>
+      <Name>RSD.SimplSharp.Common.InterfacesPro</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ICD.Connect.Protocol\ICD.Connect.Protocol_SimplSharp.csproj">
+      <Project>{2E4E01B8-D4EA-4FB1-9FCE-0A0DC8D83C8A}</Project>
+      <Name>ICD.Connect.Protocol</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ICD.Connect.Routing\ICD.Connect.Routing_SimplSharp.csproj">
+      <Project>{B0C0CA1C-FA55-4BEA-8A8B-EDB2141C523E}</Project>
+      <Name>ICD.Connect.Routing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ICD.Connect.Settings\ICD.Connect.Settings_SimplSharp.csproj">
+      <Project>{5B84EB3C-1C3A-4C4D-98C2-69F67CF51D5A}</Project>
+      <Name>ICD.Connect.Settings</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 5.2 --configuration-file="$(ProjectDir)ObfuscationSettings.cs"
+rem S# Pro preparation will execute after these operations</PostBuildEvent>
+  </PropertyGroup>
+  <Target Name="PlatformVerificationTask">
+  </Target>
+</Project>
