@@ -107,6 +107,7 @@
     <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2Adapter.cs" />
     <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2AdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2SwitcherControl.cs" />
+    <Compile Include="KrangPlugin.cs" />
     <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCRouteControl.cs" />
     <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapter.cs" />
     <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapterSettings.cs" />
