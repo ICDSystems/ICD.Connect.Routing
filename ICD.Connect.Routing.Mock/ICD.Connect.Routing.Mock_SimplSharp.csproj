@@ -71,6 +71,7 @@
     <Compile Include="Destination\MockDestinationDevice.cs" />
     <Compile Include="Destination\MockDestinationDeviceSettings.cs" />
     <Compile Include="Destination\MockRouteDestinationControl.cs" />
+    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Source\MockRouteSourceControl.cs" />
     <Compile Include="Source\MockSourceDevice.cs" />
     <Compile Include="Source\MockSourceDeviceSettings.cs" />
