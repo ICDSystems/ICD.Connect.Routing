@@ -66,7 +66,7 @@ namespace ICD.Connect.Routing.SPlus
 		/// <param name="input"></param>
 		/// <param name="type"></param>
 		[PublicAPI("SPlus")]
-		public void SetSourceDetectionChange(int input, eConnectionType type)
+		public void UpdateSourceDetection(int input, eConnectionType type)
 		{
 			bool state = GetSignalDetectedState(input, type);
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, type, state));
@@ -78,7 +78,7 @@ namespace ICD.Connect.Routing.SPlus
 		/// <param name="output"></param>
 		/// <param name="type"></param>
 		[PublicAPI("SPlus")]
-		public void SetSwitcherOutputChange(int output, eConnectionType type)
+		public void UpdateSwitcherOutput(int output, eConnectionType type)
 		{
 			// Raise the route change event.
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(output, type));
