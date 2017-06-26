@@ -25,4 +25,8 @@
     <None Remove="ICD.SimplSharp.projectinfo" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ICD.Connect.Routing\ICD.Connect.Routing_NetStandard.csproj" />
+  </ItemGroup>
+
 </Project>
