@@ -1,4 +1,5 @@
-﻿using ICD.Common.Properties;
+﻿using System;
+using ICD.Common.Properties;
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.Factories;
@@ -16,17 +17,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 		public override string FactoryName { get { return FACTORY_NAME; } }
 
 		/// <summary>
-		/// Creates a new originator instance from the settings.
+		/// Gets the type of the originator for this settings instance.
 		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public override IOriginator ToOriginator(IDeviceFactory factory)
-		{
-			DmTx200C2GAdapter output = new DmTx200C2GAdapter();
-			output.ApplySettings(this, factory);
-
-			return output;
-		}
+		public override Type OriginatorType { get { return typeof(DmTx200C2GAdapter); } }
 
 		/// <summary>
 		/// Loads the settings from XML.

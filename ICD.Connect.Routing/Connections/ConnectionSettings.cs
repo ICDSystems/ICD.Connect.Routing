@@ -57,6 +57,11 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		public override string FactoryName { get { return FACTORY_NAME; } }
 
+		/// <summary>
+		/// Gets the type of the originator for this settings instance.
+		/// </summary>
+		public override Type OriginatorType { get { return typeof(Connection); } }
+
 		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
 		public int SourceDeviceId { get; set; }
 
@@ -152,18 +157,6 @@ namespace ICD.Connect.Routing.Connections
 				XmlUtils.WriteListToXml(writer, GetSourceDeviceRestrictions(), SOURCE_DEVICE_RESTRICTIONS_ELEMENT, DEVICE_ELEMENT);
 			if (m_RoomRestrictions.Count > 0)
 				XmlUtils.WriteListToXml(writer, GetRoomRestrictions(), ROOM_RESTRICTIONS_ELEMENT, ROOM_ELEMENT);
-		}
-
-		/// <summary>
-		/// Creates a new originator instance from the settings.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public override IOriginator ToOriginator(IDeviceFactory factory)
-		{
-			Connection connection = new Connection();
-			connection.ApplySettings(this, factory);
-			return connection;
 		}
 
 		/// <summary>

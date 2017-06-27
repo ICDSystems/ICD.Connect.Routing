@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Attributes.Properties;
 using ICD.Common.Properties;
@@ -37,6 +38,11 @@ namespace ICD.Connect.Routing.StaticRoutes
 		/// Gets the originator factory name.
 		/// </summary>
 		public override string FactoryName { get { return FACTORY_NAME; } }
+
+		/// <summary>
+		/// Gets the type of the originator for this settings instance.
+		/// </summary>
+		public override Type OriginatorType { get { return typeof(StaticRoute); } }
 
 		[SettingsProperty(SettingsProperty.ePropertyType.Enum)]
 		public eConnectionType ConnectionType { get; set; }
@@ -95,18 +101,6 @@ namespace ICD.Connect.Routing.StaticRoutes
 				}
 			}
 			writer.WriteEndElement();
-		}
-
-		/// <summary>
-		/// Creates a new originator instance from the settings.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public override IOriginator ToOriginator(IDeviceFactory factory)
-		{
-			StaticRoute staticRoute = new StaticRoute();
-			staticRoute.ApplySettings(this, factory);
-			return staticRoute;
 		}
 
 		/// <summary>
