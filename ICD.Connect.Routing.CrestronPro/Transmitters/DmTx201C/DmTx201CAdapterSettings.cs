@@ -1,9 +1,7 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
-using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.Factories;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201C
 {

@@ -2,7 +2,6 @@
 using ICD.Common.Properties;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.Factories;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Mock.Destination
 {

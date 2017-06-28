@@ -10,7 +10,6 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.Factories;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.StaticRoutes
 {

@@ -1,9 +1,7 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN;
-using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.Factories;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd32X32
 {
