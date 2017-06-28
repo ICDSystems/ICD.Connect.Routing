@@ -72,6 +72,7 @@
     <Compile Include="Extensions\DeviceFactoryExtensions.cs" />
     <Compile Include="IRoutingGraph.cs" />
     <None Include="ObfuscationSettings.cs" />
+    <Compile Include="KrangPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="EventArguments\RouteChangeEventArgs.cs" />
     <Compile Include="EventArguments\RouteFinishedEventArgs.cs" />
