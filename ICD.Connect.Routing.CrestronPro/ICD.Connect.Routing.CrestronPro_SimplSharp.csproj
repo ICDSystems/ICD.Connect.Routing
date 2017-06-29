@@ -8,7 +8,7 @@
     <ProjectGuid>{E5E544B8-7483-4708-84BF-1C2CE8B962EB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ICD.Connect.Routing.CrestronPro_SimplSharp</RootNamespace>
+    <RootNamespace>ICD.Connect.Routing.CrestronPro</RootNamespace>
     <AssemblyName>ICD.Connect.Routing.CrestronPro_SimplSharp</AssemblyName>
     <ProjectTypeGuids>{0B4745B0-194B-4BB6-8E21-E9057CA92300};{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PlatformFamilyName>WindowsCE</PlatformFamilyName>
