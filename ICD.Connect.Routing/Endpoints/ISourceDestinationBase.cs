@@ -33,6 +33,4 @@ namespace ICD.Connect.Routing.Endpoints
 		/// </summary>
 		bool Disable { get; set; }
 	}
-
-	
 }

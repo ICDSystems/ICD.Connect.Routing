@@ -5,7 +5,7 @@ using ICD.Connect.Settings.Attributes.Factories;
 
 namespace ICD.Connect.Routing.SPlus
 {
-	public class SPlusSwitcherSettings : AbstractDeviceSettings
+	public sealed class SPlusSwitcherSettings : AbstractDeviceSettings
 	{
 		private const string FACTORY_NAME = "SPlusSwitcher";
 
