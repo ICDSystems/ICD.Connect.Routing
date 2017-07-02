@@ -75,7 +75,7 @@ namespace ICD.Connect.Routing.Endpoints
 
 		protected static void ParseXml(AbstractSourceDestinationBaseSettings instance, string xml)
 		{
-			instance.Device = XmlUtils.ReadChildElementContentAsInt(xml, DEVICE_ELEMENT);
+			instance.Device = XmlUtils.TryReadChildElementContentAsInt(xml, DEVICE_ELEMENT) ?? 0;
 			instance.Control = XmlUtils.TryReadChildElementContentAsInt(xml, CONTROL_ELEMENT) ?? 0;
 			instance.Address = XmlUtils.TryReadChildElementContentAsInt(xml, ADDRESS_ELEMENT) ?? 1;
 			instance.ConnectionType =
