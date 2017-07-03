@@ -127,7 +127,9 @@ namespace ICD.Connect.Routing.SPlus
 
 		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
 		{
-			return GetInputsForOutputCallback(output, type);
+			return GetInputsForOutputCallback != null
+				       ? GetInputsForOutputCallback(output, type)
+				       : new ConnectorInfo[] {new ConnectorInfo(0, eConnectionType.Audio & eConnectionType.Video)};
 		}
 
 		#region IRouteSourceControl
@@ -136,7 +138,15 @@ namespace ICD.Connect.Routing.SPlus
 
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			return GetOutputsCallback();
+			if (GetOutputsCallback != null)
+				return GetOutputsCallback();
+
+			ConnectorInfo[] fakeReturn = new ConnectorInfo[32];
+			for (int i = 1; i < 32; i++)
+			{
+				fakeReturn[i - 1] = new ConnectorInfo(i, eConnectionType.Audio & eConnectionType.Video);
+			}
+			return fakeReturn;
 		}
 
 		#endregion
@@ -153,7 +163,15 @@ namespace ICD.Connect.Routing.SPlus
 
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			return GetInputsCallback();
+			if (GetInputsCallback != null)
+				return GetInputsCallback();
+
+			ConnectorInfo[] fakeReturn = new ConnectorInfo[32];
+			for (int i = 1; i < 32; i++)
+			{
+				fakeReturn[i - 1] = new ConnectorInfo(i, eConnectionType.Audio & eConnectionType.Video);
+			}
+			return fakeReturn;
 		}
 
 		#endregion
