@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using ICD.Common.Properties;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints.Destinations;
@@ -15,16 +13,25 @@ namespace ICD.Connect.Routing.Extensions
 	{
 		public static ISource GetSourceById(this IDeviceFactory factory, int id)
 		{
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
 			return factory.GetOriginatorById<ISource>(id);
 		}
 
 		public static IDestination GetDestinationById(this IDeviceFactory factory, int id)
 		{
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
 			return factory.GetOriginatorById<IDestination>(id);
 		}
 
 		public static IDestinationGroup GetDestinationGroupById(this IDeviceFactory factory, int id)
 		{
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
 			return factory.GetOriginatorById<IDestinationGroup>(id);
 		}
 
@@ -36,6 +43,9 @@ namespace ICD.Connect.Routing.Extensions
 		[PublicAPI]
 		public static Connection GetConnectionById(this IDeviceFactory factory, int id)
 		{
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
 			return factory.GetOriginatorById<Connection>(id);
 		}
 
@@ -47,8 +57,10 @@ namespace ICD.Connect.Routing.Extensions
 		[PublicAPI]
 		public static StaticRoute GetStaticRouteById(this IDeviceFactory factory, int id)
 		{
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
 			return factory.GetOriginatorById<StaticRoute>(id);
 		}
-
 	}
 }

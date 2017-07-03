@@ -1,7 +1,7 @@
-﻿using ICD.Common.Properties;
+﻿using System;
+using ICD.Common.Properties;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.Factories;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Mock.Switcher
 {
@@ -16,22 +16,14 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// </summary>
 		public override string FactoryName { get { return FACTORY_NAME; } }
 
+		/// <summary>
+		/// Gets the type of the originator for this settings instance.
+		/// </summary>
+		public override Type OriginatorType { get { return typeof(MockSwitcherDevice); } }
+
 		#endregion
 
 		#region Methods
-
-		/// <summary>
-		/// Creates a new originator instance from the settings.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public override IOriginator ToOriginator(IDeviceFactory factory)
-		{
-			MockSwitcherDevice output = new MockSwitcherDevice();
-			output.ApplySettings(this, factory);
-
-			return output;
-		}
 
 		/// <summary>
 		/// Loads the settings from XML.

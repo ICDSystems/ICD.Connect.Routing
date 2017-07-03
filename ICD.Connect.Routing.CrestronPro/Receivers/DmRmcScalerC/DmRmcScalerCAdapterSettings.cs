@@ -1,10 +1,10 @@
-﻿using ICD.Common.Attributes.Properties;
+﻿using System;
+using ICD.Common.Attributes.Properties;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.Factories;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 {
@@ -33,6 +33,11 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		public override string FactoryName { get { return FACTORY_NAME; } }
 
 		/// <summary>
+		/// Gets the type of the originator for this settings instance.
+		/// </summary>
+		public override Type OriginatorType { get { return typeof(DmRmcScalerCAdapter); } }
+
+		/// <summary>
 		/// Writes property elements to xml.
 		/// </summary>
 		/// <param name="writer"></param>
@@ -48,18 +53,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 
 			if (DmOutputAddress != null)
 				writer.WriteElementString(DM_OUTPUT_ELEMENT, IcdXmlConvert.ToString((int)DmOutputAddress));
-		}
-
-		/// <summary>
-		/// Creates a new originator instance from the settings.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public override IOriginator ToOriginator(IDeviceFactory factory)
-		{
-			DmRmcScalerCAdapter output = new DmRmcScalerCAdapter();
-			output.ApplySettings(this, factory);
-			return output;
 		}
 
 		/// <summary>

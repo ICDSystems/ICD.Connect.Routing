@@ -1,8 +1,8 @@
-﻿using ICD.Common.Properties;
+﻿using System;
+using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.Factories;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Mock.Source
 {
@@ -20,6 +20,11 @@ namespace ICD.Connect.Routing.Mock.Source
 		/// </summary>
 		public override string FactoryName { get { return FACTORY_NAME; } }
 
+		/// <summary>
+		/// Gets the type of the originator for this settings instance.
+		/// </summary>
+		public override Type OriginatorType { get { return typeof(MockSourceDevice); } }
+
 		public int OutputCount { get; set; }
 
 		/// <summary>
@@ -31,19 +36,6 @@ namespace ICD.Connect.Routing.Mock.Source
 			base.WriteElements(writer);
 
 			writer.WriteElementString(OUTPUT_COUNT_ELEMENT, IcdXmlConvert.ToString(OutputCount));
-		}
-
-		/// <summary>
-		/// Creates a new originator instance from the settings.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public override IOriginator ToOriginator(IDeviceFactory factory)
-		{
-			MockSourceDevice output = new MockSourceDevice();
-			output.ApplySettings(this, factory);
-
-			return output;
 		}
 
 		/// <summary>

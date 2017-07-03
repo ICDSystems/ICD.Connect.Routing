@@ -1,7 +1,6 @@
-﻿using ICD.Common.Properties;
-using ICD.Connect.Settings;
+﻿using System;
+using ICD.Common.Properties;
 using ICD.Connect.Settings.Attributes.Factories;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Endpoints.Groups
 {
@@ -15,16 +14,9 @@ namespace ICD.Connect.Routing.Endpoints.Groups
 		public override string FactoryName { get { return FACTORY_NAME; } }
 
 		/// <summary>
-		/// Creates a new originator instance from the settings.
+		/// Gets the type of the originator for this settings instance.
 		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public override IOriginator ToOriginator(IDeviceFactory factory)
-		{
-			DestinationGroup destinationGroup = new DestinationGroup();
-			destinationGroup.ApplySettings(this, factory);
-			return destinationGroup;
-		}
+		public override Type OriginatorType { get { return typeof(DestinationGroup); } }
 
 		/// <summary>
 		/// Loads the settings from XML.

@@ -1,10 +1,10 @@
-﻿using ICD.Common.Attributes.Properties;
+﻿using System;
+using ICD.Common.Attributes.Properties;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.Factories;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 {
@@ -20,6 +20,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// Gets the originator factory name.
 		/// </summary>
 		public override string FactoryName { get { return FACTORY_NAME; } }
+
+		/// <summary>
+		/// Gets the type of the originator for this settings instance.
+		/// </summary>
+		public override Type OriginatorType { get { return typeof(DmTx4K302CAdapter); } }
 
 		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
 		public byte? Ipid { get; set; }
@@ -45,18 +50,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 
 			if (DmInputAddress != null)
 				writer.WriteElementString(DM_INPUT_ELEMENT, IcdXmlConvert.ToString((int)DmInputAddress));
-		}
-
-		/// <summary>
-		/// Creates a new originator instance from the settings.
-		/// </summary>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		public override IOriginator ToOriginator(IDeviceFactory factory)
-		{
-			DmTx4K302CAdapter output = new DmTx4K302CAdapter();
-			output.ApplySettings(this, factory);
-			return output;
 		}
 
 		/// <summary>
