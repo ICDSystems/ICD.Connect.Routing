@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
@@ -127,9 +128,7 @@ namespace ICD.Connect.Routing.SPlus
 
 		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
 		{
-			return GetInputsForOutputCallback != null
-				       ? GetInputsForOutputCallback(output, type)
-				       : new ConnectorInfo[] {new ConnectorInfo(0, eConnectionType.Audio & eConnectionType.Video)};
+			return GetInputsForOutputCallback == null ? Enumerable.Empty<ConnectorInfo>() : GetInputsForOutputCallback(output, type);
 		}
 
 		#region IRouteSourceControl
@@ -138,15 +137,8 @@ namespace ICD.Connect.Routing.SPlus
 
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			if (GetOutputsCallback != null)
-				return GetOutputsCallback();
+			return GetOutputsCallback == null ? Enumerable.Empty<ConnectorInfo>() : GetOutputsCallback();
 
-			ConnectorInfo[] fakeReturn = new ConnectorInfo[32];
-			for (int i = 1; i < 32; i++)
-			{
-				fakeReturn[i - 1] = new ConnectorInfo(i, eConnectionType.Audio & eConnectionType.Video);
-			}
-			return fakeReturn;
 		}
 
 		#endregion
@@ -163,15 +155,8 @@ namespace ICD.Connect.Routing.SPlus
 
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			if (GetInputsCallback != null)
-				return GetInputsCallback();
+			return GetInputsCallback == null ? Enumerable.Empty<ConnectorInfo>() : GetInputsCallback();
 
-			ConnectorInfo[] fakeReturn = new ConnectorInfo[32];
-			for (int i = 1; i < 32; i++)
-			{
-				fakeReturn[i - 1] = new ConnectorInfo(i, eConnectionType.Audio & eConnectionType.Video);
-			}
-			return fakeReturn;
 		}
 
 		#endregion
