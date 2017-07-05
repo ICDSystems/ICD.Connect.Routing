@@ -7,7 +7,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201C
 	/// <summary>
 	/// DmTx201CAdapter wraps a DmTx201C to provide a routing device.
 	/// </summary>
-	public sealed class DmTx201CAdapter : AbstractDmTx200BaseAdapter<global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C, DmTx201CAdapterSettings>
+	public sealed class DmTx201CAdapter : AbstractDmTx200BaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C, DmTx201CAdapterSettings>
 	{
 		/// <summary>
 		/// Constructor.
@@ -17,19 +17,19 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201C
 			Controls.Add(new DmTx201CSourceControl(this));
 		}
 
-		protected override global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
+		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
 		{
-			return new global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(ipid, controlSystem);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(ipid, controlSystem);
 		}
 
-		protected override global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid, DMInput input)
+		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid, DMInput input)
 		{
-			return new global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(ipid, input);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(ipid, input);
 		}
 
-		protected override global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(DMInput input)
+		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(DMInput input)
 		{
-			return new global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(input);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(input);
 		}
 	}
 }

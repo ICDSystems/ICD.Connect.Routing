@@ -7,7 +7,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 	/// <summary>
 	/// DmTx200C2GAdapter wraps a DmTx200C2G to provide a routing device.
 	/// </summary>
-	public sealed class DmTx200C2GAdapter : AbstractDmTx200BaseAdapter<global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G, DmTx200C2GAdapterSettings>
+	public sealed class DmTx200C2GAdapter : AbstractDmTx200BaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G, DmTx200C2GAdapterSettings>
 	{
 		/// <summary>
 		/// Constructor.
@@ -17,19 +17,19 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 			Controls.Add(new DmTx200C2GSourceControl(this));
 		}
 
-		protected override global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
+		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
 		{
-			return new global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G(ipid, controlSystem);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G(ipid, controlSystem);
 		}
 
-		protected override global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G InstantiateTransmitter(byte ipid, DMInput input)
+		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G InstantiateTransmitter(byte ipid, DMInput input)
 		{
-			return new global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G(ipid, input);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G(ipid, input);
 		}
 
-		protected override global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G InstantiateTransmitter(DMInput input)
+		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G InstantiateTransmitter(DMInput input)
 		{
-			return new global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G(input);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G(input);
 		}
 	}
 }

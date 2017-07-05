@@ -16,14 +16,14 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 	public sealed class DmRmcScalerCAdapter : AbstractDevice<DmRmcScalerCAdapterSettings>, IPortParent
 	{
 		public delegate void ScalerChangeCallback(
-			DmRmcScalerCAdapter sender, global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler);
+			DmRmcScalerCAdapter sender, Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler);
 
 		/// <summary>
 		/// Raised when the wrapped scaler changes.
 		/// </summary>
 		public event ScalerChangeCallback OnScalerChanged;
 
-		private global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC m_Scaler;
+		private Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC m_Scaler;
 		private int? m_ParentId;
 
 		#region Properties
@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// <summary>
 		/// Gets the wrapped scaler.
 		/// </summary>
-		public global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC Scaler
+		public Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC Scaler
 		{
 			get { return m_Scaler; }
 			private set
@@ -76,7 +76,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// <param name="scaler"></param>
 		/// <param name="parentId"></param>
 		[PublicAPI]
-		public void SetScaler(global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler, int? parentId)
+		public void SetScaler(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler, int? parentId)
 		{
 			Unsubscribe(Scaler);
 
@@ -198,8 +198,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler =
-				DmEndpointFactoryUtils.InstantiateEndpoint<global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC>(settings.Ipid, settings.DmOutputAddress,
+			Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler =
+				DmEndpointFactoryUtils.InstantiateEndpoint<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC>(settings.Ipid, settings.DmOutputAddress,
 				                                                         settings.DmSwitch, factory,
 				                                                         InstantiateScaler,
 				                                                         InstantiateScaler,
@@ -208,19 +208,19 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 			SetScaler(scaler, settings.DmSwitch);
 		}
 
-		private static global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC InstantiateScaler(byte ipid, CrestronControlSystem controlSystem)
+		private static Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC InstantiateScaler(byte ipid, CrestronControlSystem controlSystem)
 		{
-			return new global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC(ipid, controlSystem);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC(ipid, controlSystem);
 		}
 
-		private static global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC InstantiateScaler(byte ipid, DMOutput output)
+		private static Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC InstantiateScaler(byte ipid, DMOutput output)
 		{
-			return new global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC(ipid, output);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC(ipid, output);
 		}
 
-		private static global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC InstantiateScaler(DMOutput outut)
+		private static Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC InstantiateScaler(DMOutput outut)
 		{
-			return new global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC(outut);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC(outut);
 		}
 
 		#endregion
@@ -231,7 +231,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// Subscribe to the scaler events.
 		/// </summary>
 		/// <param name="scaler"></param>
-		private void Subscribe(global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
+		private void Subscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
 		{
 			if (scaler == null)
 				return;
@@ -243,7 +243,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// Unsubscribes from the scaler events.
 		/// </summary>
 		/// <param name="scaler"></param>
-		private void Unsubscribe(global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
+		private void Unsubscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
 		{
 			if (scaler == null)
 				return;

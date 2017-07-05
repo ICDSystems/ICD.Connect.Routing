@@ -14,7 +14,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 	/// <typeparam name="TTransmitter"></typeparam>
 	/// <typeparam name="TSettings"></typeparam>
 	public abstract class AbstractDmTx200BaseAdapter<TTransmitter, TSettings> : AbstractDevice<TSettings>
-		where TTransmitter : global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base
+		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base
 		where TSettings : AbstractDmTx200BaseAdapterSettings, new()
 	{
 		public delegate void TransmitterChangeCallback(object sender, TTransmitter transmitter);
@@ -99,7 +99,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 				if (result != eDeviceRegistrationUnRegistrationResponse.Success)
 					Logger.AddEntry(eSeverity.Error, "Unable to register {0} - {1}", Transmitter.GetType().Name, result);
 
-				Transmitter.VideoSource = global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
+				Transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
 			}
 
 			UpdateCachedOnlineStatus();

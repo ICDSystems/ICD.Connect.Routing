@@ -4,7 +4,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201C
 {
 	public sealed class DmTx201CSourceControl :
 		AbstractDmTxBaseSourceControl
-			<DmTx201CAdapter, DmTx201CAdapterSettings, global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C>
+			<DmTx201CAdapter, DmTx201CAdapterSettings, Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C>
 	{
 		/// <summary>
 		/// Constructor.

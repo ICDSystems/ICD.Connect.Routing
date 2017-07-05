@@ -17,7 +17,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 	public abstract class AbstractDmTxBaseSourceControl<TDevice, TDeviceSettings, TTransmitter> : AbstractRouteSourceControl<TDevice>
 		where TDevice : AbstractDmTx200BaseAdapter<TTransmitter, TDeviceSettings>, IDevice
 		where TDeviceSettings : AbstractDmTx200BaseAdapterSettings, new()
-		where TTransmitter : global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base
+		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base
 	{
 		private const int INPUT_HDMI = 1;
 		private const int OUTPUT_HDMI = 1;
@@ -242,7 +242,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 				return;
 
 			// Ensure the device stays in auto routing mode
-			Parent.Transmitter.VideoSource = global::Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
+			Parent.Transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
 			// Disable Free-Run
 			Parent.Transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
 		}

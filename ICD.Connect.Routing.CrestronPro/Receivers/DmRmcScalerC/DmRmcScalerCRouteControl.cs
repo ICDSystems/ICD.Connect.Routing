@@ -17,7 +17,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 		public override event EventHandler OnActiveInputsChanged;
 
-		private global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC m_Scaler;
+		private Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC m_Scaler;
 		private bool m_VideoDetected;
 
 		#region Properties
@@ -219,12 +219,12 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// <param name="sender"></param>
 		/// <param name="scaler"></param>
 		private void ParentOnScalerChanged(DmRmcScalerCAdapter sender,
-		                                   global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
+		                                   Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
 		{
 			SetScaler(scaler);
 		}
 
-		private void SetScaler(global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
+		private void SetScaler(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
 		{
 			Unsubscribe(m_Scaler);
 			m_Scaler = scaler;
@@ -239,7 +239,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// Subscribe to the scaler events.
 		/// </summary>
 		/// <param name="scaler"></param>
-		private void Subscribe(global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
+		private void Subscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
 		{
 			if (scaler == null)
 				return;
@@ -251,7 +251,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// Unsubscribes from the scaler events.
 		/// </summary>
 		/// <param name="scaler"></param>
-		private void Unsubscribe(global::Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
+		private void Unsubscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
 		{
 			if (scaler == null)
 				return;
