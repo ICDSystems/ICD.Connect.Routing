@@ -38,6 +38,7 @@ namespace ICD.Connect.Routing.Extensions
 		/// <summary>
 		/// Lazy-loads the Connection with the given id.
 		/// </summary>
+		/// <param name="factory"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[PublicAPI]
@@ -52,6 +53,7 @@ namespace ICD.Connect.Routing.Extensions
 		/// <summary>
 		/// Lazy-loads the StaticRoute with the given id.
 		/// </summary>
+		/// <param name="factory"></param>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[PublicAPI]

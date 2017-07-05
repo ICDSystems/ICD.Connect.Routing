@@ -308,7 +308,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 				return;
 
 			int output = (int)args.Number;
-			ConnectorInfo[] inputs = GetInputs(output, (eConnectionType) (eConnectionType.Audio | eConnectionType.Video)).ToArray();
+			ConnectorInfo[] inputs = GetInputs(output, eConnectionType.Audio | eConnectionType.Video).ToArray();
 
 			m_CachedRoutesSection.Enter();
 
