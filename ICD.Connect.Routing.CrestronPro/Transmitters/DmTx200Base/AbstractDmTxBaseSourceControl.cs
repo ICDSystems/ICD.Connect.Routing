@@ -175,6 +175,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			Unsubscribe(m_Transmitter);
 			m_Transmitter = transmitter;
 			Subscribe(m_Transmitter);
+
+			ActiveTransmissionState = HdmiDetected || VgaDetected;
 		}
 
 		#endregion
