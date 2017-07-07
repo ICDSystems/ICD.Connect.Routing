@@ -76,8 +76,9 @@ namespace ICD.Connect.Routing.Controls
 			if (extends == null)
 				throw new ArgumentNullException("extends");
 
-			return extends.GetOutputs(type).Where(o => extends.GetInputs(o.Address)
-			                                                  .Any(i => i.Address == input));
+			return extends.GetOutputs(type)
+			              .Where(o => extends.GetInputs(o.Address, type)
+			                                 .Any(i => i.Address == input));
 		}
 	}
 }
