@@ -44,13 +44,13 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// Returns true if an HDMI input source is detected.
 		/// </summary>
 		[PublicAPI]
-		public bool HdmiDetected { get { return Parent.Transmitter.HdmiInput.SyncDetectedFeedback.BoolValue; } }
+		public bool HdmiDetected { get { return Parent.Transmitter != null && Parent.Transmitter.HdmiInput.SyncDetectedFeedback.BoolValue; } }
 
 		/// <summary>
 		/// Returns true if a VGA input source is detected.
 		/// </summary>
 		[PublicAPI]
-		public bool VgaDetected { get { return Parent.Transmitter.VgaInput.SyncDetectedFeedback.BoolValue; } }
+		public bool VgaDetected { get { return Parent.Transmitter != null && Parent.Transmitter.VgaInput.SyncDetectedFeedback.BoolValue; } }
 
 		/// <summary>
 		/// Returns true when the device is actively transmitting video.
