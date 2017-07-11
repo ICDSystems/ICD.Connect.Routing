@@ -89,7 +89,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 					return true;
 
 				default:
-					throw new ArgumentOutOfRangeException();
+					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 					return true;
 
 				default:
-					throw new ArgumentOutOfRangeException();
+					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 		}
 
@@ -141,7 +141,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 					return Parent.Switcher.Inputs[(uint)input].VideoDetectedFeedback.BoolValue;
 
 				default:
-					throw new ArgumentOutOfRangeException();
+					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 		}
 

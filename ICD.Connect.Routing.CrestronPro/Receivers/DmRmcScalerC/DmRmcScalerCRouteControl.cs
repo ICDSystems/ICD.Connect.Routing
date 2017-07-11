@@ -113,7 +113,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 					return m_Scaler.DmInput.SyncDetectedFeedback.BoolValue;
 
 				default:
-					throw new ArgumentOutOfRangeException();
+					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 		}
 
@@ -148,7 +148,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 					return ActiveTransmissionState;
 
 				default:
-					throw new ArgumentOutOfRangeException();
+					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 		}
 

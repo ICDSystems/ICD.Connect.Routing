@@ -125,7 +125,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 					return switcherOutput.GetSafeVideoOutFeedback() == switcherInput;
 
 				default:
-					throw new ArgumentOutOfRangeException();
+					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 		}
 
@@ -161,7 +161,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 					return true;
 
 				default:
-					throw new ArgumentOutOfRangeException();
+					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 		}
 
