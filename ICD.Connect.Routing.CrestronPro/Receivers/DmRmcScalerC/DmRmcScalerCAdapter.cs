@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Common.Properties;
@@ -117,6 +118,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// <returns></returns>
 		public ComPort GetComPort(int address)
 		{
+			if (Scaler == null)
+				throw new InvalidOperationException("No scaler instantiated");
+
 			if (address == 1)
 				return Scaler.ComPorts[1];
 
@@ -131,6 +135,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// <returns></returns>
 		public IROutputPort GetIrOutputPort(int address)
 		{
+			if (Scaler == null)
+				throw new InvalidOperationException("No scaler instantiated");
+
 			if (address == 1)
 				return Scaler.IROutputPorts[1];
 
@@ -218,9 +225,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC(ipid, output);
 		}
 
-		private static Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC InstantiateScaler(DMOutput outut)
+		private static Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC InstantiateScaler(DMOutput output)
 		{
-			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC(outut);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC(output);
 		}
 
 		#endregion
