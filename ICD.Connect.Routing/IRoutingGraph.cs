@@ -14,7 +14,7 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing
 {
-	public interface IRoutingGraph
+	public interface IRoutingGraph : IOriginator
 	{
 		#region Events
 
