@@ -1,59 +1,64 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
-using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
 using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
+using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
+namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 {
-	public sealed class DmTx4K302CAdapter : AbstractDevice<DmTx4K302CAdapterSettings>
+	/// <summary>
+	/// DmRmcScalerCAdapter wraps a DmRmcScalerC to provide a routing device.
+	/// </summary>
+	public abstract class AbstractDmRmcScalerCAdapter<TScaler, TSettings> : AbstractDevice<TSettings>, IPortParent, IDmRmcScalerCAdapter
+		where TScaler : Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC
+		where TSettings : IDmRmcScalerCAdapterSettings, new()
 	{
-		public delegate void TransmitterChangeCallback(
-			DmTx4K302CAdapter sender, DmTx4k302C transmitter);
-
 		/// <summary>
-		/// Raised when the wrapped transmitter changes.
+		/// Raised when the wrapped scaler changes.
 		/// </summary>
-		public event TransmitterChangeCallback OnTransmitterChanged;
+		public event DmRmcScalerCChangeCallback OnScalerChanged;
 
-		private DmTx4k302C m_Transmitter;
+		private TScaler m_Scaler;
 		private int? m_ParentId;
 
 		#region Properties
 
 		/// <summary>
-		/// Gets the wrapped transmitter.
+		/// Gets the wrapped scaler.
 		/// </summary>
-		public DmTx4k302C Transmitter
+		public TScaler Scaler
 		{
-			get { return m_Transmitter; }
+			get { return m_Scaler; }
 			private set
 			{
-				if (value == m_Transmitter)
+				if (value == m_Scaler)
 					return;
 
-				m_Transmitter = value;
+				m_Scaler = value;
 
-				TransmitterChangeCallback handler = OnTransmitterChanged;
+				DmRmcScalerCChangeCallback handler = OnScalerChanged;
 				if (handler != null)
-					handler(this, m_Transmitter);
+					handler(this, m_Scaler);
 			}
 		}
+
+		Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC IDmRmcScalerCAdapter.Scaler { get { return Scaler; } }
 
 		#endregion
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public DmTx4K302CAdapter()
+		protected AbstractDmRmcScalerCAdapter()
 		{
-			Controls.Add(new DmTx4K302CRouteControl(this));
+			Controls.Add(new DmRmcScalerCBaseRouteControl(this));
 		}
 
 		#region Methods
@@ -66,27 +71,27 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 			base.DisposeFinal(disposing);
 
 			// Unsbscribe and unregister
-			SetTransmitter(null, null);
+			SetScaler(null, null);
 		}
 
 		/// <summary>
-		/// Sets the wrapped transmitter.
+		/// Sets the wrapped scaler.
 		/// </summary>
-		/// <param name="transmitter"></param>
+		/// <param name="scaler"></param>
 		/// <param name="parentId"></param>
 		[PublicAPI]
-		public void SetTransmitter(DmTx4k302C transmitter, int? parentId)
+		public void SetScaler(TScaler scaler, int? parentId)
 		{
-			Unsubscribe(Transmitter);
+			Unsubscribe(Scaler);
 
-			if (Transmitter != null)
+			if (Scaler != null)
 			{
-				if (Transmitter.Registered)
-					Transmitter.UnRegister();
+				if (Scaler.Registered)
+					Scaler.UnRegister();
 
 				try
 				{
-					Transmitter.Dispose();
+					Scaler.Dispose();
 				}
 				catch
 				{
@@ -94,18 +99,18 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 			}
 
 			m_ParentId = parentId;
-			Transmitter = transmitter;
+			Scaler = scaler;
 
-			if (Transmitter != null && !Transmitter.Registered)
+			if (Scaler != null && !Scaler.Registered)
 			{
 				if (Name != null)
-					Transmitter.Description = Name;
-				eDeviceRegistrationUnRegistrationResponse result = Transmitter.Register();
+					Scaler.Description = Name;
+				eDeviceRegistrationUnRegistrationResponse result = Scaler.Register();
 				if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-					Logger.AddEntry(eSeverity.Error, "Unable to register {0} - {1}", Transmitter.GetType().Name, result);
+					Logger.AddEntry(eSeverity.Error, "Unable to register {0} - {1}", Scaler.GetType().Name, result);
 			}
 
-			Subscribe(Transmitter);
+			Subscribe(Scaler);
 			UpdateCachedOnlineStatus();
 		}
 
@@ -116,8 +121,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// <returns></returns>
 		public ComPort GetComPort(int address)
 		{
+			if (Scaler == null)
+				throw new InvalidOperationException("No scaler instantiated");
+
 			if (address == 1)
-				return Transmitter.ComPorts[1];
+				return Scaler.ComPorts[1];
 
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(ComPort).Name, address);
 			throw new KeyNotFoundException(message);
@@ -130,8 +138,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// <returns></returns>
 		public IROutputPort GetIrOutputPort(int address)
 		{
+			if (Scaler == null)
+				throw new InvalidOperationException("No scaler instantiated");
+
 			if (address == 1)
-				return Transmitter.IROutputPorts[1];
+				return Scaler.IROutputPorts[1];
 
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(IROutputPort).Name, address);
 			throw new KeyNotFoundException(message);
@@ -167,15 +178,15 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// Override to apply properties to the settings instance.
 		/// </summary>
 		/// <param name="settings"></param>
-		protected override void CopySettingsFinal(DmTx4K302CAdapterSettings settings)
+		protected override void CopySettingsFinal(TSettings settings)
 		{
 			base.CopySettingsFinal(settings);
 
-			DMInput input = m_Transmitter == null ? null : m_Transmitter.DMInput;
+			DMOutput input = m_Scaler == null ? null : m_Scaler.DMOutput;
 
-			settings.Ipid = m_Transmitter == null ? (byte)0 : (byte)m_Transmitter.ID;
+			settings.Ipid = m_Scaler == null ? (byte)0 : (byte)m_Scaler.ID;
 			settings.DmSwitch = m_ParentId;
-			settings.DmInputAddress = input == null ? (int?)null : (int)input.Number;
+			settings.DmOutputAddress = input == null ? (int?)null : (int)input.Number;
 		}
 
 		/// <summary>
@@ -185,7 +196,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		{
 			base.ClearSettingsFinal();
 
-			SetTransmitter(null, null);
+			SetScaler(null, null);
 		}
 
 		/// <summary>
@@ -193,61 +204,52 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// </summary>
 		/// <param name="settings"></param>
 		/// <param name="factory"></param>
-		protected override void ApplySettingsFinal(DmTx4K302CAdapterSettings settings, IDeviceFactory factory)
+		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			DmTx4k302C transmitter =
-				DmEndpointFactoryUtils.InstantiateEndpoint<DmTx4k302C>(settings.Ipid, settings.DmInputAddress,
-				                                                         settings.DmSwitch, factory,
-				                                                         InstantiateTransmitter,
-				                                                         InstantiateTransmitter,
-				                                                         InstantiateTransmitter);
+			TScaler scaler =
+				DmEndpointFactoryUtils.InstantiateEndpoint<TScaler>(settings.Ipid, settings.DmOutputAddress,
+				                                                    settings.DmSwitch, factory,
+				                                                    InstantiateScaler,
+				                                                    InstantiateScaler,
+				                                                    InstantiateScaler);
 
-			SetTransmitter(transmitter, settings.DmSwitch);
+			SetScaler(scaler, settings.DmSwitch);
 		}
 
-		private static DmTx4k302C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
-		{
-			return new DmTx4k302C(ipid, controlSystem);
-		}
+		protected abstract TScaler InstantiateScaler(byte ipid, CrestronControlSystem controlSystem);
 
-		private static DmTx4k302C InstantiateTransmitter(byte ipid, DMInput input)
-		{
-			return new DmTx4k302C(ipid, input);
-		}
+		protected abstract TScaler InstantiateScaler(byte ipid, DMOutput output);
 
-		private static DmTx4k302C InstantiateTransmitter(DMInput input)
-		{
-			return new DmTx4k302C(input);
-		}
+		protected abstract TScaler InstantiateScaler(DMOutput output);
 
 		#endregion
 
 		#region Private Methods
 
 		/// <summary>
-		/// Subscribe to the transmitter events.
+		/// Subscribe to the scaler events.
 		/// </summary>
-		/// <param name="transmitter"></param>
-		private void Subscribe(DmTx4k302C transmitter)
+		/// <param name="scaler"></param>
+		private void Subscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
 		{
-			if (transmitter == null)
+			if (scaler == null)
 				return;
 
-			transmitter.OnlineStatusChange += TransmitterOnlineStatusChange;
+			scaler.OnlineStatusChange += ScalerOnlineStatusChange;
 		}
 
 		/// <summary>
-		/// Unsubscribes from the transmitter events.
+		/// Unsubscribes from the scaler events.
 		/// </summary>
-		/// <param name="transmitter"></param>
-		private void Unsubscribe(DmTx4k302C transmitter)
+		/// <param name="scaler"></param>
+		private void Unsubscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
 		{
-			if (transmitter == null)
+			if (scaler == null)
 				return;
 
-			transmitter.OnlineStatusChange -= TransmitterOnlineStatusChange;
+			scaler.OnlineStatusChange -= ScalerOnlineStatusChange;
 		}
 
 		/// <summary>
@@ -255,7 +257,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// </summary>
 		/// <param name="currentDevice"></param>
 		/// <param name="args"></param>
-		private void TransmitterOnlineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
+		private void ScalerOnlineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
 		{
 			UpdateCachedOnlineStatus();
 		}
@@ -266,7 +268,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return Transmitter != null && Transmitter.IsOnline;
+			return Scaler != null && Scaler.IsOnline;
 		}
 
 		#endregion
@@ -281,11 +283,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		{
 			base.BuildConsoleStatus(addRow);
 
-			addRow("IPID", m_Transmitter == null ? null : StringUtils.ToIpIdString((byte)m_Transmitter.ID));
+			addRow("IPID", m_Scaler == null ? null : StringUtils.ToIpIdString((byte)m_Scaler.ID));
 			addRow("DM Switch", m_ParentId);
 
-			DMInput input = m_Transmitter == null ? null : m_Transmitter.DMInput;
-			addRow("DM Input", input == null ? null : input.Number.ToString());
+			DMOutput output = m_Scaler == null ? null : m_Scaler.DMOutput;
+			addRow("DM Output", output == null ? null : output.Number.ToString());
 		}
 
 		#endregion

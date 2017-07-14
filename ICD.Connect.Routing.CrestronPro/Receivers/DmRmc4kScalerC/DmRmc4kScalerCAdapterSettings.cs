@@ -8,9 +8,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 	/// <summary>
 	/// Settings for the DmRmcScalerCAdapter.
 	/// </summary>
-	public sealed class DmRmcScalerCAdapterSettings : AbstractDmRmcScalerCAdapterSettings
+	public sealed class DmRmc4kScalerCAdapterSettings : AbstractDmRmcScalerCAdapterSettings
 	{
-		private const string FACTORY_NAME = "DmRmcScalerC";
+		private const string FACTORY_NAME = "DmRmc4kScalerC";
 
 		/// <summary>
 		/// Gets the originator factory name.
@@ -20,7 +20,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// <summary>
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
-		public override Type OriginatorType { get { return typeof(DmRmcScalerCAdapter); } }
+		public override Type OriginatorType { get { return typeof(DmRmc4kScalerCAdapter); } }
 
 		/// <summary>
 		/// Loads the settings from XML.
@@ -28,9 +28,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// <param name="xml"></param>
 		/// <returns></returns>
 		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
-		public static DmRmcScalerCAdapterSettings FromXml(string xml)
+		public static DmRmc4kScalerCAdapterSettings FromXml(string xml)
 		{
-			DmRmcScalerCAdapterSettings output = new DmRmcScalerCAdapterSettings();
+			DmRmc4kScalerCAdapterSettings output = new DmRmc4kScalerCAdapterSettings();
 			ParseXml(output, xml);
 			return output;
 		}

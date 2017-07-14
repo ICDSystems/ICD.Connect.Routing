@@ -9,9 +9,9 @@ using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 
-namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
+namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 {
-	public sealed class DmRmcScalerCRouteControl : AbstractRouteMidpointControl<DmRmcScalerCAdapter>
+	public sealed class DmRmcScalerCBaseRouteControl : AbstractRouteMidpointControl<IDmRmcScalerCAdapter>
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
@@ -60,7 +60,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		public DmRmcScalerCRouteControl(DmRmcScalerCAdapter parent)
+		public DmRmcScalerCBaseRouteControl(IDmRmcScalerCAdapter parent)
 			: base(parent, 0)
 		{
 			Subscribe(parent);
@@ -199,7 +199,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// Subscribe to parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(DmRmcScalerCAdapter parent)
+		private void Subscribe(IDmRmcScalerCAdapter parent)
 		{
 			parent.OnScalerChanged += ParentOnScalerChanged;
 		}
@@ -208,7 +208,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// Unsubscribe from parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(DmRmcScalerCAdapter parent)
+		private void Unsubscribe(IDmRmcScalerCAdapter parent)
 		{
 			parent.OnScalerChanged -= ParentOnScalerChanged;
 		}
@@ -218,7 +218,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="scaler"></param>
-		private void ParentOnScalerChanged(DmRmcScalerCAdapter sender,
+		private void ParentOnScalerChanged(IDmRmcScalerCAdapter sender,
 		                                   Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
 		{
 			SetScaler(scaler);

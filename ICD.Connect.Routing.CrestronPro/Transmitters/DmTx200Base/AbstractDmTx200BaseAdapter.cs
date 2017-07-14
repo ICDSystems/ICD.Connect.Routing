@@ -2,6 +2,8 @@
 using Crestron.SimplSharpPro.DM;
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
+using ICD.Common.Utils;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Settings.Core;
@@ -208,6 +210,25 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		private void TransmitterOnlineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
 		{
 			UpdateCachedOnlineStatus();
+		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			addRow("IPID", m_Transmitter == null ? null : StringUtils.ToIpIdString((byte)m_Transmitter.ID));
+			addRow("DM Switch", m_ParentId);
+
+			DMInput input = m_Transmitter == null ? null : m_Transmitter.DMInput;
+			addRow("DM Input", input == null ? null : input.Number.ToString());
 		}
 
 		#endregion
