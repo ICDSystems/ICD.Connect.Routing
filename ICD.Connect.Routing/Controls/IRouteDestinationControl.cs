@@ -21,7 +21,7 @@ namespace ICD.Connect.Routing.Controls
 		/// <summary>
 		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
 		/// </summary>
-		event EventHandler OnActiveInputsChanged;
+		event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		/// <summary>
 		/// Returns true if a signal is detected at the given input.

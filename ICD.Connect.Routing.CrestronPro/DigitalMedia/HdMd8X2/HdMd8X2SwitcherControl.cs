@@ -10,6 +10,7 @@ using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 {
@@ -17,11 +18,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
-		public override event EventHandler OnActiveInputsChanged;
+		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
-		private readonly Dictionary<eConnectionType, Dictionary<int, bool>> m_CachedSourceStates;
-		private readonly SafeCriticalSection m_CachedSourceSection;
+		private readonly SwitcherCache m_Cache;
 
 		private HdMd8x2 m_Switcher;
 
@@ -32,8 +32,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		public HdMd8X2SwitcherControl(HdMd8X2Adapter parent)
 			: base(parent, 0)
 		{
-			m_CachedSourceStates = new Dictionary<eConnectionType, Dictionary<int, bool>>();
-			m_CachedSourceSection = new SafeCriticalSection();
+			m_Cache = new SwitcherCache();
+			m_Cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
+			m_Cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+			m_Cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
+			m_Cache.OnRouteChange += CacheOnRouteChange;
 
 			Subscribe(parent);
 			SetSwitcher(parent.Switcher);
@@ -124,6 +127,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 					return switcherOutput.GetSafeVideoOutFeedback() == switcherInput;
 
 				default:
+// ReSharper disable once NotResolvedInText
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 		}
@@ -303,26 +307,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		private void SourceDetectionChange(int input, eConnectionType type)
 		{
 			bool state = GetSignalDetectedState(input, type);
-
-			m_CachedSourceSection.Enter();
-
-			try
-			{
-				if (!m_CachedSourceStates.ContainsKey(type))
-					m_CachedSourceStates[type] = new Dictionary<int, bool>();
-
-				bool cachedState = m_CachedSourceStates[type].GetDefault(input, false);
-				if (state == cachedState)
-					return;
-
-				m_CachedSourceStates[type][input] = state;
-			}
-			finally
-			{
-				m_CachedSourceSection.Leave();
-			}
-
-			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, type, state));
+			m_Cache.SetSourceDetectedState(input, type, state);
 		}
 
 		/// <summary>
@@ -332,23 +317,55 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		/// <param name="args"></param>
 		private void SwitcherOnDmOutputChange(Switch device, DMOutputEventArgs args)
 		{
-			if (args.EventId != DMOutputEventIds.VideoOutEventId)
-				return;
+			eConnectionType type;
+
+			switch (args.EventId)
+			{
+				case DMOutputEventIds.VideoOutEventId:
+					type = eConnectionType.Video;
+					break;
+
+				case DMOutputEventIds.AudioOutEventId:
+					type = eConnectionType.Audio;
+					break;
+
+				case DMOutputEventIds.UsbRoutedToEventId:
+					type = eConnectionType.Usb;
+					break;
+
+				default:
+					return;
+			}
 
 			int output = (int)args.Number;
+			int? input = GetInputs(output, type).Select(c => c.Address)
+												.FirstOrDefault();
 
-			// Raise the route change event.
-			OnRouteChange.Raise(this, new RouteChangeEventArgs(output, eConnectionType.Audio | eConnectionType.Video));
+			m_Cache.SetInputForOutput(output, input, type);
+		}
 
-			// Raise the active transmission changed event for the output.
-			bool state = GetActiveTransmissionState(output, eConnectionType.Video);
-			OnActiveTransmissionStateChanged.Raise(this,
-			                                       new TransmissionStateEventArgs(output,
-			                                                                      eConnectionType.Audio | eConnectionType.Video,
-			                                                                      state));
+		#endregion
 
-			// Raise the active inputs change event for the input
-			OnActiveInputsChanged.Raise(this);
+		#region Cache Callbacks
+
+		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
+		{
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(args.Output, args.Type));
+		}
+
+		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
+		{
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args.Output, args.Type, args.State));
+		}
+
+		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
+		{
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args.Input, args.Type, args.State));
+		}
+
+		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
+		{
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args.Input, args.Type, args.Active));
 		}
 
 		#endregion

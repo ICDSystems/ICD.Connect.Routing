@@ -89,7 +89,12 @@ namespace ICD.Connect.Routing.SPlus
 			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, type, state));
 
 			// Raise the active inputs change event for the input
-			OnActiveInputsChanged.Raise(this);
+			int input;
+			if (GetInputs(output, type).Select(c => c.Address).TryFirstOrDefault(out input))
+				return;
+
+			bool detected = GetSignalDetectedState(input, type);
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(input, type, detected));
 		}
 
 		#endregion
@@ -146,7 +151,7 @@ namespace ICD.Connect.Routing.SPlus
 		#region IRouteDestinationControl
 
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
-		public override event EventHandler OnActiveInputsChanged;
+		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{

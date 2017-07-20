@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Services;
-using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Mock.Destination
 {
@@ -20,10 +20,10 @@ namespace ICD.Connect.Routing.Mock.Destination
 		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 
-		public override event EventHandler OnActiveInputsChanged;
+		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		private readonly Dictionary<int, ConnectorInfo> m_Inputs;
-		private readonly Dictionary<int, Dictionary<eConnectionType, bool>> m_SignalDetected;
+		private readonly SwitcherCache m_Cache;
 
 		/// <summary>
 		/// Constructor.
@@ -33,8 +33,11 @@ namespace ICD.Connect.Routing.Mock.Destination
 		public MockRouteDestinationControl(IDevice parent, int id) :
 			base(parent, id)
 		{
+			m_Cache = new SwitcherCache();
+			m_Cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
+			m_Cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+
 			m_Inputs = new Dictionary<int, ConnectorInfo>();
-			m_SignalDetected = new Dictionary<int, Dictionary<eConnectionType, bool>>();
 		}
 
 		#region Methods
@@ -47,7 +50,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
-			return m_SignalDetected.ContainsKey(input) && m_SignalDetected[input].GetDefault(type, false);
+			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
 		/// <summary>
@@ -92,18 +95,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 		[PublicAPI]
 		public void SetSignalDetectedState(int input, eConnectionType type, bool state)
 		{
-			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
-			{
-				if (state == GetSignalDetectedState(input, flag))
-					continue;
-
-				if (!m_SignalDetected.ContainsKey(input))
-					m_SignalDetected[input] = new Dictionary<eConnectionType, bool>();
-
-				m_SignalDetected[input][flag] = state;
-
-				RaiseOnSourceChange(input, flag);
-			}
+			m_Cache.SetSourceDetectedState(input, type, state);
 		}
 
 		/// <summary>
@@ -120,9 +112,9 @@ namespace ICD.Connect.Routing.Mock.Destination
 		/// Raises the OnActiveInputsChanged event.
 		/// </summary>
 		[PublicAPI]
-		public void RaiseOnActiveInputsChanged()
+		public void RaiseOnActiveInputsChanged(int input, eConnectionType type, bool active)
 		{
-			OnActiveInputsChanged.Raise(this);
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(input, type, active));
 		}
 
 		#endregion
@@ -156,5 +148,19 @@ namespace ICD.Connect.Routing.Mock.Destination
 		{
 			SetInputs(GetInputs().Append(new ConnectorInfo(address, type)));
 		}
+
+		#region Cache Callbacks
+
+		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
+		{
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args.Input, args.Type, args.State));
+		}
+
+		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
+		{
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args.Input, args.Type, args.Active));
+		}
+
+		#endregion
 	}
 }

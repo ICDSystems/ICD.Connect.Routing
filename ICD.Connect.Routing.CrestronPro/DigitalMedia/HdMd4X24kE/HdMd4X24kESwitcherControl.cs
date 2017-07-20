@@ -4,10 +4,12 @@ using System.Linq;
 using Crestron.SimplSharpPro.DM;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 {
@@ -15,16 +17,15 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
-		public override event EventHandler OnActiveInputsChanged;
+		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
-
-		private readonly Dictionary<int, bool> m_CachedSourceStates;
-		private readonly SafeCriticalSection m_CachedSourceSection;
 
 		// Crestron is garbage at tracking the active routing states on the 4x2,
 		// so lets just cache the assigned routes until the device tells us otherwise.
 		private readonly Dictionary<int, int?> m_CachedRoutes;
 		private readonly SafeCriticalSection m_CachedRoutesSection;
+
+		private readonly SwitcherCache m_Cache;
 
 		private HdMd4x24kE m_Switcher;
 
@@ -35,8 +36,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		public HdMd4X24kESwitcherControl(HdMd4X24kEAdapter parent)
 			: base(parent, 0)
 		{
-			m_CachedSourceStates = new Dictionary<int, bool>();
-			m_CachedSourceSection = new SafeCriticalSection();
+			m_Cache = new SwitcherCache();
+			m_Cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
+			m_Cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+			m_Cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
+			m_Cache.OnRouteChange += CacheOnRouteChange;
 
 			m_CachedRoutes = new Dictionary<int, int?>();
 			m_CachedRoutesSection = new SafeCriticalSection();
@@ -89,6 +93,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 					return true;
 
 				default:
+// ReSharper disable once NotResolvedInText
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 		}
@@ -270,31 +275,21 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// <param name="args"></param>
 		private void SwitcherOnDmInputChange(Switch device, DMInputEventArgs args)
 		{
-			if (args.EventId != DMInputEventIds.SourceSyncEventId)
-				return;
+			eConnectionType type = DmUtils.DmEventToConnectionType(args.EventId);
 
-			int input = (int)args.Number;
-			bool state = GetSignalDetectedState(input, eConnectionType.Video);
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+				SourceDetectionChange((int)args.Number, flag);
+		}
 
-			m_CachedSourceSection.Enter();
-
-			try
-			{
-				bool cachedState = m_CachedSourceStates.GetDefault(input, false);
-				if (state == cachedState)
-					return;
-
-				m_CachedSourceStates[input] = state;
-			}
-			finally
-			{
-				m_CachedSourceSection.Leave();
-			}
-
-			OnSourceDetectionStateChange.Raise(this,
-											   new SourceDetectionStateChangeEventArgs(input,
-																					   eConnectionType.Audio |
-																					   eConnectionType.Video, state));
+		/// <summary>
+		/// Handles the detection change for individual connection types.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		private void SourceDetectionChange(int input, eConnectionType type)
+		{
+			bool state = GetSignalDetectedState(input, type);
+			m_Cache.SetSourceDetectedState(input, type, state);
 		}
 
 		/// <summary>
@@ -308,32 +303,50 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 				return;
 
 			int output = (int)args.Number;
+
+			// 4x2 is utter garbage at tracking the routing state properly, so cache the last known values
 			ConnectorInfo[] inputs = GetInputs(output, eConnectionType.Audio | eConnectionType.Video).ToArray();
 
 			m_CachedRoutesSection.Enter();
 
 			try
 			{
-				foreach (ConnectorInfo input in inputs)
-					m_CachedRoutes[output] = input.Address;
+				foreach (ConnectorInfo connector in inputs)
+					m_CachedRoutes[output] = connector.Address;
 			}
 			finally
 			{
 				m_CachedRoutesSection.Leave();
 			}
 
-			// Raise the route change event.
-			OnRouteChange.Raise(this, new RouteChangeEventArgs(output, eConnectionType.Audio | eConnectionType.Video));
+			int? input = GetInputs(output, eConnectionType.Audio | eConnectionType.Video).Select(c => c.Address)
+												.FirstOrDefault();
 
-			// Raise the active transmission changed event for the output.
-			bool state = GetActiveTransmissionState(output, eConnectionType.Video);
-			OnActiveTransmissionStateChanged.Raise(this,
-												   new TransmissionStateEventArgs(output,
-																				  eConnectionType.Audio | eConnectionType.Video,
-																				  state));
+			m_Cache.SetInputForOutput(output, input, eConnectionType.Audio | eConnectionType.Video);
+		}
 
-			// Raise the active inputs change event for the input
-			OnActiveInputsChanged.Raise(this);
+		#endregion
+
+		#region Cache Callbacks
+
+		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
+		{
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(args.Output, args.Type));
+		}
+
+		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
+		{
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args.Output, args.Type, args.State));
+		}
+
+		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
+		{
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args.Input, args.Type, args.State));
+		}
+
+		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
+		{
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args.Input, args.Type, args.Active));
 		}
 
 		#endregion

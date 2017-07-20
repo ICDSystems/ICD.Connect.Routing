@@ -11,7 +11,7 @@ namespace ICD.Connect.Routing.Controls
 		where T : IDevice
 	{
 		public abstract event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
-		public abstract event EventHandler OnActiveInputsChanged;
+		public abstract event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		/// <summary>
 		/// Constructor.

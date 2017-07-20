@@ -18,7 +18,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
-		public override event EventHandler OnActiveInputsChanged;
+		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		private readonly Dictionary<int, ConnectorInfo> m_Inputs;
 		private readonly Dictionary<int, Dictionary<eConnectionType, bool>> m_SignalDetected;
