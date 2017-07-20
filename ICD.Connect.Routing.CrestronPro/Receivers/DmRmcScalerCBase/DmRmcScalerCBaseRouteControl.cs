@@ -15,7 +15,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
-		public override event EventHandler OnActiveInputsChanged;
+		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		private Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC m_Scaler;
 		private bool m_VideoDetected;
