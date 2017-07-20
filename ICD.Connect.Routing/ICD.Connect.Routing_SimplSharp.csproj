@@ -68,6 +68,7 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventArguments\ActiveInputStateChangeEventArgs.cs" />
     <Compile Include="Extensions\CoreExtensions.cs" />
     <Compile Include="Extensions\DeviceFactoryExtensions.cs" />
     <Compile Include="IRoutingGraph.cs" />
@@ -118,6 +119,7 @@
     <Compile Include="EventArguments\SourceDetectionStateChangeEventArgs.cs" />
     <Compile Include="EventArguments\SourceEventArgs.cs" />
     <Compile Include="EventArguments\TransmissionStateEventArgs.cs" />
+    <Compile Include="Utils\SwitcherCache.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>
