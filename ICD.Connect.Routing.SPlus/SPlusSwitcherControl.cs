@@ -90,7 +90,7 @@ namespace ICD.Connect.Routing.SPlus
 
 			// Raise the active inputs change event for the input
 			int input;
-			if (GetInputs(output, type).Select(c => c.Address).TryFirstOrDefault(out input))
+			if (GetInputs(output, type).Select(c => c.Address).TryFirst(out input))
 				return;
 
 			bool detected = GetSignalDetectedState(input, type);
