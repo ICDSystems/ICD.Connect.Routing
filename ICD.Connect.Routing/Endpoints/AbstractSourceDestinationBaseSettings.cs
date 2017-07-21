@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using ICD.Common.Attributes.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Endpoints
 {
