@@ -21,7 +21,7 @@ namespace ICD.Connect.Routing.Extensions
 	{
 		public static IRoutingGraph GetRoutingGraph(this ICore core)
 		{
-			return core.Originators.OfType<IRoutingGraph>().SingleOrDefault();
+			return core.Originators.GetChild<IRoutingGraph>();
 		}
 	}
 }
