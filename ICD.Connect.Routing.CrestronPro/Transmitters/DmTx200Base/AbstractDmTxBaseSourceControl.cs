@@ -218,7 +218,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <param name="args"></param>
 		private void VgaInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
-			if (args.EventId == DMInputEventIds.VideoOutEventId)
 				ActiveTransmissionState = HdmiDetected || VgaDetected;
 		}
 
@@ -229,7 +228,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <param name="args"></param>
 		private void HdmiInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
-			if (args.EventId == DMInputEventIds.VideoDetectedEventId)
 				ActiveTransmissionState = HdmiDetected || VgaDetected;
 		}
 
