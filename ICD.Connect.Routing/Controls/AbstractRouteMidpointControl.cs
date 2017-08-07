@@ -47,6 +47,16 @@ namespace ICD.Connect.Routing.Controls
 		public abstract IEnumerable<ConnectorInfo> GetOutputs();
 
 		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public virtual ConnectorInfo GetOutput(int input)
+		{
+			return GetOutputs().First(c => c.Address == input);
+		}
+
+		/// <summary>
 		/// Returns the true if the input is actively being used by the source device.
 		/// For example, a display might true if the input is currently on screen,
 		/// while a switcher may return true if the input is currently routed.
