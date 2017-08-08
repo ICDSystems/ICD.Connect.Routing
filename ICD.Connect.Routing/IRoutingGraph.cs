@@ -140,6 +140,15 @@ namespace ICD.Connect.Routing
 		/// Searches for switchers currently routing the source and unroutes them.
 		/// </summary>
 		/// <param name="sourceControl"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		bool Unroute(IRouteSourceControl sourceControl, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Searches for switchers currently routing the source and unroutes them.
+		/// </summary>
+		/// <param name="sourceControl"></param>
 		/// <param name="sourceAddress"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
