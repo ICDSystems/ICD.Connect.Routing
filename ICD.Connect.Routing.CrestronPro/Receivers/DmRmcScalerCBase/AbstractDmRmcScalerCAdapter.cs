@@ -119,7 +119,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public ComPort GetComPort(int address)
+		public virtual ComPort GetComPort(int address)
 		{
 			if (Scaler == null)
 				throw new InvalidOperationException("No scaler instantiated");
@@ -136,7 +136,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public IROutputPort GetIrOutputPort(int address)
+		public virtual IROutputPort GetIrOutputPort(int address)
 		{
 			if (Scaler == null)
 				throw new InvalidOperationException("No scaler instantiated");
@@ -153,7 +153,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public Relay GetRelayPort(int address)
+		public virtual Relay GetRelayPort(int address)
 		{
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(Relay).Name, address);
 			throw new KeyNotFoundException(message);
@@ -164,7 +164,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public Versiport GetIoPort(int address)
+		public virtual Versiport GetIoPort(int address)
 		{
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(Versiport).Name, address);
 			throw new KeyNotFoundException(message);
