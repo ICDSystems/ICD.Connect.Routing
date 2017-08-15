@@ -21,13 +21,16 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove=".gitignore" />
+    <None Remove="ICD.Connect.projectinfo" />
     <None Remove="ICD.Connect.Routing.projectinfo" />
-    <None Remove="ICD.Connect.Routing.SPlus_SimplSharp.suo" />
     <None Remove="ICD.SimplSharp.projectinfo" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\ICD.Common.Utils\ICD.Common.Utils\ICD.Common.Utils_NetStandard.csproj" />
+    <ProjectReference Include="..\..\ICD.Connect.Devices\ICD.Connect.Devices\ICD.Connect.Devices_NetStandard.csproj" />
+    <ProjectReference Include="..\..\ICD.Connect.Misc\ICD.Connect.Misc.CrestronPro\ICD.Connect.Misc.CrestronPro_NetStandard.csproj" />
     <ProjectReference Include="..\ICD.Connect.Routing\ICD.Connect.Routing_NetStandard.csproj" />
   </ItemGroup>
 
