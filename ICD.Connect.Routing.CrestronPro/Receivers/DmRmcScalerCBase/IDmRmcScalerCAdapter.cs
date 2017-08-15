@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Devices;
+﻿#if SIMPLSHARP
+using ICD.Connect.Devices;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 {
@@ -12,3 +13,4 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC Scaler { get; }
 	}
 }
+#endif

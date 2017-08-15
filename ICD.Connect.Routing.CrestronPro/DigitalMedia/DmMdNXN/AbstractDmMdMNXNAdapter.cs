@@ -1,30 +1,40 @@
 ﻿using System.Collections.Generic;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro;
+using ICD.Connect.Misc.CrestronPro.Devices;
+#endif
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
 using ICD.Connect.Devices;
-using ICD.Connect.Misc.CrestronPro;
-using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Settings.Core;
+using System;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 {
-// ReSharper disable once InconsistentNaming
-	public abstract class AbstractDmMdMNXNAdapter<TSwitcher, TSettings> : AbstractDevice<TSettings>, IDmMdMNXNAdapter, IDmParent
+    // ReSharper disable once InconsistentNaming
+#if SIMPLSHARP
+    public abstract class AbstractDmMdMNXNAdapter<TSwitcher, TSettings> : AbstractDevice<TSettings>, IDmMdMNXNAdapter, IDmParent
 		where TSwitcher : DmMDMnxn
-		where TSettings : IDmMdNXNAdapterSettings, new()
+#else
+    public abstract class AbstractDmMdMNXNAdapter<TSettings> : AbstractDevice<TSettings>
+#endif
+        where TSettings : IDmMdNXNAdapterSettings, new()
 	{
+#if SIMPLSHARP
 		public event DmMdMNXNChangeCallback OnSwitcherChanged;
 
-		private TSwitcher m_Switcher;
+        private TSwitcher m_Switcher;
+#endif
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets the wrapped switcher.
-		/// </summary>
-		public TSwitcher Switcher
+#if SIMPLSHARP
+        /// <summary>
+        /// Gets the wrapped switcher.
+        /// </summary>
+        public TSwitcher Switcher
 		{
 			get { return m_Switcher; }
 			private set
@@ -41,37 +51,45 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		}
 
 		DmMDMnxn IDmMdMNXNAdapter.Switcher { get { return Switcher; } }
+#endif
 
-		#endregion
+        #endregion
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		protected AbstractDmMdMNXNAdapter()
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        protected AbstractDmMdMNXNAdapter()
 		{
-			Controls.Add(new DmMdMNXNSwitcherControl(this));
+#if SIMPLSHARP
+            Controls.Add(new DmMdMNXNSwitcherControl(this));
+#endif
 		}
 
-		#region Methods
+#region Methods
 
 		/// <summary>
 		/// Release resources.
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
-			OnSwitcherChanged = null;
+#if SIMPLSHARP
+            OnSwitcherChanged = null;
+#endif
 
 			base.DisposeFinal(disposing);
 
-			// Unsubscribe and unregister.
-			SetSwitcher(null);
+#if SIMPLSHARP
+            // Unsubscribe and unregister.
+            SetSwitcher(null);
+#endif
 		}
 
-		/// <summary>
-		/// Sets the wrapped switcher.
-		/// </summary>
-		/// <param name="switcher"></param>
-		[PublicAPI]
+#if SIMPLSHARP
+        /// <summary>
+        /// Sets the wrapped switcher.
+        /// </summary>
+        /// <param name="switcher"></param>
+        [PublicAPI]
 		public void SetSwitcher(TSwitcher switcher)
 		{
 			Unsubscribe(Switcher);
@@ -138,21 +156,26 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 
 			return m_Switcher.Outputs[(uint)address];
 		}
+#endif
 
-		#endregion
+        #endregion
 
-		#region Settings
+        #region Settings
 
-		/// <summary>
-		/// Override to apply properties to the settings instance.
-		/// </summary>
-		/// <param name="settings"></param>
-		protected override void CopySettingsFinal(TSettings settings)
+        /// <summary>
+        /// Override to apply properties to the settings instance.
+        /// </summary>
+        /// <param name="settings"></param>
+        protected override void CopySettingsFinal(TSettings settings)
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.Ipid = Switcher == null ? (byte)0 : (byte)Switcher.ID;
-		}
+#if SIMPLSHARP
+            settings.Ipid = Switcher == null ? (byte)0 : (byte)Switcher.ID;
+#else
+            settings.Ipid = 0;
+#endif
+        }
 
 		/// <summary>
 		/// Override to clear the instance settings.
@@ -161,7 +184,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		{
 			base.ClearSettingsFinal();
 
-			SetSwitcher(null);
+#if SIMPLSHARP
+            SetSwitcher(null);
+#endif
 		}
 
 		/// <summary>
@@ -173,21 +198,27 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			TSwitcher switcher = InstantiateSwitcher(settings.Ipid, ProgramInfo.ControlSystem);
+#if SIMPLSHARP
+            TSwitcher switcher = InstantiateSwitcher(settings.Ipid, ProgramInfo.ControlSystem);
 			SetSwitcher(switcher);
-		}
+#else
+            throw new NotImplementedException();
+#endif
+        }
 
-		/// <summary>
-		/// Creates a new instance of the wrapped internal switcher.
-		/// </summary>
-		/// <param name="ipid"></param>
-		/// <param name="controlSystem"></param>
-		/// <returns></returns>
-		protected abstract TSwitcher InstantiateSwitcher(ushort ipid, CrestronControlSystem controlSystem);
+#if SIMPLSHARP
+        /// <summary>
+        /// Creates a new instance of the wrapped internal switcher.
+        /// </summary>
+        /// <param name="ipid"></param>
+        /// <param name="controlSystem"></param>
+        /// <returns></returns>
+        protected abstract TSwitcher InstantiateSwitcher(ushort ipid, CrestronControlSystem controlSystem);
+#endif
 
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 
 		/// <summary>
 		/// Gets the current online status of the device.
@@ -195,14 +226,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return Switcher != null && Switcher.IsOnline;
-		}
+#if SIMPLSHARP
+            return Switcher != null && Switcher.IsOnline;
+#else
+            return false;
+#endif
+        }
 
-		/// <summary>
-		/// Subscribe to the switcher events.
-		/// </summary>
-		/// <param name="switcher"></param>
-		private void Subscribe(TSwitcher switcher)
+#if SIMPLSHARP
+        /// <summary>
+        /// Subscribe to the switcher events.
+        /// </summary>
+        /// <param name="switcher"></param>
+        private void Subscribe(TSwitcher switcher)
 		{
 			if (switcher == null)
 				return;
@@ -231,7 +267,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		{
 			UpdateCachedOnlineStatus();
 		}
+#endif
 
-		#endregion
+#endregion
 	}
 }

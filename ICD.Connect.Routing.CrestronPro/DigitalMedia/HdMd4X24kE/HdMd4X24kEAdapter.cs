@@ -1,10 +1,13 @@
-﻿using Crestron.SimplSharpPro;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+#endif
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Settings.Core;
+using System;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 {
@@ -13,7 +16,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 	/// </summary>
 	public sealed class HdMd4X24kEAdapter : AbstractDevice<HdMd4X24kEAdapterSettings>
 	{
-		public delegate void SwitcherChangeCallback(HdMd4X24kEAdapter sender, HdMd4x24kE switcher);
+#if SIMPLSHARP
+        public delegate void SwitcherChangeCallback(HdMd4X24kEAdapter sender, HdMd4x24kE switcher);
 
 		/// <summary>
 		/// Raised when the wrapped switcher changes.
@@ -21,14 +25,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		public event SwitcherChangeCallback OnSwitcherChanged;
 
 		private HdMd4x24kE m_Switcher;
+#endif
 		private string m_Address;
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets the wrapped switcher.
-		/// </summary>
-		public HdMd4x24kE Switcher
+#if SIMPLSHARP
+        /// <summary>
+        /// Gets the wrapped switcher.
+        /// </summary>
+        public HdMd4x24kE Switcher
 		{
 			get { return m_Switcher; }
 			private set
@@ -43,22 +49,25 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 					handler(this, m_Switcher);
 			}
 		}
+#endif
 
-		#endregion
+#endregion
 
-		#region Constructors
+#region Constructors
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		public HdMd4X24kEAdapter()
 		{
-			Controls.Add(new HdMd4X24kESwitcherControl(this));
+#if SIMPLSHARP
+            Controls.Add(new HdMd4X24kESwitcherControl(this));
+#endif
 		}
 
-		#endregion
+#endregion
 
-		#region Methods
+#region Methods
 
 		/// <summary>
 		/// Release resources.
@@ -67,16 +76,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		{
 			base.DisposeFinal(disposing);
 
-			// Unsubscribe and unregister.
-			SetSwitcher(null, null);
+#if SIMPLSHARP
+            // Unsubscribe and unregister.
+            SetSwitcher(null, null);
+#endif
 		}
 
-		/// <summary>
-		/// Sets the wrapped switcher.
-		/// </summary>
-		/// <param name="switcher"></param>
-		/// <param name="address"></param>
-		[PublicAPI]
+#if SIMPLSHARP
+        /// <summary>
+        /// Sets the wrapped switcher.
+        /// </summary>
+        /// <param name="switcher"></param>
+        /// <param name="address"></param>
+        [PublicAPI]
 		public void SetSwitcher(HdMd4x24kE switcher, string address)
 		{
 			m_Address = address;
@@ -112,10 +124,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 
 			UpdateCachedOnlineStatus();
 		}
+#endif
 
-		#endregion
+#endregion
 
-		#region Settings
+#region Settings
 
 		/// <summary>
 		/// Override to apply properties to the settings instance.
@@ -125,9 +138,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.Address = m_Address;
+#if SIMPLSHARP
+            settings.Address = m_Address;
 			settings.Ipid = Switcher == null ? (byte)0 : (byte)Switcher.ID;
-		}
+#else
+            settings.Address = m_Address;
+            settings.Ipid = 0;
+#endif
+        }
 
 		/// <summary>
 		/// Override to clear the instance settings.
@@ -137,7 +155,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			base.ClearSettingsFinal();
 
 			m_Address = null;
-			SetSwitcher(null, null);
+#if SIMPLSHARP
+            SetSwitcher(null, null);
+#endif
 		}
 
 		/// <summary>
@@ -149,13 +169,17 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			HdMd4x24kE switcher = new HdMd4x24kE(settings.Ipid, settings.Address, ProgramInfo.ControlSystem);
+#if SIMPLSHARP
+            HdMd4x24kE switcher = new HdMd4x24kE(settings.Ipid, settings.Address, ProgramInfo.ControlSystem);
 			SetSwitcher(switcher, settings.Address);
-		}
+#else
+            throw new NotImplementedException();
+#endif
+        }
 
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 
 		/// <summary>
 		/// Gets the current online status of the device.
@@ -163,14 +187,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return Switcher != null && Switcher.IsOnline;
-		}
+#if SIMPLSHARP
+            return Switcher != null && Switcher.IsOnline;
+#else
+            return false;
+#endif
+        }
 
-		/// <summary>
-		/// Subscribe to the switcher events.
-		/// </summary>
-		/// <param name="switcher"></param>
-		private void Subscribe(HdMd4x24kE switcher)
+#if SIMPLSHARP
+        /// <summary>
+        /// Subscribe to the switcher events.
+        /// </summary>
+        /// <param name="switcher"></param>
+        private void Subscribe(HdMd4x24kE switcher)
 		{
 			if (switcher == null)
 				return;
@@ -199,7 +228,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		{
 			UpdateCachedOnlineStatus();
 		}
+#endif
 
-		#endregion
+#endregion
 	}
 }

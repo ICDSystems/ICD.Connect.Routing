@@ -1,3 +1,4 @@
+#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Devices;
 
@@ -14,3 +15,4 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		DmMDMnxn Switcher { get; }
 	}
 }
+#endif

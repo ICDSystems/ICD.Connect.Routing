@@ -1,3 +1,4 @@
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -371,3 +372,4 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		#endregion
 	}
 }
+#endif

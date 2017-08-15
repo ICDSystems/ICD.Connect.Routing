@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SIMPLSHARP
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro.DM;
@@ -372,3 +373,4 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		#endregion
 	}
 }
+#endif

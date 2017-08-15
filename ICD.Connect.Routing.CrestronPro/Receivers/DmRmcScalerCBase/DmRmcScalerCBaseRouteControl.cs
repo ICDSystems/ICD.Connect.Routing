@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SIMPLSHARP
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro.DM.Endpoints;
@@ -273,3 +274,4 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		#endregion
 	}
 }
+#endif

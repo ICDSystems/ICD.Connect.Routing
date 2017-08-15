@@ -1,12 +1,15 @@
-﻿using Crestron.SimplSharpPro;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+#endif
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201C
 {
-	/// <summary>
-	/// DmTx201CAdapter wraps a DmTx201C to provide a routing device.
-	/// </summary>
+    /// <summary>
+    /// DmTx201CAdapter wraps a DmTx201C to provide a routing device.
+    /// </summary>
+#if SIMPLSHARP
 	public sealed class DmTx201CAdapter : AbstractDmTx200BaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C, DmTx201CAdapterSettings>
 	{
 		/// <summary>
@@ -32,4 +35,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201C
 			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(input);
 		}
 	}
+#else
+    public sealed class DmTx201CAdapter : AbstractDmTx200BaseAdapter<DmTx201CAdapterSettings>
+    {
+    }
+#endif
 }

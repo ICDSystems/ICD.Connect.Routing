@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SIMPLSHARP
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro;
@@ -250,3 +251,4 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		#endregion
 	}
 }
+#endif

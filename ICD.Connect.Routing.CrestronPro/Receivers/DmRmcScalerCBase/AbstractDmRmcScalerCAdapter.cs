@@ -1,39 +1,48 @@
 ﻿using System;
 using System.Collections.Generic;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Misc.CrestronPro.Utils;
+#endif
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
 using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
-using ICD.Connect.Misc.CrestronPro.Devices;
-using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 {
-	/// <summary>
-	/// DmRmcScalerCAdapter wraps a DmRmcScalerC to provide a routing device.
-	/// </summary>
+    /// <summary>
+    /// DmRmcScalerCAdapter wraps a DmRmcScalerC to provide a routing device.
+    /// </summary>
+#if SIMPLSHARP
 	public abstract class AbstractDmRmcScalerCAdapter<TScaler, TSettings> : AbstractDevice<TSettings>, IPortParent, IDmRmcScalerCAdapter
 		where TScaler : Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC
-		where TSettings : IDmRmcScalerCAdapterSettings, new()
+#else
+    public abstract class AbstractDmRmcScalerCAdapter<TSettings> : AbstractDevice<TSettings>
+#endif
+        where TSettings : IDmRmcScalerCAdapterSettings, new()
 	{
-		/// <summary>
-		/// Raised when the wrapped scaler changes.
-		/// </summary>
-		public event DmRmcScalerCChangeCallback OnScalerChanged;
+#if SIMPLSHARP
+        /// <summary>
+        /// Raised when the wrapped scaler changes.
+        /// </summary>
+        public event DmRmcScalerCChangeCallback OnScalerChanged;
 
 		private TScaler m_Scaler;
+#endif
 		private int? m_ParentId;
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets the wrapped scaler.
-		/// </summary>
-		public TScaler Scaler
+#if SIMPLSHARP
+        /// <summary>
+        /// Gets the wrapped scaler.
+        /// </summary>
+        public TScaler Scaler
 		{
 			get { return m_Scaler; }
 			private set
@@ -50,18 +59,21 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		}
 
 		Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC IDmRmcScalerCAdapter.Scaler { get { return Scaler; } }
+#endif
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		protected AbstractDmRmcScalerCAdapter()
 		{
-			Controls.Add(new DmRmcScalerCBaseRouteControl(this));
+#if SIMPLSHARP
+            Controls.Add(new DmRmcScalerCBaseRouteControl(this));
+#endif
 		}
 
-		#region Methods
+#region Methods
 
 		/// <summary>
 		/// Release resources
@@ -70,16 +82,19 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		{
 			base.DisposeFinal(disposing);
 
-			// Unsbscribe and unregister
-			SetScaler(null, null);
+#if SIMPLSHARP
+            // Unsbscribe and unregister
+            SetScaler(null, null);
+#endif
 		}
 
-		/// <summary>
-		/// Sets the wrapped scaler.
-		/// </summary>
-		/// <param name="scaler"></param>
-		/// <param name="parentId"></param>
-		[PublicAPI]
+#if SIMPLSHARP
+        /// <summary>
+        /// Sets the wrapped scaler.
+        /// </summary>
+        /// <param name="scaler"></param>
+        /// <param name="parentId"></param>
+        [PublicAPI]
 		public void SetScaler(TScaler scaler, int? parentId)
 		{
 			Unsubscribe(Scaler);
@@ -169,10 +184,11 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(Versiport).Name, address);
 			throw new KeyNotFoundException(message);
 		}
+#endif
 
-		#endregion
+#endregion
 
-		#region Settings
+#region Settings
 
 		/// <summary>
 		/// Override to apply properties to the settings instance.
@@ -182,12 +198,18 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		{
 			base.CopySettingsFinal(settings);
 
-			DMOutput input = m_Scaler == null ? null : m_Scaler.DMOutput;
+#if SIMPLSHARP
+            DMOutput input = m_Scaler == null ? null : m_Scaler.DMOutput;
 
 			settings.Ipid = m_Scaler == null ? (byte)0 : (byte)m_Scaler.ID;
 			settings.DmSwitch = m_ParentId;
 			settings.DmOutputAddress = input == null ? (int?)null : (int)input.Number;
-		}
+#else
+            settings.Ipid = 0;
+            settings.DmSwitch = m_ParentId;
+            settings.DmOutputAddress = null;
+#endif
+        }
 
 		/// <summary>
 		/// Override to clear the instance settings.
@@ -196,7 +218,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		{
 			base.ClearSettingsFinal();
 
-			SetScaler(null, null);
+#if SIMPLSHARP
+            SetScaler(null, null);
+#endif
 		}
 
 		/// <summary>
@@ -208,7 +232,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			TScaler scaler =
+#if SIMPLSHARP
+            TScaler scaler =
 				DmEndpointFactoryUtils.InstantiateEndpoint<TScaler>(settings.Ipid, settings.DmOutputAddress,
 				                                                    settings.DmSwitch, factory,
 				                                                    InstantiateScaler,
@@ -216,23 +241,29 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 				                                                    InstantiateScaler);
 
 			SetScaler(scaler, settings.DmSwitch);
-		}
+#else
+            throw new NotImplementedException();
+#endif
+        }
 
-		protected abstract TScaler InstantiateScaler(byte ipid, CrestronControlSystem controlSystem);
+#if SIMPLSHARP
+        protected abstract TScaler InstantiateScaler(byte ipid, CrestronControlSystem controlSystem);
 
 		protected abstract TScaler InstantiateScaler(byte ipid, DMOutput output);
 
 		protected abstract TScaler InstantiateScaler(DMOutput output);
+#endif
 
-		#endregion
+        #endregion
 
-		#region Private Methods
+        #region Private Methods
 
-		/// <summary>
-		/// Subscribe to the scaler events.
-		/// </summary>
-		/// <param name="scaler"></param>
-		private void Subscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
+#if SIMPLSHARP
+        /// <summary>
+        /// Subscribe to the scaler events.
+        /// </summary>
+        /// <param name="scaler"></param>
+        private void Subscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
 		{
 			if (scaler == null)
 				return;
@@ -261,25 +292,30 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		{
 			UpdateCachedOnlineStatus();
 		}
+#endif
 
-		/// <summary>
-		/// Gets the current online status of the device.
-		/// </summary>
-		/// <returns></returns>
-		protected override bool GetIsOnlineStatus()
+        /// <summary>
+        /// Gets the current online status of the device.
+        /// </summary>
+        /// <returns></returns>
+        protected override bool GetIsOnlineStatus()
 		{
-			return Scaler != null && Scaler.IsOnline;
-		}
+#if SIMPLSHARP
+            return Scaler != null && Scaler.IsOnline;
+#else
+            return false;
+#endif
+        }
 
-		#endregion
+        #endregion
 
-		#region Console
-
-		/// <summary>
-		/// Calls the delegate for each console status item.
-		/// </summary>
-		/// <param name="addRow"></param>
-		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+#region Console
+#if SIMPLSHARP
+        /// <summary>
+        /// Calls the delegate for each console status item.
+        /// </summary>
+        /// <param name="addRow"></param>
+        public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
 		{
 			base.BuildConsoleStatus(addRow);
 
@@ -289,7 +325,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			DMOutput output = m_Scaler == null ? null : m_Scaler.DMOutput;
 			addRow("DM Output", output == null ? null : output.Number.ToString());
 		}
+#endif
 
-		#endregion
+#endregion
 	}
 }

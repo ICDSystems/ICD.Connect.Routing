@@ -1,10 +1,13 @@
-﻿using Crestron.SimplSharpPro;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+#endif
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd8X8
 {
-	public sealed class DmMd8X8Adapter : AbstractDmMdMNXNAdapter<DmMd8x8, DmMd8X8AdapterSettings>
+#if SIMPLSHARP
+    public sealed class DmMd8X8Adapter : AbstractDmMdMNXNAdapter<DmMd8x8, DmMd8X8AdapterSettings>
 	{
 		/// <summary>
 		/// Creates a new instance of the wrapped internal switcher.
@@ -17,4 +20,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd8X8
 			return new DmMd8x8(ipid, controlSystem);
 		}
 	}
+#else
+    public sealed class DmMd8X8Adapter : AbstractDmMdMNXNAdapter<DmMd8X8AdapterSettings>
+    {
+    }
+#endif
 }

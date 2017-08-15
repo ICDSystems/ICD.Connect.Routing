@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
+﻿#if SIMPLSHARP
+using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 {
@@ -16,3 +17,4 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 		}
 	}
 }
+#endif

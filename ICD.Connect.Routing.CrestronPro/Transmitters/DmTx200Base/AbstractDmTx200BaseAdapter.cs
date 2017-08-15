@@ -1,40 +1,50 @@
-﻿using Crestron.SimplSharpPro;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro.Utils;
+#endif
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
 using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
-using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Settings.Core;
+using System;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 {
-	/// <summary>
-	/// Base class for DmTx200 device adapters.
-	/// </summary>
-	/// <typeparam name="TTransmitter"></typeparam>
-	/// <typeparam name="TSettings"></typeparam>
+    /// <summary>
+    /// Base class for DmTx200 device adapters.
+    /// </summary>
+    /// <typeparam name="TTransmitter"></typeparam>
+    /// <typeparam name="TSettings"></typeparam>
+#if SIMPLSHARP
 	public abstract class AbstractDmTx200BaseAdapter<TTransmitter, TSettings> : AbstractDevice<TSettings>
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base
-		where TSettings : AbstractDmTx200BaseAdapterSettings, new()
+#else
+    public abstract class AbstractDmTx200BaseAdapter<TSettings> : AbstractDevice<TSettings>
+#endif
+        where TSettings : AbstractDmTx200BaseAdapterSettings, new()
 	{
-		public delegate void TransmitterChangeCallback(object sender, TTransmitter transmitter);
+#if SIMPLSHARP
+        public delegate void TransmitterChangeCallback(object sender, TTransmitter transmitter);
 
 		/// <summary>
 		/// Raised when the wrapped transmitter changes.
 		/// </summary>
 		public event TransmitterChangeCallback OnTransmitterChanged;
 
+        private TTransmitter m_Transmitter;
+#endif
 		private int? m_ParentId;
-		private TTransmitter m_Transmitter;
 
-		#region Properties
+        #region Properties
 
-		/// <summary>
-		/// Gets the transmitter.
-		/// </summary>
-		public TTransmitter Transmitter
+#if SIMPLSHARP
+        /// <summary>
+        /// Gets the transmitter.
+        /// </summary>
+        public TTransmitter Transmitter
 		{
 			get { return m_Transmitter; }
 			private set
@@ -49,10 +59,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 					handler(this, m_Transmitter);
 			}
 		}
+#endif
 
-		#endregion
+#endregion
 
-		#region Methods
+#region Methods
 
 		/// <summary>
 		/// Release resources.
@@ -61,16 +72,19 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		{
 			base.DisposeFinal(disposing);
 
-			// Unsubscribe and unregister.
-			SetTransmitter(null, null);
+#if SIMPLSHARP
+            // Unsubscribe and unregister.
+            SetTransmitter(null, null);
+#endif
 		}
 
-		/// <summary>
-		/// Sets the wrapped transmitter.
-		/// </summary>
-		/// <param name="transmitter"></param>
-		/// <param name="parentId">The id of the parent DM Switch device.</param>
-		[PublicAPI]
+#if SIMPLSHARP
+        /// <summary>
+        /// Sets the wrapped transmitter.
+        /// </summary>
+        /// <param name="transmitter"></param>
+        /// <param name="parentId">The id of the parent DM Switch device.</param>
+        [PublicAPI]
 		public void SetTransmitter(TTransmitter transmitter, int? parentId)
 		{
 			if (Transmitter != null)
@@ -106,10 +120,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 
 			UpdateCachedOnlineStatus();
 		}
+#endif
 
-		#endregion
+#endregion
 
-		#region Settings
+#region Settings
 
 		/// <summary>
 		/// Override to apply properties to the settings instance.
@@ -119,12 +134,18 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		{
 			base.CopySettingsFinal(settings);
 
-			DMInput input = Transmitter == null ? null : Transmitter.DMInput;
+#if SIMPLSHARP
+            DMInput input = Transmitter == null ? null : Transmitter.DMInput;
 
 			settings.Ipid = Transmitter == null ? (byte?)null : (byte)Transmitter.ID;
 			settings.DmSwitch = m_ParentId;
 			settings.DmInputAddress = input == null ? (int?)null : (int)input.Number;
-		}
+#else
+            settings.Ipid = null;
+            settings.DmSwitch = m_ParentId;
+            settings.DmInputAddress = null;
+#endif
+        }
 
 		/// <summary>
 		/// Override to clear the instance settings.
@@ -133,7 +154,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		{
 			base.ClearSettingsFinal();
 
-			SetTransmitter(null, null);
+#if SIMPLSHARP
+            SetTransmitter(null, null);
+#endif
 		}
 
 		/// <summary>
@@ -145,7 +168,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			TTransmitter transmitter =
+#if SIMPLSHARP
+            TTransmitter transmitter =
 				DmEndpointFactoryUtils.InstantiateEndpoint<TTransmitter>(settings.Ipid, settings.DmInputAddress,
 				                                                         settings.DmSwitch, factory,
 				                                                         InstantiateTransmitter,
@@ -153,17 +177,22 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 				                                                         InstantiateTransmitter);
 
 			SetTransmitter(transmitter, settings.DmSwitch);
-		}
+#else
+            throw new NotImplementedException();
+#endif
+        }
 
-		protected abstract TTransmitter InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem);
+#if SIMPLSHARP
+        protected abstract TTransmitter InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem);
 
 		protected abstract TTransmitter InstantiateTransmitter(byte ipid, DMInput input);
 
 		protected abstract TTransmitter InstantiateTransmitter(DMInput input);
+#endif
 
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 
 		/// <summary>
 		/// Gets the current online status of the device.
@@ -171,18 +200,23 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return Transmitter != null && Transmitter.IsOnline;
-		}
+#if SIMPLSHARP
+            return Transmitter != null && Transmitter.IsOnline;
+#else
+            return false;
+#endif
+        }
 
-		#endregion
+        #endregion
 
-		#region Transmitter callbacks
+#region Transmitter callbacks
 
-		/// <summary>
-		/// Subscribes to the transmitter events.
-		/// </summary>
-		/// <param name="transmitter"></param>
-		private void Subscribe(TTransmitter transmitter)
+#if SIMPLSHARP
+        /// <summary>
+        /// Subscribes to the transmitter events.
+        /// </summary>
+        /// <param name="transmitter"></param>
+        private void Subscribe(TTransmitter transmitter)
 		{
 			if (transmitter == null)
 				return;
@@ -211,16 +245,18 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		{
 			UpdateCachedOnlineStatus();
 		}
+#endif
 
-		#endregion
+#endregion
 
-		#region Console
+#region Console
 
-		/// <summary>
-		/// Calls the delegate for each console status item.
-		/// </summary>
-		/// <param name="addRow"></param>
-		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+#if SIMPLSHARP
+        /// <summary>
+        /// Calls the delegate for each console status item.
+        /// </summary>
+        /// <param name="addRow"></param>
+        public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
 		{
 			base.BuildConsoleStatus(addRow);
 
@@ -230,7 +266,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			DMInput input = m_Transmitter == null ? null : m_Transmitter.DMInput;
 			addRow("DM Input", input == null ? null : input.Number.ToString());
 		}
+#endif
 
-		#endregion
+#endregion
 	}
 }

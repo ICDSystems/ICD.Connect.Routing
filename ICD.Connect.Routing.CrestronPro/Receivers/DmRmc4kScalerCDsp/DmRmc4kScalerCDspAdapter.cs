@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+#endif
 using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 {
-	/// <summary>
-	/// DmRmc4kScalerCDspAdapter wraps a DmRmc4kScalerCDsp to provide a routing device.
-	/// </summary>
+    /// <summary>
+    /// DmRmc4kScalerCDspAdapter wraps a DmRmc4kScalerCDsp to provide a routing device.
+    /// </summary>
+#if SIMPLSHARP
 	public sealed class DmRmc4kScalerCDspAdapter : AbstractDmRmcScalerCAdapter<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp, DmRmc4kScalerCDspAdapterSettings>
 	{
 		/// <summary>
@@ -43,4 +46,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp(output);
 		}
 	}
+#else
+    public sealed class DmRmc4kScalerCDspAdapter : AbstractDmRmcScalerCAdapter<DmRmc4kScalerCDspAdapterSettings>
+    {
+    }
+#endif
 }
