@@ -1,5 +1,8 @@
+using System;
+using ICD.Common.Services;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
+using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Endpoints
 {
@@ -32,5 +35,24 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Shorthand for disabling an instance in the system.
 		/// </summary>
 		bool Disable { get; set; }
+	}
+
+	public static class SourceDestinationBaseExtensions
+	{
+		/// <summary>
+		/// Gets the name of the source. If no name specified, returns the name of the device
+		/// with the specified id.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <returns></returns>
+		public static string GetNameOrDeviceName(this ISourceDestinationBase extends)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			return string.IsNullOrEmpty(extends.Name)
+					   ? ServiceProvider.GetService<ICore>().Originators.GetChild(extends.Endpoint.Device).Name
+					   : extends.Name;
+		}
 	}
 }
