@@ -6,7 +6,7 @@ using ICD.Common.Utils;
 #endif
 using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
 
-namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
+namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 {
     /// <summary>
     /// DmRmcScalerCAdapter wraps a DmRmcScalerC to provide a routing device.

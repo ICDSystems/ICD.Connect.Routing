@@ -3,7 +3,7 @@ using ICD.Common.Properties;
 using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
 using ICD.Connect.Settings.Attributes.Factories;
 
-namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
+namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 {
 	/// <summary>
 	/// Settings for the DmRmcScalerCAdapter.
