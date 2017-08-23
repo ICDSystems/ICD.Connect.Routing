@@ -81,7 +81,7 @@ namespace ICD.Connect.Routing.Endpoints
 			instance.ConnectionType =
 				XmlUtils.TryReadChildElementContentAsEnum<eConnectionType>(xml, CONNECTION_TYPE_ELEMENT, true) ??
 				eConnectionType.Audio | eConnectionType.Video;
-			instance.Order = XmlUtils.TryReadChildElementContentAsInt(xml, ORDER_ELEMENT) ?? int.MaxValue;
+			instance.Order = XmlUtils.TryReadChildElementContentAsInt(xml, ORDER_ELEMENT) ?? 0;
 			instance.Disable = XmlUtils.TryReadChildElementContentAsBoolean(xml, DISABLE_ELEMENT) ?? false;
 
 			AbstractSettings.ParseXml(instance, xml);

@@ -61,7 +61,7 @@ namespace ICD.Connect.Routing.Endpoints
 			base.ClearSettingsFinal();
 
 			Endpoint = default(EndpointInfo);
-			Order = int.MaxValue;
+			Order = 0;
 			Disable = false;
 			ConnectionType = default(eConnectionType);
 		}
