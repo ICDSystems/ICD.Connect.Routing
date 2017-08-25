@@ -251,7 +251,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		private ConnectorInfo GetOutput(int address)
+		public override ConnectorInfo GetOutput(int address)
 		{
 			eCardInputOutputType type = Parent.GetDmOutput(address).CardInputOutputType;
 			return new ConnectorInfo(address, GetConnectionType(type));
