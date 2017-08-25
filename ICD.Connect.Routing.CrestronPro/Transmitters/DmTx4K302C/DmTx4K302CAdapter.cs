@@ -4,6 +4,8 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 using ICD.Connect.Misc.CrestronPro.Utils;
+#else
+using System;
 #endif
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
@@ -11,7 +13,6 @@ using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Core;
-using System;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 {
