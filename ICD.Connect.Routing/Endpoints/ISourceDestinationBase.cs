@@ -1,4 +1,5 @@
 using System;
+using ICD.Common.EventArguments;
 using ICD.Common.Services;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
@@ -11,6 +12,11 @@ namespace ICD.Connect.Routing.Endpoints
 	/// </summary>
 	public interface ISourceDestinationBase : IOriginator
 	{
+		/// <summary>
+		/// Raised when the disable state changes.
+		/// </summary>
+		event EventHandler<BoolEventArgs> OnDisableStateChanged;
+		
 		/// <summary>
 		/// Device id
 		/// </summary>

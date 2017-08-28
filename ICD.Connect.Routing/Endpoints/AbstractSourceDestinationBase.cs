@@ -1,4 +1,6 @@
 ﻿using System;
+using ICD.Common.EventArguments;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Core;
@@ -8,6 +10,13 @@ namespace ICD.Connect.Routing.Endpoints
 	public abstract class AbstractSourceDestinationBase<TSettings> : AbstractOriginator<TSettings>, ISourceDestinationBase
 		where TSettings : AbstractSourceDestinationBaseSettings, new()
 	{
+		/// <summary>
+		/// Raised when the disable state changes.
+		/// </summary>
+		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
+
+		private bool m_Disable;
+
 		#region Properties
 
 		/// <summary>
@@ -33,9 +42,32 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <summary>
 		/// Shorthand for disabling an instance in the system.
 		/// </summary>
-		public bool Disable { get; set; }
+		public bool Disable
+		{
+			get { return m_Disable; }
+			set
+			{
+				if (value == m_Disable)
+					return;
+
+				m_Disable = value;
+
+				OnDisableStateChanged.Raise(this, new BoolEventArgs(m_Disable));
+			}
+		}
 
 		#endregion
+
+		/// <summary>
+		/// Override to release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
+		protected override void DisposeFinal(bool disposing)
+		{
+			OnDisableStateChanged = null;
+
+			base.DisposeFinal(disposing);
+		}
 
 		/// <summary>
 		/// Override to add additional properties to the ToString representation.
