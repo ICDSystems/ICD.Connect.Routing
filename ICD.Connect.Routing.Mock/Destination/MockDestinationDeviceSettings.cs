@@ -1,6 +1,6 @@
 ﻿using System;
 using ICD.Common.Properties;
-using ICD.Connect.Settings;
+using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes.Factories;
 
 namespace ICD.Connect.Routing.Mock.Destination
