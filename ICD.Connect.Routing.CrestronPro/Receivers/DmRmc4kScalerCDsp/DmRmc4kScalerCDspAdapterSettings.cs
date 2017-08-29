@@ -8,6 +8,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 	/// <summary>
 	/// Settings for the DmRmc4kScalerCDspAdapter.
 	/// </summary>
+// ReSharper disable once InconsistentNaming
 	public sealed class DmRmc4kScalerCDspAdapterSettings : AbstractDmRmcScalerCAdapterSettings
 	{
 		private const string FACTORY_NAME = "DmRmc4kScalerCDsp";

@@ -14,8 +14,8 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 {
-    // ReSharper disable once InconsistentNaming
 #if SIMPLSHARP
+// ReSharper disable once InconsistentNaming
     public abstract class AbstractDmMdMNXNAdapter<TSwitcher, TSettings> : AbstractDevice<TSettings>, IDmMdMNXNAdapter, IDmParent
 		where TSwitcher : DmMDMnxn
 #else

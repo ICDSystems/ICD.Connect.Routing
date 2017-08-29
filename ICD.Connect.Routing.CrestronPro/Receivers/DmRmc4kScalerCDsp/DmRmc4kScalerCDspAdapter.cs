@@ -12,6 +12,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
     /// DmRmc4kScalerCDspAdapter wraps a DmRmc4kScalerCDsp to provide a routing device.
     /// </summary>
 #if SIMPLSHARP
+// ReSharper disable once InconsistentNaming
 	public sealed class DmRmc4kScalerCDspAdapter : AbstractDmRmcScalerCAdapter<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp, DmRmc4kScalerCDspAdapterSettings>
 	{
 		/// <summary>
