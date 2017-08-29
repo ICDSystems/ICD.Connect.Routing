@@ -1,5 +1,5 @@
 using System;
-using ICD.Common.EventArguments;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Services;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;

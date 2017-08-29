@@ -1,4 +1,4 @@
-﻿using ICD.Common.EventArguments;
+﻿using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Routing.Endpoints.Sources;
 
 namespace ICD.Connect.Routing.EventArguments
