@@ -8,7 +8,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 	public delegate void DmMdMNXNChangeCallback(IDmMdMNXNAdapter sender, DmMDMnxn switcher);
 
 // ReSharper disable once InconsistentNaming
-	public interface IDmMdMNXNAdapter : IDevice
+	public interface IDmMdMNXNAdapter : IDmSwitchAdapter, IDevice
 	{
 		event DmMdMNXNChangeCallback OnSwitcherChanged;
 
