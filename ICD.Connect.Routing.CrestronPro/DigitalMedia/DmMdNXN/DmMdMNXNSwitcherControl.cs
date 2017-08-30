@@ -242,9 +242,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 			parent.OnSwitcherChanged -= ParentOnSwitcherChanged;
 		}
 
-		private void ParentOnSwitcherChanged(IDmMdMNXNAdapter sender, DmMDMnxn switcher)
+		private void ParentOnSwitcherChanged(IDmSwitcherAdapter dmSwitcherAdapter, Switch @switch)
 		{
-			SetSwitcher(switcher);
+			SetSwitcher(dmSwitcherAdapter.Switcher as DmMDMnxn);
 		}
 
 		/// <summary>

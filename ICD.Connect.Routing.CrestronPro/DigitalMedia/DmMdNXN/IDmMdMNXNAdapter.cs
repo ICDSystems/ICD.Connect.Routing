@@ -1,18 +1,12 @@
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
-using ICD.Connect.Devices;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 {
 // ReSharper disable once InconsistentNaming
-	public delegate void DmMdMNXNChangeCallback(IDmMdMNXNAdapter sender, DmMDMnxn switcher);
-
-// ReSharper disable once InconsistentNaming
-	public interface IDmMdMNXNAdapter : IDmSwitchAdapter, IDevice
+	public interface IDmMdMNXNAdapter : IDmSwitcherAdapter
 	{
-		event DmMdMNXNChangeCallback OnSwitcherChanged;
-
-		DmMDMnxn Switcher { get; }
+		new DmMDMnxn Switcher { get; }
 	}
 }
 #endif
