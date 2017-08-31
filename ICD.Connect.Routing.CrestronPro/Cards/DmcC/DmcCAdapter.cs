@@ -3,7 +3,7 @@ using Crestron.SimplSharpPro.DM;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.DmcC
 {
-	public sealed class DmcCAdapter : AbstractCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcHd, DmcCAdapterSettings>
+	public sealed class DmcCAdapter : AbstractCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcC, DmcCAdapterSettings>
 	{
 		/// <summary>
 		/// Instantiates an external card.
@@ -11,9 +11,10 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.DmcC
 		/// <param name="cresnetId"></param>
 		/// <param name="controlSystem"></param>
 		/// <returns></returns>
-		protected override Crestron.SimplSharpPro.DM.Cards.DmcHd InstantiateCard(uint cresnetId, CrestronControlSystem controlSystem)
+		protected override Crestron.SimplSharpPro.DM.Cards.DmcC InstantiateCardExternal(byte cresnetId,
+		                                                                                 CrestronControlSystem controlSystem)
 		{
-			return new Crestron.SimplSharpPro.DM.Cards.DmcHd(cresnetId, controlSystem);
+			return new Crestron.SimplSharpPro.DM.Cards.DmcC(cresnetId, controlSystem);
 		}
 
 		/// <summary>
@@ -22,9 +23,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.DmcC
 		/// <param name="cardNumber"></param>
 		/// <param name="switcher"></param>
 		/// <returns></returns>
-		protected override Crestron.SimplSharpPro.DM.Cards.DmcHd InstantiateCard(uint cardNumber, Switch switcher)
+		protected override Crestron.SimplSharpPro.DM.Cards.DmcC InstantiateCardInternal(uint cardNumber, Switch switcher)
 		{
-			return new Crestron.SimplSharpPro.DM.Cards.DmcHd(cardNumber, switcher);
+			return new Crestron.SimplSharpPro.DM.Cards.DmcC(cardNumber, switcher);
 		}
 	}
 }

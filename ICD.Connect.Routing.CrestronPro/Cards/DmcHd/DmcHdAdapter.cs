@@ -11,7 +11,8 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.DmcHd
 		/// <param name="cresnetId"></param>
 		/// <param name="controlSystem"></param>
 		/// <returns></returns>
-		protected override Crestron.SimplSharpPro.DM.Cards.DmcHd InstantiateCard(uint cresnetId, CrestronControlSystem controlSystem)
+		protected override Crestron.SimplSharpPro.DM.Cards.DmcHd InstantiateCardExternal(byte cresnetId,
+		                                                                                 CrestronControlSystem controlSystem)
 		{
 			return new Crestron.SimplSharpPro.DM.Cards.DmcHd(cresnetId, controlSystem);
 		}
@@ -22,7 +23,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.DmcHd
 		/// <param name="cardNumber"></param>
 		/// <param name="switcher"></param>
 		/// <returns></returns>
-		protected override Crestron.SimplSharpPro.DM.Cards.DmcHd InstantiateCard(uint cardNumber, Switch switcher)
+		protected override Crestron.SimplSharpPro.DM.Cards.DmcHd InstantiateCardInternal(uint cardNumber, Switch switcher)
 		{
 			return new Crestron.SimplSharpPro.DM.Cards.DmcHd(cardNumber, switcher);
 		}

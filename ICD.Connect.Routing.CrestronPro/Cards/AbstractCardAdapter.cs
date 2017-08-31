@@ -3,6 +3,7 @@ using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Common.Services.Logging;
 using ICD.Connect.Devices;
+using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards
@@ -19,6 +20,11 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		public event CardChangeCallback OnCardChanged;
 
 		private TCard m_Card;
+
+		// Used with settings
+		private byte? m_CresnetId;
+		private int? m_CardNumber;
+		private int? m_SwitcherId;
 
 		/// <summary>
 		/// Gets the wrapped internal card.
@@ -50,11 +56,39 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		}
 
 		/// <summary>
-		/// Sets the wrapped internal card instance.
+		/// Sets the wrapped card instance.
 		/// </summary>
 		/// <param name="card"></param>
-		public void SetCard(TCard card)
+		/// <param name="number"></param>
+		/// <param name="switcherId"></param>
+		public void SetCard(TCard card, int number, int switcherId)
 		{
+			SetCard(card, null, number, switcherId);
+		}
+
+		/// <summary>
+		/// Sets the wrapped card instance.
+		/// </summary>
+		/// <param name="card"></param>
+		/// <param name="cresnetId"></param>
+		public void SetCard(TCard card, byte cresnetId)
+		{
+			SetCard(card, cresnetId, null, null);
+		}
+
+		/// <summary>
+		/// Sets the wrapped card instance.
+		/// </summary>
+		/// <param name="card"></param>
+		/// <param name="cresnetId"></param>
+		/// <param name="number"></param>
+		/// <param name="switcherId"></param>
+		private void SetCard(TCard card, byte? cresnetId, int? number, int? switcherId)
+		{
+			m_CresnetId = cresnetId;
+			m_CardNumber = number;
+			m_SwitcherId = switcherId;
+
 			if (card == Card)
 				return;
 
@@ -87,22 +121,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 
 			UpdateCachedOnlineStatus();
 		}
-
-		/// <summary>
-		/// Instantiates an external card.
-		/// </summary>
-		/// <param name="cresnetId"></param>
-		/// <param name="controlSystem"></param>
-		/// <returns></returns>
-		protected abstract TCard InstantiateCard(uint cresnetId, CrestronControlSystem controlSystem);
-
-		/// <summary>
-		/// Instantiates an internal card.
-		/// </summary>
-		/// <param name="cardNumber"></param>
-		/// <param name="switcher"></param>
-		/// <returns></returns>
-		protected abstract TCard InstantiateCard(uint cardNumber, Switch switcher);
 
 		/// <summary>
 		/// Gets the current online status of the device.
@@ -160,7 +178,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		{
 			base.ClearSettingsFinal();
 
-			SetCard(null);
+			SetCard(null, null, null, null);
 		}
 
 		/// <summary>
@@ -170,6 +188,10 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		protected override void CopySettingsFinal(TSettings settings)
 		{
 			base.CopySettingsFinal(settings);
+
+			settings.CresnetId = m_CresnetId;
+			settings.CardNumber = m_CardNumber;
+			settings.SwitcherId = m_SwitcherId;
 		}
 
 		/// <summary>
@@ -180,7 +202,37 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
+
+			SetCard(settings, factory);
 		}
+
+		private void SetCard(TSettings settings, IDeviceFactory factory)
+		{
+			TCard card = DmEndpointFactoryUtils.InstantiateCard<TCard>(settings.CresnetId,
+			                                                           settings.CardNumber,
+			                                                           settings.SwitcherId,
+			                                                           factory,
+			                                                           InstantiateCardExternal,
+			                                                           InstantiateCardInternal);
+
+			SetCard(card, settings.CresnetId, settings.CardNumber, settings.SwitcherId);
+		}
+
+		/// <summary>
+		/// Instantiates an external card.
+		/// </summary>
+		/// <param name="cresnetId"></param>
+		/// <param name="controlSystem"></param>
+		/// <returns></returns>
+		protected abstract TCard InstantiateCardExternal(byte cresnetId, CrestronControlSystem controlSystem);
+
+		/// <summary>
+		/// Instantiates an internal card.
+		/// </summary>
+		/// <param name="cardNumber"></param>
+		/// <param name="switcher"></param>
+		/// <returns></returns>
+		protected abstract TCard InstantiateCardInternal(uint cardNumber, Switch switcher);
 
 		#endregion
 	}

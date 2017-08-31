@@ -36,7 +36,7 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 		public static TCard InstantiateCard<TCard>(byte? cresnetId, int? cardNumber, int? switcherId,
 												   IDeviceFactory factory,
 												   Func<byte, CrestronControlSystem, TCard> instantiateExternal,
-												   Func<int, Switch, TCard> instantiateInternal)
+												   Func<uint, Switch, TCard> instantiateInternal)
 		{
 			if (switcherId == null)
 			{
@@ -62,7 +62,7 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 					}
 					else
 					{
-						return instantiateInternal((int)cardNumber, switcher.Switcher);
+						return instantiateInternal((uint)cardNumber, switcher.Switcher);
 					}
 				}
 			}
