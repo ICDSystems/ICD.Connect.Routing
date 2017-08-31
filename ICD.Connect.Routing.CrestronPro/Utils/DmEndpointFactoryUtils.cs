@@ -8,6 +8,7 @@ using ICD.Common.Services.Logging;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Utils
@@ -18,6 +19,56 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 	public static class DmEndpointFactoryUtils
 	{
 		private static ILoggerService Logger { get { return ServiceProvider.GetService<ILoggerService>(); } }
+
+		/// <summary>
+		/// Determines the best way to instantiate a card based on the available information.
+		/// Instantiates via parent Switch if specified, otherwise uses the ControlSystem.
+		/// </summary>
+		/// <typeparam name="TCard"></typeparam>
+		/// <param name="cresnetId"></param>
+		/// <param name="cardNumber"></param>
+		/// <param name="switcherId"></param>
+		/// <param name="factory"></param>
+		/// <param name="instantiateExternal"></param>
+		/// <param name="instantiateInternal"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		public static TCard InstantiateCard<TCard>(byte? cresnetId, int? cardNumber, int? switcherId,
+												   IDeviceFactory factory,
+												   Func<byte, CrestronControlSystem, TCard> instantiateExternal,
+												   Func<int, Switch, TCard> instantiateInternal)
+		{
+			if (switcherId == null)
+			{
+				if (cresnetId == null)
+					Logger.AddEntry(eSeverity.Error, "Failed to instantiate {0} - no CresnetID", typeof(TCard).Name);
+				else
+					return instantiateExternal((byte)cresnetId, ProgramInfo.ControlSystem);
+			}
+			else
+			{
+				if (cardNumber == null)
+				{
+					Logger.AddEntry(eSeverity.Error, "Failed to instantiate {0} - no DM input address", typeof(TCard).Name);
+				}
+				else
+				{
+					IDmSwitcherAdapter switcher = factory.GetOriginatorById<IDmSwitcherAdapter>((int)switcherId);
+
+					if (switcher == null)
+					{
+						Logger.AddEntry(eSeverity.Error, "Failed to instantiate {0} - Device {1} is not a {2}",
+										typeof(TCard).Name, switcherId, typeof(IDmSwitcherAdapter).Name);
+					}
+					else
+					{
+						return instantiateInternal((int)cardNumber, switcher.Switcher);
+					}
+				}
+			}
+
+			return default(TCard);
+		}
 
 		/// <summary>
 		/// Determines the best way to instantiate a DMEndpoint based on the available information.
