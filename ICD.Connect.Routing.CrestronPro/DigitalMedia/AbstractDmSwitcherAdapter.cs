@@ -4,12 +4,13 @@ using Crestron.SimplSharpPro.DM;
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
 using ICD.Connect.Devices;
+using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
 	public abstract class AbstractDmSwitcherAdapter<TSwitcher, TSettings> : AbstractDevice<TSettings>, IDmSwitcherAdapter
 		where TSwitcher : Switch
-		where TSettings : IDeviceSettings, new()
+		where TSettings : IDmSwitcherAdapterSettings, new()
 	{
 		public event DmSwitcherChangeCallback OnSwitcherChanged;
 
@@ -72,7 +73,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// </summary>
 		/// <param name="switcher"></param>
 		[PublicAPI]
-		public void SetSwitcher(TSwitcher switcher)
+		protected void SetSwitcher(TSwitcher switcher)
 		{
 			Unsubscribe(Switcher);
 
@@ -181,6 +182,60 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			UpdateCachedOnlineStatus();
 		}
+
+		#endregion
+
+		#region Settings
+
+		/// <summary>
+		/// Override to apply properties to the settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		protected override void CopySettingsFinal(TSettings settings)
+		{
+			base.CopySettingsFinal(settings);
+
+			settings.Ipid = Switcher == null ? (byte)0 : (byte)Switcher.ID;
+		}
+
+		/// <summary>
+		/// Override to clear the instance settings.
+		/// </summary>
+		protected override void ClearSettingsFinal()
+		{
+			base.ClearSettingsFinal();
+
+			SetSwitcher(null);
+		}
+
+		/// <summary>
+		/// Override to apply settings to the instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
+		{
+			base.ApplySettingsFinal(settings, factory);
+
+			SetSwitcher(settings);
+		}
+
+		/// <summary>
+		/// Override to control how the switcher is assigned from settings.
+		/// </summary>
+		/// <param name="settings"></param>
+		protected virtual void SetSwitcher(TSettings settings)
+		{
+			TSwitcher switcher = InstantiateSwitcher(settings);
+			SetSwitcher(switcher);
+		}
+
+		/// <summary>
+		/// Creates a new instance of the wrapped internal switcher.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <returns></returns>
+		protected abstract TSwitcher InstantiateSwitcher(TSettings settings);
 
 		#endregion
 	}

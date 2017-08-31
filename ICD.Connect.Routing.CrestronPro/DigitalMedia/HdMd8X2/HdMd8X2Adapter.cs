@@ -4,14 +4,11 @@ using ICD.Connect.Misc.CrestronPro;
 #else
 using System;
 #endif
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 {
 	public sealed class HdMd8X2Adapter : AbstractDmSwitcherAdapter<HdMd8x2, HdMd8X2AdapterSettings>
 	{
-#region Constructors
-
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -22,54 +19,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 #endif
 		}
 
-#endregion
-
-#region Settings
-
 		/// <summary>
-		/// Override to apply properties to the settings instance.
+		/// Creates a new instance of the wrapped internal switcher.
 		/// </summary>
 		/// <param name="settings"></param>
-		protected override void CopySettingsFinal(HdMd8X2AdapterSettings settings)
+		/// <returns></returns>
+		protected override HdMd8x2 InstantiateSwitcher(HdMd8X2AdapterSettings settings)
 		{
-			base.CopySettingsFinal(settings);
-
-#if SIMPLSHARP
-            settings.Ipid = Switcher == null ? (byte)0 : (byte)Switcher.ID;
-#else
-            settings.Ipid = 0;
-#endif
-        }
-
-		/// <summary>
-		/// Override to clear the instance settings.
-		/// </summary>
-		protected override void ClearSettingsFinal()
-		{
-			base.ClearSettingsFinal();
-
-#if SIMPLSHARP
-            SetSwitcher(null);
-#endif
+			return new HdMd8x2(settings.Ipid, ProgramInfo.ControlSystem);
 		}
-
-		/// <summary>
-		/// Override to apply settings to the instance.
-		/// </summary>
-		/// <param name="settings"></param>
-		/// <param name="factory"></param>
-		protected override void ApplySettingsFinal(HdMd8X2AdapterSettings settings, IDeviceFactory factory)
-		{
-			base.ApplySettingsFinal(settings, factory);
-
-#if SIMPLSHARP
-            HdMd8x2 switcher = new HdMd8x2(settings.Ipid, ProgramInfo.ControlSystem);
-			SetSwitcher(switcher);
-#else
-            throw new NotImplementedException();
-#endif
-        }
-
-#endregion
 	}
 }

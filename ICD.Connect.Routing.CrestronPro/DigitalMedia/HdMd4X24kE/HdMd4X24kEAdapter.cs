@@ -4,7 +4,6 @@ using Crestron.SimplSharpPro.DM;
 using System;
 #endif
 using ICD.Connect.Misc.CrestronPro;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 {
@@ -14,8 +13,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 	public sealed class HdMd4X24kEAdapter : AbstractDmSwitcherAdapter<HdMd4x24kE, HdMd4X24kEAdapterSettings>
 	{
 		private string m_Address;
-
-#region Constructors
 
 		/// <summary>
 		/// Constructor.
@@ -27,9 +24,18 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 #endif
 		}
 
-#endregion
+		/// <summary>
+		/// Sets the wrapped switcher.
+		/// </summary>
+		/// <param name="switcher"></param>
+		/// <param name="address"></param>
+		public void SetSwitcher(HdMd4x24kE switcher, string address)
+		{
+			m_Address = address;
+			SetSwitcher(switcher);
+		}
 
-#region Settings
+		#region Settings
 
 		/// <summary>
 		/// Override to apply properties to the settings instance.
@@ -39,13 +45,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		{
 			base.CopySettingsFinal(settings);
 
-#if SIMPLSHARP
             settings.Address = m_Address;
-			settings.Ipid = Switcher == null ? (byte)0 : (byte)Switcher.ID;
-#else
-            settings.Address = m_Address;
-            settings.Ipid = 0;
-#endif
         }
 
 		/// <summary>
@@ -56,28 +56,28 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			base.ClearSettingsFinal();
 
 			m_Address = null;
-#if SIMPLSHARP
-            SetSwitcher(null, null);
-#endif
 		}
 
 		/// <summary>
-		/// Override to apply settings to the instance.
+		/// Override to control how the switcher is assigned from settings.
 		/// </summary>
 		/// <param name="settings"></param>
-		/// <param name="factory"></param>
-		protected override void ApplySettingsFinal(HdMd4X24kEAdapterSettings settings, IDeviceFactory factory)
+		protected override void SetSwitcher(HdMd4X24kEAdapterSettings settings)
 		{
-			base.ApplySettingsFinal(settings, factory);
-
-#if SIMPLSHARP
-            HdMd4x24kE switcher = new HdMd4x24kE(settings.Ipid, settings.Address, ProgramInfo.ControlSystem);
+			HdMd4x24kE switcher = InstantiateSwitcher(settings);
 			SetSwitcher(switcher, settings.Address);
-#else
-            throw new NotImplementedException();
-#endif
-        }
+		}
 
-#endregion
+		/// <summary>
+		/// Creates a new instance of the wrapped internal switcher.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <returns></returns>
+		protected override HdMd4x24kE InstantiateSwitcher(HdMd4X24kEAdapterSettings settings)
+		{
+			return new HdMd4x24kE(settings.Ipid, settings.Address, ProgramInfo.ControlSystem);
+		}
+
+		#endregion
 	}
 }

@@ -105,6 +105,7 @@
     <Compile Include="ControlSystem\ControlSystemDeviceSettings.cs" />
     <Compile Include="ControlSystem\ControlSystemSwitcherControl.cs" />
     <Compile Include="DigitalMedia\AbstractDmSwitcherAdapter.cs" />
+    <Compile Include="DigitalMedia\AbstractDmSwitcherAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16Adapter.cs" />
     <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32Adapter.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2AdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2SwitcherControl.cs" />
     <Compile Include="DigitalMedia\IDmSwitcherAdapter.cs" />
+    <Compile Include="DigitalMedia\IDmSwitcherAdapterSettings.cs" />
     <Compile Include="KrangPlugin.cs" />
     <Compile Include="Receivers\DmRmc4kScalerCDsp\DmRmc4kScalerCDspAdapter.cs" />
     <Compile Include="Receivers\DmRmc4kScalerCDsp\DmRmc4kScalerCDspAdapterSettings.cs" />
