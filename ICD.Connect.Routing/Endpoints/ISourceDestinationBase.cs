@@ -56,9 +56,27 @@ namespace ICD.Connect.Routing.Endpoints
 			if (extends == null)
 				throw new ArgumentNullException("extends");
 
-			return string.IsNullOrEmpty(extends.Name)
-					   ? ServiceProvider.GetService<ICore>().Originators.GetChild(extends.Endpoint.Device).Name
-					   : extends.Name;
+			return extends.GetNameOrDeviceName(false);
+		}
+
+		/// <summary>
+		/// Gets the name of the source. If no name specified, returns the name of the device
+		/// with the specified id.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="combine">If true uses the combine names for the originators.</param>
+		/// <returns></returns>
+		public static string GetNameOrDeviceName(this ISourceDestinationBase extends, bool combine)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			string name = extends.GetName(combine);
+			if (!string.IsNullOrEmpty(name))
+				return name;
+
+			IOriginator device = ServiceProvider.GetService<ICore>().Originators.GetChild(extends.Endpoint.Device);
+			return device.GetName(combine);
 		}
 	}
 }
