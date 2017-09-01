@@ -2,11 +2,11 @@
 using ICD.Common.Properties;
 using ICD.Connect.Settings.Attributes.Factories;
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.DmcC
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcHd
 {
-	public sealed class DmcCAdapterSettings : AbstractCardSettings
+	public sealed class DmcHdAdapterSettings : AbstractCardSettings
 	{
-		private const string FACTORY_NAME = "DmcC";
+		private const string FACTORY_NAME = "DmcHd";
 
 		/// <summary>
 		/// Gets the originator factory name.
@@ -16,7 +16,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.DmcC
 		/// <summary>
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
-		public override Type OriginatorType { get { return typeof(DmcCAdapter); } }
+		public override Type OriginatorType { get { return typeof(DmcHdAdapter); } }
 
 		/// <summary>
 		/// Loads the settings from XML.
@@ -24,9 +24,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.DmcC
 		/// <param name="xml"></param>
 		/// <returns></returns>
 		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
-		public static DmcCAdapterSettings FromXml(string xml)
+		public static DmcHdAdapterSettings FromXml(string xml)
 		{
-			DmcCAdapterSettings output = new DmcCAdapterSettings();
+			DmcHdAdapterSettings output = new DmcHdAdapterSettings();
 			ParseXml(output, xml);
 			return output;
 		}

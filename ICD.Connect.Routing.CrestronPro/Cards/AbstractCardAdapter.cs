@@ -8,7 +8,7 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards
 {
-	public abstract class AbstractCardAdapter<TCard, TSettings> : AbstractDevice<TSettings>
+	public abstract class AbstractCardAdapter<TCard, TSettings> : AbstractDevice<TSettings>, ICardAdapter
 		where TCard : CardDevice
 		where TSettings : ICardSettings, new()
 	{
@@ -17,7 +17,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		/// <summary>
 		/// Called when the wrapped internal card changes.
 		/// </summary>
-		public event CardChangeCallback OnCardChanged;
+		public event Cards.CardChangeCallback OnCardChanged;
 
 		private TCard m_Card;
 
@@ -39,11 +39,16 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 
 				m_Card = value;
 
-				CardChangeCallback handler = OnCardChanged;
+				Cards.CardChangeCallback handler = OnCardChanged;
 				if (handler != null)
 					handler(this, m_Card);
 			}
 		}
+
+		/// <summary>
+		/// Gets the wrapped internal card.
+		/// </summary>
+		CardDevice ICardAdapter.Card { get { return Card; } }
 
 		/// <summary>
 		/// Release resources.

@@ -1,10 +1,18 @@
 ﻿using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.DmcHd
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcHd
 {
 	public sealed class DmcHdAdapter : AbstractCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcHd, DmcHdAdapterSettings>
 	{
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public DmcHdAdapter()
+		{
+			Controls.Add(new DmcHdAdapterRoutingControl(this, 0));
+		}
+
 		/// <summary>
 		/// Instantiates an external card.
 		/// </summary>
