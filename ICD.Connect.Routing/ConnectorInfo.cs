@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Routing.Connections;
+﻿using ICD.Common.Utils;
+using ICD.Connect.Routing.Connections;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
@@ -44,7 +45,12 @@ namespace ICD.Connect.Routing
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return string.Format("{0}(Address={1}, ConnectionType={2})", GetType().Name, Address, ConnectionType);
+			ReprBuilder builder = new ReprBuilder(this);
+
+			builder.AppendProperty("Address", Address);
+			builder.AppendProperty("ConnectionType", ConnectionType);
+
+			return builder.ToString();
 		}
 
 		#endregion

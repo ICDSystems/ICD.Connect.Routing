@@ -1,4 +1,5 @@
 using System;
+using ICD.Common.Utils;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints;
@@ -51,13 +52,39 @@ namespace ICD.Connect.Routing
 		public HostInfo RouteRequestFrom { get; set; }
 
 		/// <summary>
+		/// Returns the string representation for the routing operation.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString()
+		{
+			ReprBuilder builder = new ReprBuilder(this);
+
+			builder.AppendProperty("Id", Id);
+			builder.AppendProperty("Source", Source);
+			builder.AppendProperty("Destination", Destination);
+			builder.AppendProperty("LocalInput", LocalInput);
+			builder.AppendProperty("LocalOutput", LocalOutput);
+			builder.AppendProperty("ConnectionType", ConnectionType);
+			builder.AppendProperty("RoomId", RoomId);
+			builder.AppendProperty("RouteRequestFrom", RouteRequestFrom);
+
+			return builder.ToString();
+		}
+
+		/// <summary>
 		/// Returns a shorthand string representation for a local routing operation.
 		/// </summary>
 		/// <returns></returns>
 		public string ToStringLocal()
 		{
-			return string.Format("{0}(Source={1}, Destination={2}, Type={3}, Room={4})", GetType().Name, Source, Destination,
-			                     ConnectionType, RoomId);
+			ReprBuilder builder = new ReprBuilder(this);
+
+			builder.AppendProperty("Source", Source);
+			builder.AppendProperty("Destination", Destination);
+			builder.AppendProperty("ConnectionType", ConnectionType);
+			builder.AppendProperty("RoomId", RoomId);
+
+			return builder.ToString();
 		}
 	}
 }
