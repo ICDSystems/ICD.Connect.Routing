@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 {
@@ -17,21 +18,22 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 		}
 
 		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
 		/// Returns the inputs.
 		/// </summary>
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Returns the outputs.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetOutputs()
-		{
-			throw new NotImplementedException();
+			yield return GetInput(1);
 		}
 
 		/// <summary>
@@ -41,6 +43,37 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
+		{
+			if (output != 1)
+				throw new ArgumentOutOfRangeException("output");
+
+			yield return GetInput(1);
+		}
+
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int input)
+		{
+			return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Returns the outputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs()
+		{
+			yield return GetOutput(1);
+		}
+
+		/// <summary>
+		/// Update the cache with the current state of the card.
+		/// </summary>
+		/// <param name="cache"></param>
+		protected override void UpdateCache(SwitcherCache cache)
 		{
 			throw new NotImplementedException();
 		}

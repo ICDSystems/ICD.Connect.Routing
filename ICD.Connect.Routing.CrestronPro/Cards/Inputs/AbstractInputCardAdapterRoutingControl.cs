@@ -1,5 +1,7 @@
 ﻿using System;
+using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM.Cards;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
@@ -15,7 +17,11 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 		private readonly SwitcherCache m_Cache;
-		private CardDevice m_SubscribedCard;
+
+		/// <summary>
+		/// Gets the current subscribed card.
+		/// </summary>
+		protected CardDevice Card { get; private set; }
 
 		/// <summary>
 		/// Constructor.
@@ -26,6 +32,8 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
+			Subscribe(m_Cache);
+
 			Subscribe(parent);
 		}
 
@@ -40,8 +48,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 
 			base.DisposeFinal(disposing);
 
+			Unsubscribe(m_Cache);
 			Unsubscribe(Parent);
-			Unsubscribe(m_SubscribedCard);
+			Unsubscribe(Card);
 		}
 
 		/// <summary>
@@ -55,10 +64,11 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
-		private void UpdateCache()
-		{
-			throw new NotImplementedException();
-		}
+		/// <summary>
+		/// Update the cache with the current state of the card.
+		/// </summary>
+		/// <param name="cache"></param>
+		protected abstract void UpdateCache(SwitcherCache cache);
 
 		#region Parent Callbacks
 
@@ -87,14 +97,70 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// <param name="card"></param>
 		private void ParentOnCardChanged(ICardAdapter sender, CardDevice card)
 		{
-			Unsubscribe(m_SubscribedCard);
+			Unsubscribe(Card);
 
 			m_Cache.Clear();
-			m_SubscribedCard = card;
+			Card = card;
 
-			Subscribe(m_SubscribedCard);
+			Subscribe(Card);
 
-			UpdateCache();
+			UpdateCache(m_Cache);
+		}
+
+		#endregion
+
+		#region Cache Callbacks
+
+		/// <summary>
+		/// Subscribe to the switcher cache events.
+		/// </summary>
+		/// <param name="cache"></param>
+		private void Subscribe(SwitcherCache cache)
+		{
+			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
+			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
+		}
+
+		/// <summary>
+		/// Unsubscribe from the switcher cache events.
+		/// </summary>
+		/// <param name="cache"></param>
+		private void Unsubscribe(SwitcherCache cache)
+		{
+			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
+			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
+		}
+
+		/// <summary>
+		/// Called when the cached active transmission state changes.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
+		{
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
+		}
+
+		/// <summary>
+		/// Called when the cached active inputs change.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
+		{
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
+		}
+
+		/// <summary>
+		/// Called when the caches source detection state changes.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
+		{
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
 		}
 
 		#endregion
@@ -105,16 +171,34 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// Subscribe to the card events.
 		/// </summary>
 		/// <param name="card"></param>
-		protected virtual void Subscribe(CardDevice card)
+		private void Subscribe(CardDevice card)
 		{
+			if (card == null)
+				return;
+
+			card.BaseEvent += CardOnBaseEvent;
 		}
 
 		/// <summary>
 		/// Unsubscribe from the card events.
 		/// </summary>
 		/// <param name="card"></param>
-		protected virtual void Unsubscribe(CardDevice card)
+		private void Unsubscribe(CardDevice card)
 		{
+			if (card == null)
+				return;
+
+			card.BaseEvent -= CardOnBaseEvent;
+		}
+
+		/// <summary>
+		/// Called when the card reports a change.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="args"></param>
+		private void CardOnBaseEvent(GenericBase device, BaseEventArgs args)
+		{
+			UpdateCache(m_Cache);
 		}
 
 		#endregion

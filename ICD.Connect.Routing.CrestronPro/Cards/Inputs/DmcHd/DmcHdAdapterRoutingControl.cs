@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcHd
 {
@@ -40,6 +41,15 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcHd
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
+		{
+			throw new System.NotImplementedException();
+		}
+
+		/// <summary>
+		/// Update the cache with the current state of the card.
+		/// </summary>
+		/// <param name="cache"></param>
+		protected override void UpdateCache(SwitcherCache cache)
 		{
 			throw new System.NotImplementedException();
 		}
