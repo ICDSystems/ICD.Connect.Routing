@@ -52,6 +52,31 @@ namespace ICD.Connect.Routing
 		public HostInfo RouteRequestFrom { get; set; }
 
 		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public RouteOperation()
+		{
+			Id = Guid.NewGuid();
+		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="op"></param>
+		public RouteOperation(RouteOperation op)
+			: this()
+		{
+			Id = op.Id;
+			Source = op.Source;
+			Destination = op.Destination;
+			LocalInput = op.LocalInput;
+			LocalOutput = op.LocalOutput;
+			ConnectionType = op.ConnectionType;
+			RoomId = op.RoomId;
+			RouteRequestFrom = op.RouteRequestFrom;
+		}
+
+		/// <summary>
 		/// Returns the string representation for the routing operation.
 		/// </summary>
 		/// <returns></returns>

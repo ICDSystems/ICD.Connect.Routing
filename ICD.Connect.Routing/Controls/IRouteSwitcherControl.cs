@@ -77,7 +77,7 @@ namespace ICD.Connect.Routing.Controls
 		[PublicAPI]
 		public static bool Route(this IRouteSwitcherControl device, int input, int output, eConnectionType type)
 		{
-			return device.Route(new RouteOperation {Id = Guid.NewGuid(), ConnectionType = type, LocalInput = input, LocalOutput = output});
+			return device.Route(new RouteOperation {ConnectionType = type, LocalInput = input, LocalOutput = output});
 		}
 	}
 }
