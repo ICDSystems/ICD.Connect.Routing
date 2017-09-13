@@ -72,9 +72,9 @@ namespace ICD.Connect.Routing.Connections
 				}
 
 				m_Ordered.Add(item);
-                m_Contains.Add(item);
+				m_Contains.Add(item);
 
-                return true;
+				return true;
 			}
 			finally
 			{
