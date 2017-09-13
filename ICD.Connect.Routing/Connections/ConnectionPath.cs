@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
+using ICD.Connect.Routing.Endpoints;
 
 namespace ICD.Connect.Routing.Connections
 {
@@ -62,11 +63,15 @@ namespace ICD.Connect.Routing.Connections
 				if (m_Contains.Contains(item))
 					return false;
 
-                // Is this adjacent to the last item?
-                if (m_Ordered.Count != 0 && m_Ordered[m_Ordered.Count - 1].Destination != item.Source)
-                    return false;
+				// Is this adjacent to the last item?
+				if (m_Ordered.Count != 0)
+				{
+					EndpointInfo destination = m_Ordered[m_Ordered.Count - 1].Destination;
+					if (!destination.EqualsControl(item.Source))
+						return false;
+				}
 
-                m_Ordered.Add(item);
+				m_Ordered.Add(item);
                 m_Contains.Add(item);
 
                 return true;

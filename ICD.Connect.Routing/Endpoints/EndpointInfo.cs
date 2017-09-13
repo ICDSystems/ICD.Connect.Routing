@@ -98,6 +98,16 @@ namespace ICD.Connect.Routing.Endpoints
 		}
 
 		/// <summary>
+		/// Returns true if the endpoints share the same control info without checking address.
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public bool EqualsControl(EndpointInfo other)
+		{
+			return other.Device == m_DeviceId && other.Control == m_ControlId;
+		}
+
+		/// <summary>
 		/// Gets the hashcode for this instance.
 		/// </summary>
 		/// <returns></returns>
