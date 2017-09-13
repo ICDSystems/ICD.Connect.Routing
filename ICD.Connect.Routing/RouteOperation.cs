@@ -60,13 +60,27 @@ namespace ICD.Connect.Routing
 			ReprBuilder builder = new ReprBuilder(this);
 
 			builder.AppendProperty("Id", Id);
-			builder.AppendProperty("Source", Source);
-			builder.AppendProperty("Destination", Destination);
-			builder.AppendProperty("LocalInput", LocalInput);
-			builder.AppendProperty("LocalOutput", LocalOutput);
+
+			if (Source != default(EndpointInfo))
+				builder.AppendProperty("Source", Source);
+
+			if (Destination != default(EndpointInfo))
+				builder.AppendProperty("Destination", Destination);
+
+			if (LocalInput != 0)
+				builder.AppendProperty("LocalInput", LocalInput);
+
+			if (LocalOutput != 0)
+				builder.AppendProperty("LocalOutput", LocalOutput);
+
+			// If connection type is "None" then we probably want to know
 			builder.AppendProperty("ConnectionType", ConnectionType);
-			builder.AppendProperty("RoomId", RoomId);
-			builder.AppendProperty("RouteRequestFrom", RouteRequestFrom);
+
+			if (RoomId != 0)
+				builder.AppendProperty("RoomId", RoomId);
+
+			if (RouteRequestFrom != default(HostInfo))
+				builder.AppendProperty("RouteRequestFrom", RouteRequestFrom);
 
 			return builder.ToString();
 		}
@@ -79,10 +93,17 @@ namespace ICD.Connect.Routing
 		{
 			ReprBuilder builder = new ReprBuilder(this);
 
-			builder.AppendProperty("Source", Source);
-			builder.AppendProperty("Destination", Destination);
+			if (Source != default(EndpointInfo))
+				builder.AppendProperty("Source", Source);
+
+			if (Destination != default(EndpointInfo))
+				builder.AppendProperty("Destination", Destination);
+
+			// If connection type is "None" then we probably want to know
 			builder.AppendProperty("ConnectionType", ConnectionType);
-			builder.AppendProperty("RoomId", RoomId);
+
+			if (RoomId != 0)
+				builder.AppendProperty("RoomId", RoomId);
 
 			return builder.ToString();
 		}
