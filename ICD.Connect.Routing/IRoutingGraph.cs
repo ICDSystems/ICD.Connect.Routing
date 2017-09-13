@@ -104,7 +104,7 @@ namespace ICD.Connect.Routing
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if route could not be established</returns>
-		bool Route(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
+		void Route(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Routes the source to the destination.
@@ -116,7 +116,7 @@ namespace ICD.Connect.Routing
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if route could not be established</returns>
-		bool Route(IRouteSourceControl sourceControl, int sourceAddress, IRouteDestinationControl destinationControl,
+		void Route(IRouteSourceControl sourceControl, int sourceAddress, IRouteDestinationControl destinationControl,
 		           int destinationAddress, eConnectionType type, int roomId);
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace ICD.Connect.Routing
 		/// </summary>
 		/// <param name="op"></param>>
 		/// <returns>False if route could not be established</returns>
-		bool Route(RouteOperation op);
+		void Route(RouteOperation op);
 
 		/// <summary>
 		/// Searches for switchers currently routing the source to the destination and unroutes them.
@@ -134,7 +134,7 @@ namespace ICD.Connect.Routing
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		bool Unroute(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
+		void Unroute(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Searches for switchers currently routing the source and unroutes them.
@@ -143,7 +143,7 @@ namespace ICD.Connect.Routing
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		bool Unroute(IRouteSourceControl sourceControl, eConnectionType type, int roomId);
+		void Unroute(IRouteSourceControl sourceControl, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Searches for switchers currently routing the source and unroutes them.
@@ -152,7 +152,7 @@ namespace ICD.Connect.Routing
 		/// <param name="sourceAddress"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-		bool Unroute(IRouteSourceControl sourceControl, int sourceAddress, eConnectionType type, int roomId);
+		void Unroute(IRouteSourceControl sourceControl, int sourceAddress, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Searches for switchers currently routing the source to the destination and unroutes them.
@@ -164,7 +164,7 @@ namespace ICD.Connect.Routing
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if the devices could not be unrouted.</returns>
-		bool Unroute(IRouteSourceControl sourceControl, int sourceAddress, IRouteDestinationControl destinationControl,
+		void Unroute(IRouteSourceControl sourceControl, int sourceAddress, IRouteDestinationControl destinationControl,
 		             int destinationAddress, eConnectionType type, int roomId);
 
 		/// <summary>
@@ -176,7 +176,7 @@ namespace ICD.Connect.Routing
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if the devices could not be unrouted.</returns>
-		bool Unroute(IRouteSourceControl sourceControl, int sourceAddress, IRouteDestinationControl destinationControl,
+		void Unroute(IRouteSourceControl sourceControl, int sourceAddress, IRouteDestinationControl destinationControl,
 		             eConnectionType type, int roomId);
 
 		/// <summary>
@@ -187,7 +187,7 @@ namespace ICD.Connect.Routing
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if the devices could not be unrouted.</returns>
-		bool Unroute(IRouteSourceControl sourceControl, IRouteDestinationControl destinationControl, eConnectionType type,
+		void Unroute(IRouteSourceControl sourceControl, IRouteDestinationControl destinationControl, eConnectionType type,
 		             int roomId);
 
 		#endregion
