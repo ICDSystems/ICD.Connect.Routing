@@ -7,6 +7,7 @@ using Crestron.SimplSharpPro.DM;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
@@ -495,6 +496,31 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
 		{
 			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args.Input, args.Type, args.Active));
+		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SystemControl == null)
+				return;
+
+			addRow("Audio Breakaway",
+			       m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported
+				       ? m_SubscribedControlSystem.SystemControl.EnableAudioBreakawayFeedback.BoolValue.ToString()
+				       : "Not Supported");
+			addRow("USB Breakaway",
+			       m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported
+				       ? m_SubscribedControlSystem.SystemControl.EnableUSBBreakawayFeedback.BoolValue.ToString()
+				       : "Not Supported");
 		}
 
 		#endregion

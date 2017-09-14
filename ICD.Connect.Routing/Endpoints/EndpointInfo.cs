@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using ICD.Common.Utils;
+using Newtonsoft.Json;
 
 namespace ICD.Connect.Routing.Endpoints
 {
@@ -50,7 +51,13 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <returns></returns>
 		public override string ToString()
 		{
-			return string.Format("{0}(Device={1}, Control={2}, Address={3})", GetType().Name, Device, Control, Address);
+			ReprBuilder builder = new ReprBuilder(this);
+
+			builder.AppendProperty("Device", Device);
+			builder.AppendProperty("Control", Control);
+			builder.AppendProperty("Address", Address);
+
+			return builder.ToString();
 		}
 
 		#region Equality
@@ -88,6 +95,16 @@ namespace ICD.Connect.Routing.Endpoints
 				return false;
 
 			return GetHashCode() == ((EndpointInfo)other).GetHashCode();
+		}
+
+		/// <summary>
+		/// Returns true if the endpoints share the same control info without checking address.
+		/// </summary>
+		/// <param name="other"></param>
+		/// <returns></returns>
+		public bool EqualsControl(EndpointInfo other)
+		{
+			return other.Device == m_DeviceId && other.Control == m_ControlId;
 		}
 
 		/// <summary>
