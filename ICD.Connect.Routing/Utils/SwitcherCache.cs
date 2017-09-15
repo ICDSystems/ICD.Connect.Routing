@@ -111,6 +111,67 @@ namespace ICD.Connect.Routing.Utils
 				SetInputForOutputSingle(output, input, flag);
 		}
 
+		/// <summary>
+		/// Gets the cached input for the given output.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		[PublicAPI]
+		public int? GetInputForOutput(int output, eConnectionType type)
+		{
+			if (EnumUtils.HasMultipleFlags(type))
+				throw new InvalidOperationException("Type must have a single flag");
+
+			m_OutputInputMapSection.Enter();
+
+			try
+			{
+				Dictionary<eConnectionType, int?> dict;
+				if (!m_OutputInputMap.TryGetValue(output, out dict))
+					return null;
+
+				int? address;
+				return dict.TryGetValue(type, out address) ? address : null;
+			}
+			finally
+			{
+				m_OutputInputMapSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Gets the cached inputs for the given output.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable<ConnectorInfo> GetInputsForOutput(int output, eConnectionType type)
+		{
+			m_OutputInputMapSection.Enter();
+
+			try
+			{
+				Dictionary<eConnectionType, int?> dict;
+				if (!m_OutputInputMap.TryGetValue(output, out dict))
+					return Enumerable.Empty<ConnectorInfo>();
+
+				return EnumUtils.GetFlagsExceptNone(type)
+				                .Select(f =>
+				                        {
+					                        int? input = GetInputForOutput(output, f);
+					                        return input == null
+												? (ConnectorInfo?)null
+												: new ConnectorInfo((int)input, f);
+				                        })
+				                .OfType<ConnectorInfo>();
+			}
+			finally
+			{
+				m_OutputInputMapSection.Leave();
+			}
+		}
+
 		#endregion
 
 		#region Private Methods
