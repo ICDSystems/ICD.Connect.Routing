@@ -1,15 +1,15 @@
-﻿using ICD.Connect.Routing.CrestronPro.Utils;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
-using ICD.Connect.Misc.CrestronPro.Utils;
-#else
-using System;
-#endif
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
 using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Misc.CrestronPro.Utils;
+using ICD.Connect.Routing.CrestronPro.Utils;
+#else
+using System;
+#endif
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Core;
 
