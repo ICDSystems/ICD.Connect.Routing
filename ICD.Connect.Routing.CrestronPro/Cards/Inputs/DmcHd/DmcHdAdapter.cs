@@ -1,8 +1,11 @@
-﻿using Crestron.SimplSharpPro;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+#endif
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcHd
 {
+#if SIMPLSHARP
 	public sealed class DmcHdAdapter : AbstractCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcHd, DmcHdAdapterSettings>
 	{
 		/// <summary>
@@ -36,4 +39,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcHd
 			return new Crestron.SimplSharpPro.DM.Cards.DmcHd(cardNumber, switcher);
 		}
 	}
+#else
+	public sealed class DmcHdAdapter : AbstractCardAdapter<DmcHdAdapterSettings>
+	{
+	}
+#endif
 }

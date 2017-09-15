@@ -1,14 +1,19 @@
-﻿using Crestron.SimplSharpPro.DM;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro.DM;
+#endif
 using ICD.Common.Properties;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
+#if SIMPLSHARP
 	public delegate void DmSwitcherChangeCallback(IDmSwitcherAdapter sender, Switch switcher);
+#endif
 
 	public interface IDmSwitcherAdapter : IDevice, IDmParent
 	{
+#if SIMPLSHARP
 		event DmSwitcherChangeCallback OnSwitcherChanged;
 
 		/// <summary>
@@ -16,5 +21,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// </summary>
 		[CanBeNull]
 		Switch Switcher { get; }
+#endif
 	}
 }

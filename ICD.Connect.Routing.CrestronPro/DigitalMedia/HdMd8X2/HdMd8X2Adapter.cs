@@ -1,12 +1,11 @@
 ﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
-#else
-using System;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 {
+#if SIMPLSHARP
 	public sealed class HdMd8X2Adapter : AbstractDmSwitcherAdapter<HdMd8x2, HdMd8X2AdapterSettings>
 	{
 		/// <summary>
@@ -14,9 +13,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		/// </summary>
 		public HdMd8X2Adapter()
 		{
-#if SIMPLSHARP
             Controls.Add(new HdMd8X2SwitcherControl(this));
-#endif
 		}
 
 		/// <summary>
@@ -29,4 +26,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 			return new HdMd8x2(settings.Ipid, ProgramInfo.ControlSystem);
 		}
 	}
+#else
+	public sealed class HdMd8X2Adapter : AbstractDmSwitcherAdapter<HdMd8X2AdapterSettings>
+	{
+	}
+#endif
 }

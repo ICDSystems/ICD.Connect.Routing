@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+#endif
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
 using ICD.Connect.Devices;
@@ -8,16 +10,23 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
+#if SIMPLSHARP
 	public abstract class AbstractDmSwitcherAdapter<TSwitcher, TSettings> : AbstractDevice<TSettings>, IDmSwitcherAdapter
 		where TSwitcher : Switch
+#else
+	public abstract class AbstractDmSwitcherAdapter<TSettings> : AbstractDevice<TSettings>, IDmSwitcherAdapter
+#endif
 		where TSettings : IDmSwitcherAdapterSettings, new()
 	{
+#if SIMPLSHARP
 		public event DmSwitcherChangeCallback OnSwitcherChanged;
 
 		private TSwitcher m_Switcher;
+#endif
 
 		#region Properties
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Gets the wrapped switcher.
 		/// </summary>
@@ -41,6 +50,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// Gets the wrapped switch instance.
 		/// </summary>
 		Switch IDmSwitcherAdapter.Switcher { get { return Switcher; } }
+#endif
 
 		#endregion
 
@@ -49,12 +59,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
+#if SIMPLSHARP
 			OnSwitcherChanged = null;
+#endif
 
 			base.DisposeFinal(disposing);
 
+#if SIMPLSHARP
 			// Unsubscribe and unregister.
 			SetSwitcher(null);
+#endif
 		}
 
 		/// <summary>
@@ -63,11 +77,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
+#if SIMPLSHARP
 			return m_Switcher != null && m_Switcher.IsOnline;
+#else
+			return false;
+#endif
 		}
 
 		#region Methods
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Sets the wrapped switcher.
 		/// </summary>
@@ -144,11 +163,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 			return m_Switcher.Outputs[(uint)address];
 		}
+#endif
 
-		#endregion
+#endregion
 
-		#region Switcher Callbacks
+#region Switcher Callbacks
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Subscribe to the switcher events.
 		/// </summary>
@@ -182,10 +203,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			UpdateCachedOnlineStatus();
 		}
+#endif
 
-		#endregion
+#endregion
 
-		#region Settings
+#region Settings
 
 		/// <summary>
 		/// Override to apply properties to the settings instance.
@@ -195,7 +217,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			base.CopySettingsFinal(settings);
 
+#if SIMPLSHARP
 			settings.Ipid = Switcher == null ? (byte)0 : (byte)Switcher.ID;
+#else
+			settings.Ipid = 0;
+#endif
 		}
 
 		/// <summary>
@@ -205,7 +231,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			base.ClearSettingsFinal();
 
+#if SIMPLSHARP
 			SetSwitcher(null);
+#endif
 		}
 
 		/// <summary>
@@ -217,9 +245,12 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			base.ApplySettingsFinal(settings, factory);
 
+#if SIMPLSHARP
 			SetSwitcher(settings);
+#endif
 		}
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Override to control how the switcher is assigned from settings.
 		/// </summary>
@@ -236,7 +267,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// <param name="settings"></param>
 		/// <returns></returns>
 		protected abstract TSwitcher InstantiateSwitcher(TSettings settings);
+#endif
 
-		#endregion
+#endregion
 	}
 }

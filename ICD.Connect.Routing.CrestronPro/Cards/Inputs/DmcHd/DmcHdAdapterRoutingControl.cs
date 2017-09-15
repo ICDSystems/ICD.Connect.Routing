@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿#if SIMPLSHARP
+using System.Collections.Generic;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Utils;
 
@@ -55,3 +56,4 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcHd
 		}
 	}
 }
+#endif

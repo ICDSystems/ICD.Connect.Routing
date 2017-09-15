@@ -1,17 +1,24 @@
-﻿using Crestron.SimplSharpPro;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
+using ICD.Connect.Routing.CrestronPro.Utils;
+#endif
 using ICD.Common.Services.Logging;
 using ICD.Connect.Devices;
-using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards
 {
+#if SIMPLSHARP
 	public abstract class AbstractCardAdapter<TCard, TSettings> : AbstractDevice<TSettings>, ICardAdapter
 		where TCard : CardDevice
+#else
+	public abstract class AbstractCardAdapter<TSettings> : AbstractDevice<TSettings>, ICardAdapter
+#endif
 		where TSettings : ICardSettings, new()
 	{
+#if SIMPLSHARP
 		public delegate void CardChangeCallback(object sender, TCard transmitter);
 
 		/// <summary>
@@ -20,12 +27,14 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		public event Cards.CardChangeCallback OnCardChanged;
 
 		private TCard m_Card;
+#endif
 
 		// Used with settings
 		private byte? m_CresnetId;
 		private int? m_CardNumber;
 		private int? m_SwitcherId;
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Gets the wrapped internal card.
 		/// </summary>
@@ -49,17 +58,21 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		/// Gets the wrapped internal card.
 		/// </summary>
 		CardDevice ICardAdapter.Card { get { return Card; } }
+#endif
 
 		/// <summary>
 		/// Release resources.
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
+#if SIMPLSHARP
 			OnCardChanged = null;
+#endif
 
 			base.DisposeFinal(disposing);
 		}
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Sets the wrapped card instance.
 		/// </summary>
@@ -126,6 +139,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 
 			UpdateCachedOnlineStatus();
 		}
+#endif
 
 		/// <summary>
 		/// Gets the current online status of the device.
@@ -133,11 +147,16 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
+#if SIMPLSHARP
 			return m_Card != null && m_Card.IsOnline;
+#else
+			return false;
+#endif
 		}
 
 		#region Card Callbacks
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Subscribe to the card events.
 		/// </summary>
@@ -171,10 +190,11 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		{
 			UpdateCachedOnlineStatus();
 		}
+#endif
 
-		#endregion
+#endregion
 
-		#region Settings
+#region Settings
 
 		/// <summary>
 		/// Override to clear the instance settings.
@@ -183,7 +203,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		{
 			base.ClearSettingsFinal();
 
+#if SIMPLSHARP
 			SetCard(null, null, null, null);
+#endif
 		}
 
 		/// <summary>
@@ -208,9 +230,12 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		{
 			base.ApplySettingsFinal(settings, factory);
 
+#if SIMPLSHARP
 			SetCard(settings, factory);
+#endif
 		}
 
+#if SIMPLSHARP
 		private void SetCard(TSettings settings, IDeviceFactory factory)
 		{
 			TCard card = DmEndpointFactoryUtils.InstantiateCard<TCard>(settings.CresnetId,
@@ -238,7 +263,8 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		/// <param name="switcher"></param>
 		/// <returns></returns>
 		protected abstract TCard InstantiateCardInternal(uint cardNumber, Switch switcher);
+#endif
 
-		#endregion
+#endregion
 	}
 }

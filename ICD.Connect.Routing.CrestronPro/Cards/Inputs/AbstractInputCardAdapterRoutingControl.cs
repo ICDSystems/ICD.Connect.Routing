@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SIMPLSHARP
+using System;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Common.Utils.Extensions;
@@ -70,7 +71,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// <param name="cache"></param>
 		protected abstract void UpdateCache(SwitcherCache cache);
 
-		#region Parent Callbacks
+#region Parent Callbacks
 
 		/// <summary>
 		/// Subscribe to the parent events.
@@ -107,9 +108,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 			UpdateCache(m_Cache);
 		}
 
-		#endregion
+#endregion
 
-		#region Cache Callbacks
+#region Cache Callbacks
 
 		/// <summary>
 		/// Subscribe to the switcher cache events.
@@ -163,9 +164,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
 		}
 
-		#endregion
+#endregion
 
-		#region Card Callbacks
+#region Card Callbacks
 
 		/// <summary>
 		/// Subscribe to the card events.
@@ -201,6 +202,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 			UpdateCache(m_Cache);
 		}
 
-		#endregion
+#endregion
 	}
 }
+#endif

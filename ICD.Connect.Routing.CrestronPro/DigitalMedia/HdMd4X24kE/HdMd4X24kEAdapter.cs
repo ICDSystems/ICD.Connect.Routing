@@ -10,7 +10,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 	/// <summary>
 	/// HdMd4X24kEAdapter wraps a HdMd4x24kE to provide a routing device.
 	/// </summary>
+#if SIMPLSHARP
 	public sealed class HdMd4X24kEAdapter : AbstractDmSwitcherAdapter<HdMd4x24kE, HdMd4X24kEAdapterSettings>
+#else
+	public sealed class HdMd4X24kEAdapter : AbstractDmSwitcherAdapter<HdMd4X24kEAdapterSettings>
+#endif
 	{
 		private string m_Address;
 
@@ -24,6 +28,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 #endif
 		}
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Sets the wrapped switcher.
 		/// </summary>
@@ -34,8 +39,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			m_Address = address;
 			SetSwitcher(switcher);
 		}
+#endif
 
-		#region Settings
+#region Settings
 
 		/// <summary>
 		/// Override to apply properties to the settings instance.
@@ -58,6 +64,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			m_Address = null;
 		}
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Override to control how the switcher is assigned from settings.
 		/// </summary>
@@ -77,7 +84,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		{
 			return new HdMd4x24kE(settings.Ipid, settings.Address, ProgramInfo.ControlSystem);
 		}
+#endif
 
-		#endregion
+#endregion
 	}
 }
