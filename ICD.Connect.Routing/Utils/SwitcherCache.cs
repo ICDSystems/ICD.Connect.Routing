@@ -98,17 +98,19 @@ namespace ICD.Connect.Routing.Utils
 		/// <param name="type"></param>
 		/// <param name="state"></param>
 		[PublicAPI]
-		public void SetSourceDetectedState(int input, eConnectionType type, bool state)
+		public bool SetSourceDetectedState(int input, eConnectionType type, bool state)
 		{
-			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
-				SetSourceDetectedStateSingle(input, flag, state);
+			return EnumUtils.GetFlagsExceptNone(type)
+			                .Select(f => SetSourceDetectedStateSingle(input, f, state))
+			                .Any(e => e);
 		}
 
 		[PublicAPI]
-		public void SetInputForOutput(int output, int? input, eConnectionType type)
+		public bool SetInputForOutput(int output, int? input, eConnectionType type)
 		{
-			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
-				SetInputForOutputSingle(output, input, flag);
+			return EnumUtils.GetFlagsExceptNone(type)
+			                .Select(f => SetInputForOutputSingle(output, input, f))
+			                .Any(e => e);
 		}
 
 		/// <summary>
@@ -206,7 +208,7 @@ namespace ICD.Connect.Routing.Utils
 		/// <param name="input"></param>
 		/// <param name="type"></param>
 		/// <param name="state"></param>
-		private void SetSourceDetectedStateSingle(int input, eConnectionType type, bool state)
+		private bool SetSourceDetectedStateSingle(int input, eConnectionType type, bool state)
 		{
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type must have single flag", "type");
@@ -219,14 +221,14 @@ namespace ICD.Connect.Routing.Utils
 				{
 					// No change
 					if (!state)
-						return;
+						return false;
 
 					m_SourceDetectionStates[input] = new Dictionary<eConnectionType, bool>();
 				}
 
 				// No change
 				if (m_SourceDetectionStates[input].GetDefault(type, false) == state)
-					return;
+					return false;
 
 				m_SourceDetectionStates[input][type] = state;
 			}
@@ -236,6 +238,7 @@ namespace ICD.Connect.Routing.Utils
 			}
 
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, type, state));
+			return true;
 		}
 
 		/// <summary>
@@ -244,7 +247,7 @@ namespace ICD.Connect.Routing.Utils
 		/// <param name="output"></param>
 		/// <param name="input"></param>
 		/// <param name="type"></param>
-		private void SetInputForOutputSingle(int output, int? input, eConnectionType type)
+		private bool SetInputForOutputSingle(int output, int? input, eConnectionType type)
 		{
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type must have single flag", "type");
@@ -259,7 +262,7 @@ namespace ICD.Connect.Routing.Utils
 				{
 					// No change
 					if (!input.HasValue)
-						return;
+						return false;
 
 					m_OutputInputMap[output] = new Dictionary<eConnectionType, int?>();
 				}
@@ -268,7 +271,7 @@ namespace ICD.Connect.Routing.Utils
 
 				// No change
 				if (oldInput == input)
-					return;
+					return false;
 
 				m_OutputInputMap[output][type] = input;
 			}
@@ -277,10 +280,11 @@ namespace ICD.Connect.Routing.Utils
 				m_OutputInputMapSection.Leave();
 			}
 
-			SetActiveTransmissionStateSingle(output, type, input.HasValue);
 			UpdateInputOutputMapSingle(oldInput, input, output, type);
+			SetActiveTransmissionStateSingle(output, type, input.HasValue);
 
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(output, type));
+			return true;
 		}
 
 		/// <summary>
