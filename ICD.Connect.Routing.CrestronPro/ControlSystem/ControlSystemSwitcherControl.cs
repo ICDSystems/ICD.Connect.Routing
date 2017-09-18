@@ -122,8 +122,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 
-			m_Cache.SetInputForOutput(input, output, type);
-			return true;
+			return m_Cache.SetInputForOutput(input, output, type);
 		}
 
 		/// <summary>
@@ -416,6 +415,17 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		}
 
 		/// <summary>
+		/// Handles the detection change for individual connection types.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		private void SourceDetectionChange(int input, eConnectionType type)
+		{
+			bool state = GetSignalDetectedFeedback(input, type);
+			m_Cache.SetSourceDetectedState(input, type, state);
+		}
+
+		/// <summary>
 		/// Called when an input state changes.
 		/// </summary>
 		/// <param name="device"></param>
@@ -426,17 +436,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 				SourceDetectionChange((int)args.Number, flag);
-		}
-
-		/// <summary>
-		/// Handles the detection change for individual connection types.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <param name="type"></param>
-		private void SourceDetectionChange(int input, eConnectionType type)
-		{
-			bool state = GetSignalDetectedFeedback(input, type);
-			m_Cache.SetSourceDetectedState(input, type, state);
 		}
 
 		/// <summary>

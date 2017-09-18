@@ -80,7 +80,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(f => this.Route(input, output, f)).Unanimous(false);
+				                .Select(f => this.Route(input, output, f))
+				                .Unanimous(false);
 			}
 
 			switch (type)
@@ -88,8 +89,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 				case eConnectionType.Audio:
 				case eConnectionType.Video:
 					m_Switcher.Outputs[(uint)output].VideoOut = m_Switcher.Inputs[(uint)input];
-					m_Cache.SetInputForOutput(output, input, eConnectionType.Audio | eConnectionType.Video);
-					return true;
+					return m_Cache.SetInputForOutput(output, input, eConnectionType.Audio | eConnectionType.Video);
 
 				default:
 // ReSharper disable once NotResolvedInText
@@ -119,8 +119,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 				case eConnectionType.Audio:
 				case eConnectionType.Video:
 					m_Switcher.Outputs[(uint)output].VideoOut = null;
-					m_Cache.SetInputForOutput(output, null, eConnectionType.Audio | eConnectionType.Video);
-					return true;
+					return m_Cache.SetInputForOutput(output, null, eConnectionType.Audio | eConnectionType.Video);
 
 				default:
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
