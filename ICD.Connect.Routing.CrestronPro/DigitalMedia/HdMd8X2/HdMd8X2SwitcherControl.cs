@@ -200,7 +200,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(t => GetSignalDetectedState(input, t))
+								.Select(t => GetSignalDetectedFeedback(input, t))
 				                .Unanimous(false);
 			}
 
