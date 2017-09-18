@@ -80,23 +80,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				                .Unanimous(false);
 			}
 
-			DMInput switcherInput = Parent.GetDmInput(input);
-
-			switch (type)
-			{
-				case eConnectionType.Video:
-					return switcherInput.VideoDetectedFeedback.BoolValue;
-
-				case eConnectionType.Audio:
-					// No way of detecting audio?
-					return true;
-
-				case eConnectionType.Usb:
-					return switcherInput.USBRoutedToFeedback.EndpointOnlineFeedback;
-
-				default:
-					return false;
-			}
+			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
 		/// <summary>
@@ -124,20 +108,23 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			{
 				case eConnectionType.Audio:
 					switcherOutput.AudioOut = switcherInput;
-					return switcherOutput.GetSafeAudioOutFeedback() == switcherInput;
+					break;
 
 				case eConnectionType.Video:
 					switcherOutput.VideoOut = switcherInput;
-					return switcherOutput.GetSafeVideoOutFeedback() == switcherInput;
+					break;
 
 				case eConnectionType.Usb:
 					switcherOutput.USBRoutedTo = switcherInput;
-					return switcherOutput.GetSafeUsbRoutedToFeedback() == switcherInput;
+					break;
 
 				default:
 // ReSharper disable once NotResolvedInText
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
+
+			m_Cache.SetInputForOutput(input, output, type);
+			return true;
 		}
 
 		/// <summary>
@@ -160,26 +147,71 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			switch (type)
 			{
 				case eConnectionType.Video:
-					if (switcherOutput.GetSafeVideoOutFeedback() == null)
-						return false;
 					switcherOutput.VideoOut = null;
-					return true;
+					break;
 
 				case eConnectionType.Audio:
-					if (switcherOutput.GetSafeAudioOutFeedback() == null)
-						return false;
 					switcherOutput.AudioOut = null;
-					return true;
+					break;
 
 				case eConnectionType.Usb:
-					if (switcherOutput.GetSafeUsbRoutedToFeedback() == null)
-						return false;
 					switcherOutput.USBRoutedTo = null;
-					return true;
+					break;
 
 				default:
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
+
+			m_Cache.SetInputForOutput(output, null, type);
+			return true;
+		}
+
+		/// <summary>
+		/// Gets the connector info for the output at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int address)
+		{
+			eCardInputOutputType type = Parent.GetDmOutput(address).CardInputOutputType;
+			return new ConnectorInfo(address, GetConnectionType(type));
+		}
+
+		/// <summary>
+		/// Returns the outputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs()
+		{
+			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherOutputs
+				                             ? Enumerable.Range(1, Parent.ControlSystem.NumberOfSwitcherOutputs)
+				                             : Enumerable.Empty<int>();
+
+			return addresses.Select(i => GetOutput(i)).Where(c => c.ConnectionType != eConnectionType.None);
+		}
+
+		/// <summary>
+		/// Gets the connector info for the input at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int address)
+		{
+			eCardInputOutputType type = Parent.GetDmInput(address).CardInputOutputType;
+			return new ConnectorInfo(address, GetConnectionType(type));
+		}
+
+		/// <summary>
+		/// Returns the inputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetInputs()
+		{
+			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherInputs
+				                             ? Enumerable.Range(1, Parent.ControlSystem.NumberOfSwitcherInputs)
+				                             : Enumerable.Empty<int>();
+
+			return addresses.Select(i => GetInput(i)).Where(c => c.ConnectionType != eConnectionType.None);
 		}
 
 		/// <summary>
@@ -189,6 +221,67 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
+		{
+			return m_Cache.GetInputsForOutput(output, type);
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			if (!Parent.ControlSystem.SupportsSwitcherInputs)
+				return false;
+			return input > 0 && input <= Parent.ControlSystem.NumberOfSwitcherInputs;
+		}
+
+		#endregion
+
+		#region Private Methods
+
+		/// <summary>
+		/// Returns true if a signal is detected at the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		private bool GetSignalDetectedFeedback(int input, eConnectionType type)
+		{
+			if (EnumUtils.HasMultipleFlags(type))
+			{
+				return EnumUtils.GetFlagsExceptNone(type)
+				                .Select(t => GetSignalDetectedFeedback(input, t))
+				                .Unanimous(false);
+			}
+
+			DMInput switcherInput = Parent.GetDmInput(input);
+
+			switch (type)
+			{
+				case eConnectionType.Video:
+					return switcherInput.VideoDetectedFeedback.BoolValue;
+
+				case eConnectionType.Audio:
+					// No way of detecting audio?
+					return true;
+
+				case eConnectionType.Usb:
+					return switcherInput.USBRoutedToFeedback.EndpointOnlineFeedback;
+
+				default:
+					return false;
+			}
+		}
+
+		/// <summary>
+		/// Gets the input for the given output.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		private IEnumerable<ConnectorInfo> GetInputsFeedback(int output, eConnectionType type)
 		{
 			IcdHashSet<int> inputs = new IcdHashSet<int>();
 			DMOutput switcherOutput = Parent.GetDmOutput(output);
@@ -215,121 +308,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			}
 
 			return inputs.Select(i => GetInput(i));
-		}
-
-		/// <summary>
-		/// Returns the outputs.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetOutputs()
-		{
-			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherOutputs
-				                             ? Enumerable.Range(1, Parent.ControlSystem.NumberOfSwitcherOutputs)
-				                             : Enumerable.Empty<int>();
-
-			return addresses.Select(i => GetOutput(i)).Where(c => c.ConnectionType != eConnectionType.None);
-		}
-
-		/// <summary>
-		/// Returns the inputs.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetInputs()
-		{
-			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherInputs
-				                             ? Enumerable.Range(1, Parent.ControlSystem.NumberOfSwitcherInputs)
-				                             : Enumerable.Empty<int>();
-
-			return addresses.Select(i => GetInput(i)).Where(c => c.ConnectionType != eConnectionType.None);
-		}
-
-		#endregion
-
-		#region Private Methods
-
-		/// <summary>
-		/// Gets the connector info for the output at the given address.
-		/// </summary>
-		/// <param name="address"></param>
-		/// <returns></returns>
-		public override ConnectorInfo GetOutput(int address)
-		{
-			eCardInputOutputType type = Parent.GetDmOutput(address).CardInputOutputType;
-			return new ConnectorInfo(address, GetConnectionType(type));
-		}
-
-		/// <summary>
-		/// Returns true if the destination contains an input at the given address.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		public override bool ContainsInput(int input)
-		{
-			if (!Parent.ControlSystem.SupportsSwitcherInputs)
-				return false;
-			return input > 0 && input <= Parent.ControlSystem.NumberOfSwitcherInputs;
-		}
-
-		/// <summary>
-		/// Gets the connector info for the input at the given address.
-		/// </summary>
-		/// <param name="address"></param>
-		/// <returns></returns>
-		public override ConnectorInfo GetInput(int address)
-		{
-			eCardInputOutputType type = Parent.GetDmInput(address).CardInputOutputType;
-			return new ConnectorInfo(address, GetConnectionType(type));
-		}
-
-		/// <summary>
-		/// Gets the connection types for the card IO type.
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		private static eConnectionType GetConnectionType(eCardInputOutputType type)
-		{
-			switch (type)
-			{
-				// Unsure - unused?
-				case eCardInputOutputType.Dmps3StreamingReceive:
-				case eCardInputOutputType.Dmps3CodecOutput:
-				case eCardInputOutputType.Dmps3StreamingTransmit:
-				case eCardInputOutputType.Dmps3DigitalMixOutput:
-					return eConnectionType.None;
-
-				case eCardInputOutputType.NA:
-					return eConnectionType.None;
-
-				case eCardInputOutputType.Dmps3HdmiInputWithoutAnalogAudio:
-				case eCardInputOutputType.Dmps3HdmiInput:
-				case eCardInputOutputType.Dmps3HdmiVgaInput:
-				case eCardInputOutputType.Dmps3HdmiVgaBncInput:
-				case eCardInputOutputType.Dmps3AirMediaInput:
-				case eCardInputOutputType.Dmps3HdmiOutput:
-				case eCardInputOutputType.Dmps3DmInput:
-				case eCardInputOutputType.Dmps3DmOutput:
-				case eCardInputOutputType.Dmps3DmHdmiAudioOutput:
-				case eCardInputOutputType.Dmps3HdmiAudioOutput:
-				case eCardInputOutputType.Dmps3HdmiOutputBackend:
-				case eCardInputOutputType.Dmps3DmOutputBackend:
-				case eCardInputOutputType.Dm8x14k:
-					return eConnectionType.Video | eConnectionType.Audio;
-
-				case eCardInputOutputType.Dmps3VgaInput:
-					return eConnectionType.Video;
-
-				case eCardInputOutputType.Dmps3AnalogAudioInput:
-				case eCardInputOutputType.Dmps3Aux1Output:
-				case eCardInputOutputType.Dmps3Aux2Output:
-				case eCardInputOutputType.Dmps3SipInput:
-				case eCardInputOutputType.Dmps3ProgramOutput:
-				case eCardInputOutputType.Dmps3DialerOutput:
-				case eCardInputOutputType.Dmps3AecOutput:
-					return eConnectionType.Audio;
-
-				default:
-					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
-			}
 		}
 
 		#endregion
@@ -436,7 +414,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		/// <param name="type"></param>
 		private void SourceDetectionChange(int input, eConnectionType type)
 		{
-			bool state = GetSignalDetectedState(input, type);
+			bool state = GetSignalDetectedFeedback(input, type);
 			m_Cache.SetSourceDetectedState(input, type, state);
 		}
 
@@ -468,10 +446,61 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			}
 
 			int output = (int)args.Number;
-			int? input = GetInputs(output, type).Select(c => c.Address)
-			                                    .FirstOrDefault();
+			int? input = GetInputsFeedback(output, type).Select(c => c.Address)
+			                                            .FirstOrDefault();
 
 			m_Cache.SetInputForOutput(output, input, type);
+		}
+
+		/// <summary>
+		/// Gets the connection types for the card IO type.
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		private static eConnectionType GetConnectionType(eCardInputOutputType type)
+		{
+			switch (type)
+			{
+					// Unsure - unused?
+				case eCardInputOutputType.Dmps3StreamingReceive:
+				case eCardInputOutputType.Dmps3CodecOutput:
+				case eCardInputOutputType.Dmps3StreamingTransmit:
+				case eCardInputOutputType.Dmps3DigitalMixOutput:
+					return eConnectionType.None;
+
+				case eCardInputOutputType.NA:
+					return eConnectionType.None;
+
+				case eCardInputOutputType.Dmps3HdmiInputWithoutAnalogAudio:
+				case eCardInputOutputType.Dmps3HdmiInput:
+				case eCardInputOutputType.Dmps3HdmiVgaInput:
+				case eCardInputOutputType.Dmps3HdmiVgaBncInput:
+				case eCardInputOutputType.Dmps3AirMediaInput:
+				case eCardInputOutputType.Dmps3HdmiOutput:
+				case eCardInputOutputType.Dmps3DmInput:
+				case eCardInputOutputType.Dmps3DmOutput:
+				case eCardInputOutputType.Dmps3DmHdmiAudioOutput:
+				case eCardInputOutputType.Dmps3HdmiAudioOutput:
+				case eCardInputOutputType.Dmps3HdmiOutputBackend:
+				case eCardInputOutputType.Dmps3DmOutputBackend:
+				case eCardInputOutputType.Dm8x14k:
+					return eConnectionType.Video | eConnectionType.Audio;
+
+				case eCardInputOutputType.Dmps3VgaInput:
+					return eConnectionType.Video;
+
+				case eCardInputOutputType.Dmps3AnalogAudioInput:
+				case eCardInputOutputType.Dmps3Aux1Output:
+				case eCardInputOutputType.Dmps3Aux2Output:
+				case eCardInputOutputType.Dmps3SipInput:
+				case eCardInputOutputType.Dmps3ProgramOutput:
+				case eCardInputOutputType.Dmps3DialerOutput:
+				case eCardInputOutputType.Dmps3AecOutput:
+					return eConnectionType.Audio;
+
+				default:
+					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
+			}
 		}
 
 		#endregion
