@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 {
@@ -25,7 +24,11 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 		/// <returns></returns>
 		public override ConnectorInfo GetInput(int input)
 		{
-			return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+			if (input == 1)
+				return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
+
+			string message = string.Format("No input at address {0}", input);
+			throw new ArgumentOutOfRangeException("input", message);
 		}
 
 		/// <summary>
@@ -46,7 +49,10 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
 		{
 			if (output != 1)
-				throw new ArgumentOutOfRangeException("output");
+			{
+				string message = string.Format("No output at address {0}", output);
+				throw new ArgumentOutOfRangeException("output", message);
+			}
 
 			yield return GetInput(1);
 		}
@@ -54,11 +60,15 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 		/// <summary>
 		/// Gets the output at the given address.
 		/// </summary>
-		/// <param name="input"></param>
+		/// <param name="output"></param>
 		/// <returns></returns>
-		public override ConnectorInfo GetOutput(int input)
+		public override ConnectorInfo GetOutput(int output)
 		{
-			return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+			if (output == 1)
+				return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
+
+			string message = string.Format("No output at address {0}", output);
+			throw new ArgumentOutOfRangeException("output", message);
 		}
 
 		/// <summary>
@@ -68,15 +78,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
 			yield return GetOutput(1);
-		}
-
-		/// <summary>
-		/// Update the cache with the current state of the card.
-		/// </summary>
-		/// <param name="cache"></param>
-		protected override void UpdateCache(SwitcherCache cache)
-		{
-			throw new NotImplementedException();
 		}
 	}
 }

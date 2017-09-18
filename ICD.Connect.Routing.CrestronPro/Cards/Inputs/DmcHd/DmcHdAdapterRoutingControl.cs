@@ -1,7 +1,7 @@
 ﻿#if SIMPLSHARP
+using System;
 using System.Collections.Generic;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcHd
 {
@@ -18,21 +18,26 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcHd
 		}
 
 		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			if (input == 1)
+				return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
+
+			string message = string.Format("No input at address {0}", input);
+			throw new ArgumentOutOfRangeException("input", message);
+		}
+
+		/// <summary>
 		/// Returns the inputs.
 		/// </summary>
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			throw new System.NotImplementedException();
-		}
-
-		/// <summary>
-		/// Returns the outputs.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetOutputs()
-		{
-			throw new System.NotImplementedException();
+			yield return GetInput(1);
 		}
 
 		/// <summary>
@@ -43,16 +48,36 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcHd
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
 		{
-			throw new System.NotImplementedException();
+			if (output != 1)
+			{
+				string message = string.Format("No output at address {0}", output);
+				throw new ArgumentOutOfRangeException("output", message);
+			}
+
+			yield return GetInput(1);
 		}
 
 		/// <summary>
-		/// Update the cache with the current state of the card.
+		/// Gets the output at the given address.
 		/// </summary>
-		/// <param name="cache"></param>
-		protected override void UpdateCache(SwitcherCache cache)
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int output)
 		{
-			throw new System.NotImplementedException();
+			if (output == 1)
+				return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
+
+			string message = string.Format("No output at address {0}", output);
+			throw new ArgumentOutOfRangeException("output", message);
+		}
+
+		/// <summary>
+		/// Returns the outputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs()
+		{
+			yield return GetOutput(1);
 		}
 	}
 }

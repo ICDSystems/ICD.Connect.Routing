@@ -1,7 +1,8 @@
 ﻿#if SIMPLSHARP
 using System;
-using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
+using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
@@ -22,7 +23,8 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// <summary>
 		/// Gets the current subscribed card.
 		/// </summary>
-		protected CardDevice Card { get; private set; }
+		[CanBeNull]
+		private CardDevice Card { get; set; }
 
 		/// <summary>
 		/// Constructor.
@@ -60,18 +62,12 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// <param name="input"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public sealed override bool GetSignalDetectedState(int input, eConnectionType type)
+		public override sealed bool GetSignalDetectedState(int input, eConnectionType type)
 		{
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
-		/// <summary>
-		/// Update the cache with the current state of the card.
-		/// </summary>
-		/// <param name="cache"></param>
-		protected abstract void UpdateCache(SwitcherCache cache);
-
-#region Parent Callbacks
+		#region Parent Callbacks
 
 		/// <summary>
 		/// Subscribe to the parent events.
@@ -105,12 +101,73 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 
 			Subscribe(Card);
 
-			UpdateCache(m_Cache);
+			RebuildCache();
 		}
 
-#endregion
+		/// <summary>
+		/// Clears and updates the cache.
+		/// </summary>
+		private void RebuildCache()
+		{
+			m_Cache.Clear();
 
-#region Cache Callbacks
+			// Source detection
+			foreach (ConnectorInfo input in GetInputs())
+			{
+				bool detected = GetVideoDetectedFeedback(input.Address);
+				m_Cache.SetSourceDetectedState(input.Address, eConnectionType.Audio | eConnectionType.Video, detected);
+			}
+		}
+
+		#endregion
+
+		#region Card Callbacks
+
+		/// <summary>
+		/// Subscribe to the card events.
+		/// </summary>
+		/// <param name="card"></param>
+		private void Subscribe(CardDevice card)
+		{
+			if (card == null)
+				return;
+
+			card.Switcher.DMInputChange += SwitcherOnDmInputChange;
+		}
+
+		/// <summary>
+		/// Unsubscribe from the card events.
+		/// </summary>
+		/// <param name="card"></param>
+		private void Unsubscribe(CardDevice card)
+		{
+			if (card == null)
+				return;
+
+			card.Switcher.DMInputChange -= SwitcherOnDmInputChange;
+		}
+
+		private void SwitcherOnDmInputChange(Switch device, DMInputEventArgs args)
+		{
+			if (Card == null)
+				return;
+
+			int input = (int)Card.SwitcherInputOutput.Number;
+			if (args.Number != input)
+				return;
+
+			bool state = GetVideoDetectedFeedback(input);
+			m_Cache.SetSourceDetectedState(input, eConnectionType.Audio | eConnectionType.Video, state);
+		}
+
+		private bool GetVideoDetectedFeedback(int input)
+		{
+			return Card != null && Card.Switcher.Inputs[(uint)input].VideoDetectedFeedback.BoolValue;
+		}
+
+		#endregion
+
+		#region Cache Callbacks
 
 		/// <summary>
 		/// Subscribe to the switcher cache events.
@@ -119,8 +176,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		private void Subscribe(SwitcherCache cache)
 		{
 			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
-			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
-			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
 		}
 
 		/// <summary>
@@ -130,28 +185,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		private void Unsubscribe(SwitcherCache cache)
 		{
 			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
-			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
-			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
-		}
-
-		/// <summary>
-		/// Called when the cached active transmission state changes.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
-		{
-			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
-		}
-
-		/// <summary>
-		/// Called when the cached active inputs change.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="args"></param>
-		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
-		{
-			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
 		}
 
 		/// <summary>
@@ -164,45 +197,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
 		}
 
-#endregion
-
-#region Card Callbacks
-
-		/// <summary>
-		/// Subscribe to the card events.
-		/// </summary>
-		/// <param name="card"></param>
-		private void Subscribe(CardDevice card)
-		{
-			if (card == null)
-				return;
-
-			card.BaseEvent += CardOnBaseEvent;
-		}
-
-		/// <summary>
-		/// Unsubscribe from the card events.
-		/// </summary>
-		/// <param name="card"></param>
-		private void Unsubscribe(CardDevice card)
-		{
-			if (card == null)
-				return;
-
-			card.BaseEvent -= CardOnBaseEvent;
-		}
-
-		/// <summary>
-		/// Called when the card reports a change.
-		/// </summary>
-		/// <param name="device"></param>
-		/// <param name="args"></param>
-		private void CardOnBaseEvent(GenericBase device, BaseEventArgs args)
-		{
-			UpdateCache(m_Cache);
-		}
-
-#endregion
+		#endregion
 	}
 }
 #endif
