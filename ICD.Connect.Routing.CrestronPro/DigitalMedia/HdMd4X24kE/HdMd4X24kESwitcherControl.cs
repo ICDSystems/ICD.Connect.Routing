@@ -270,15 +270,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// <param name="args"></param>
 		private void SwitcherOnDmInputChange(Switch device, DMInputEventArgs args)
 		{
-			SourceDetectionChange((int)args.Number);
-		}
+			int input = (int)args.Number;
 
-		/// <summary>
-		/// Handles the detection change for individual connection types.
-		/// </summary>
-		/// <param name="input"></param>
-		private void SourceDetectionChange(int input)
-		{
 			bool state = GetVideoDetectedFeedback(input);
 			m_Cache.SetSourceDetectedState(input, eConnectionType.Audio | eConnectionType.Video, state);
 		}
@@ -290,6 +283,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// <param name="args"></param>
 		private void SwitcherOnDmOutputChange(Switch device, DMOutputEventArgs args)
 		{
+			if (args.EventId != DMOutputEventIds.VideoOutEventId)
+				return;
+
 			DMInput input = Parent.Switcher.HdmiOutputs[args.Number].GetSafeVideoOutFeedback();
 			int? address = input == null ? null : (int?)input.Number;
 
