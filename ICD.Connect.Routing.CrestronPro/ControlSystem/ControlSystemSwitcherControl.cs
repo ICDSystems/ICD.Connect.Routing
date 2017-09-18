@@ -256,17 +256,18 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 			DMInput switcherInput = Parent.GetDmInput(input);
 
+			// The feedback sigs are null while the program is starting up
 			switch (type)
 			{
 				case eConnectionType.Video:
-					return switcherInput.VideoDetectedFeedback.BoolValue;
+					return switcherInput.VideoDetectedFeedback != null && switcherInput.VideoDetectedFeedback.BoolValue;
 
 				case eConnectionType.Audio:
 					// No way of detecting audio?
 					return true;
 
 				case eConnectionType.Usb:
-					return switcherInput.USBRoutedToFeedback.EndpointOnlineFeedback;
+					return switcherInput.USBRoutedToFeedback != null && switcherInput.USBRoutedToFeedback.EndpointOnlineFeedback;
 
 				default:
 					return false;
