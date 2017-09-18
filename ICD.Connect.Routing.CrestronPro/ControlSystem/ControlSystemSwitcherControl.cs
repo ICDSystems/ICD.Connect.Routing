@@ -5,7 +5,6 @@ using System.Linq;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Common.Utils;
-using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Misc.CrestronPro.Utils;
@@ -283,31 +282,29 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		/// <returns></returns>
 		private IEnumerable<ConnectorInfo> GetInputsFeedback(int output, eConnectionType type)
 		{
-			IcdHashSet<int> inputs = new IcdHashSet<int>();
 			DMOutput switcherOutput = Parent.GetDmOutput(output);
 
-			if (type.HasFlag(eConnectionType.Audio))
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 			{
-				DMInput audioInput = switcherOutput.GetSafeAudioOutFeedback();
-				if (audioInput != null)
-					inputs.Add((int)audioInput.Number);
-			}
+				DMInputOutputBase input;
 
-			if (type.HasFlag(eConnectionType.Video))
-			{
-				DMInput videoInput = switcherOutput.GetSafeVideoOutFeedback();
-				if (videoInput != null)
-					inputs.Add((int)videoInput.Number);
-			}
+				switch (flag)
+				{
+					case eConnectionType.Audio:
+						input = switcherOutput.GetSafeAudioOutFeedback();
+						break;
+					case eConnectionType.Video:
+						input = switcherOutput.GetSafeVideoOutFeedback();
+						break;
+					case eConnectionType.Usb:
+						input = switcherOutput.GetSafeUsbRoutedToFeedback();
+						break;
+					default:
+						continue;
+				}
 
-			if (type.HasFlag(eConnectionType.Usb))
-			{
-				DMInputOutputBase usbInput = switcherOutput.GetSafeUsbRoutedToFeedback();
-				if (usbInput != null)
-					inputs.Add((int)usbInput.Number);
+				yield return new ConnectorInfo((int)input.Number, flag);
 			}
-
-			return inputs.Select(i => GetInput(i));
 		}
 
 		#endregion
@@ -348,14 +345,38 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			m_SubscribedControlSystem = controlSystem;
 			Subscribe(m_SubscribedControlSystem);
 
-			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SystemControl == null)
-				return;
+			if (m_SubscribedControlSystem != null && m_SubscribedControlSystem.SystemControl != null)
+			{
+				if (m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported)
+					m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.BoolValue = true;
 
-			if (m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported)
-				m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.BoolValue = true;
+				if (m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported)
+					m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.BoolValue = true;
+			}
 
-			if (m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported)
-				m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.BoolValue = true;
+			RebuildCache();
+		}
+
+		private void RebuildCache()
+		{
+			m_Cache.Clear();
+
+			// Source detection
+			foreach (ConnectorInfo input in GetInputs())
+			{
+				foreach (eConnectionType type in EnumUtils.GetValuesExceptNone<eConnectionType>())
+				{
+					bool detected = GetSignalDetectedFeedback(input.Address, type);
+					m_Cache.SetSourceDetectedState(input.Address, type, detected);
+				}
+			}
+
+			// Routing
+			foreach (ConnectorInfo output in GetOutputs())
+			{
+				foreach (ConnectorInfo input in GetInputsFeedback(output.Address, EnumUtils.GetFlagsAllValue<eConnectionType>()))
+					m_Cache.SetInputForOutput(output.Address, input.Address, eConnectionType.Audio | eConnectionType.Video);
+			}
 		}
 
 		#endregion
