@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
-using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
