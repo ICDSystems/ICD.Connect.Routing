@@ -302,6 +302,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 						continue;
 				}
 
+				if (input == null)
+					continue;
+
 				yield return new ConnectorInfo((int)input.Number, flag);
 			}
 		}
