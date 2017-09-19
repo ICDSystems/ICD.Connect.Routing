@@ -102,6 +102,7 @@ namespace ICD.Connect.Routing.Utils
 		{
 			return EnumUtils.GetFlagsExceptNone(type)
 			                .Select(f => SetSourceDetectedStateSingle(input, f, state))
+			                .ToArray()
 			                .Any(e => e);
 		}
 
@@ -110,6 +111,7 @@ namespace ICD.Connect.Routing.Utils
 		{
 			return EnumUtils.GetFlagsExceptNone(type)
 			                .Select(f => SetInputForOutputSingle(output, input, f))
+			                .ToArray()
 			                .Any(e => e);
 		}
 
