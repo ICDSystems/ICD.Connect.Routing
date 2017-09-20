@@ -100,10 +100,41 @@ namespace ICD.Connect.Routing.Utils
 		[PublicAPI]
 		public bool SetSourceDetectedState(int input, eConnectionType type, bool state)
 		{
-			return EnumUtils.GetFlagsExceptNone(type)
-			                .Select(f => SetSourceDetectedStateSingle(input, f, state))
-			                .ToArray()
-			                .Any(e => e);
+			eConnectionType changed = eConnectionType.None;
+
+			m_SourceDetectionStatesSection.Enter();
+
+			try
+			{
+				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+				{
+					if (!m_SourceDetectionStates.ContainsKey(input))
+					{
+						// No change
+						if (!state)
+							continue;
+
+						m_SourceDetectionStates[input] = new Dictionary<eConnectionType, bool>();
+					}
+
+					// No change
+					if (m_SourceDetectionStates[input].GetDefault(flag, false) == state)
+						continue;
+
+					m_SourceDetectionStates[input][flag] = state;
+					changed |= flag;
+				}
+			}
+			finally
+			{
+				m_SourceDetectionStatesSection.Leave();
+			}
+
+			if (changed == eConnectionType.None)
+				return false;
+
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, changed, state));
+			return true;
 		}
 
 		[PublicAPI]
@@ -202,45 +233,6 @@ namespace ICD.Connect.Routing.Utils
 
 			foreach (int input in inputs)
 				SetSourceDetectedState(input, allTypes, false);
-		}
-
-		/// <summary>
-		/// Sets the source detection state for the given input.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <param name="type"></param>
-		/// <param name="state"></param>
-		private bool SetSourceDetectedStateSingle(int input, eConnectionType type, bool state)
-		{
-			if (!EnumUtils.HasSingleFlag(type))
-				throw new ArgumentException("Type must have single flag", "type");
-
-			m_SourceDetectionStatesSection.Enter();
-
-			try
-			{
-				if (!m_SourceDetectionStates.ContainsKey(input))
-				{
-					// No change
-					if (!state)
-						return false;
-
-					m_SourceDetectionStates[input] = new Dictionary<eConnectionType, bool>();
-				}
-
-				// No change
-				if (m_SourceDetectionStates[input].GetDefault(type, false) == state)
-					return false;
-
-				m_SourceDetectionStates[input][type] = state;
-			}
-			finally
-			{
-				m_SourceDetectionStatesSection.Leave();
-			}
-
-			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, type, state));
-			return true;
 		}
 
 		/// <summary>
