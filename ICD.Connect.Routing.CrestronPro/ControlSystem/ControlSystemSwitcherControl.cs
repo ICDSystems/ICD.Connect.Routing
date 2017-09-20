@@ -470,7 +470,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			}
 
 			int output = (int)args.Number;
-			int? input = GetInputsFeedback(output, type).Select(c => c.Address)
+			int? input = GetInputsFeedback(output, type).Select(c => (int?)c.Address)
 			                                            .FirstOrDefault();
 
 			m_Cache.SetInputForOutput(output, input, type);
