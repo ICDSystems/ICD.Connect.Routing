@@ -53,6 +53,18 @@ namespace ICD.Connect.Routing
 		                                                   bool signalDetected);
 
 		/// <summary>
+		/// Finds the actively routed source for the destination at the given input address.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <returns>The source</returns>
+		EndpointInfo? GetActiveSourceEndpoint(IRouteDestinationControl destination, int input,
+		                                      eConnectionType type, bool signalDetected);
+
+		/// <summary>
 		/// Finds the destinations that the source is actively routed to.
 		/// </summary>
 		/// <param name="sourceControl"></param>
@@ -248,32 +260,6 @@ namespace ICD.Connect.Routing
 
 	public static class RoutingGraphExtensions
 	{
-		/// <summary>
-		/// Finds the actively routed sources for the destination at the given input address.
-		/// Will return multiple items when connection types are combined, e.g. seperate audio and video sources.
-		/// </summary>
-		/// <param name="extends"></param>
-		/// <param name="destinationControl"></param>
-		/// <param name="destinationInput"></param>
-		/// <param name="type"></param>
-		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
-		/// <exception cref="ArgumentNullException"></exception>
-		/// <returns>The sources</returns>
-		public static IEnumerable<EndpointInfo> GetActiveSourceEndpoints(this IRoutingGraph extends,
-		                                                                 IRouteDestinationControl destinationControl,
-		                                                                 int destinationInput, eConnectionType type,
-		                                                                 bool signalDetected)
-		{
-			if (extends == null)
-				throw new ArgumentNullException("extends");
-
-			if (destinationControl == null)
-				throw new ArgumentNullException("destinationControl");
-
-			EndpointInfo destinationEndpoint = destinationControl.GetInputEndpointInfo(destinationInput);
-			return extends.GetActiveSourceEndpoints(destinationEndpoint, type, signalDetected);
-		}
-
 		/// <summary>
 		/// Gets the destination control for the given destination.
 		/// </summary>
