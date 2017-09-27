@@ -8,16 +8,14 @@ using Crestron.SimplSharpPro.DM.Endpoints;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 {
-	public abstract class AbstractDmTxBaseSourceControl<TDevice, TDeviceSettings, TTransmitter> : AbstractRouteSourceControl<TDevice>
-		where TDevice : AbstractDmTx200BaseAdapter<TTransmitter, TDeviceSettings>, IDevice
-		where TDeviceSettings : AbstractDmTx200BaseAdapterSettings, new()
+	public abstract class AbstractDmTxBaseSourceControl<TDevice, TTransmitter> : AbstractRouteSourceControl<TDevice>
+		where TDevice : IDmTx200BaseAdapter
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base
 	{
 		private const int INPUT_HDMI = 1;
@@ -36,7 +34,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			: base(parent, 0)
 		{
 			Subscribe(parent);
-			SetTransmitter(parent.Transmitter);
+			SetTransmitter(parent.Transmitter as TTransmitter);
 		}
 
 		#region Properties
@@ -166,9 +164,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="transmitter"></param>
-		private void TransmitterOnTransmitterChanged(object sender, TTransmitter transmitter)
+		private void TransmitterOnTransmitterChanged(IDmTx200BaseAdapter sender, Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base transmitter)
 		{
-			SetTransmitter(transmitter);
+			SetTransmitter(transmitter as TTransmitter);
 		}
 
 		private void SetTransmitter(TTransmitter transmitter)

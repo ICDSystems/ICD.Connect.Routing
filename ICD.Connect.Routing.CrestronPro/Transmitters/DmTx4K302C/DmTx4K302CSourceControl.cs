@@ -16,7 +16,7 @@ using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 {
-	public sealed class DmTx4K302CRouteControl : AbstractRouteSourceControl<DmTx4K302CAdapter>
+	public sealed class DmTx4K302CSourceControl : AbstractRouteSourceControl<DmTx4K302CAdapter>
 	{
 		private const int HDMI_INPUT_1 = 1;
 		private const int HDMI_INPUT_2 = 2;
@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		public DmTx4K302CRouteControl(DmTx4K302CAdapter parent)
+		public DmTx4K302CSourceControl(DmTx4K302CAdapter parent)
 			: base(parent, 0)
 		{
 			Subscribe(parent);

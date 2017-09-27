@@ -5,7 +5,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 {
 	public sealed class DmTx200C2GSourceControl :
 		AbstractDmTxBaseSourceControl
-			<DmTx200C2GAdapter, DmTx200C2GAdapterSettings, Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G>
+			<DmTx200C2GAdapter, Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G>
 	{
 		/// <summary>
 		/// Constructor.

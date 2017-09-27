@@ -20,16 +20,14 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
     /// <typeparam name="TTransmitter"></typeparam>
     /// <typeparam name="TSettings"></typeparam>
 #if SIMPLSHARP
-	public abstract class AbstractDmTx200BaseAdapter<TTransmitter, TSettings> : AbstractDevice<TSettings>
+	public abstract class AbstractDmTx200BaseAdapter<TTransmitter, TSettings> : AbstractDevice<TSettings>, IDmTx200BaseAdapter
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base
 #else
     public abstract class AbstractDmTx200BaseAdapter<TSettings> : AbstractDevice<TSettings>
 #endif
-        where TSettings : AbstractDmTx200BaseAdapterSettings, new()
+        where TSettings : IDmTx200BaseAdapterSettings, new()
 	{
 #if SIMPLSHARP
-        public delegate void TransmitterChangeCallback(object sender, TTransmitter transmitter);
-
 		/// <summary>
 		/// Raised when the wrapped transmitter changes.
 		/// </summary>
@@ -60,6 +58,14 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 					handler(this, m_Transmitter);
 			}
 		}
+
+	    /// <summary>
+	    /// Gets the wrapped transmitter instance.
+	    /// </summary>
+	    Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base IDmTx200BaseAdapter.Transmitter
+	    {
+		    get { return Transmitter; }
+	    }
 #endif
 
 #endregion
