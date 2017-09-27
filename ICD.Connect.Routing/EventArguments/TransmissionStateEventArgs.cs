@@ -36,5 +36,14 @@ namespace ICD.Connect.Routing.EventArguments
 			m_State = state;
 			m_Type = type;
 		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="args"></param>
+		public TransmissionStateEventArgs(TransmissionStateEventArgs args)
+			: this(args.Output, args.Type, args.State)
+		{
+		}
 	}
 }

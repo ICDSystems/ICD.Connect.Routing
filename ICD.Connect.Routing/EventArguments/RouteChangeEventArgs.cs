@@ -34,5 +34,14 @@ namespace ICD.Connect.Routing.EventArguments
 			m_Type = type;
 			m_Output = output;
 		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="args"></param>
+		public RouteChangeEventArgs(RouteChangeEventArgs args)
+			: this(args.Output, args.Type)
+		{
+		}
 	}
 }

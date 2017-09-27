@@ -36,5 +36,14 @@ namespace ICD.Connect.Routing.EventArguments
 			m_Type = type;
 			m_Active = active;
 		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="args"></param>
+		public ActiveInputStateChangeEventArgs(ActiveInputStateChangeEventArgs args)
+			: this(args.Input, args.Type, args.Active)
+		{
+		}
 	}
 }

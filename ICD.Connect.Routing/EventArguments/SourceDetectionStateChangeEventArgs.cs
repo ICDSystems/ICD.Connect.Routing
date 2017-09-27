@@ -43,5 +43,14 @@ namespace ICD.Connect.Routing.EventArguments
 			m_Type = type;
 			m_State = state;
 		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="args"></param>
+		public SourceDetectionStateChangeEventArgs(SourceDetectionStateChangeEventArgs args)
+			: this(args.Input, args.Type, args.State)
+		{
+		}
 	}
 }
