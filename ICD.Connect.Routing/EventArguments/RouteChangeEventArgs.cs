@@ -1,5 +1,6 @@
 ﻿using System;
 using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Connect.Routing.Connections;
 
 namespace ICD.Connect.Routing.EventArguments
@@ -42,6 +43,20 @@ namespace ICD.Connect.Routing.EventArguments
 		public RouteChangeEventArgs(RouteChangeEventArgs args)
 			: this(args.Output, args.Type)
 		{
+		}
+
+		/// <summary>
+		/// Gets the string representation for this instance.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString()
+		{
+			ReprBuilder builder = new ReprBuilder(this);
+
+			builder.AppendProperty("Output", m_Output);
+			builder.AppendProperty("Type", m_Type);
+
+			return builder.ToString();
 		}
 	}
 }

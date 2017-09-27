@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Common.Utils;
 using ICD.Connect.Routing.Connections;
 
 namespace ICD.Connect.Routing.EventArguments
@@ -44,6 +45,21 @@ namespace ICD.Connect.Routing.EventArguments
 		public TransmissionStateEventArgs(TransmissionStateEventArgs args)
 			: this(args.Output, args.Type, args.State)
 		{
+		}
+
+		/// <summary>
+		/// Gets the string representation for this instance.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString()
+		{
+			ReprBuilder builder = new ReprBuilder(this);
+
+			builder.AppendProperty("Output", m_Output);
+			builder.AppendProperty("Type", m_Type);
+			builder.AppendProperty("State", m_State);
+
+			return builder.ToString();
 		}
 	}
 }
