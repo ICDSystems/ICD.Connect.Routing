@@ -122,7 +122,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 
-			return m_Cache.SetInputForOutput(input, output, type);
+			return m_Cache.SetInputForOutput(output, input, type);
 		}
 
 		/// <summary>
