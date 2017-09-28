@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 {
@@ -24,7 +24,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static DmTx200C2GAdapterSettings FromXml(string xml)
 		{
 			DmTx200C2GAdapterSettings output = new DmTx200C2GAdapterSettings();

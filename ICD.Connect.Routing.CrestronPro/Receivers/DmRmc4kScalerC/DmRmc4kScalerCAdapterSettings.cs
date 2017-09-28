@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 {
@@ -28,7 +28,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static DmRmc4kScalerCAdapterSettings FromXml(string xml)
 		{
 			DmRmc4kScalerCAdapterSettings output = new DmRmc4kScalerCAdapterSettings();

@@ -4,7 +4,7 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
 using ICD.Common.Properties;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 {
@@ -62,7 +62,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static DmTx201CAdapterSettings FromXml(string xml)
 		{
 			DmTx201CAdapterSettings output = new DmTx201CAdapterSettings();
