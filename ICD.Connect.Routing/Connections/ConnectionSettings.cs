@@ -8,7 +8,6 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes;
-using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Connections
 {
