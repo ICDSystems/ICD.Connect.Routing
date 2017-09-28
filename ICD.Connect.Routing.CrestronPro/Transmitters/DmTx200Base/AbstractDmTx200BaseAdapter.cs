@@ -20,6 +20,9 @@
 		/// <param name="transmitter"></param>
 		protected override void ConfigureTransmitter(TTransmitter transmitter)
 		{
+			if (transmitter == null)
+				return;
+
 			transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
 		}
 	}

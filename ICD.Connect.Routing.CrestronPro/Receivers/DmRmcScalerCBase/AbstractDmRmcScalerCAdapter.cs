@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Common.Properties;
 using ICD.Common.Services.Logging;
@@ -98,38 +99,66 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		public void SetScaler(TScaler scaler, int? parentId)
 		{
 			Unsubscribe(Scaler);
-
-			if (Scaler != null)
-			{
-				if (Scaler.Registered)
-					Scaler.UnRegister();
-
-				try
-				{
-					Scaler.Dispose();
-				}
-				catch
-				{
-				}
-			}
+			Unregister(Scaler);
 
 			m_ParentId = parentId;
 			Scaler = scaler;
 
-			if (Scaler != null && !Scaler.Registered)
-			{
-				if (Name != null)
-					Scaler.Description = Name;
-				eDeviceRegistrationUnRegistrationResponse result = Scaler.Register();
-				if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-					Logger.AddEntry(eSeverity.Error, "Unable to register {0} - {1}", Scaler.GetType().Name, result);
-			}
-
+			Register(Scaler);
 			Subscribe(Scaler);
+
 			UpdateCachedOnlineStatus();
 		}
 
 		/// <summary>
+		/// Unregisters the given scaler.
+		/// </summary>
+		/// <param name="scaler"></param>
+	    private void Unregister(TScaler scaler)
+	    {
+		    if (scaler == null || !scaler.Registered)
+			    return;
+
+			scaler.UnRegister();
+
+			try
+			{
+				scaler.Dispose();
+			}
+			catch
+			{
+			}
+	    }
+
+		/// <summary>
+		/// Registers the given scaler and re-registers the DM parent.
+		/// </summary>
+		/// <param name="scaler"></param>
+	    private void Register(TScaler scaler)
+		{
+			if (scaler == null || scaler.Registered)
+				return;
+
+			if (Name != null)
+				scaler.Description = Name;
+
+			eDeviceRegistrationUnRegistrationResponse result = scaler.Register();
+			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
+			{
+				Logger.AddEntry(eSeverity.Error, "Unable to register {0} - {1}", scaler.GetType().Name, result);
+				return;
+			}
+
+			GenericDevice parent = scaler.Parent as GenericDevice;
+			if (parent == null)
+				return;
+
+			eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
+			if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
+				Logger.AddEntry(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
+		}
+
+	    /// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
 		/// <param name="address"></param>
@@ -170,6 +199,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// <returns></returns>
 		public virtual Relay GetRelayPort(int address)
 		{
+			if (Scaler == null)
+				throw new InvalidOperationException("No scaler instantiated");
+
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(Relay).Name, address);
 			throw new KeyNotFoundException(message);
 		}
@@ -181,6 +213,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// <returns></returns>
 		public virtual Versiport GetIoPort(int address)
 		{
+			if (Scaler == null)
+				throw new InvalidOperationException("No scaler instantiated");
+
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(Versiport).Name, address);
 			throw new KeyNotFoundException(message);
 		}
