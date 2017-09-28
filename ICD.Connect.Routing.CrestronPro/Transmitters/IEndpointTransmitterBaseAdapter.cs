@@ -1,13 +1,13 @@
 ﻿using ICD.Connect.Devices;
 
-namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
+namespace ICD.Connect.Routing.CrestronPro.Transmitters
 {
 #if SIMPLSHARP
 	public delegate void TransmitterChangeCallback(
-		IDmTx200BaseAdapter sender, Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base transmitter);
+		IEndpointTransmitterBaseAdapter sender, Crestron.SimplSharpPro.DM.Endpoints.Transmitters.EndpointTransmitterBase transmitter);
 #endif
 
-	public interface IDmTx200BaseAdapter : IDevice
+	public interface IEndpointTransmitterBaseAdapter : IDevice
 	{
 #if SIMPLSHARP
 		/// <summary>
@@ -18,7 +18,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <summary>
 		/// Gets the wrapped transmitter instance.
 		/// </summary>
-		Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base Transmitter { get; }
+		Crestron.SimplSharpPro.DM.Endpoints.Transmitters.EndpointTransmitterBase Transmitter { get; }
 #endif
 	}
 }

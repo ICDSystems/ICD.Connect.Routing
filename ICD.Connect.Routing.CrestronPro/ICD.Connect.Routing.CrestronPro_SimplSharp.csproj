@@ -122,11 +122,10 @@
     <Compile Include="Receivers\DmRmcScalerCBase\DmRmcScalerCBaseRouteControl.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapter.cs" />
+    <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapterSettings.cs" />
+    <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapter.cs" />
     <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapter.cs" />
-    <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCAdapterSettings.cs" />
-    <Compile Include="Transmitters\DmTx200Base\IDmTx200BaseAdapter.cs" />
-    <Compile Include="Transmitters\DmTx200Base\IDmTx200BaseAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GAdapter.cs" />
     <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GSourceControl.cs" />
@@ -147,6 +146,8 @@
     <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CSourceControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transmitters\IEndpointTransmitterBaseAdapter.cs" />
+    <Compile Include="Transmitters\IEndpointTransmitterBaseAdapterSettings.cs" />
     <Compile Include="Utils\DmEndpointFactoryUtils.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>

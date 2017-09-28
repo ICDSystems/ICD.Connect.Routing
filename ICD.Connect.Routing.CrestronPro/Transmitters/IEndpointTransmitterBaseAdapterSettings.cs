@@ -1,8 +1,8 @@
 using ICD.Connect.Devices;
 
-namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
+namespace ICD.Connect.Routing.CrestronPro.Transmitters
 {
-	public interface IDmTx200BaseAdapterSettings : IDeviceSettings
+	public interface IEndpointTransmitterBaseAdapterSettings : IDeviceSettings
 	{
 		byte? Ipid { get; set; }
 		int? DmSwitch { get; set; }
