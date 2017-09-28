@@ -69,6 +69,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connections\ConnectionPath.cs" />
+    <Compile Include="Endpoints\Destinations\IDestinationSettings.cs" />
+    <Compile Include="Endpoints\ISourceDestinationBaseSettings.cs" />
+    <Compile Include="Endpoints\Sources\ISourceSettings.cs" />
     <Compile Include="EventArguments\ActiveInputStateChangeEventArgs.cs" />
     <Compile Include="Extensions\CoreExtensions.cs" />
     <Compile Include="Extensions\DeviceFactoryExtensions.cs" />

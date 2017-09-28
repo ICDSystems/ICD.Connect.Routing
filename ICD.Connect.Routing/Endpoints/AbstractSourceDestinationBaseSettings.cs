@@ -6,7 +6,7 @@ using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Endpoints
 {
-	public abstract class AbstractSourceDestinationBaseSettings : AbstractSettings
+	public abstract class AbstractSourceDestinationBaseSettings : AbstractSettings, ISourceDestinationBaseSettings
 	{
 		protected const string DEVICE_ELEMENT = "Device";
 		private const string CONTROL_ELEMENT = "Control";

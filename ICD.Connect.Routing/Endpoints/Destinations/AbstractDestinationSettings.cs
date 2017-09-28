@@ -1,6 +1,6 @@
 ﻿namespace ICD.Connect.Routing.Endpoints.Destinations
 {
-	public abstract class AbstractDestinationSettings : AbstractSourceDestinationBaseSettings
+	public abstract class AbstractDestinationSettings : AbstractSourceDestinationBaseSettings, IDestinationSettings
 	{
 		private const string DESTINATION_ELEMENT = "Destination";
 
