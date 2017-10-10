@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
@@ -216,14 +217,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 			switch (type)
 			{
 				case eConnectionType.Video:
-					return switcherInput.VideoDetectedFeedback.BoolValue;
+					BoolOutputSig videoFeedbackSig = switcherInput.VideoDetectedFeedback;
+					return videoFeedbackSig != null && videoFeedbackSig.BoolValue;
 
 				case eConnectionType.Audio:
 					// No way of detecting audio?
 					return true;
 
 				case eConnectionType.Usb:
-					return switcherInput.USBRoutedToFeedback.EndpointOnlineFeedback;
+					DMInputOutputBase usbFeedbackSig = switcherInput.USBRoutedToFeedback;
+					return usbFeedbackSig != null && usbFeedbackSig.EndpointOnlineFeedback;
 
 				default:
 					return false;
