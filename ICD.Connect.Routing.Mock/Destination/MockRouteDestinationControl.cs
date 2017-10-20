@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Services;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Devices;
@@ -50,6 +51,13 @@ namespace ICD.Connect.Routing.Mock.Destination
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
+			if (EnumUtils.HasMultipleFlags(type))
+			{
+				return EnumUtils.GetFlagsExceptNone(type)
+								.Select(t => GetSignalDetectedState(input, t))
+								.Unanimous(false);
+			}
+
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 

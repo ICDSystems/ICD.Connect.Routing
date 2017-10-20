@@ -73,6 +73,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
+			if (EnumUtils.HasMultipleFlags(type))
+			{
+				return EnumUtils.GetFlagsExceptNone(type)
+								.Select(t => GetSignalDetectedState(input, t))
+								.Unanimous(false);
+			}
+
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
