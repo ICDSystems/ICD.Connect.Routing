@@ -24,9 +24,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 			writer.WriteElementString(IPID_ELEMENT, StringUtils.ToIpIdString(Ipid));
 		}
 
-		public static void ParseXml(AbstractDmMdMNXNAdapterSettings instance, string xml)
+		protected static void ParseXml(AbstractDmMdMNXNAdapterSettings instance, string xml)
 		{
-			instance.Ipid = XmlUtils.ReadChildElementContentAsByte(xml, IPID_ELEMENT);
+			instance.Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT) ?? 0;
 			AbstractDeviceSettings.ParseXml(instance, xml);
 		}
 	}
