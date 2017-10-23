@@ -267,6 +267,23 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		}
 
 		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			addRow("HDMI Detected", HdmiDetected);
+			addRow("VGA Detected", VgaDetected);
+			addRow("Active Transmission State", ActiveTransmissionState);
+		}
+
+		#endregion
 	}
 }
 #endif
