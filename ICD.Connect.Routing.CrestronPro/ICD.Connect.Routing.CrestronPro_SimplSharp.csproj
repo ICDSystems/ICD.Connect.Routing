@@ -97,6 +97,10 @@
     <Compile Include="ControlSystem\ControlSystemDevice.cs" />
     <Compile Include="ControlSystem\ControlSystemDeviceSettings.cs" />
     <Compile Include="ControlSystem\ControlSystemSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\Dm100xStrBase\AbstractDm100XStrBaseAdapter.cs" />
+    <Compile Include="DigitalMedia\Dm100xStrBase\AbstractDm100XStrBaseAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\Dm100xStrBase\IDm100XStrBaseAdapter.cs" />
+    <Compile Include="DigitalMedia\Dm100xStrBase\IDm100XStrBaseAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16Adapter.cs" />
     <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32Adapter.cs" />
