@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.API.Nodes;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -253,6 +254,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <param name="args"></param>
 		private void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
 		{
+			if (args.EventId == EndpointTransmitterBase.AudioSourceFeedbackEventId ||
+				args.EventId == EndpointTransmitterBase.VideoSourceFeedbackEventId)
+				UpdateActiveTransmissionState();
+
 			if (args.EventId != DMOutputEventIds.ContentLanModeEventId)
 				return;
 
