@@ -167,6 +167,22 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		}
 
 		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public DigitalInput GetDigitalInputPort(int address)
+		{
+			if (ControlSystem.ComPorts == null)
+				throw new KeyNotFoundException("Control System has no DigitalInputPorts");
+
+			if (address < 0 || !ControlSystem.DigitalInputPorts.Contains((uint)address))
+				throw new KeyNotFoundException(string.Format("{0} has no DigitalInput at address {1}", this, address));
+
+			return ControlSystem.DigitalInputPorts[(uint)address];
+		}
+
+		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
 		/// <param name="address"></param>

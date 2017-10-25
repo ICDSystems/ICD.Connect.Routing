@@ -219,6 +219,20 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(Versiport).Name, address);
 			throw new KeyNotFoundException(message);
 		}
+
+	    /// <summary>
+	    /// Gets the port at the given address.
+	    /// </summary>
+	    /// <param name="address"></param>
+	    /// <returns></returns>
+	    public DigitalInput GetDigitalInputPort(int address)
+	    {
+			if (Scaler == null)
+				throw new InvalidOperationException("No scaler instantiated");
+
+			string message = string.Format("{0} has no {1} with address {2}", this, typeof(DigitalInput).Name, address);
+			throw new KeyNotFoundException(message);
+	    }
 #endif
 
 #endregion
