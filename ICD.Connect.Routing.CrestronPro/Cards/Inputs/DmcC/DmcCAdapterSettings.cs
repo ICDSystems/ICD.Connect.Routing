@@ -1,6 +1,6 @@
 ﻿using System;
 using ICD.Common.Properties;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 {
@@ -23,7 +23,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static DmcCAdapterSettings FromXml(string xml)
 		{
 			DmcCAdapterSettings output = new DmcCAdapterSettings();
