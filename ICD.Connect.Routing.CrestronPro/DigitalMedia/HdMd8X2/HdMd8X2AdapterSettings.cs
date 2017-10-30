@@ -1,6 +1,9 @@
 using System;
 using ICD.Common.Properties;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Xml;
+using ICD.Connect.Devices;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 {
@@ -23,7 +26,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static HdMd8X2AdapterSettings FromXml(string xml)
 		{
 			HdMd8X2AdapterSettings output = new HdMd8X2AdapterSettings();

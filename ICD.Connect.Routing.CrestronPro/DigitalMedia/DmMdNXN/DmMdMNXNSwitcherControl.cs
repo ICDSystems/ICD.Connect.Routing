@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
@@ -72,6 +73,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
+			if (EnumUtils.HasMultipleFlags(type))
+			{
+				return EnumUtils.GetFlagsExceptNone(type)
+								.Select(t => GetSignalDetectedState(input, t))
+								.Unanimous(false);
+			}
+
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
@@ -216,14 +224,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 			switch (type)
 			{
 				case eConnectionType.Video:
-					return switcherInput.VideoDetectedFeedback.BoolValue;
+					BoolOutputSig videoFeedbackSig = switcherInput.VideoDetectedFeedback;
+					return videoFeedbackSig != null && videoFeedbackSig.BoolValue;
 
 				case eConnectionType.Audio:
 					// No way of detecting audio?
 					return true;
 
 				case eConnectionType.Usb:
-					return switcherInput.USBRoutedToFeedback.EndpointOnlineFeedback;
+					DMInputOutputBase usbFeedbackSig = switcherInput.USBRoutedToFeedback;
+					return usbFeedbackSig != null && usbFeedbackSig.EndpointOnlineFeedback;
 
 				default:
 					return false;
@@ -410,7 +420,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 			}
 
 			int output = (int)args.Number;
-			int? input = GetInputsFeedback(output, type).Select(c => c.Address)
+			int? input = GetInputsFeedback(output, type).Select(c => (int?)c.Address)
 			                                            .FirstOrDefault();
 
 			m_Cache.SetInputForOutput(output, input, type);
@@ -422,22 +432,22 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
-			OnRouteChange.Raise(this, new RouteChangeEventArgs(args.Output, args.Type));
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
 		}
 
 		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
 		{
-			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args.Output, args.Type, args.State));
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
 		}
 
 		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
-			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args.Input, args.Type, args.State));
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
 		}
 
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
 		{
-			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args.Input, args.Type, args.Active));
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
 		}
 
 		#endregion

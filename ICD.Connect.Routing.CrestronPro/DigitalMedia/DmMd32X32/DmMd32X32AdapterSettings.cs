@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd32X32
 {
@@ -24,7 +24,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd32X32
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static DmMd32X32AdapterSettings FromXml(string xml)
 		{
 			DmMd32X32AdapterSettings output = new DmMd32X32AdapterSettings();

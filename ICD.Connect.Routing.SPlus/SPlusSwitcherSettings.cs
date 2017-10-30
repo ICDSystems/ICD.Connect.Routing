@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Connect.Devices;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.SPlus
 {
@@ -21,7 +21,7 @@ namespace ICD.Connect.Routing.SPlus
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static SPlusSwitcherSettings FromXml(string xml)
 		{
 			SPlusSwitcherSettings output = new SPlusSwitcherSettings();

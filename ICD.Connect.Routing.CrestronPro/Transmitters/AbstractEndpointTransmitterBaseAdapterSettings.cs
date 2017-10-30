@@ -1,11 +1,12 @@
 ﻿using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
+using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
 using ICD.Connect.Settings.Attributes;
 
-namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
+namespace ICD.Connect.Routing.CrestronPro.Transmitters
 {
-	public abstract class AbstractDmTx200BaseAdapterSettings : AbstractDeviceSettings
+	public abstract class AbstractEndpointTransmitterBaseAdapterSettings : AbstractDeviceSettings, IEndpointTransmitterBaseAdapterSettings
 	{
 		private const string IPID_ELEMENT = "IPID";
 		private const string DM_SWITCH_ELEMENT = "DmSwitch";

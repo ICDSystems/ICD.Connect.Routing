@@ -8,7 +8,6 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes;
-using ICD.Connect.Settings.Attributes.Factories;
 
 namespace ICD.Connect.Routing.Connections
 {
@@ -177,7 +176,7 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlConnectionSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static ConnectionSettings FromXml(string xml)
 		{
 			eConnectionType connectionType;

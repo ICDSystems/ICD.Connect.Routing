@@ -2,7 +2,7 @@
 using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Mock.Source
 {
@@ -43,7 +43,7 @@ namespace ICD.Connect.Routing.Mock.Source
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static MockSourceDeviceSettings FromXml(string xml)
 		{
 			int? outputCount = XmlUtils.TryReadChildElementContentAsInt(xml, OUTPUT_COUNT_ELEMENT);

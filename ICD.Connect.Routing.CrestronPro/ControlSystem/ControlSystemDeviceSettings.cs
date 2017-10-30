@@ -1,7 +1,7 @@
 using System;
 using ICD.Common.Properties;
 using ICD.Connect.Devices;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 {
@@ -24,7 +24,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlDeviceSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static ControlSystemDeviceSettings FromXml(string xml)
 		{
 			ControlSystemDeviceSettings output = new ControlSystemDeviceSettings();

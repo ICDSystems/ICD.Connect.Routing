@@ -1,11 +1,11 @@
 ﻿#if SIMPLSHARP
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
 
-namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201C
+namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 {
 	public sealed class DmTx201CSourceControl :
 		AbstractDmTxBaseSourceControl
-			<DmTx201CAdapter, DmTx201CAdapterSettings, Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C>
+			<DmTx201CAdapter, Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C>
 	{
 		/// <summary>
 		/// Constructor.

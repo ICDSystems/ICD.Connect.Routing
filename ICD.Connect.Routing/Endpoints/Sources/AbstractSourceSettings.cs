@@ -1,6 +1,6 @@
 ﻿namespace ICD.Connect.Routing.Endpoints.Sources
 {
-	public abstract class AbstractSourceSettings : AbstractSourceDestinationBaseSettings
+	public abstract class AbstractSourceSettings : AbstractSourceDestinationBaseSettings, ISourceSettings
 	{
 		private const string SOURCE_ELEMENT = "Source";
 

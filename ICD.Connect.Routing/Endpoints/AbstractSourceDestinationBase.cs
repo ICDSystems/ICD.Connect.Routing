@@ -8,7 +8,7 @@ using ICD.Connect.Settings.Core;
 namespace ICD.Connect.Routing.Endpoints
 {
 	public abstract class AbstractSourceDestinationBase<TSettings> : AbstractOriginator<TSettings>, ISourceDestinationBase
-		where TSettings : AbstractSourceDestinationBaseSettings, new()
+		where TSettings : ISourceDestinationBaseSettings, new()
 	{
 		/// <summary>
 		/// Raised when the disable state changes.

@@ -9,7 +9,6 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes;
-using ICD.Connect.Settings.Attributes.Factories;
 
 namespace ICD.Connect.Routing.StaticRoutes
 {
@@ -119,7 +118,7 @@ namespace ICD.Connect.Routing.StaticRoutes
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlStaticRouteSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static StaticRouteSettings FromXml(string xml)
 		{
 			string connectionsElement = XmlUtils.GetChildElementAsString(xml, CONNECTIONS_ELEMENT);

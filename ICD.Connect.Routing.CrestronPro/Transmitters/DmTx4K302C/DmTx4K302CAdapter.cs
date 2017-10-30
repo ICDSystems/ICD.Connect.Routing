@@ -61,7 +61,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		public DmTx4K302CAdapter()
 		{
 #if SIMPLSHARP
-            Controls.Add(new DmTx4K302CRouteControl(this));
+            Controls.Add(new DmTx4K302CSourceControl(this));
 #endif
 		}
 

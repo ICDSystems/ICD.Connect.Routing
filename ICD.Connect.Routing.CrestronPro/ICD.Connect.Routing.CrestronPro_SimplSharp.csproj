@@ -78,7 +78,7 @@
     </Reference>
     <Reference Include="SimplSharpNewtonsoft, Version=1.0.0.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\ProgramData\Crestron\SDK\SimplSharpNewtonsoft.dll</HintPath>
+      <HintPath>C:\ProgramData\Crestron\SDK\SimplSharpNewtonsoft.dll</HintPath>
     </Reference>
     <Reference Include="SimplSharpPro, Version=1.5.2.0, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -137,24 +137,32 @@
     <Compile Include="Receivers\DmRmcScalerCBase\DmRmcScalerCBaseRouteControl.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapter.cs" />
+    <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapterSettings.cs" />
+    <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapter.cs" />
     <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapter.cs" />
-    <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GAdapter.cs" />
     <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GSourceControl.cs" />
-    <Compile Include="Transmitters\DmTx201C\DmTx201CAdapter.cs" />
+    <Compile Include="Transmitters\DmTx201S\AbstractDmTx201SSourceControl.cs" />
+    <Compile Include="Transmitters\DmTx201S\DmTx201CSourceControl.cs" />
+    <Compile Include="Transmitters\DmTx201S\DmTx201S2SourceControl.cs" />
+    <Compile Include="Transmitters\DmTx201S\DmTx201CAdapter.cs" />
     <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCAdapter.cs" />
-    <Compile Include="Transmitters\DmTx201C\DmTx201CAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd4X24kE\HdMd4X24kEAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd4X24kE\HdMd4X24kEAdapterSettings.cs" />
     <None Include="ObfuscationSettings.cs" />
     <Compile Include="Transmitters\DmTx200Base\AbstractDmTxBaseSourceControl.cs" />
-    <Compile Include="Transmitters\DmTx201C\DmTx201CSourceControl.cs" />
+    <Compile Include="Transmitters\DmTx201S\DmTx201SSourceControl.cs" />
+    <Compile Include="Transmitters\DmTx201S\AbstractDmTx201SAdapter.cs" />
+    <Compile Include="Transmitters\DmTx201S\DmTx201S2Adapter.cs" />
+    <Compile Include="Transmitters\DmTx201S\DmTx201SAdapter.cs" />
     <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CAdapter.cs" />
     <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CAdapterSettings.cs" />
-    <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CRouteControl.cs" />
+    <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CSourceControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transmitters\IEndpointTransmitterBaseAdapter.cs" />
+    <Compile Include="Transmitters\IEndpointTransmitterBaseAdapterSettings.cs" />
     <Compile Include="Utils\DmEndpointFactoryUtils.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>

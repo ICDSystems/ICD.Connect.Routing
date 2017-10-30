@@ -1,6 +1,6 @@
 ﻿using System;
 using ICD.Common.Properties;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Endpoints.Sources
 {
@@ -23,7 +23,7 @@ namespace ICD.Connect.Routing.Endpoints.Sources
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlSourceSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static SourceSettings FromXml(string xml)
 		{
 			SourceSettings output = new SourceSettings();

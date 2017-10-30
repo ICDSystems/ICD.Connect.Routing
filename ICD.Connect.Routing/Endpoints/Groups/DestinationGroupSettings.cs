@@ -1,6 +1,6 @@
 ﻿using System;
 using ICD.Common.Properties;
-using ICD.Connect.Settings.Attributes.Factories;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Endpoints.Groups
 {
@@ -23,7 +23,7 @@ namespace ICD.Connect.Routing.Endpoints.Groups
 		/// </summary>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		[PublicAPI, XmlDestinationGroupSettingsFactoryMethod(FACTORY_NAME)]
+		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static DestinationGroupSettings FromXml(string xml)
 		{
 			DestinationGroupSettings output = new DestinationGroupSettings();

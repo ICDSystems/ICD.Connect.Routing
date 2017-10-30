@@ -1,23 +1,23 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.API.Nodes;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
+using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 {
-	public abstract class AbstractDmTxBaseSourceControl<TDevice, TDeviceSettings, TTransmitter> : AbstractRouteSourceControl<TDevice>
-		where TDevice : AbstractDmTx200BaseAdapter<TTransmitter, TDeviceSettings>, IDevice
-		where TDeviceSettings : AbstractDmTx200BaseAdapterSettings, new()
+	public abstract class AbstractDmTxBaseSourceControl<TDevice, TTransmitter> : AbstractRouteSourceControl<TDevice>
+		where TDevice : IDmTx200BaseAdapter
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base
 	{
 		private const int INPUT_HDMI = 1;
@@ -36,7 +36,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			: base(parent, 0)
 		{
 			Subscribe(parent);
-			SetTransmitter(parent.Transmitter);
+			SetTransmitter(parent.Transmitter as TTransmitter);
 		}
 
 		#region Properties
@@ -45,13 +45,27 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// Returns true if an HDMI input source is detected.
 		/// </summary>
 		[PublicAPI]
-		public bool HdmiDetected { get { return Parent.Transmitter != null && Parent.Transmitter.HdmiInput.SyncDetectedFeedback.BoolValue; } }
+		public bool HdmiDetected
+		{
+			get
+			{
+				TTransmitter transmitter = Parent.Transmitter as TTransmitter;
+				return transmitter != null && transmitter.HdmiInput.SyncDetectedFeedback.BoolValue;
+			}
+		}
 
 		/// <summary>
 		/// Returns true if a VGA input source is detected.
 		/// </summary>
 		[PublicAPI]
-		public bool VgaDetected { get { return Parent.Transmitter != null && Parent.Transmitter.VgaInput.SyncDetectedFeedback.BoolValue; } }
+		public bool VgaDetected
+		{
+			get
+			{
+				TTransmitter transmitter = Parent.Transmitter as TTransmitter;
+				return transmitter != null && transmitter.VgaInput.SyncDetectedFeedback.BoolValue;
+			}
+		}
 
 		/// <summary>
 		/// Returns true when the device is actively transmitting video.
@@ -100,10 +114,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			yield return new ConnectorInfo(1, eConnectionType.Video | eConnectionType.Audio);
 		}
 
-		#endregion
-
-		#region Private Methods
-
 		/// <summary>
 		/// Returns true if the device is actively transmitting on the given output.
 		/// This is NOT the same as sending video, since some devices may send an
@@ -118,8 +128,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			{
 				return
 					EnumUtils.GetFlagsExceptNone(type)
-							 .Select(f => GetActiveTransmissionState(output, f))
-							 .Unanimous(false);
+					         .Select(f => GetActiveTransmissionState(output, f))
+					         .Unanimous(false);
 			}
 
 			if (output != 1)
@@ -149,7 +159,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <param name="parent"></param>
 		private void Subscribe(TDevice parent)
 		{
-			parent.OnTransmitterChanged += TransmitterOnTransmitterChanged;
+			parent.OnTransmitterChanged += ParentOnTransmitterChanged;
 		}
 
 		/// <summary>
@@ -158,7 +168,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <param name="parent"></param>
 		private void Unsubscribe(TDevice parent)
 		{
-			parent.OnTransmitterChanged -= TransmitterOnTransmitterChanged;
+			parent.OnTransmitterChanged -= ParentOnTransmitterChanged;
 		}
 
 		/// <summary>
@@ -166,9 +176,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="transmitter"></param>
-		private void TransmitterOnTransmitterChanged(object sender, TTransmitter transmitter)
+		private void ParentOnTransmitterChanged(IEndpointTransmitterBaseAdapter sender, EndpointTransmitterBase transmitter)
 		{
-			SetTransmitter(transmitter);
+			SetTransmitter(transmitter as TTransmitter);
 		}
 
 		private void SetTransmitter(TTransmitter transmitter)
@@ -177,7 +187,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			m_Transmitter = transmitter;
 			Subscribe(m_Transmitter);
 
-			ActiveTransmissionState = HdmiDetected || VgaDetected;
+			UpdateActiveTransmissionState();
 		}
 
 		#endregion
@@ -219,7 +229,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <param name="args"></param>
 		private void VgaInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
-				ActiveTransmissionState = HdmiDetected || VgaDetected;
+			UpdateActiveTransmissionState();
 		}
 
 		/// <summary>
@@ -229,7 +239,12 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <param name="args"></param>
 		private void HdmiInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
-				ActiveTransmissionState = HdmiDetected || VgaDetected;
+			UpdateActiveTransmissionState();
+		}
+
+		private void UpdateActiveTransmissionState()
+		{
+			ActiveTransmissionState = HdmiDetected || VgaDetected;
 		}
 
 		/// <summary>
@@ -239,13 +254,38 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <param name="args"></param>
 		private void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
 		{
+			if (args.EventId == EndpointTransmitterBase.AudioSourceFeedbackEventId ||
+				args.EventId == EndpointTransmitterBase.VideoSourceFeedbackEventId)
+				UpdateActiveTransmissionState();
+
 			if (args.EventId != DMOutputEventIds.ContentLanModeEventId)
 				return;
 
+			TTransmitter transmitter = device as TTransmitter;
+			if (transmitter == null)
+				return;
+
 			// Ensure the device stays in auto routing mode
-			Parent.Transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
+			transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
 			// Disable Free-Run
-			Parent.Transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
+			transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
+		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			addRow("HDMI Detected", HdmiDetected);
+			addRow("VGA Detected", VgaDetected);
+			addRow("Active Transmission State", ActiveTransmissionState);
 		}
 
 		#endregion

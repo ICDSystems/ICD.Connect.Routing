@@ -122,7 +122,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 
-			return m_Cache.SetInputForOutput(input, output, type);
+			return m_Cache.SetInputForOutput(output, input, type);
 		}
 
 		/// <summary>
@@ -470,7 +470,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			}
 
 			int output = (int)args.Number;
-			int? input = GetInputsFeedback(output, type).Select(c => c.Address)
+			int? input = GetInputsFeedback(output, type).Select(c => (int?)c.Address)
 			                                            .FirstOrDefault();
 
 			m_Cache.SetInputForOutput(output, input, type);
@@ -533,22 +533,22 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
-			OnRouteChange.Raise(this, new RouteChangeEventArgs(args.Output, args.Type));
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
 		}
 
 		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
 		{
-			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args.Output, args.Type, args.State));
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
 		}
 
 		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
-			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args.Input, args.Type, args.State));
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
 		}
 
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
 		{
-			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args.Input, args.Type, args.Active));
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
 		}
 
 		#endregion
