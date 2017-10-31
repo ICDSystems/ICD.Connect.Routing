@@ -98,6 +98,9 @@
     <Compile Include="Cards\AbstractCardSettings.cs" />
     <Compile Include="Cards\ICardAdapter.cs" />
     <Compile Include="Cards\Inputs\AbstractInputCardAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Inputs\Dmc4kC\Dmc4kCAdapter.cs" />
+    <Compile Include="Cards\Inputs\Dmc4kC\Dmc4kCAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Inputs\Dmc4kC\Dmc4kCAdapterSettings.cs" />
     <Compile Include="Cards\Inputs\DmcC\DmcCAdapter.cs" />
     <Compile Include="Cards\Inputs\DmcC\DmcCAdapterRoutingControl.cs" />
     <Compile Include="Cards\Inputs\DmcC\DmcCAdapterSettings.cs" />
