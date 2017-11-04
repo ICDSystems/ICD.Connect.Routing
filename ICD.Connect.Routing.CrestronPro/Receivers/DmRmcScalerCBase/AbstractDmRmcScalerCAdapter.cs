@@ -272,28 +272,38 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 #endif
 		}
 
-		/// <summary>
-		/// Override to apply settings to the instance.
-		/// </summary>
-		/// <param name="settings"></param>
-		/// <param name="factory"></param>
-		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
-		{
-			base.ApplySettingsFinal(settings, factory);
+	    /// <summary>
+	    /// Override to apply settings to the instance.
+	    /// </summary>
+	    /// <param name="settings"></param>
+	    /// <param name="factory"></param>
+	    protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
+	    {
+		    base.ApplySettingsFinal(settings, factory);
 
 #if SIMPLSHARP
-            TScaler scaler =
-				DmEndpointFactoryUtils.InstantiateEndpoint<TScaler>(settings.Ipid, settings.DmOutputAddress,
-				                                                    settings.DmSwitch, factory,
-				                                                    InstantiateScaler,
-				                                                    InstantiateScaler,
-				                                                    InstantiateScaler);
+		    TScaler scaler = null;
 
-			SetScaler(scaler, settings.DmSwitch);
+		    try
+		    {
+			    scaler =
+				    DmEndpointFactoryUtils.InstantiateEndpoint<TScaler>(settings.Ipid, settings.DmOutputAddress,
+				                                                        settings.DmSwitch, factory,
+				                                                        InstantiateScaler,
+				                                                        InstantiateScaler,
+				                                                        InstantiateScaler);
+		    }
+		    catch (Exception e)
+		    {
+				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate internal {1} - {2}",
+								GetType().Name, typeof(TScaler).Name, e.Message);
+		    }
+
+		    SetScaler(scaler, settings.DmSwitch);
 #else
             throw new NotImplementedException();
 #endif
-        }
+	    }
 
 #if SIMPLSHARP
         protected abstract TScaler InstantiateScaler(byte ipid, CrestronControlSystem controlSystem);
