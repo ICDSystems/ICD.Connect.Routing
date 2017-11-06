@@ -43,7 +43,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// </summary>
 		/// <param name="instance"></param>
 		/// <param name="xml"></param>
-		protected static void ParseXml(AbstractDmTx200BaseAdapterSettings instance, string xml)
+		protected static void ParseXml(AbstractEndpointTransmitterBaseAdapterSettings instance, string xml)
 		{
 			instance.Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT);
 			instance.DmSwitch = XmlUtils.TryReadChildElementContentAsInt(xml, DM_SWITCH_ELEMENT);

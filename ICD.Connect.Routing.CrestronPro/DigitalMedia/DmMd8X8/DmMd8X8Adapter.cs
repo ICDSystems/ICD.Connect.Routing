@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Misc.CrestronPro;
+﻿using ICD.Common.Services.Logging;
+using ICD.Connect.Misc.CrestronPro;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 #endif
@@ -16,6 +17,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd8X8
 	    /// <returns></returns>
 	    protected override DmMd8x8 InstantiateSwitcher(DmMd8X8AdapterSettings settings)
 	    {
+            Logger.AddEntry(eSeverity.Warning, "Instantiate Switcher");
 		    return new DmMd8x8(settings.Ipid, ProgramInfo.ControlSystem);
 	    }
 	}

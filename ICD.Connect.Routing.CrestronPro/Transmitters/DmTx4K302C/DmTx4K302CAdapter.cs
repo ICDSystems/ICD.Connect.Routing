@@ -16,7 +16,7 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 {
-	public sealed class DmTx4K302CAdapter : AbstractDevice<DmTx4K302CAdapterSettings>
+	public sealed class DmTx4K302CAdapter : AbstractEndpointTransmitterBaseAdapter<DmTx4k302C,DmTx4K302CAdapterSettings>
 	{
 #if SIMPLSHARP
         public delegate void TransmitterChangeCallback(DmTx4K302CAdapter sender, DmTx4k302C transmitter);
@@ -233,17 +233,17 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
         }
 
 #if SIMPLSHARP
-        private static DmTx4k302C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
-		{
-			return new DmTx4k302C(ipid, controlSystem);
+        protected override DmTx4k302C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
+        {
+            return new DmTx4k302C(ipid, controlSystem);
 		}
 
-		private static DmTx4k302C InstantiateTransmitter(byte ipid, DMInput input)
+		protected override DmTx4k302C InstantiateTransmitter(byte ipid, DMInput input)
 		{
 			return new DmTx4k302C(ipid, input);
 		}
 
-		private static DmTx4k302C InstantiateTransmitter(DMInput input)
+		protected override DmTx4k302C InstantiateTransmitter(DMInput input)
 		{
 			return new DmTx4k302C(input);
 		}

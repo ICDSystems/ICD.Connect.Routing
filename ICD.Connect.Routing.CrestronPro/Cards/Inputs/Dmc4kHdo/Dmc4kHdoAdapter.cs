@@ -1,20 +1,20 @@
-using ICD.Common.Services.Logging;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdo
 {
 #if SIMPLSHARP
-	public sealed class DmcCAdapter : AbstractCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcC, DmcCAdapterSettings>
+// ReSharper disable once InconsistentNaming
+	public sealed class Dmc4kHdoAdapter : AbstractCardAdapter<Crestron.SimplSharpPro.DM.Cards.Dmc4kHdo, Dmc4kHdoAdapterSettings>
 	{
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public DmcCAdapter()
+		public Dmc4kHdoAdapter()
 		{
-			Controls.Add(new DmcCAdapterRoutingControl(this, 0));
+			Controls.Add(new Dmc4kHdoAdapterRoutingControl(this, 0));
 		}
 
 		/// <summary>
@@ -23,10 +23,10 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 		/// <param name="cresnetId"></param>
 		/// <param name="controlSystem"></param>
 		/// <returns></returns>
-		protected override Crestron.SimplSharpPro.DM.Cards.DmcC InstantiateCardExternal(byte cresnetId,
+		protected override Crestron.SimplSharpPro.DM.Cards.Dmc4kHdo InstantiateCardExternal(byte cresnetId,
 		                                                                                 CrestronControlSystem controlSystem)
 		{
-			return new Crestron.SimplSharpPro.DM.Cards.DmcC(cresnetId, controlSystem);
+			return new Crestron.SimplSharpPro.DM.Cards.Dmc4kHdo(cresnetId, controlSystem);
 		}
 
 		/// <summary>
@@ -35,10 +35,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 		/// <param name="cardNumber"></param>
 		/// <param name="switcher"></param>
 		/// <returns></returns>
-		protected override Crestron.SimplSharpPro.DM.Cards.DmcC InstantiateCardInternal(uint cardNumber, Switch switcher)
+		protected override Crestron.SimplSharpPro.DM.Cards.Dmc4kHdo InstantiateCardInternal(uint cardNumber, Switch switcher)
 		{
-            Logger.AddEntry(eSeverity.Warning, "DmcC instantiate");
-			return new Crestron.SimplSharpPro.DM.Cards.DmcC(cardNumber, switcher);
+			return new Crestron.SimplSharpPro.DM.Cards.Dmc4kHdo(cardNumber, switcher, null , null);
 		}
 	}
 #else

@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Common.Services.Logging;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
@@ -36,6 +37,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kC
         /// <returns></returns>
         protected override Crestron.SimplSharpPro.DM.Cards.Dmc4kC InstantiateCardInternal(uint cardNumber, Switch switcher)
         {
+            Logger.AddEntry(eSeverity.Warning, "Card Instantiated");
             return new Crestron.SimplSharpPro.DM.Cards.Dmc4kC(cardNumber, switcher);
         }
     }

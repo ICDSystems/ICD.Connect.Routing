@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ICD.Connect.Routing.CrestronPro.Cards;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -116,8 +117,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 			{
 				if (Name != null)
 					Switcher.Description = Name;
-
+                
 				eDeviceRegistrationUnRegistrationResponse result = Switcher.Register();
+                Logger.AddEntry(eSeverity.Warning, "Switcher Registered");
 				if (result != eDeviceRegistrationUnRegistrationResponse.Success)
 					Logger.AddEntry(eSeverity.Error, "Unable to register {0} - {1}", Switcher.GetType().Name, result);
 			}
@@ -243,9 +245,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// <param name="factory"></param>
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
-			base.ApplySettingsFinal(settings, factory);
-
+            base.ApplySettingsFinal(settings, factory);
 #if SIMPLSHARP
+            
 			SetSwitcher(settings);
 #endif
 		}

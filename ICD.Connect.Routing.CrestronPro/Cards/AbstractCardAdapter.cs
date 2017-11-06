@@ -1,4 +1,6 @@
-﻿#if SIMPLSHARP
+﻿using Crestron.SimplSharp;
+using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
@@ -103,7 +105,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		/// <param name="switcherId"></param>
 		private void SetCard(TCard card, byte? cresnetId, int? number, int? switcherId)
 		{
-			m_CresnetId = cresnetId;
+            m_CresnetId = cresnetId;
 			m_CardNumber = number;
 			m_SwitcherId = switcherId;
 
@@ -125,8 +127,11 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 			}
 
 			Unsubscribe(Card);
+            UnRegister(Card);
 			Card = card;
+            Register(Card);
 			Subscribe(Card);
+
 
 			if (Card != null && !Card.Registered)
 			{
@@ -180,6 +185,41 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 
 			card.OnlineStatusChange -= CardOnLineStatusChange;
 		}
+
+        /// <summary>
+        /// Registers the card and then re-registers its parent.
+        /// </summary>
+        /// <param name="card"></param>
+	    private void Register(TCard card)
+	    {
+            Logger.AddEntry(eSeverity.Warning, "Card Register");
+	        if (card == null)
+	        {
+	            return;
+	        }
+
+	        GenericDevice parent = card.Parent as GenericDevice;
+	        if (parent == null)
+	        {
+	            return;
+	        }
+
+	        eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
+	        if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
+	        {
+	            Logger.AddEntry(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
+	        }
+	    }
+
+	    private void UnRegister(TCard card)
+	    {
+	        if (card == null || !card.Registered)
+	        {
+	            return;
+	        }
+	        card.UnRegister();
+	    }
+
 
 		/// <summary>
 		/// Called when the card goes online or offline.

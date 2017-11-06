@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Common.Services.Logging;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -309,8 +310,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		/// <param name="switcher"></param>
 		private void SetSwitcher(DmMDMnxn switcher)
 		{
-			Unsubscribe(m_Switcher);
+            Unsubscribe(m_Switcher);
 			m_Switcher = switcher;
+            Logger.AddEntry(eSeverity.Warning, "Set Switcher");
 			Subscribe(m_Switcher);
 
 			RebuildCache();

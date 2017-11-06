@@ -2,11 +2,12 @@
 using ICD.Common.Properties;
 using ICD.Connect.Settings.Attributes;
 
-namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdo
 {
-    public sealed class DmTx4K302CAdapterSettings : AbstractEndpointTransmitterBaseAdapterSettings
+// ReSharper disable once InconsistentNaming
+	public sealed class Dmc4kHdoAdapterSettings : AbstractCardSettings
 	{
-		private const string FACTORY_NAME = "DmTx4k302C";
+		private const string FACTORY_NAME = "Dmc4kHdo";
 
 		/// <summary>
 		/// Gets the originator factory name.
@@ -16,7 +17,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// <summary>
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
-		public override Type OriginatorType { get { return typeof(DmTx4K302CAdapter); } }
+		public override Type OriginatorType { get { return typeof(Dmc4kHdoAdapter); } }
 
 		/// <summary>
 		/// Loads the settings from XML.
@@ -24,9 +25,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// <param name="xml"></param>
 		/// <returns></returns>
 		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static DmTx4K302CAdapterSettings FromXml(string xml)
+		public static Dmc4kHdoAdapterSettings FromXml(string xml)
 		{
-		    DmTx4K302CAdapterSettings output = new DmTx4K302CAdapterSettings();
+			Dmc4kHdoAdapterSettings output = new Dmc4kHdoAdapterSettings();
 			ParseXml(output, xml);
 			return output;
 		}
