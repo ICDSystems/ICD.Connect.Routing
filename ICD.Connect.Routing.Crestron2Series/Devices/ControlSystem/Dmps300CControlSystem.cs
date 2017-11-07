@@ -31,6 +31,8 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		[PublicAPI]
 		public string Address { get { return m_Client.Address; } set { m_Client.Address = value; } }
 
+		public ushort Port { get { return PORT; } }
+
 		#endregion
 
 		/// <summary>

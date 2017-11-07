@@ -8,7 +8,7 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 {
     public sealed class Dmps300CControlSystemSettings : AbstractDeviceSettings
     {
-        private const string FACTORY_NAME = "Crestron2SeriesControlSystem";
+        private const string FACTORY_NAME = "Dmps300CControlSystem";
 
 	    private const string ADDRESS_ELEMENT = "Address";
 
