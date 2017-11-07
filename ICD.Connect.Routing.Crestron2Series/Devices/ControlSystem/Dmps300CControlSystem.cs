@@ -1,10 +1,8 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Devices;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Network.Tcp;
 using ICD.Connect.Protocol.Ports;
@@ -14,7 +12,7 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 {
-	public sealed class Dmps300CControlSystem : AbstractDevice<Dmps300CControlSystemSettings>
+	public sealed class Dmps300CControlSystem : AbstractDmps300CDevice<Dmps300CControlSystemSettings>
 	{
 		private const ushort PORT = 8700;
 
@@ -25,13 +23,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 
 		#region Properties
 
-		/// <summary>
-		/// Gets/sets the network address of the 
-		/// </summary>
-		[PublicAPI]
-		public string Address { get { return m_Client.Address; } set { m_Client.Address = value; } }
+		public override string Address { get { return m_Client.Address; } }
 
-		public ushort Port { get { return PORT; } }
+		public override ushort Port { get { return PORT; } }
 
 		#endregion
 
@@ -174,7 +168,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		{
 			base.ClearSettingsFinal();
 
-			Address = null;
+			m_Client.Address = null;
 		}
 
 		/// <summary>
@@ -197,7 +191,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			Address = settings.Address;
+			m_Client.Address = settings.Address;
 		}
 
 		#endregion

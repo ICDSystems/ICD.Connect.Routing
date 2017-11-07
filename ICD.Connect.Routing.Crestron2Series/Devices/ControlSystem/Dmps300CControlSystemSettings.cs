@@ -1,12 +1,11 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 {
-    public sealed class Dmps300CControlSystemSettings : AbstractDeviceSettings
+    public sealed class Dmps300CControlSystemSettings : AbstractDmps300CDeviceSettings
     {
         private const string FACTORY_NAME = "Dmps300CControlSystem";
 
