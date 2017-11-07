@@ -42,6 +42,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 
 			Subscribe(m_Buffer);
 			Subscribe(m_Client);
+
+			Controls.Add(new Dmps300CControlSystemSwitcherControl(this));
 		}
 
 		/// <summary>
