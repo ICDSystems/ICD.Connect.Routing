@@ -1,4 +1,5 @@
 ﻿using ICD.Common.Utils.Xml;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints
 {
@@ -7,6 +8,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints
 	{
 		private const string PARENT_DEVICE_ELEMENT = "Device";
 
+		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
 		public int Device { get; set; }
 
 		/// <summary>
@@ -29,7 +31,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints
 		{
 			instance.Device = XmlUtils.TryReadChildElementContentAsInt(xml, PARENT_DEVICE_ELEMENT) ?? 0;
 
-			AbstractDmps300CDeviceSettings.ParseXml(instance, xml);
+			ParseXml((AbstractDmps300CDeviceSettings)instance, xml);
 		}
 	}
 }
