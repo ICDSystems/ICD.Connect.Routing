@@ -65,7 +65,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return m_Client.IsOnline;
+			return m_Client != null && m_Client.IsOnline;
 		}
 
 		#region Methods
