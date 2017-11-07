@@ -12,7 +12,7 @@ using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 {
-	public sealed class Crestron2SeriesControlSystemSwitcherControl : AbstractRouteSwitcherControl<Crestron2SeriesControlSystem>
+	public sealed class Dmps300CControlSystemSwitcherControl : AbstractRouteSwitcherControl<Dmps300CControlSystem>
 	{
 		private const ushort ANALOG_VIDEO_HDMI_OUT_1 = 1;
 		private const ushort ANALOG_VIDEO_HDMI_OUT_2 = 2;
@@ -47,7 +47,7 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		public Crestron2SeriesControlSystemSwitcherControl(Crestron2SeriesControlSystem parent)
+		public Dmps300CControlSystemSwitcherControl(Dmps300CControlSystem parent)
 			: base(parent, 0)
 		{
 			m_Cache = new SwitcherCache();
@@ -113,33 +113,10 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 				                .Unanimous(false);
 			}
 
-			throw new NotImplementedException();
-
-			/*
-			DMOutput switcherOutput = Parent.GetDmOutput(output);
-			DMInput switcherInput = Parent.GetDmInput(input);
-
-			switch (type)
-			{
-				case eConnectionType.Audio:
-					switcherOutput.AudioOut = switcherInput;
-					break;
-
-				case eConnectionType.Video:
-					switcherOutput.VideoOut = switcherInput;
-					break;
-
-				case eConnectionType.Usb:
-					switcherOutput.USBRoutedTo = switcherInput;
-					break;
-
-				default:
-// ReSharper disable once NotResolvedInText
-					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
-			}
+			ushort index = GetOutputIndex(output, type);
+			Parent.SendData(new AnalogXSig((ushort)input, index));
 
 			return m_Cache.SetInputForOutput(output, input, type);
-			 */
 		}
 
 		/// <summary>
@@ -157,31 +134,12 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 				                .Unanimous(false);
 			}
 
-			throw new NotImplementedException();
-			/*
-			DMOutput switcherOutput = Parent.GetDmOutput(output);
-
-			switch (type)
-			{
-				case eConnectionType.Video:
-					switcherOutput.VideoOut = null;
-					break;
-
-				case eConnectionType.Audio:
-					switcherOutput.AudioOut = null;
-					break;
-
-				case eConnectionType.Usb:
-					switcherOutput.USBRoutedTo = null;
-					break;
-
-				default:
-					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
-			}
+			ushort index = GetOutputIndex(output, type);
+			Parent.SendData(new AnalogXSig(0, index));
 
 			m_Cache.SetInputForOutput(output, null, type);
+
 			return true;
-			 */
 		}
 
 		/// <summary>
@@ -191,11 +149,22 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// <returns></returns>
 		public override ConnectorInfo GetOutput(int address)
 		{
-			throw new NotImplementedException();
-			/*
-			eCardInputOutputType type = Parent.GetDmOutput(address).CardInputOutputType;
-			return new ConnectorInfo(address, GetConnectionType(type));
-			 */
+			switch (address)
+			{
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+					return new ConnectorInfo(address, eConnectionType.Audio | eConnectionType.Video);
+				
+				case 5:
+				case 6:
+				case 7:
+					return new ConnectorInfo(address, eConnectionType.Audio);
+
+				default:
+					throw new ArgumentOutOfRangeException("address");
+			}
 		}
 
 		/// <summary>
@@ -204,14 +173,7 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			throw new NotImplementedException();
-			/*
-			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherOutputs
-				                             ? Enumerable.Range(1, Parent.ControlSystem.NumberOfSwitcherOutputs)
-				                             : Enumerable.Empty<int>();
-
-			return addresses.Select(i => GetOutput(i)).Where(c => c.ConnectionType != eConnectionType.None);
-			 */
+			return Enumerable.Range(1, 7).Select(i => GetOutput(i));
 		}
 
 		/// <summary>
@@ -221,12 +183,20 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// <returns></returns>
 		public override ConnectorInfo GetInput(int address)
 		{
-			throw new NotImplementedException();
+			switch (address)
+			{
+				case 1:
+				case 2:
+				case 3:
+				case 4:
+				case 5:
+				case 6:
+				case 7:
+					return new ConnectorInfo(address, eConnectionType.Audio | eConnectionType.Video);
 
-			/*
-			eCardInputOutputType type = Parent.GetDmInput(address).CardInputOutputType;
-			return new ConnectorInfo(address, GetConnectionType(type));
-			 */
+				default:
+					throw new ArgumentOutOfRangeException("address");
+			}
 		}
 
 		/// <summary>
@@ -235,15 +205,7 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			throw new NotImplementedException();
-
-			/*
-			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherInputs
-				                             ? Enumerable.Range(1, Parent.ControlSystem.NumberOfSwitcherInputs)
-				                             : Enumerable.Empty<int>();
-
-			return addresses.Select(i => GetInput(i)).Where(c => c.ConnectionType != eConnectionType.None);
-			 */
+			return Enumerable.Range(1, 7).Select(i => GetInput(i));
 		}
 
 		/// <summary>
@@ -264,99 +226,61 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// <returns></returns>
 		public override bool ContainsInput(int input)
 		{
-			throw new NotImplementedException();
-
-			/*
-			if (!Parent.ControlSystem.SupportsSwitcherInputs)
-				return false;
-			return input > 0 && input <= Parent.ControlSystem.NumberOfSwitcherInputs;
-			 */
+			return input >= 1 && input <= 7;
 		}
 
 		#endregion
 
-		#region Private Methods
-
 		/// <summary>
-		/// Returns true if a signal is detected at the given input.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		private bool GetSignalDetectedFeedback(int input, eConnectionType type)
-		{
-			throw new NotImplementedException();
-
-			/*
-			if (EnumUtils.HasMultipleFlags(type))
-			{
-				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(t => GetSignalDetectedFeedback(input, t))
-				                .Unanimous(false);
-			}
-
-			DMInput switcherInput = Parent.GetDmInput(input);
-
-			// The feedback sigs are null while the program is starting up
-			switch (type)
-			{
-				case eConnectionType.Video:
-					return switcherInput.VideoDetectedFeedback != null && switcherInput.VideoDetectedFeedback.BoolValue;
-
-				case eConnectionType.Audio:
-					// No way of detecting audio?
-					return true;
-
-				case eConnectionType.Usb:
-					return switcherInput.USBRoutedToFeedback != null && switcherInput.USBRoutedToFeedback.EndpointOnlineFeedback;
-
-				default:
-					return false;
-			}
-			 */
-		}
-
-		/// <summary>
-		/// Gets the input for the given output.
+		/// Gets the sig index for the given output and type.
 		/// </summary>
 		/// <param name="output"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		private IEnumerable<ConnectorInfo> GetInputsFeedback(int output, eConnectionType type)
+		private ushort GetOutputIndex(int output, eConnectionType type)
 		{
-			throw new NotImplementedException();
-
-			/*
-			DMOutput switcherOutput = Parent.GetDmOutput(output);
-
-			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+			switch (type)
 			{
-				DMInputOutputBase input;
+				case eConnectionType.Audio:
+					switch (output)
+					{
+						case 1:
+							return ANALOG_AUDIO_HDMI_OUT_1;
+						case 2:
+							return ANALOG_AUDIO_HDMI_OUT_2;
+						case 3:
+							return ANALOG_AUDIO_DM_OUT_3;
+						case 4:
+							return ANALOG_AUDIO_DM_OUT_4;
+						case 5:
+							return ANALOG_AUDIO_PROG_OUT_5;
+						case 6:
+							return ANALOG_AUDIO_AUX1_OUT_6;
+						case 7:
+							return ANALOG_AUDIO_AUX2_OUT_7;
+						default:
+							throw new ArgumentOutOfRangeException("output");
+					}
 
-				switch (flag)
-				{
-					case eConnectionType.Audio:
-						input = switcherOutput.GetSafeAudioOutFeedback();
-						break;
-					case eConnectionType.Video:
-						input = switcherOutput.GetSafeVideoOutFeedback();
-						break;
-					case eConnectionType.Usb:
-						input = switcherOutput.GetSafeUsbRoutedToFeedback();
-						break;
-					default:
-						continue;
-				}
+				case eConnectionType.Video:
+					switch (output)
+					{
+						case 1:
+							return ANALOG_VIDEO_HDMI_OUT_1;
+						case 2:
+							return ANALOG_VIDEO_HDMI_OUT_2;
+						case 3:
+							return ANALOG_VIDEO_DM_OUT_3;
+						case 4:
+							return ANALOG_VIDEO_DM_OUT_4;
 
-				if (input == null)
-					continue;
-
-				yield return new ConnectorInfo((int)input.Number, flag);
+						default:
+							throw new ArgumentOutOfRangeException("output");
+					}
+				default:
+					throw new ArgumentOutOfRangeException("type");
 			}
-			 */
 		}
-
-		#endregion
 
 		#region Parent Callbacks
 
@@ -364,7 +288,7 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(Crestron2SeriesControlSystem parent)
+		private void Subscribe(Dmps300CControlSystem parent)
 		{
 			parent.OnSigEvent += ParentOnSigEvent;
 		}
@@ -373,7 +297,7 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(Crestron2SeriesControlSystem parent)
+		private void Unsubscribe(Dmps300CControlSystem parent)
 		{
 			parent.OnSigEvent -= ParentOnSigEvent;
 		}
@@ -394,20 +318,43 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 
 		private void HandleAnalogSigEvent(AnalogXSig data)
 		{
+			int? input = data.Value == 0 ? (int?)null : data.Value;
+
 			switch (data.Index)
 			{
 				case (ANALOG_VIDEO_HDMI_OUT_1):
+					m_Cache.SetInputForOutput(1, input, eConnectionType.Video);
+					break;
 				case (ANALOG_VIDEO_HDMI_OUT_2):
+					m_Cache.SetInputForOutput(2, input, eConnectionType.Video);
+					break;
 				case (ANALOG_VIDEO_DM_OUT_3):
+					m_Cache.SetInputForOutput(3, input, eConnectionType.Video);
+					break;
 				case (ANALOG_VIDEO_DM_OUT_4):
+					m_Cache.SetInputForOutput(4, input, eConnectionType.Video);
+					break;
 				case (ANALOG_AUDIO_HDMI_OUT_1):
+					m_Cache.SetInputForOutput(1, input, eConnectionType.Audio);
+					break;
 				case (ANALOG_AUDIO_HDMI_OUT_2):
+					m_Cache.SetInputForOutput(2, input, eConnectionType.Audio);
+					break;
 				case (ANALOG_AUDIO_DM_OUT_3):
+					m_Cache.SetInputForOutput(3, input, eConnectionType.Audio);
+					break;
 				case (ANALOG_AUDIO_DM_OUT_4):
+					m_Cache.SetInputForOutput(4, input, eConnectionType.Audio);
+					break;
 				case (ANALOG_AUDIO_PROG_OUT_5):
+					m_Cache.SetInputForOutput(5, input, eConnectionType.Audio);
+					break;
 				case (ANALOG_AUDIO_AUX1_OUT_6):
+					m_Cache.SetInputForOutput(6, input, eConnectionType.Audio);
+					break;
 				case (ANALOG_AUDIO_AUX2_OUT_7):
-					throw new NotImplementedException();
+					m_Cache.SetInputForOutput(7, input, eConnectionType.Audio);
+					break;
 			}
 		}
 
@@ -416,13 +363,26 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 			switch (data.Index)
 			{
 				case (DIGITAL_VIDEO_DETECTED_1):
+					m_Cache.SetSourceDetectedState(1, eConnectionType.Video, data.Value);
+					break;
 				case (DIGITAL_VIDEO_DETECTED_2):
+					m_Cache.SetSourceDetectedState(2, eConnectionType.Video, data.Value);
+					break;
 				case (DIGITAL_VIDEO_DETECTED_3):
+					m_Cache.SetSourceDetectedState(3, eConnectionType.Video, data.Value);
+					break;
 				case (DIGITAL_VIDEO_DETECTED_4):
+					m_Cache.SetSourceDetectedState(4, eConnectionType.Video, data.Value);
+					break;
 				case (DIGITAL_VIDEO_DETECTED_5):
+					m_Cache.SetSourceDetectedState(5, eConnectionType.Video, data.Value);
+					break;
 				case (DIGITAL_VIDEO_DETECTED_6):
+					m_Cache.SetSourceDetectedState(6, eConnectionType.Video, data.Value);
+					break;
 				case (DIGITAL_VIDEO_DETECTED_7):
-					throw new NotImplementedException();
+					m_Cache.SetSourceDetectedState(7, eConnectionType.Video, data.Value);
+					break;
 			}
 		}
 

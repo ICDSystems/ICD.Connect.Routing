@@ -6,7 +6,7 @@ using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 {
-    public sealed class Crestron2SeriesControlSystemSettings : AbstractDeviceSettings
+    public sealed class Dmps300CControlSystemSettings : AbstractDeviceSettings
     {
         private const string FACTORY_NAME = "Crestron2SeriesControlSystem";
 
@@ -22,7 +22,7 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
         /// <summary>
         /// Gets the type of the originator for this settings instance.
         /// </summary>
-        public override Type OriginatorType { get { return typeof(Crestron2SeriesControlSystem); } }
+        public override Type OriginatorType { get { return typeof(Dmps300CControlSystem); } }
 
 	    /// <summary>
 	    /// Writes property elements to xml.
@@ -41,9 +41,9 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// <param name="xml"></param>
 		/// <returns></returns>
 		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static Crestron2SeriesControlSystemSettings FromXml(string xml)
+		public static Dmps300CControlSystemSettings FromXml(string xml)
 		{
-			Crestron2SeriesControlSystemSettings output = new Crestron2SeriesControlSystemSettings
+			Dmps300CControlSystemSettings output = new Dmps300CControlSystemSettings
 			{
 				Address = XmlUtils.TryReadChildElementContentAsString(xml, ADDRESS_ELEMENT)
 			};

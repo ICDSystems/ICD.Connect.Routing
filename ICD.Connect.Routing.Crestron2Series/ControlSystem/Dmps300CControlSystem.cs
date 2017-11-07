@@ -14,7 +14,7 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 {
-	public sealed class Crestron2SeriesControlSystem : AbstractDevice<Crestron2SeriesControlSystemSettings>
+	public sealed class Dmps300CControlSystem : AbstractDevice<Dmps300CControlSystemSettings>
 	{
 		private const ushort PORT = 8700;
 
@@ -36,7 +36,7 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public Crestron2SeriesControlSystem()
+		public Dmps300CControlSystem()
 		{
 			m_Client = new AsyncTcpClient
 			{
@@ -179,7 +179,7 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// Override to apply properties to the settings instance.
 		/// </summary>
 		/// <param name="settings"></param>
-		protected override void CopySettingsFinal(Crestron2SeriesControlSystemSettings settings)
+		protected override void CopySettingsFinal(Dmps300CControlSystemSettings settings)
 		{
 			base.CopySettingsFinal(settings);
 
@@ -191,7 +191,7 @@ namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
 		/// </summary>
 		/// <param name="settings"></param>
 		/// <param name="factory"></param>
-		protected override void ApplySettingsFinal(Crestron2SeriesControlSystemSettings settings, IDeviceFactory factory)
+		protected override void ApplySettingsFinal(Dmps300CControlSystemSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
 
