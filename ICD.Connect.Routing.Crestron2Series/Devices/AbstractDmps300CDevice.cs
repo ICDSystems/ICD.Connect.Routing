@@ -73,6 +73,22 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		#region Methods
 
 		/// <summary>
+		/// Connect to the device.
+		/// </summary>
+		public void Connect()
+		{
+			m_Client.Connect();
+		}
+
+		/// <summary>
+		/// Disconnect from the device.
+		/// </summary>
+		public void Disconnect()
+		{
+			m_Client.Disconnect();
+		}
+
+		/// <summary>
 		/// Sends the sig data to the device.
 		/// </summary>
 		/// <param name="sig"></param>

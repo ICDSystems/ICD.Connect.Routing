@@ -49,6 +49,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 
 			Address = settings.Address;
 			Port = PORT;
+
+			Connect();
 		}
 
 		#endregion
