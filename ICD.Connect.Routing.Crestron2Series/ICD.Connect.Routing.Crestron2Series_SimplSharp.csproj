@@ -66,6 +66,16 @@
     <Compile Include="Devices\ControlSystem\Dmps300CControlSystem.cs" />
     <Compile Include="Devices\ControlSystem\Dmps300CControlSystemSettings.cs" />
     <Compile Include="Devices\ControlSystem\Dmps300CControlSystemSwitcherControl.cs" />
+    <Compile Include="Devices\Endpoints\AbstractDmps300CEndpointDevice.cs" />
+    <Compile Include="Devices\Endpoints\AbstractDmps300CEndpointDeviceSettings.cs" />
+    <Compile Include="Devices\Endpoints\IDmps300CEndpointDevice.cs" />
+    <Compile Include="Devices\Endpoints\IDmps300CEndpointDeviceSettings.cs" />
+    <Compile Include="Devices\Endpoints\Receiver\Dmps300CReceiver.cs" />
+    <Compile Include="Devices\Endpoints\Receiver\Dmps300CReceiverDestinationControl.cs" />
+    <Compile Include="Devices\Endpoints\Receiver\Dmps300CReceiverSettings.cs" />
+    <Compile Include="Devices\Endpoints\Transmitter\Dmps300CTransmitter.cs" />
+    <Compile Include="Devices\Endpoints\Transmitter\Dmps300CTransmitterSettings.cs" />
+    <Compile Include="Devices\Endpoints\Transmitter\Dmps300CTransmitterSourceControl.cs" />
     <Compile Include="Devices\IDmps300CDevice.cs" />
     <Compile Include="Devices\IDmps300CDeviceSettings.cs" />
     <Compile Include="KrangPlugin.cs" />
@@ -104,10 +114,6 @@
       <Project>{B0C0CA1C-FA55-4BEA-8A8B-EDB2141C523E}</Project>
       <Name>ICD.Connect.Routing_SimplSharp</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Devices\Receivers\" />
-    <Folder Include="Devices\Transmitters\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
   <PropertyGroup>
