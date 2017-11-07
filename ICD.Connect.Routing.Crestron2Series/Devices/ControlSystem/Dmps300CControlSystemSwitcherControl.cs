@@ -322,37 +322,37 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 
 			switch (data.Index)
 			{
-				case (ANALOG_VIDEO_HDMI_OUT_1):
+				case ANALOG_VIDEO_HDMI_OUT_1:
 					m_Cache.SetInputForOutput(1, input, eConnectionType.Video);
 					break;
-				case (ANALOG_VIDEO_HDMI_OUT_2):
+				case ANALOG_VIDEO_HDMI_OUT_2:
 					m_Cache.SetInputForOutput(2, input, eConnectionType.Video);
 					break;
-				case (ANALOG_VIDEO_DM_OUT_3):
+				case ANALOG_VIDEO_DM_OUT_3:
 					m_Cache.SetInputForOutput(3, input, eConnectionType.Video);
 					break;
-				case (ANALOG_VIDEO_DM_OUT_4):
+				case ANALOG_VIDEO_DM_OUT_4:
 					m_Cache.SetInputForOutput(4, input, eConnectionType.Video);
 					break;
-				case (ANALOG_AUDIO_HDMI_OUT_1):
+				case ANALOG_AUDIO_HDMI_OUT_1:
 					m_Cache.SetInputForOutput(1, input, eConnectionType.Audio);
 					break;
-				case (ANALOG_AUDIO_HDMI_OUT_2):
+				case ANALOG_AUDIO_HDMI_OUT_2:
 					m_Cache.SetInputForOutput(2, input, eConnectionType.Audio);
 					break;
-				case (ANALOG_AUDIO_DM_OUT_3):
+				case ANALOG_AUDIO_DM_OUT_3:
 					m_Cache.SetInputForOutput(3, input, eConnectionType.Audio);
 					break;
-				case (ANALOG_AUDIO_DM_OUT_4):
+				case ANALOG_AUDIO_DM_OUT_4:
 					m_Cache.SetInputForOutput(4, input, eConnectionType.Audio);
 					break;
-				case (ANALOG_AUDIO_PROG_OUT_5):
+				case ANALOG_AUDIO_PROG_OUT_5:
 					m_Cache.SetInputForOutput(5, input, eConnectionType.Audio);
 					break;
-				case (ANALOG_AUDIO_AUX1_OUT_6):
+				case ANALOG_AUDIO_AUX1_OUT_6:
 					m_Cache.SetInputForOutput(6, input, eConnectionType.Audio);
 					break;
-				case (ANALOG_AUDIO_AUX2_OUT_7):
+				case ANALOG_AUDIO_AUX2_OUT_7:
 					m_Cache.SetInputForOutput(7, input, eConnectionType.Audio);
 					break;
 			}
@@ -362,25 +362,25 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		{
 			switch (data.Index)
 			{
-				case (DIGITAL_VIDEO_DETECTED_1):
+				case DIGITAL_VIDEO_DETECTED_1:
 					m_Cache.SetSourceDetectedState(1, eConnectionType.Video, data.Value);
 					break;
-				case (DIGITAL_VIDEO_DETECTED_2):
+				case DIGITAL_VIDEO_DETECTED_2:
 					m_Cache.SetSourceDetectedState(2, eConnectionType.Video, data.Value);
 					break;
-				case (DIGITAL_VIDEO_DETECTED_3):
+				case DIGITAL_VIDEO_DETECTED_3:
 					m_Cache.SetSourceDetectedState(3, eConnectionType.Video, data.Value);
 					break;
-				case (DIGITAL_VIDEO_DETECTED_4):
+				case DIGITAL_VIDEO_DETECTED_4:
 					m_Cache.SetSourceDetectedState(4, eConnectionType.Video, data.Value);
 					break;
-				case (DIGITAL_VIDEO_DETECTED_5):
+				case DIGITAL_VIDEO_DETECTED_5:
 					m_Cache.SetSourceDetectedState(5, eConnectionType.Video, data.Value);
 					break;
-				case (DIGITAL_VIDEO_DETECTED_6):
+				case DIGITAL_VIDEO_DETECTED_6:
 					m_Cache.SetSourceDetectedState(6, eConnectionType.Video, data.Value);
 					break;
-				case (DIGITAL_VIDEO_DETECTED_7):
+				case DIGITAL_VIDEO_DETECTED_7:
 					m_Cache.SetSourceDetectedState(7, eConnectionType.Video, data.Value);
 					break;
 			}
