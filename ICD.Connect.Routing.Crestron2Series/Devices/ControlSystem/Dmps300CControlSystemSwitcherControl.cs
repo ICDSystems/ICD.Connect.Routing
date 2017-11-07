@@ -10,7 +10,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
+namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 {
 	public sealed class Dmps300CControlSystemSwitcherControl : AbstractRouteSwitcherControl<Dmps300CControlSystem>
 	{

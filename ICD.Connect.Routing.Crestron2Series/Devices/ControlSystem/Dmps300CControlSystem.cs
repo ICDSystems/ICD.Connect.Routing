@@ -12,7 +12,7 @@ using ICD.Connect.Protocol.SerialBuffers;
 using ICD.Connect.Protocol.XSig;
 using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
+namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 {
 	public sealed class Dmps300CControlSystem : AbstractDevice<Dmps300CControlSystemSettings>
 	{

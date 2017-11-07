@@ -4,7 +4,7 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes;
 
-namespace ICD.Connect.Routing.Crestron2Series.ControlSystem
+namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 {
     public sealed class Dmps300CControlSystemSettings : AbstractDeviceSettings
     {

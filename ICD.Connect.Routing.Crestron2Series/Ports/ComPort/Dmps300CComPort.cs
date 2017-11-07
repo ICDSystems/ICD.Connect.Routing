@@ -4,7 +4,7 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Protocol.Network.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
-using ICD.Connect.Routing.Crestron2Series.ControlSystem;
+using ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
