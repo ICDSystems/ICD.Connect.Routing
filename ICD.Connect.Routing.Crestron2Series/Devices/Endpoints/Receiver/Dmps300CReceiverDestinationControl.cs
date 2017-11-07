@@ -114,7 +114,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Receiver
 	    {
 		    switch (data.Index)
 		    {
-			    case (DIGITAL_SOURCE_DETECTION_JOIN):
+			    case DIGITAL_SOURCE_DETECTION_JOIN:
 				    m_Cache.SetSourceDetectedState(1, eConnectionType.Video, data.Value);
 				    break;
 		    }

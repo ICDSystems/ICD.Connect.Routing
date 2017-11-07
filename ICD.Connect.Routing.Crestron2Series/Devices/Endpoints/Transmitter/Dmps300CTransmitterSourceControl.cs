@@ -189,10 +189,10 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 		{
 			switch (data.Index)
 			{
-				case (DIGITAL_HDMI_DETECTED_JOIN):
+				case DIGITAL_HDMI_DETECTED_JOIN:
 					HdmiDetected = data.Value;
 					break;
-				case (DIGITAL_VGA_DETECTED_JOIN):
+				case DIGITAL_VGA_DETECTED_JOIN:
 					VgaDetected = data.Value;
 					break;
 			}
