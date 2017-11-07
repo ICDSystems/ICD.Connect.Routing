@@ -6,6 +6,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Receiver
 	{
 		private const ushort START_PORT = 8730;
 		private const ushort PORT_INCREMENT = 10;
+		private const ushort START_DM_OUTPUT = 3;
 
 		private int m_DmOutput;
 
@@ -36,7 +37,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Receiver
 			base.ApplySettingsFinal(settings, factory);
 
 			m_DmOutput = settings.DmOutput;
-			Port = (ushort)(START_PORT + PORT_INCREMENT * (m_DmOutput - 1));
+			Port = (ushort)(START_PORT + PORT_INCREMENT * (m_DmOutput - START_DM_OUTPUT));
 
 			Connect();
 		}
