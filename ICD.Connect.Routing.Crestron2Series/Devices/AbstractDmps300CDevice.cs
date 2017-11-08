@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Common.Services.Logging;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
@@ -94,6 +95,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// <param name="sig"></param>
 		public bool SendData(IXSig sig)
 		{
+			Logger.AddEntry(eSeverity.Notice, "{0} sending sig {1}", this, sig);
+
 			string data = StringUtils.ToString(sig.Data);
 			return m_Client.Send(data);
 		}
@@ -172,6 +175,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		private void BufferOnCompletedSerial(object sender, StringEventArgs stringEventArgs)
 		{
 			IXSig sig = XSigParser.Parse(stringEventArgs.Data);
+
+			Logger.AddEntry(eSeverity.Notice, "{0} received sig {1}", this, sig);
+
 			OnSigEvent.Raise(this, new XSigEventArgs(sig));
 		}
 

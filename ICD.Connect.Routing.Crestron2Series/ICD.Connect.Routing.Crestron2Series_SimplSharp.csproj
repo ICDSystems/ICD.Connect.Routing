@@ -82,6 +82,10 @@
     <None Include="ObfuscationSettings.cs" />
     <Compile Include="Ports\ComPort\Dmps300CComPort.cs" />
     <Compile Include="Ports\ComPort\Dmps300CComPortSettings.cs" />
+    <Compile Include="Ports\DigitalInputPort\Dmps300CDigitalInputPort.cs" />
+    <Compile Include="Ports\DigitalInputPort\Dmps300CDigitalInputPortSettings.cs" />
+    <Compile Include="Ports\RelayPort\Dmps300CRelayPort.cs" />
+    <Compile Include="Ports\RelayPort\Dmps300CRelayPortSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
