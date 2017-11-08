@@ -114,9 +114,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			}
 
 			ushort index = GetOutputIndex(output, type);
-			Parent.SendData(new AnalogXSig((ushort)input, index));
-
-			return m_Cache.SetInputForOutput(output, input, type);
+			return Parent.SendData(new AnalogXSig((ushort)input, index)) &&
+			       m_Cache.SetInputForOutput(output, input, type);
 		}
 
 		/// <summary>
@@ -135,7 +134,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			}
 
 			ushort index = GetOutputIndex(output, type);
-			Parent.SendData(new AnalogXSig(0, index));
+
+			if (!Parent.SendData(new AnalogXSig(0, index)))
+				return false;
 
 			m_Cache.SetInputForOutput(output, null, type);
 

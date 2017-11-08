@@ -92,10 +92,10 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// Sends the sig data to the device.
 		/// </summary>
 		/// <param name="sig"></param>
-		public void SendData(IXSig sig)
+		public bool SendData(IXSig sig)
 		{
 			string data = StringUtils.ToString(sig.Data);
-			m_Client.Send(data);
+			return m_Client.Send(data);
 		}
 
 		#endregion
