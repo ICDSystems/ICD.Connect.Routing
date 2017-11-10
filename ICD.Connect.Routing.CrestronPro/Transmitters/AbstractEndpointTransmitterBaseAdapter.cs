@@ -1,4 +1,5 @@
 ﻿using ICD.Connect.Routing.CrestronPro.Cards;
+﻿using System;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -231,12 +232,22 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			base.ApplySettingsFinal(settings, factory);
 
 #if SIMPLSHARP
-            TTransmitter transmitter =
-				DmEndpointFactoryUtils.InstantiateEndpoint<TTransmitter>(settings.Ipid, settings.DmInputAddress,
-																		 settings.DmSwitch, factory,
-																		 InstantiateTransmitter,
-																		 InstantiateTransmitter,
-																		 InstantiateTransmitter);
+			TTransmitter transmitter = null;
+
+			try
+			{
+				transmitter =
+					DmEndpointFactoryUtils.InstantiateEndpoint<TTransmitter>(settings.Ipid, settings.DmInputAddress,
+					                                                         settings.DmSwitch, factory,
+					                                                         InstantiateTransmitter,
+					                                                         InstantiateTransmitter,
+					                                                         InstantiateTransmitter);
+			}
+			catch (Exception e)
+			{
+				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate internal {1} - {2}",
+				                GetType().Name, typeof(TTransmitter).Name, e.Message);
+			}
 			SetTransmitter(transmitter, settings.DmSwitch);
 #else
             throw new NotImplementedException();

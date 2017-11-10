@@ -73,6 +73,7 @@
     <Compile Include="Endpoints\ISourceDestinationBaseSettings.cs" />
     <Compile Include="Endpoints\Sources\ISourceSettings.cs" />
     <Compile Include="EventArguments\ActiveInputStateChangeEventArgs.cs" />
+    <Compile Include="EventArguments\EndpointStateEventArgs.cs" />
     <Compile Include="Extensions\CoreExtensions.cs" />
     <Compile Include="Extensions\DeviceFactoryExtensions.cs" />
     <Compile Include="IRoutingGraph.cs" />

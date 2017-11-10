@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using System;
+#if SIMPLSHARP
 using System.Collections.Generic;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -219,12 +220,22 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 			base.ApplySettingsFinal(settings, factory);
 
 #if SIMPLSHARP
-            DmTx4k302C transmitter =
-				DmEndpointFactoryUtils.InstantiateEndpoint<DmTx4k302C>(settings.Ipid, settings.DmInputAddress,
-				                                                         settings.DmSwitch, factory,
-				                                                         InstantiateTransmitter,
-				                                                         InstantiateTransmitter,
-				                                                         InstantiateTransmitter);
+			DmTx4k302C transmitter = null;
+
+			try
+			{
+				transmitter =
+					DmEndpointFactoryUtils.InstantiateEndpoint<DmTx4k302C>(settings.Ipid, settings.DmInputAddress,
+					                                                       settings.DmSwitch, factory,
+					                                                       InstantiateTransmitter,
+					                                                       InstantiateTransmitter,
+					                                                       InstantiateTransmitter);
+			}
+			catch (Exception e)
+			{
+				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate internal {1} - {2}",
+				                GetType().Name, typeof(DmTx4k302C).Name, e.Message);
+			}
 
 			SetTransmitter(transmitter, settings.DmSwitch);
 #else

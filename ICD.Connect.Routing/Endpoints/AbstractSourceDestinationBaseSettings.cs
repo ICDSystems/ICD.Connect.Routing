@@ -87,15 +87,23 @@ namespace ICD.Connect.Routing.Endpoints
 			AbstractSettings.ParseXml(instance, xml);
 		}
 
-		/// <summary>
-		/// Returns the collection of ids that the settings will depend on.
-		/// For example, to instantiate an IR Port from settings, the device the physical port
-		/// belongs to will need to be instantiated first.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<int> GetDeviceDependencies()
-		{
-			yield return Device;
-		}
+        /// <summary>
+        /// Returns true if the settings depend on a device with the given ID.
+        /// For example, to instantiate an IR Port from settings, the device the physical port
+        /// belongs to will need to be instantiated first.
+        /// </summary>
+        /// <returns></returns>
+        public override bool HasDeviceDependency(int id)
+        {
+            return Device == id;
+        }
+
+        /// <summary>
+        /// Returns the count from the collection of ids that the settings depends on.
+        /// </summary>
+        public override int DependencyCount
+        {
+            get { return 1; }
+        }
 	}
 }
