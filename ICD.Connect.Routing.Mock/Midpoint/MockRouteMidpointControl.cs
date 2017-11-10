@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Services;
-using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Mock.Midpoint
 {
@@ -19,16 +19,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
-		private readonly Dictionary<int, ConnectorInfo> m_Inputs;
-		private readonly Dictionary<int, Dictionary<eConnectionType, bool>> m_SignalDetected;
-		private readonly Dictionary<int, ConnectorInfo> m_Outputs;
-		private readonly Dictionary<int, Dictionary<eConnectionType, int>> m_OutputToInputMap;
-
-		/// <summary>
-		/// Returns the number of outputs on the device.
-		/// </summary>
-		[PublicAPI]
-		public int OutputCount { get; set; }
+		private readonly SwitcherCache m_Cache;
 
 		/// <summary>
 		/// Constructor.
@@ -38,10 +29,8 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		public MockRouteMidpointControl(IDevice parent, int id)
 			: base(parent, id)
 		{
-			m_Inputs = new Dictionary<int, ConnectorInfo>();
-			m_SignalDetected = new Dictionary<int, Dictionary<eConnectionType, bool>>();
-			m_Outputs = new Dictionary<int, ConnectorInfo>();
-			m_OutputToInputMap = new Dictionary<int, Dictionary<eConnectionType, int>>();
+			m_Cache = new SwitcherCache();
+			Subscribe(m_Cache);
 		}
 
 		#region Methods
@@ -57,6 +46,8 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 			OnActiveInputsChanged = null;
 
 			base.DisposeFinal(disposing);
+
+			Unsubscribe(m_Cache);
 		}
 
 		/// <summary>
@@ -73,40 +64,26 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		}
 
 		/// <summary>
-		/// Sets the outputs.
+		/// Gets the outputs for the given input.
 		/// </summary>
-		/// <param name="outputs"></param>
-		public void SetOutputs(IEnumerable<ConnectorInfo> outputs)
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
 		{
-			m_Outputs.Clear();
-			m_Outputs.AddRange(outputs, info => info.Address);
+			return m_Cache.GetOutputsForInput(input, type);
 		}
 
 		/// <summary>
-		/// Gets the inputs routed to the given output.
+		/// Gets the input routed to the given output matching the given type.
 		/// </summary>
 		/// <param name="output"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
+		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
+		public override ConnectorInfo? GetInput(int output, eConnectionType type)
 		{
-			if (!m_OutputToInputMap.ContainsKey(output))
-				return Enumerable.Empty<ConnectorInfo>();
-
-			return EnumUtils.GetFlagsExceptNone(type)
-			                .Where(f => m_OutputToInputMap[output].ContainsKey(f))
-			                .Select(f => GetInput(m_OutputToInputMap[output][f]))
-			                .Distinct();
-		}
-
-		/// <summary>
-		/// Sets the inputs.
-		/// </summary>
-		/// <param name="inputs"></param>
-		public void SetInputs(IEnumerable<ConnectorInfo> inputs)
-		{
-			m_Inputs.Clear();
-			m_Inputs.AddRange(inputs, info => info.Address);
+			return m_Cache.GetInputConnectorInfoForOutput(output, type);
 		}
 
 		/// <summary>
@@ -130,7 +107,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
-			return m_SignalDetected.ContainsKey(input) && m_SignalDetected[input].GetDefault(type, false);
+			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
 		/// <summary>
@@ -142,31 +119,48 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		[PublicAPI]
 		public void SetSignalDetectedState(int input, eConnectionType type, bool state)
 		{
-			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
-			{
-				if (state == GetSignalDetectedState(input, flag))
-					continue;
-
-				if (!m_SignalDetected.ContainsKey(input))
-					m_SignalDetected[input] = new Dictionary<eConnectionType, bool>();
-
-				m_SignalDetected[input][flag] = state;
-
-				RaiseOnSourceChange(input, flag);
-			}
+			m_Cache.SetSourceDetectedState(input, type, state);
 		}
 
 		#endregion
 
-		#region Private Methods
+		#region Cache Callbacks
 
 		/// <summary>
-		/// Simulates a source change.
+		/// Subscribe to the cache events.
 		/// </summary>
-		private void RaiseOnSourceChange(int input, eConnectionType type)
+		/// <param name="cache"></param>
+		private void Subscribe(SwitcherCache cache)
 		{
-			bool detected = GetSignalDetectedState(input, type);
-			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, type, detected));
+			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
+			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
+		}
+
+		/// <summary>
+		/// Unsubscribe from the cache events.
+		/// </summary>
+		/// <param name="cache"></param>
+		private void Unsubscribe(SwitcherCache cache)
+		{
+			cache.OnActiveInputsChanged -= CacheOnActiveInputsChanged;
+			cache.OnSourceDetectionStateChange -= CacheOnSourceDetectionStateChange;
+			cache.OnActiveTransmissionStateChanged -= CacheOnActiveTransmissionStateChanged;
+		}
+
+		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
+		{
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
+		}
+
+		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
+		{
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
+		}
+
+		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
+		{
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
 		}
 
 		#endregion
@@ -178,14 +172,6 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 			foreach (IConsoleCommand command in GetBaseConsoleCommands())
 				yield return command;
 
-			yield return new GenericConsoleCommand<int, eConnectionType>(
-				"AddInput",
-				"Adds an input to the device",
-				(a, b) => AddInput(a, b));
-			yield return new GenericConsoleCommand<int, eConnectionType>(
-				"AddOutput",
-				"Adds an output to the device",
-				(a, b) => AddOutput(a, b));
 			yield return new GenericConsoleCommand<int, eConnectionType, bool>(
 				"SetSignalDetectedState",
 				"<input> <connectionType> <true/false>",
@@ -199,16 +185,6 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
 		{
 			return base.GetConsoleCommands();
-		}
-
-		private void AddOutput(int address, eConnectionType type)
-		{
-			SetOutputs(GetOutputs().Append(new ConnectorInfo(address, type)));
-		}
-
-		private void AddInput(int address, eConnectionType type)
-		{
-			SetInputs(GetInputs().Append(new ConnectorInfo(address, type)));
 		}
 
 		#endregion
