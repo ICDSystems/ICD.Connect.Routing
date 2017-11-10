@@ -2,133 +2,65 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
+using ICD.Common.Services;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.API.Commands;
+using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.SPlus
+namespace ICD.Connect.Routing.Mock.Midpoint
 {
-	public sealed class SPlusSwitcherControl : AbstractRouteSwitcherControl<SPlusSwitcher>
+	public sealed class MockRouteMidpointControl : AbstractRouteMidpointControl<IDevice>
 	{
-		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		private readonly SwitcherCache m_Cache;
 
-		#region S+ Delegates
-
-		public delegate bool SPlusGetSignalDetectedState(int input, eConnectionType type);
-
-		public delegate IEnumerable<ConnectorInfo> SPlusGetInputs();
-
-		public delegate IEnumerable<ConnectorInfo> SPlusGetOutputs();
-
-		public delegate bool SPlusRoute(RouteOperation info);
-
-		public delegate bool SPlusClearOutput(int output, eConnectionType type);
-
-		#endregion
-
-		#region S+ Events
-
-		[PublicAPI("SPlus")]
-		public SPlusGetSignalDetectedState GetSignalDetectedStateCallback { get; set; }
-
-		[PublicAPI("SPlus")]
-		public SPlusGetInputs GetInputsCallback { get; set; }
-
-		[PublicAPI("SPlus")]
-		public SPlusGetOutputs GetOutputsCallback { get; set; }
-
-		[PublicAPI("SPlus")]
-		public SPlusRoute RouteCallback { get; set; }
-
-		[PublicAPI("SPlus")]
-		public SPlusClearOutput ClearOutputCallback { get; set; }
-
-		#endregion
-
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public SPlusSwitcherControl(SPlusSwitcher parent, int id)
+		public MockRouteMidpointControl(IDevice parent, int id)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
 			Subscribe(m_Cache);
 		}
 
+		#region Methods
+
+		/// <summary>
+		/// Override to release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
-			GetSignalDetectedStateCallback = null;
-			GetInputsCallback = null;
-			GetOutputsCallback = null;
-			RouteCallback = null;
-			ClearOutputCallback = null;
+			OnActiveInputsChanged = null;
+			OnSourceDetectionStateChange = null;
+			OnActiveInputsChanged = null;
 
 			base.DisposeFinal(disposing);
 
 			Unsubscribe(m_Cache);
 		}
 
-		#region Methods
-
 		/// <summary>
-		/// Called to inform the system of a source detection change.
+		/// Returns the outputs.
 		/// </summary>
-		/// <param name="input"></param>
-		/// <param name="type"></param>
-		[PublicAPI("SPlus")]
-		public void UpdateSourceDetection(int input, eConnectionType type)
-		{
-			bool state = GetSignalDetectedStateCallback != null && GetSignalDetectedStateCallback(input, type);
-			m_Cache.SetSourceDetectedState(input, type, state);
-		}
-
-		/// <summary>
-		/// Called to inform the system of a switcher routing change.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <param name="input"></param>
-		/// <param name="type"></param>
-		[PublicAPI("SPlus")]
-		public void SetInputForOutput(int output, int input, eConnectionType type)
-		{
-			m_Cache.SetInputForOutput(output, input, type);
-		}
-
-		#endregion
-
-		#region IRouteSwitcherControl
-
-		public override bool Route(RouteOperation info)
-		{
-			return RouteCallback(info);
-		}
-
-		public override bool ClearOutput(int output, eConnectionType type)
-		{
-			return ClearOutputCallback(output, type);
-		}
-
-		public override IEnumerable<ConnectorInfo> GetInputs()
-		{
-			return GetInputsCallback == null
-				       ? Enumerable.Empty<ConnectorInfo>()
-				       : GetInputsCallback();
-		}
-
+		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			return GetOutputsCallback == null
-				       ? Enumerable.Empty<ConnectorInfo>()
-				       : GetOutputsCallback();
+			return
+				ServiceProvider.GetService<IRoutingGraph>()
+				               .Connections.GetConnections()
+				               .Where(c => c.Source.Device == Parent.Id && c.Source.Control == Id)
+				               .Select(c => new ConnectorInfo(c.Source.Address, c.ConnectionType));
 		}
 
 		/// <summary>
@@ -154,9 +86,40 @@ namespace ICD.Connect.Routing.SPlus
 			return m_Cache.GetInputConnectorInfoForOutput(output, type);
 		}
 
+		/// <summary>
+		/// Returns the inputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetInputs()
+		{
+			return
+				ServiceProvider.GetService<IRoutingGraph>()
+				               .Connections.GetConnections()
+				               .Where(c => c.Destination.Device == Parent.Id && c.Destination.Control == Id)
+				               .Select(c => new ConnectorInfo(c.Destination.Address, c.ConnectionType));
+		}
+
+		/// <summary>
+		/// Returns true if video is detected at the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
 			return m_Cache.GetSourceDetectedState(input, type);
+		}
+
+		/// <summary>
+		/// Sets the video detected state at the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <param name="state"></param>
+		[PublicAPI]
+		public void SetSignalDetectedState(int input, eConnectionType type, bool state)
+		{
+			m_Cache.SetSourceDetectedState(input, type, state);
 		}
 
 		#endregion
@@ -169,7 +132,6 @@ namespace ICD.Connect.Routing.SPlus
 		/// <param name="cache"></param>
 		private void Subscribe(SwitcherCache cache)
 		{
-			cache.OnRouteChange += CacheOnRouteChange;
 			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
 			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
 			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
@@ -181,15 +143,9 @@ namespace ICD.Connect.Routing.SPlus
 		/// <param name="cache"></param>
 		private void Unsubscribe(SwitcherCache cache)
 		{
-			cache.OnRouteChange -= CacheOnRouteChange;
 			cache.OnActiveInputsChanged -= CacheOnActiveInputsChanged;
 			cache.OnSourceDetectionStateChange -= CacheOnSourceDetectionStateChange;
 			cache.OnActiveTransmissionStateChanged -= CacheOnActiveTransmissionStateChanged;
-		}
-
-		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
-		{
-			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
 		}
 
 		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
@@ -205,6 +161,30 @@ namespace ICD.Connect.Routing.SPlus
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
 		{
 			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
+		}
+
+		#endregion
+
+		#region Console
+
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+			yield return new GenericConsoleCommand<int, eConnectionType, bool>(
+				"SetSignalDetectedState",
+				"<input> <connectionType> <true/false>",
+				(a, b, c) => SetSignalDetectedState(a, b, c));
+		}
+
+		/// <summary>
+		/// Workaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
 		}
 
 		#endregion

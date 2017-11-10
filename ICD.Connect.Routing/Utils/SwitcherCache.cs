@@ -156,7 +156,7 @@ namespace ICD.Connect.Routing.Utils
 		public int? GetInputForOutput(int output, eConnectionType type)
 		{
 			if (EnumUtils.HasMultipleFlags(type))
-				throw new InvalidOperationException("Type must have a single flag");
+				throw new ArgumentException("Type must have a single flag", "type");
 
 			m_OutputInputMapSection.Enter();
 
@@ -173,6 +173,25 @@ namespace ICD.Connect.Routing.Utils
 			{
 				m_OutputInputMapSection.Leave();
 			}
+		}
+
+		/// <summary>
+		/// Gets the cached input for the given output.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		[PublicAPI]
+		public ConnectorInfo? GetInputConnectorInfoForOutput(int output, eConnectionType type)
+		{
+			if (EnumUtils.HasMultipleFlags(type))
+				throw new ArgumentException("Type must have a single flag", "type");
+
+			int? input = GetInputForOutput(output, type);
+			if (input == null)
+				return null;
+
+			return new ConnectorInfo((int)input, type);
 		}
 
 		/// <summary>
@@ -199,11 +218,44 @@ namespace ICD.Connect.Routing.Utils
 												? (ConnectorInfo?)null
 												: new ConnectorInfo((int)input, f);
 				                        })
-				                .OfType<ConnectorInfo>();
+				                .ExceptNulls()
+								.ToArray();
 			}
 			finally
 			{
 				m_OutputInputMapSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Gets the caches outputs for the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable<ConnectorInfo> GetOutputsForInput(int input, eConnectionType type)
+		{
+			m_InputOutputMapSection.Enter();
+
+			try
+			{
+				Dictionary<eConnectionType, IcdHashSet<int>> dict;
+				if (!m_InputOutputMap.TryGetValue(input, out dict))
+					return Enumerable.Empty<ConnectorInfo>();
+
+				return EnumUtils.GetFlagsExceptNone(type)
+								.SelectMany(f =>
+								            {
+									            IcdHashSet<int> collection;
+									            return dict.TryGetValue(f, out collection)
+										                   ? collection.Select(i => new ConnectorInfo(i, f))
+										                   : Enumerable.Empty<ConnectorInfo>();
+								            })
+								.ToArray();
+			}
+			finally
+			{
+				m_InputOutputMapSection.Leave();
 			}
 		}
 
