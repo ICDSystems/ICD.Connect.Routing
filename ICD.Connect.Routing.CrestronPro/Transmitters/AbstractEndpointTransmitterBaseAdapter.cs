@@ -50,8 +50,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		{
 		    get
 		    {
-                Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " + "Get Public Member");
-		        return m_Transmitter;
+                return m_Transmitter;
 		    }
 			private set
 			{
@@ -73,8 +72,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		{
 		    get
 		    {
-		        Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "Get Wrapped Instance");
-                return Transmitter;
+		        return Transmitter;
 		    }
 		}
 #endif
@@ -88,7 +86,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "Dispose Final");
 			base.DisposeFinal(disposing);
 
 #if SIMPLSHARP
@@ -106,8 +103,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		[PublicAPI]
 		public void SetTransmitter(TTransmitter transmitter, int? parentId)
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "Set Transmitter to " + (transmitter == null ? "null":"actual"));
-			Unsubscribe(Transmitter);
+            Unsubscribe(Transmitter);
 			Unregister(Transmitter);
 
 			m_ParentId = parentId;
@@ -127,7 +123,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="transmitter"></param>
 		protected virtual void ConfigureTransmitter(TTransmitter transmitter)
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "ConfigureTransmitter");
 		}
 
 		/// <summary>
@@ -136,7 +131,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="transmitter"></param>
 		private void Unregister(TTransmitter transmitter)
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "Unregister Transmitter");
 			if (transmitter == null || !transmitter.Registered)
 				return;
 
@@ -157,7 +151,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="transmitter"></param>
 		private void Register(TTransmitter transmitter)
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "Begin Register");
 			if (transmitter == null || transmitter.Registered)
 				return;
 
@@ -191,7 +184,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="settings"></param>
 		protected override void CopySettingsFinal(TSettings settings)
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "Copy Settings Final");
 			base.CopySettingsFinal(settings);
 
 #if SIMPLSHARP
@@ -212,7 +204,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// </summary>
 		protected override void ClearSettingsFinal()
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "ClearSettingsFinal");
 			base.ClearSettingsFinal();
 
 #if SIMPLSHARP
@@ -227,7 +218,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="factory"></param>
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "Begin Apply Settings Final For TX");
 		    factory.LoadOriginators<ICardAdapter>();
 			base.ApplySettingsFinal(settings, factory);
 
@@ -273,7 +263,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		protected override bool GetIsOnlineStatus()
 		{
 #if SIMPLSHARP
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " + "get online status");
 			return Transmitter != null && Transmitter.IsOnline;
 #else
             return false;
@@ -291,7 +280,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="transmitter"></param>
 		private void Subscribe(TTransmitter transmitter)
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " + "subscribe callback");
 			if (transmitter == null)
 				return;
 
@@ -304,7 +292,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="transmitter"></param>
 		private void Unsubscribe(TTransmitter transmitter)
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "unsub callback");
 			if (transmitter == null)
 				return;
 
@@ -318,7 +305,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="args"></param>
 		private void TransmitterOnlineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "online status change callback");
 			UpdateCachedOnlineStatus();
 		}
 #endif
@@ -334,7 +320,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="addRow"></param>
 		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
 		{
-            Logger.AddEntry(eSeverity.Notice, typeof(TTransmitter).ToString() + ": " +  "Build console Status");
 			base.BuildConsoleStatus(addRow);
 
 			addRow("IPID", m_Transmitter == null ? null : StringUtils.ToIpIdString((byte)m_Transmitter.ID));

@@ -17,8 +17,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd8X8
 	    /// <returns></returns>
 	    protected override DmMd8x8 InstantiateSwitcher(DmMd8X8AdapterSettings settings)
 	    {
-            Logger.AddEntry(eSeverity.Warning, "Instantiate Switcher");
-		    return new DmMd8x8(settings.Ipid, ProgramInfo.ControlSystem);
+            return new DmMd8x8(settings.Ipid, ProgramInfo.ControlSystem);
 	    }
 	}
 #else

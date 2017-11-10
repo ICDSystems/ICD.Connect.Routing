@@ -119,7 +119,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 					Switcher.Description = Name;
                 
 				eDeviceRegistrationUnRegistrationResponse result = Switcher.Register();
-                Logger.AddEntry(eSeverity.Warning, "Switcher Registered");
 				if (result != eDeviceRegistrationUnRegistrationResponse.Success)
 					Logger.AddEntry(eSeverity.Error, "Unable to register {0} - {1}", Switcher.GetType().Name, result);
 			}

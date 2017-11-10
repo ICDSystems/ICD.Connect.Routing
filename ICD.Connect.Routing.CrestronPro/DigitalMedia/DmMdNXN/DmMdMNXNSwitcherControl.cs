@@ -324,7 +324,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		{
             Unsubscribe(m_Switcher);
 			m_Switcher = switcher;
-            Logger.AddEntry(eSeverity.Warning, "Set Switcher");
 			Subscribe(m_Switcher);
 
 			RebuildCache();

@@ -37,8 +37,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 		/// <returns></returns>
 		protected override Crestron.SimplSharpPro.DM.Cards.DmcC InstantiateCardInternal(uint cardNumber, Switch switcher)
 		{
-            Logger.AddEntry(eSeverity.Warning, "DmcC instantiate");
-			return new Crestron.SimplSharpPro.DM.Cards.DmcC(cardNumber, switcher);
+            return new Crestron.SimplSharpPro.DM.Cards.DmcC(cardNumber, switcher);
 		}
 	}
 #else

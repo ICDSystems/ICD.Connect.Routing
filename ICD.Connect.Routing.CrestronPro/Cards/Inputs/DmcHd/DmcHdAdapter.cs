@@ -37,8 +37,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcHd
 		/// <returns></returns>
 		protected override Crestron.SimplSharpPro.DM.Cards.DmcHd InstantiateCardInternal(uint cardNumber, Switch switcher)
 		{
-            Logger.AddEntry(eSeverity.Warning, "Hd card Instantiate");
-			return new Crestron.SimplSharpPro.DM.Cards.DmcHd(cardNumber, switcher);
+            return new Crestron.SimplSharpPro.DM.Cards.DmcHd(cardNumber, switcher);
 		}
 	}
 #else
