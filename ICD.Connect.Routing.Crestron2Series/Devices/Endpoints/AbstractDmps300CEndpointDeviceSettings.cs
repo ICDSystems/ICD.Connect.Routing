@@ -8,7 +8,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints
 	{
 		private const string PARENT_DEVICE_ELEMENT = "Device";
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
+		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
 		public int Device { get; set; }
 
 		/// <summary>

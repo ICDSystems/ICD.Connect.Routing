@@ -13,7 +13,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		private const string DEVICE_ELEMENT = "Device";
 		private const string ADDRESS_ELEMENT = "Address";
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
+		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
 		public int Device { get; set; }
 
 		public int Address { get; set; }
