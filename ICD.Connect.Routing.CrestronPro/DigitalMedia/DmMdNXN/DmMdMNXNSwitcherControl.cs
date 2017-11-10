@@ -163,17 +163,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		}
 
 		/// <summary>
-		/// Gets the routed inputs for the given output.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
-		{
-			return m_Cache.GetInputsForOutput(output, type);
-		}
-
-		/// <summary>
 		/// Returns the outputs.
 		/// </summary>
 		/// <returns></returns>
@@ -183,6 +172,29 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 
 			return Enumerable.Range(1, outputs)
 			                 .Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
+		}
+
+		/// <summary>
+		/// Gets the outputs for the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
+		{
+			return m_Cache.GetOutputsForInput(input, type);
+		}
+
+		/// <summary>
+		/// Gets the input routed to the given output matching the given type.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
+		public override ConnectorInfo? GetInput(int output, eConnectionType type)
+		{
+			return m_Cache.GetInputConnectorInfoForOutput(output, type);
 		}
 
 		/// <summary>

@@ -37,7 +37,17 @@ namespace ICD.Connect.Routing.Controls
 		public virtual bool GetActiveTransmissionState(int output, eConnectionType type)
 		{
 			// Returns true if the output is transmitting an input on all flags
-			return EnumUtils.GetFlagsExceptNone(type).All(flag => GetInputs(output, flag).Any());
+			return EnumUtils.GetFlagsExceptNone(type).All(flag => this.GetInputs(output, flag).Any());
+		}
+
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public virtual ConnectorInfo GetOutput(int address)
+		{
+			return GetOutputs().First(c => c.Address == address);
 		}
 
 		/// <summary>
@@ -47,14 +57,21 @@ namespace ICD.Connect.Routing.Controls
 		public abstract IEnumerable<ConnectorInfo> GetOutputs();
 
 		/// <summary>
-		/// Gets the output at the given address.
+		/// Gets the outputs for the given input.
 		/// </summary>
 		/// <param name="input"></param>
+		/// <param name="type"></param>
 		/// <returns></returns>
-		public virtual ConnectorInfo GetOutput(int input)
-		{
-			return GetOutputs().First(c => c.Address == input);
-		}
+		public abstract IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type);
+
+		/// <summary>
+		/// Gets the input routed to the given output matching the given type.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
+		public abstract ConnectorInfo? GetInput(int output, eConnectionType type);
 
 		/// <summary>
 		/// Returns the true if the input is actively being used by the source device.
@@ -63,16 +80,8 @@ namespace ICD.Connect.Routing.Controls
 		/// </summary>
 		public override bool GetInputActiveState(int input, eConnectionType type)
 		{
-			return this.GetOutputs(input, type).Any();
+			return GetOutputs(input, type).Any();
 		}
-
-		/// <summary>
-		/// Gets the input for the given output.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type);
 
 		#endregion
 
@@ -115,7 +124,7 @@ namespace ICD.Connect.Routing.Controls
 
 					string typeString = type.ToString();
 					string detectedString = GetSignalDetectedState(input.Address, type) ? "True" : string.Empty;
-					string outputsString = StringUtils.ArrayFormat(this.GetOutputs(input.Address, type));
+					string outputsString = StringUtils.ArrayFormat(GetOutputs(input.Address, type));
 
 					builder.AddRow(inputString, typeString, detectedString, outputsString);
 				}
