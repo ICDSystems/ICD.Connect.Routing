@@ -178,6 +178,29 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		}
 
 		/// <summary>
+		/// Gets the outputs for the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
+		{
+			return m_Cache.GetOutputsForInput(input, type);
+		}
+
+		/// <summary>
+		/// Gets the input routed to the given output matching the given type.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
+		public override ConnectorInfo? GetInput(int output, eConnectionType type)
+		{
+			return m_Cache.GetInputConnectorInfoForOutput(output, type);
+		}
+
+		/// <summary>
 		/// Gets the connector info for the input at the given address.
 		/// </summary>
 		/// <param name="address"></param>
@@ -207,17 +230,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
 			return Enumerable.Range(1, 7).Select(i => GetInput(i));
-		}
-
-		/// <summary>
-		/// Gets the input for the given output.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
-		{
-			return m_Cache.GetInputsForOutput(output, type);
 		}
 
 		/// <summary>
