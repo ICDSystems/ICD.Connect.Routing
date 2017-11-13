@@ -192,7 +192,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
         /// <param name="card"></param>
 	    private void Register(TCard card)
 	    {
-            Logger.AddEntry(eSeverity.Warning, "Card Register");
 	        if (card == null)
 	        {
 	            return;
