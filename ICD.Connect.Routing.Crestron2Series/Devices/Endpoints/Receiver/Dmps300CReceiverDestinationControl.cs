@@ -14,7 +14,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Receiver
 {
     public sealed class Dmps300CReceiverDestinationControl : AbstractRouteMidpointControl<Dmps300CReceiver>
     {
-	    private const ushort DIGITAL_SOURCE_DETECTION_JOIN = 6;
+	    private const ushort DIGITAL_SOURCE_DETECTION_JOIN = 106;
 
 	    public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 	    public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
