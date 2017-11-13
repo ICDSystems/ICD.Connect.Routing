@@ -9,7 +9,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 {
 	public sealed class Dmps300CDigitalInputPort : AbstractDigitalInputPort<Dmps300CDigitalInputPortSettings>
 	{
-		private const ushort START_DIGITAL_JOIN = 295;
+		private const ushort START_DIGITAL_JOIN = 695;
 
 		private IDmps300CDevice m_Device;
 
