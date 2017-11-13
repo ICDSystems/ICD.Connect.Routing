@@ -6,6 +6,7 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.Devices;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes;
 
@@ -60,21 +61,21 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(Connection); } }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
+		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(IDevice))]
 		public int SourceDeviceId { get; set; }
 
 		public int SourceControlId { get; set; }
 
 		public int SourceAddress { get { return m_SourceAddress; } set { m_SourceAddress = value; } }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
+		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(IDevice))]
 		public int DestinationDeviceId { get; set; }
 
 		public int DestinationControlId { get; set; }
 
 		public int DestinationAddress { get { return m_DestinationAddress; } set { m_DestinationAddress = value; } }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Enum)]
+
 		public eConnectionType ConnectionType { get; set; }
 
 		#endregion

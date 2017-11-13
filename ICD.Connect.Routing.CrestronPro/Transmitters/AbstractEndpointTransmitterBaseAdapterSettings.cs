@@ -1,6 +1,7 @@
 ﻿using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
+using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
 using ICD.Connect.Settings.Attributes;
 
@@ -15,7 +16,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
 		public byte? Ipid { get; set; }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
+		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(IDmParent))]
 		public int? DmSwitch { get; set; }
 
 		public int? DmInputAddress { get; set; }
