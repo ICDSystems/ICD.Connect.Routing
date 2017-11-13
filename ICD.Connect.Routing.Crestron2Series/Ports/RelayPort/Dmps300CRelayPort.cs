@@ -54,7 +54,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 				return;
 			}
 
-			if (m_Device.SendData(new DigitalXSig(true, DigitalJoinIndex)))
+			if (m_Device.SendData(new DigitalXSig(false, DigitalJoinIndex)))
 				Closed = false;
 		}
 
@@ -69,7 +69,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 				return;
 			}
 
-			if (m_Device.SendData(new DigitalXSig(false, DigitalJoinIndex)))
+			if (m_Device.SendData(new DigitalXSig(true, DigitalJoinIndex)))
 				Closed = true;
 		}
 
