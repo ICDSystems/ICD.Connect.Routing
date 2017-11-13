@@ -28,14 +28,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		{
 			base.WriteElements(writer);
 
-			if (Ipid != null)
-				writer.WriteElementString(IPID_ELEMENT, StringUtils.ToIpIdString((byte)Ipid));
-
-			if (DmSwitch != null)
-				writer.WriteElementString(DM_SWITCH_ELEMENT, IcdXmlConvert.ToString((int)DmSwitch));
-
-			if (DmInputAddress != null)
-				writer.WriteElementString(DM_INPUT_ELEMENT, IcdXmlConvert.ToString((int)DmInputAddress));
+			writer.WriteElementString(IPID_ELEMENT, Ipid == null ? null : StringUtils.ToIpIdString((byte)Ipid));
+			writer.WriteElementString(DM_SWITCH_ELEMENT, IcdXmlConvert.ToString(DmSwitch));
+			writer.WriteElementString(DM_INPUT_ELEMENT, IcdXmlConvert.ToString(DmInputAddress));
 		}
 
 		/// <summary>
