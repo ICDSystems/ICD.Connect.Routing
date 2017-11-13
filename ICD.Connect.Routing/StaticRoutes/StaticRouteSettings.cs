@@ -42,7 +42,6 @@ namespace ICD.Connect.Routing.StaticRoutes
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(StaticRoute); } }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Enum)]
 		public eConnectionType ConnectionType { get; set; }
 
 		#endregion

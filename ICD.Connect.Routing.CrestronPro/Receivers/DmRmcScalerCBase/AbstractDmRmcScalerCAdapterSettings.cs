@@ -1,6 +1,7 @@
 ﻿using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
+using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
@@ -17,7 +18,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
 		public byte? Ipid { get; set; }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
+		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(IDmParent))]
 		public int? DmSwitch { get; set; }
 
 		public int? DmOutputAddress { get; set; }
@@ -30,14 +31,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		{
 			base.WriteElements(writer);
 
-			if (Ipid != null)
-				writer.WriteElementString(IPID_ELEMENT, StringUtils.ToIpIdString((byte)Ipid));
-
-			if (DmSwitch != null)
-				writer.WriteElementString(DM_SWITCH_ELEMENT, IcdXmlConvert.ToString((int)DmSwitch));
-
-			if (DmOutputAddress != null)
-				writer.WriteElementString(DM_OUTPUT_ELEMENT, IcdXmlConvert.ToString((int)DmOutputAddress));
+			writer.WriteElementString(IPID_ELEMENT, Ipid == null ? null : StringUtils.ToIpIdString((byte)Ipid));
+			writer.WriteElementString(DM_SWITCH_ELEMENT, IcdXmlConvert.ToString(DmSwitch));
+			writer.WriteElementString(DM_OUTPUT_ELEMENT, IcdXmlConvert.ToString(DmOutputAddress));
 		}
 
 		/// <summary>
@@ -46,7 +42,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// <param name="instance"></param>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public static void ParseXml(AbstractDmRmcScalerCAdapterSettings instance, string xml)
+		protected static void ParseXml(AbstractDmRmcScalerCAdapterSettings instance, string xml)
 		{
 			instance.Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT);
 			instance.DmSwitch = XmlUtils.TryReadChildElementContentAsInt(xml, DM_SWITCH_ELEMENT);
