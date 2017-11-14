@@ -41,6 +41,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 			Unsubscribe(m_Device);
 			m_Device = device;
 			Subscribe(m_Device);
+
+			UpdateCachedOnlineStatus();
 		}
 
 		/// <summary>

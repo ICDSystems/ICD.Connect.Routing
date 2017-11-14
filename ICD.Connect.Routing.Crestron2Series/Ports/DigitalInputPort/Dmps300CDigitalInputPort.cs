@@ -41,6 +41,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 			Unsubscribe(m_Device);
 			m_Device = device;
 			Subscribe(m_Device);
+
+			UpdateCachedOnlineStatus();
 		}
 
 		/// <summary>
