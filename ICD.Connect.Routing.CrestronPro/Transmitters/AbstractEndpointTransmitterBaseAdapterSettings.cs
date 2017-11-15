@@ -3,7 +3,7 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
-using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters
 {
@@ -13,10 +13,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		private const string DM_SWITCH_ELEMENT = "DmSwitch";
 		private const string DM_INPUT_ELEMENT = "DmInput";
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
+		[IpIdSettingsProperty]
 		public byte? Ipid { get; set; }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(IDmParent))]
+		[OriginatorIdSettingsProperty(typeof(IDmParent))]
 		public int? DmSwitch { get; set; }
 
 		public int? DmInputAddress { get; set; }
