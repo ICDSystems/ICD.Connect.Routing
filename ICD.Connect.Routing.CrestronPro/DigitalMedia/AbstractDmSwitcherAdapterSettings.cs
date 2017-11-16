@@ -2,7 +2,7 @@
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
-using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
@@ -10,7 +10,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 	{
 		private const string IPID_ELEMENT = "IPID";
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
+		[IpIdSettingsProperty]
 		public byte Ipid { get; set; }
 
 		/// <summary>
@@ -30,7 +30,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// <param name="instance"></param>
 		/// <param name="xml"></param>
 		/// <returns></returns>
-		public static void ParseXml(AbstractDmSwitcherAdapterSettings instance, string xml)
+		protected static void ParseXml(AbstractDmSwitcherAdapterSettings instance, string xml)
 		{
 			if (instance == null)
 				throw new ArgumentNullException("instance");

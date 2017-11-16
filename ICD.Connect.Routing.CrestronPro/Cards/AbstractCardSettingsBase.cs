@@ -1,6 +1,7 @@
 ﻿using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
-using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards
 {
@@ -11,7 +12,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 
 		public int? CardNumber { get; set; }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
+		[OriginatorIdSettingsProperty(typeof(IDmSwitcherAdapter))]
 		public int? SwitcherId { get; set; }
 
 		/// <summary>
