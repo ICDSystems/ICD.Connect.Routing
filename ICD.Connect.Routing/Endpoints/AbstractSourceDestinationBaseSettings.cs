@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using ICD.Common.Utils.Xml;
+﻿using ICD.Common.Utils.Xml;
+using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
-using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Endpoints
 {
@@ -22,7 +22,7 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <summary>
 		/// Gets the endpoint device.
 		/// </summary>
-		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
+		[OriginatorIdSettingsProperty(typeof(IDevice))]
 		public int Device { get; set; }
 
 		/// <summary>
@@ -38,7 +38,6 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <summary>
 		/// Specifies which media types to use for the source.
 		/// </summary>
-		[SettingsProperty(SettingsProperty.ePropertyType.Enum)]
 		public eConnectionType ConnectionType { get; set; }
 
 		/// <summary>

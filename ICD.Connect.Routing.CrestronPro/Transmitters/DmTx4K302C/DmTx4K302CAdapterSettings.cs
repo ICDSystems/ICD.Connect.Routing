@@ -1,12 +1,21 @@
 ﻿using System;
 using ICD.Common.Properties;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Xml;
+using ICD.Connect.Devices;
+using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 {
-    public sealed class DmTx4K302CAdapterSettings : AbstractEndpointTransmitterBaseAdapterSettings
+	public sealed class DmTx4K302CAdapterSettings : AbstractDeviceSettings
 	{
 		private const string FACTORY_NAME = "DmTx4k302C";
+
+		private const string IPID_ELEMENT = "IPID";
+		private const string DM_SWITCH_ELEMENT = "DmSwitch";
+		private const string DM_INPUT_ELEMENT = "DmInput";
 
 		/// <summary>
 		/// Gets the originator factory name.
@@ -18,6 +27,27 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(DmTx4K302CAdapter); } }
 
+		[IpIdSettingsProperty]
+		public byte? Ipid { get; set; }
+
+		[OriginatorIdSettingsProperty(typeof(IDmParent))]
+		public int? DmSwitch { get; set; }
+
+		public int? DmInputAddress { get; set; }
+
+		/// <summary>
+		/// Writes property elements to xml.
+		/// </summary>
+		/// <param name="writer"></param>
+		protected override void WriteElements(IcdXmlTextWriter writer)
+		{
+			base.WriteElements(writer);
+
+			writer.WriteElementString(IPID_ELEMENT, Ipid == null ? null : StringUtils.ToIpIdString((byte)Ipid));
+			writer.WriteElementString(DM_SWITCH_ELEMENT, IcdXmlConvert.ToString(DmSwitch));
+			writer.WriteElementString(DM_INPUT_ELEMENT, IcdXmlConvert.ToString(DmInputAddress));
+		}
+
 		/// <summary>
 		/// Loads the settings from XML.
 		/// </summary>
@@ -26,7 +56,13 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
 		public static DmTx4K302CAdapterSettings FromXml(string xml)
 		{
-		    DmTx4K302CAdapterSettings output = new DmTx4K302CAdapterSettings();
+			DmTx4K302CAdapterSettings output = new DmTx4K302CAdapterSettings
+			{
+				Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT),
+				DmSwitch = XmlUtils.TryReadChildElementContentAsInt(xml, DM_SWITCH_ELEMENT),
+				DmInputAddress = XmlUtils.TryReadChildElementContentAsInt(xml, DM_INPUT_ELEMENT),
+			};
+
 			ParseXml(output, xml);
 			return output;
 		}

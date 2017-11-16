@@ -1,8 +1,9 @@
 ﻿using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
+using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
-using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters
 {
@@ -12,10 +13,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		private const string DM_SWITCH_ELEMENT = "DmSwitch";
 		private const string DM_INPUT_ELEMENT = "DmInput";
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
+		[IpIdSettingsProperty]
 		public byte? Ipid { get; set; }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
+		[OriginatorIdSettingsProperty(typeof(IDmParent))]
 		public int? DmSwitch { get; set; }
 
 		public int? DmInputAddress { get; set; }
@@ -28,14 +29,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		{
 			base.WriteElements(writer);
 
-			if (Ipid != null)
-				writer.WriteElementString(IPID_ELEMENT, StringUtils.ToIpIdString((byte)Ipid));
-
-			if (DmSwitch != null)
-				writer.WriteElementString(DM_SWITCH_ELEMENT, IcdXmlConvert.ToString((int)DmSwitch));
-
-			if (DmInputAddress != null)
-				writer.WriteElementString(DM_INPUT_ELEMENT, IcdXmlConvert.ToString((int)DmInputAddress));
+			writer.WriteElementString(IPID_ELEMENT, Ipid == null ? null : StringUtils.ToIpIdString((byte)Ipid));
+			writer.WriteElementString(DM_SWITCH_ELEMENT, IcdXmlConvert.ToString(DmSwitch));
+			writer.WriteElementString(DM_INPUT_ELEMENT, IcdXmlConvert.ToString(DmInputAddress));
 		}
 
 		/// <summary>
