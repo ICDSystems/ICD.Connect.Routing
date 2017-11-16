@@ -2,7 +2,7 @@
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
-using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Endpoints
 {
@@ -22,7 +22,7 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <summary>
 		/// Gets the endpoint device.
 		/// </summary>
-		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(IDevice))]
+		[OriginatorIdSettingsProperty(typeof(IDevice))]
 		public int Device { get; set; }
 
 		/// <summary>

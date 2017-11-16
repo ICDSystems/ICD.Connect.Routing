@@ -109,12 +109,12 @@ namespace ICD.Connect.Routing.SPlus
 
 		public override bool Route(RouteOperation info)
 		{
-			return RouteCallback(info);
+			return RouteCallback != null && RouteCallback(info);
 		}
 
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
-			return ClearOutputCallback(output, type);
+			return ClearOutputCallback != null && ClearOutputCallback(output, type);
 		}
 
 		public override IEnumerable<ConnectorInfo> GetInputs()
