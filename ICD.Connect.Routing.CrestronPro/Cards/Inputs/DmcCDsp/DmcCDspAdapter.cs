@@ -7,7 +7,7 @@ using Crestron.SimplSharpPro.DM;
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcCDsp
 {
 #if SIMPLSHARP
-	public sealed class DmcCDspAdapter : AbstractCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcCDsp, DmcCDspAdapterSettings>
+	public sealed class DmcCDspAdapter : AbstractInputCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcCDsp, DmcCDspAdapterSettings>
 	{
 		/// <summary>
 		/// Constructor.
@@ -41,7 +41,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcCDsp
 		}
 	}
 #else
-	public sealed class DmcCAdapter : AbstractCardAdapter<DmcCAdapterSettings>
+	public sealed class DmcCDspAdapter : AbstractInputCardAdapter<DmcCDspAdapterSettings>
 	{
 	}
 #endif

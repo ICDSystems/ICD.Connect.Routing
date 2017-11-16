@@ -94,10 +94,23 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Cards\AbstractCardAdapter.cs" />
-    <Compile Include="Cards\AbstractCardSettings.cs" />
+    <Compile Include="Cards\AbstractCardAdapterBase.cs" />
+    <Compile Include="Cards\AbstractInputCardAdapter.cs" />
+    <Compile Include="Cards\Inputs\AbstractInputCardSettings.cs" />
+    <Compile Include="Cards\AbstractOutputCardAdapter.cs" />
     <Compile Include="Cards\ICardAdapter.cs" />
     <Compile Include="Cards\Inputs\AbstractInputCardAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Outputs\AbstractOutputCardSettings.cs" />
+    <Compile Include="Cards\Outputs\AbstractOutputCardAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Outputs\Dmc4kCoHd\Dmc4kCoHdAdapter.cs" />
+    <Compile Include="Cards\Outputs\Dmc4kCoHd\Dmc4kCoHdAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Outputs\Dmc4kCoHd\Dmc4kCoHdAdapterSettings.cs" />
+    <Compile Include="Cards\Inputs\Dmc4KHdDsp\Dmc4kHdDspAdapter.cs" />
+    <Compile Include="Cards\Inputs\Dmc4KHdDsp\Dmc4kHdDspAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Inputs\Dmc4KHdDsp\Dmc4kHdDspAdapterSettings.cs" />
+    <Compile Include="Cards\Inputs\DmcCDsp\DmcCDspAdapter.cs" />
+    <Compile Include="Cards\Inputs\DmcCDsp\DmcCDspAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Inputs\DmcCDsp\DmcCDspAdapterSettings.cs" />
     <Compile Include="Cards\Inputs\Dmc4kC\Dmc4kCAdapter.cs" />
     <Compile Include="Cards\Inputs\Dmc4kC\Dmc4kCAdapterRoutingControl.cs" />
     <Compile Include="Cards\Inputs\Dmc4kC\Dmc4kCAdapterSettings.cs" />

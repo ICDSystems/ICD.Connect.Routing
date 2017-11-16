@@ -53,7 +53,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 
 			Unsubscribe(m_Cache);
 			Unsubscribe(Parent);
-			Unsubscribe(Card);
+		    Unsubscribe(Card);
 		}
 
 		/// <summary>
@@ -92,12 +92,12 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="card"></param>
-		private void ParentOnCardChanged(ICardAdapter sender, CardDevice card)
+		private void ParentOnCardChanged(ICardAdapter sender, object card)
 		{
 			Unsubscribe(Card);
-
+                      
 			m_Cache.Clear();
-			Card = card;
+			Card = card as CardDevice;
 
 			Subscribe(Card);
 
@@ -131,7 +131,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		{
 			if (card == null)
 				return;
-
 			card.Switcher.DMInputChange += SwitcherOnDmInputChange;
 		}
 
@@ -140,10 +139,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// </summary>
 		/// <param name="card"></param>
 		private void Unsubscribe(CardDevice card)
-		{
-			if (card == null)
-				return;
-
+        {
+            if (card == null)
+                return;
 			card.Switcher.DMInputChange -= SwitcherOnDmInputChange;
 		}
 
@@ -152,7 +150,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 			if (Card == null)
 				return;
 
-			int input = (int)Card.SwitcherInputOutput.Number;
+			int input = (int)((CardDevice)Card).SwitcherInputOutput.Number;
 			if (args.Number != input)
 				return;
 
@@ -162,7 +160,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 
 		private bool GetVideoDetectedFeedback(int input)
 		{
-			return Card != null && Card.Switcher.Inputs[(uint)input].VideoDetectedFeedback.BoolValue;
+			return Card != null && ((CardDevice)Card).Switcher.Inputs[(uint)input].VideoDetectedFeedback.BoolValue;
 		}
 
 		#endregion
@@ -184,7 +182,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// <param name="cache"></param>
 		private void Unsubscribe(SwitcherCache cache)
 		{
-			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+			cache.OnSourceDetectionStateChange -= CacheOnSourceDetectionStateChange;
 		}
 
 		/// <summary>

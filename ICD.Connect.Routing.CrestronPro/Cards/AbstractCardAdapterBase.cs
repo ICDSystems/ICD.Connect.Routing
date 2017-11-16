@@ -1,0 +1,90 @@
+﻿using ICD.Common.Properties;
+using ICD.Common.Services;
+using ICD.Connect.Devices;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia;
+using ICD.Connect.Settings.Core;
+
+namespace ICD.Connect.Routing.CrestronPro.Cards
+{
+    public abstract class AbstractCardAdapterBase<TCard, TSettings> : AbstractDevice<TSettings>, ICardAdapter
+        where TSettings : ICardSettings, new()
+    {
+        public event CardChangeCallback OnCardChanged;
+        private TCard m_Card;
+        private int? m_CardNumber;
+        private int? m_SwitcherId;
+
+        /// <summary>
+        /// Returns the Card Number
+        /// </summary>
+        [PublicAPI]
+        public int? CardNumber
+        {
+            get { return m_CardNumber; } 
+            protected set { m_CardNumber = value; }
+        }
+
+        /// <summary>
+        /// Returns the Switcher ID
+        /// </summary>
+        [PublicAPI]
+        public int? SwitcherId
+        {
+            get { return m_SwitcherId; }
+            protected set { m_SwitcherId = value; }
+        }
+
+        /// <summary>
+        /// Gets the wrapped internal card.
+        /// </summary>
+        [PublicAPI]
+        public TCard Card
+        {
+            get { return m_Card; }
+            protected set
+            {
+                if (value == null && m_Card == null)
+                    return;
+                if (value != null && value.Equals(m_Card))
+                    return;
+
+                m_Card = value;
+
+                CardChangeCallback handler = OnCardChanged;
+                if (handler != null)
+                    handler(this, m_Card);
+            }
+        }
+
+        /// <summary>
+        /// Returns the Switcher
+        /// </summary>
+        [PublicAPI]
+        public IDmSwitcherAdapter Switcher
+        {
+            get
+            {
+                if (SwitcherId == null)
+                    return null;
+                ICore core = ServiceProvider.GetService<ICore>();
+                return core.Originators.GetChild<IDmSwitcherAdapter>((int)SwitcherId);
+            }
+        }
+
+        /// <summary>
+        /// Gets the wrapped internal card.
+        /// </summary>
+        object ICardAdapter.Card { get { return Card; } }
+
+        /// <summary>
+        /// Release resources.
+        /// </summary>
+        protected override void DisposeFinal(bool disposing)
+        {
+#if SIMPLSHARP
+            OnCardChanged = null;
+#endif
+            base.DisposeFinal(disposing);
+        }
+    }
+}

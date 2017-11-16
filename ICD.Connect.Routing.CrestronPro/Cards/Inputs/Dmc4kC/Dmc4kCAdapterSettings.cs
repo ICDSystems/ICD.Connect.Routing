@@ -4,7 +4,7 @@ using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kC
 {
-    public sealed class Dmc4kCAdapterSettings : AbstractCardSettings
+    public sealed class Dmc4kCAdapterSettings : AbstractInputCardSettings
     {
         private const string FACTORY_NAME = "Dmc4kC";
 

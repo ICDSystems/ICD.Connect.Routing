@@ -1,12 +1,13 @@
 ﻿using System;
+using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Common.Properties;
 using ICD.Connect.Settings.Attributes;
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDsp
+namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
 {
-    public sealed class Dmc4kHdDspAdapterSettings : AbstractInputCardSettings
+    public sealed class Dmc4kCoHdAdapterSettings : AbstractOutputCardSettings
 	{
-        private const string FACTORY_NAME = "Dmc4kHdDsp";
+        private const string FACTORY_NAME = "Dmc4kCoHd";
 
 		/// <summary>
 		/// Gets the originator factory name.
@@ -16,7 +17,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDsp
 		/// <summary>
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
-        public override Type OriginatorType { get { return typeof(Dmc4kHdDspAdapter); } }
+		public override Type OriginatorType { get { return typeof(Dmc4kCoHdAdapter); } }
 
 		/// <summary>
 		/// Loads the settings from XML.
@@ -24,9 +25,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDsp
 		/// <param name="xml"></param>
 		/// <returns></returns>
 		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-        public static Dmc4kHdDspAdapterSettings FromXml(string xml)
+        public static Dmc4kCoHdAdapterSettings FromXml(string xml)
 		{
-            Dmc4kHdDspAdapterSettings output = new Dmc4kHdDspAdapterSettings();
+            Dmc4kCoHdAdapterSettings output = new Dmc4kCoHdAdapterSettings();
 			ParseXml(output, xml);
 			return output;
 		}
