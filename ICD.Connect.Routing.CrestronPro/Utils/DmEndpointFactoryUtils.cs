@@ -70,6 +70,50 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 			return default(TCard);
 		}
 
+        /// <summary>
+        /// Determines the best way to instantiate a card based on the available information.
+        /// Instantiates via parent Switch if specified, otherwise uses the ControlSystem.
+        /// </summary>
+        /// <typeparam name="TCard"></typeparam>
+        /// <param name="cardNumber"></param>
+        /// <param name="switcherId"></param>
+        /// <param name="factory"></param>
+        /// <param name="instantiateInternal"></param>
+        /// <returns></returns>
+        [CanBeNull]
+        public static TCard InstantiateCard<TCard>(int? cardNumber, int? switcherId,
+                                                   IDeviceFactory factory,
+                                                   Func<uint, Switch, TCard> instantiateInternal)
+        {
+            if (switcherId == null)
+            {
+                    Logger.AddEntry(eSeverity.Error, "Failed to instantiate {0} - no switcher defined", typeof(TCard).Name);
+            }
+            else
+            {
+                if (cardNumber == null)
+                {
+                    Logger.AddEntry(eSeverity.Error, "Failed to instantiate {0} - no DM input address", typeof(TCard).Name);
+                }
+                else
+                {
+                    IDmSwitcherAdapter switcher = factory.GetOriginatorById<IDmSwitcherAdapter>((int)switcherId);
+
+                    if (switcher == null)
+                    {
+                        Logger.AddEntry(eSeverity.Error, "Failed to instantiate {0} - Device {1} is not a {2}",
+                                        typeof(TCard).Name, switcherId, typeof(IDmSwitcherAdapter).Name);
+                    }
+                    else
+                    {
+                        return instantiateInternal((uint)cardNumber, switcher.Switcher);
+                    }
+                }
+            }
+
+            return default(TCard);
+        }
+
 		/// <summary>
 		/// Determines the best way to instantiate a DMEndpoint based on the available information.
 		/// Instantiates via parent DM Switch if specified, otherwise uses the ControlSystem.
@@ -187,6 +231,11 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 
 			return default(TEndpoint);
 		}
+
+	    public static int GetSwitcherOutputPortNumber(int physicalCardSlot, int outputOnCard)
+	    {
+	        return ((physicalCardSlot - 1) * 2) + outputOnCard;
+	    }
 	}
 }
 #endif
