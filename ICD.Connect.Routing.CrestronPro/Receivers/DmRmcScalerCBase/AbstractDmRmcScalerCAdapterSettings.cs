@@ -2,7 +2,7 @@
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
-using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 {
@@ -15,10 +15,10 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		private const string DM_SWITCH_ELEMENT = "DmSwitch";
 		private const string DM_OUTPUT_ELEMENT = "DmOutput";
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
+		[IpIdSettingsProperty]
 		public byte? Ipid { get; set; }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(IDmParent))]
+		[OriginatorIdSettingsProperty(typeof(IDmParent))]
 		public int? DmSwitch { get; set; }
 
 		public int? DmOutputAddress { get; set; }
@@ -48,7 +48,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			instance.DmSwitch = XmlUtils.TryReadChildElementContentAsInt(xml, DM_SWITCH_ELEMENT);
 			instance.DmOutputAddress = XmlUtils.TryReadChildElementContentAsInt(xml, DM_OUTPUT_ELEMENT);
 
-			ParseXml((AbstractDeviceSettings)instance, xml);
+			AbstractDeviceSettings.ParseXml(instance, xml);
 		}
 	}
 }

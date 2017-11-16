@@ -5,6 +5,7 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 {
@@ -26,10 +27,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(DmTx4K302CAdapter); } }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
+		[IpIdSettingsProperty]
 		public byte? Ipid { get; set; }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(IDmParent))]
+		[OriginatorIdSettingsProperty(typeof(IDmParent))]
 		public int? DmSwitch { get; set; }
 
 		public int? DmInputAddress { get; set; }
