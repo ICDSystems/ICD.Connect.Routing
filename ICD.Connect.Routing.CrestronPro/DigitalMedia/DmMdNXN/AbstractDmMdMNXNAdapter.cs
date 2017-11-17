@@ -1,11 +1,8 @@
 ﻿#if SIMPLSHARP
-using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
-using ICD.Connect.Misc.CrestronPro;
 #else
 using System;
 #endif
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 {

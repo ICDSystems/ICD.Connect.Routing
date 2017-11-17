@@ -7,7 +7,6 @@ using ICD.Common.Services;
 using ICD.Common.Services.Logging;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Misc.CrestronPro;
-using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia;
 using ICD.Connect.Settings.Core;
 

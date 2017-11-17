@@ -1,4 +1,3 @@
-using ICD.Common.Services.Logging;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;

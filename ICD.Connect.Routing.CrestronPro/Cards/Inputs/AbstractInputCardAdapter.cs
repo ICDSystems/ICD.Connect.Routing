@@ -1,6 +1,5 @@
 ﻿using ICD.Common.Properties;
 #if SIMPLSHARP
-using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
@@ -8,10 +7,9 @@ using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 #endif
 using ICD.Common.Services.Logging;
-using ICD.Connect.Devices;
 using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Routing.CrestronPro.Cards
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 {
 #if SIMPLSHARP
     public abstract class AbstractInputCardAdapter<TCard, TSettings> : AbstractCardAdapterBase<TCard, TSettings>, IInputCardAdapter

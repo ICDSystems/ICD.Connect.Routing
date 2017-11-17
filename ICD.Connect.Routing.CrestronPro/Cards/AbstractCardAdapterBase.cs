@@ -52,10 +52,12 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
             get { return m_Card; }
             protected set
             {
+// ReSharper disable CompareNonConstrainedGenericWithNull
                 if (value == null && m_Card == null)
                     return;
                 if (value != null && value.Equals(m_Card))
                     return;
+// ReSharper restore CompareNonConstrainedGenericWithNull
 
                 m_Card = value;
 

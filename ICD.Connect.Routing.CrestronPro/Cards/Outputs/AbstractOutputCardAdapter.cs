@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
@@ -11,10 +9,9 @@ using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Connect.Routing.CrestronPro.Utils;
 #endif
 using ICD.Common.Services.Logging;
-using ICD.Connect.Devices;
 using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Routing.CrestronPro.Cards
+namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
 {
 #if SIMPLSHARP
     public abstract class AbstractOutputCardAdapter<TCard, TSettings> : AbstractCardAdapterBase<TCard, TSettings>, IOutputCardAdapter

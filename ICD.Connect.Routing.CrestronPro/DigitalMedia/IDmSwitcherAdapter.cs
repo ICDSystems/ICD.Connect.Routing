@@ -1,7 +1,6 @@
 ﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 #endif
-using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Common.Properties;
 using ICD.Connect.Devices;
 
