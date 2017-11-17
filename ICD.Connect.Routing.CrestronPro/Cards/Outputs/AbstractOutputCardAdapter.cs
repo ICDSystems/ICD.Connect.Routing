@@ -46,16 +46,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
                 Unsubscribe(GetInternalCards());
                 UnRegister(GetInternalCards());
 
-                foreach (var internalCard in GetInternalCards())
-                {
-                    try
-                    {
-                        internalCard.Dispose();
-                    }
-                    catch
-                    {
-                    }
-                }
+                card.Dispose();
             }
             Card = card;
 
@@ -107,24 +98,21 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
         /// <param name="cards"></param>
         protected void Register(IEnumerable<CardDevice> cards)
         {
-            foreach (var card in cards)
+            var card = cards.FirstOrDefault();
+            if (card == null)
             {
-                if (card == null)
-                {
-                    return;
-                }
+                return;
+            }
 
-                GenericDevice parent = card.Parent as GenericDevice;
-                if (parent == null)
-                {
-                    return;
-                }
-
-                eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
-                if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
-                {
-                    Logger.AddEntry(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
-                }
+            GenericDevice parent = ((Card.DMOCard)card.Parent).Parent as GenericDevice;
+            if (parent == null)
+            {
+                return;
+            }
+            eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
+            if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
+            {
+                Logger.AddEntry(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
             }
         }
 

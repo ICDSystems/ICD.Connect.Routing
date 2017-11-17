@@ -85,33 +85,7 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
                                                    IDeviceFactory factory,
                                                    Func<uint, Switch, TCard> instantiateInternal)
         {
-            if (switcherId == null)
-            {
-                    Logger.AddEntry(eSeverity.Error, "Failed to instantiate {0} - no switcher defined", typeof(TCard).Name);
-            }
-            else
-            {
-                if (cardNumber == null)
-                {
-                    Logger.AddEntry(eSeverity.Error, "Failed to instantiate {0} - no DM input address", typeof(TCard).Name);
-                }
-                else
-                {
-                    IDmSwitcherAdapter switcher = factory.GetOriginatorById<IDmSwitcherAdapter>((int)switcherId);
-
-                    if (switcher == null)
-                    {
-                        Logger.AddEntry(eSeverity.Error, "Failed to instantiate {0} - Device {1} is not a {2}",
-                                        typeof(TCard).Name, switcherId, typeof(IDmSwitcherAdapter).Name);
-                    }
-                    else
-                    {
-                        return instantiateInternal((uint)cardNumber, switcher.Switcher);
-                    }
-                }
-            }
-
-            return default(TCard);
+            return InstantiateCard(null, cardNumber, switcherId, factory, null, instantiateInternal);
         }
 
 		/// <summary>
