@@ -144,6 +144,7 @@
     <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2SwitcherControl.cs" />
     <Compile Include="DigitalMedia\IDmSwitcherAdapter.cs" />
     <Compile Include="DigitalMedia\IDmSwitcherAdapterSettings.cs" />
+    <Compile Include="IDmParent.cs" />
     <Compile Include="KrangPlugin.cs" />
     <Compile Include="Receivers\DmRmc4kScalerCDsp\DmRmc4kScalerCDspAdapter.cs" />
     <Compile Include="Receivers\DmRmc4kScalerCDsp\DmRmc4kScalerCDspAdapterSettings.cs" />
