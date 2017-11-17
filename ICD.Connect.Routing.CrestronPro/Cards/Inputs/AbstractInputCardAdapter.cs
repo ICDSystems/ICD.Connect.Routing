@@ -1,11 +1,11 @@
-﻿using Crestron.SimplSharp;
-using ICD.Common.Properties;
-using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
+﻿using ICD.Common.Properties;
 #if SIMPLSHARP
+using Crestron.SimplSharp;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Connect.Routing.CrestronPro.Utils;
+using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 #endif
 using ICD.Common.Services.Logging;
 using ICD.Connect.Devices;
@@ -17,7 +17,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
     public abstract class AbstractInputCardAdapter<TCard, TSettings> : AbstractCardAdapterBase<TCard, TSettings>, IInputCardAdapter
         where TCard : CardDevice
 #else
-	public abstract class AbstractInputCardAdapter<TSettings> : AbstractDevice<TSettings>, ICardAdapter
+	public abstract class AbstractInputCardAdapter<TSettings> : AbstractCardAdapterBase<TSettings>, ICardAdapter
 #endif
         where TSettings : IInputCardSettings, new()
     {
@@ -228,13 +228,15 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
         /// <param name="switcher"></param>
         /// <returns></returns>
         protected abstract TCard InstantiateCardInternal(uint cardNumber, Switch switcher);
-#endif
-
-        #endregion
 
         /// <summary>
         /// Gets the wrapped internal card.
         /// </summary>
         CardDevice IInputCardAdapter.Card { get { return Card; } }
+#endif
+
+        #endregion
+
+
     }
 }

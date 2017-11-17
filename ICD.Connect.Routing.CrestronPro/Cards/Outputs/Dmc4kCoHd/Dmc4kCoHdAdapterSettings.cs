@@ -1,5 +1,4 @@
 ﻿using System;
-using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Common.Properties;
 using ICD.Connect.Settings.Attributes;
 

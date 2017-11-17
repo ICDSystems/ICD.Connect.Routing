@@ -13,14 +13,16 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 
     public interface ICardAdapter : IDevice
     {
+#if SIMPLSHARP
         event CardChangeCallback OnCardChanged;
 
         object Card { get; }
 
         IDmSwitcherAdapter Switcher { get; }
+#endif
     }
 
-	public interface IInputCardAdapter : ICardAdapter
+    public interface IInputCardAdapter : ICardAdapter
 	{
 #if SIMPLSHARP
 		/// <summary>

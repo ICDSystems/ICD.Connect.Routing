@@ -8,8 +8,12 @@ using System;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 {
-	public sealed class DmTx4K302CAdapter : AbstractEndpointTransmitterBaseAdapter<DmTx4k302C, DmTx4K302CAdapterSettings>
-	{
+#if SIMPLSHARP
+    public sealed class DmTx4K302CAdapter : AbstractEndpointTransmitterBaseAdapter<DmTx4k302C, DmTx4K302CAdapterSettings>
+#else
+    public sealed class DmTx4K302CAdapter : AbstractEndpointTransmitterBaseAdapter<DmTx4K302CAdapterSettings>
+#endif
+    {
 		/// <summary>
 		/// Constructor.
 		/// </summary>

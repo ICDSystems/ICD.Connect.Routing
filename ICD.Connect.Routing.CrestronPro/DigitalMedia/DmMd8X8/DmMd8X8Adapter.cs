@@ -1,7 +1,7 @@
 ﻿using ICD.Common.Services.Logging;
-using ICD.Connect.Misc.CrestronPro;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro;
 #endif
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN;
 

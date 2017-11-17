@@ -1,6 +1,6 @@
-﻿using ICD.Connect.Misc.CrestronPro;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro;
 #endif
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN;
 

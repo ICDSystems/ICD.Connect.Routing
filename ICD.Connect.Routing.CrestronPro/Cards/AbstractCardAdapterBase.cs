@@ -6,11 +6,19 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards
 {
+#if SIMPLSHARP
     public abstract class AbstractCardAdapterBase<TCard, TSettings> : AbstractDevice<TSettings>, ICardAdapter
+#else
+    public abstract class AbstractCardAdapterBase<TSettings> : AbstractDevice<TSettings>, ICardAdapter
+#endif
         where TSettings : ICardSettings, new()
     {
+#if SIMPLSHARP
         public event CardChangeCallback OnCardChanged;
-        private TCard m_Card;
+
+         private TCard m_Card;
+#endif
+
         private int? m_CardNumber;
         private int? m_SwitcherId;
 
@@ -34,6 +42,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
             protected set { m_SwitcherId = value; }
         }
 
+#if SIMPLSHARP
         /// <summary>
         /// Gets the wrapped internal card.
         /// </summary>
@@ -55,6 +64,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
                     handler(this, m_Card);
             }
         }
+#endif
 
         /// <summary>
         /// Returns the Switcher
@@ -71,10 +81,12 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
             }
         }
 
+#if SIMPLSHARP
         /// <summary>
         /// Gets the wrapped internal card.
         /// </summary>
         object ICardAdapter.Card { get { return Card; } }
+#endif
 
         /// <summary>
         /// Release resources.

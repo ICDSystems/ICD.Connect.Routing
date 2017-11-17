@@ -2,15 +2,16 @@
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
+using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Connect.Routing.CrestronPro.Utils;
 #endif
 using ICD.Common.Services.Logging;
+using ICD.Connect.Devices;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards
@@ -19,7 +20,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
     public abstract class AbstractOutputCardAdapter<TCard, TSettings> : AbstractCardAdapterBase<TCard, TSettings>, IOutputCardAdapter
         where TCard : DmcOutputSingle
 #else
-	public abstract class AbstractCardAdapter<TSettings> : AbstractDevice<TSettings>, IOutputCardAdapter
+	public abstract class AbstractOutputCardAdapter<TSettings> : AbstractCardAdapterBase<TSettings>, IOutputCardAdapter
 #endif
         where TSettings : IOutputCardSettings, new()
     {
@@ -56,14 +57,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
             UpdateCachedOnlineStatus();
         }
 
-        /// <summary>
-        /// Gets the current online status of the device.
-        /// </summary>
-        /// <returns></returns>
-        protected override bool GetIsOnlineStatus()
-        {
-            return Card != null && GetInternalCards().AnyAndAll(c => c.IsOnline);
-        }
+
 
         #region Card Callbacks
 
@@ -200,13 +194,26 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
         /// <param name="switcher"></param>
         /// <returns></returns>
         protected abstract TCard InstantiateCardInternal(uint cardNumber, Switch switcher);
-#endif
-
-        #endregion
 
         /// <summary>
         /// Gets the wrapped internal card.
         /// </summary>
         DmcOutputSingle IOutputCardAdapter.Card { get { return Card; } }
+#endif
+
+        #endregion
+
+        /// <summary>
+        /// Gets the current online status of the device.
+        /// </summary>
+        /// <returns></returns>
+        protected override bool GetIsOnlineStatus()
+        {
+#if SIMPLSHARP
+            return Card != null && GetInternalCards().AnyAndAll(c => c.IsOnline);
+#else
+            return false;
+#endif
+        }
     }
 }

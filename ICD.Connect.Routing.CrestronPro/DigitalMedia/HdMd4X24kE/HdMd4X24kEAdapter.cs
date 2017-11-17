@@ -1,9 +1,9 @@
 ﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro;
 #else
 using System;
 #endif
-using ICD.Connect.Misc.CrestronPro;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 {
