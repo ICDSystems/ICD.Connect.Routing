@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
@@ -42,10 +43,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
             SwitcherId = switcherId;
             CardNumber = number;
 
-            if (Card != null)
+            if (Card != null && card != null)
             {
                 Unsubscribe(GetInternalCards());
-                UnRegister(GetInternalCards());
 
                 card.Dispose();
             }
@@ -107,18 +107,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
             if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
             {
                 Logger.AddEntry(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
-            }
-        }
-
-        /// <summary>
-        /// Unregisters the internal cards from this output card. 
-        /// </summary>
-        /// <param name="cards"></param>
-        protected void UnRegister(IEnumerable<CardDevice> cards)
-        {
-            foreach (var card in cards.Where(card => card.Registered))
-            {
-                card.UnRegister();
             }
         }
 
