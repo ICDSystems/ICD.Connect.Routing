@@ -150,7 +150,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 			if (Card == null)
 				return;
 
-			int input = (int)((CardDevice)Card).SwitcherInputOutput.Number;
+			int input = (int)Card.SwitcherInputOutput.Number;
 			if (args.Number != input)
 				return;
 
@@ -160,7 +160,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 
 		private bool GetVideoDetectedFeedback(int input)
 		{
-			return Card != null && ((CardDevice)Card).Switcher.Inputs[(uint)input].VideoDetectedFeedback.BoolValue;
+			return Card != null && Card.Switcher.Inputs[(uint)input].VideoDetectedFeedback.BoolValue;
 		}
 
 		#endregion

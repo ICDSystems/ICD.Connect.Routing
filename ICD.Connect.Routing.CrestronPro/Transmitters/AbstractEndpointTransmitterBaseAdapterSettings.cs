@@ -1,8 +1,6 @@
 ﻿using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
-using ICD.Connect.Misc.CrestronPro.Devices;
-using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters

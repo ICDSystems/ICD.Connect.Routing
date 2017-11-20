@@ -3,7 +3,7 @@ using Crestron.SimplSharpPro.DM;
 #endif
 using ICD.Common.Properties;
 
-namespace ICD.Connect.Misc.CrestronPro.Devices
+namespace ICD.Connect.Routing.CrestronPro
 {
 	/// <summary>
 	/// A IDmParent provides methods for getting attached DM devices.
