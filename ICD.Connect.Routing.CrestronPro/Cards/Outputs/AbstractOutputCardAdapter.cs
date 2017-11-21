@@ -102,7 +102,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
             eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
             if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
             {
-                Logger.AddEntry(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
+                Logger.AddEntry(eSeverity.Error, "{0} unable to register parent {1} - {2}", this, parent.GetType().Name, parentResult);
             }
         }
 
