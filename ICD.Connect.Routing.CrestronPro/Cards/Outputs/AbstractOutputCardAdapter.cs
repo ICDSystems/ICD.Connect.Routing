@@ -40,11 +40,10 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
             SwitcherId = switcherId;
             CardNumber = number;
 
-            if (Card != null && card != null)
+            if (Card != null)
             {
                 Unsubscribe(GetInternalCards());
-
-                card.Dispose();
+                Card.Dispose();
             }
             Card = card;
 
@@ -84,7 +83,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
         }
 
         /// <summary>
-        /// Registers the internal cards from this output card and then re-registers their parents.
+        /// Reregisters the parent switcher from the first output card on this list.
         /// </summary>
         /// <param name="cards"></param>
         protected void Register(IEnumerable<CardDevice> cards)
