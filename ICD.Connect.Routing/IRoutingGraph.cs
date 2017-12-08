@@ -18,7 +18,25 @@ namespace ICD.Connect.Routing
 	{
 		#region Events
 
+		/// <summary>
+		/// Raised when a route operation fails or succeeds.
+		/// </summary>
 		event EventHandler<RouteFinishedEventArgs> OnRouteFinished;
+
+		/// <summary>
+		/// Raised when a switcher changes routing.
+		/// </summary>
+		event EventHandler OnRouteChanged;
+
+		/// <summary>
+		/// Raised when a source device starts/stops sending video.
+		/// </summary>
+		event EventHandler<EndpointStateEventArgs> OnSourceTransmissionStateChanged;
+
+		/// <summary>
+		/// Raised when a source device is connected or disconnected.
+		/// </summary>
+		event EventHandler<EndpointStateEventArgs> OnSourceDetectionStateChanged;
 
 		#endregion
 
