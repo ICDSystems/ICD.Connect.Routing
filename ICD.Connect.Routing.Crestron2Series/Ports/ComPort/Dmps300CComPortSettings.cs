@@ -15,7 +15,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		private const string DEVICE_ELEMENT = "Device";
 		private const string ADDRESS_ELEMENT = "Address";
 
-		[OriginatorIdSettingsProperty(typeof(IDmps300CDevice))]
+		[OriginatorIdSettingsProperty(typeof(IDmps300CComPortDevice))]
 		public int Device { get; set; }
 
 		public int Address { get; set; }
