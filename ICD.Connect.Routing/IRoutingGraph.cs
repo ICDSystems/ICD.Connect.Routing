@@ -122,6 +122,16 @@ namespace ICD.Connect.Routing
 		[PublicAPI]
 		bool SourceDetected(IRouteSourceControl sourceControl, int output, eConnectionType type);
 
+		/// <summary>
+		/// Returns true if there is a path from the given source to the given destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		bool HasPath(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
+
 		#endregion
 
 		#region Routing
