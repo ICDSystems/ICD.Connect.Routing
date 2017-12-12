@@ -27,13 +27,13 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		private const ushort ANALOG_AUDIO_AUX1_OUT_6 = 10;
 		private const ushort ANALOG_AUDIO_AUX2_OUT_7 = 11;
 
-		private const ushort DIGITAL_VIDEO_DETECTED_1 = 401;
-		private const ushort DIGITAL_VIDEO_DETECTED_2 = 402;
-		private const ushort DIGITAL_VIDEO_DETECTED_3 = 403;
-		private const ushort DIGITAL_VIDEO_DETECTED_4 = 404;
-		private const ushort DIGITAL_VIDEO_DETECTED_5 = 405;
-		private const ushort DIGITAL_VIDEO_DETECTED_6 = 406;
-		private const ushort DIGITAL_VIDEO_DETECTED_7 = 407;
+		private const ushort DIGITAL_VIDEO_DETECTED_1 = 1;
+		private const ushort DIGITAL_VIDEO_DETECTED_2 = 2;
+		private const ushort DIGITAL_VIDEO_DETECTED_3 = 3;
+		private const ushort DIGITAL_VIDEO_DETECTED_4 = 4;
+		private const ushort DIGITAL_VIDEO_DETECTED_5 = 5;
+		private const ushort DIGITAL_VIDEO_DETECTED_6 = 6;
+		private const ushort DIGITAL_VIDEO_DETECTED_7 = 7;
 
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;

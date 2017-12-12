@@ -13,8 +13,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 {
     public sealed class Dmps300CTransmitterSourceControl : AbstractRouteSourceControl<Dmps300CTransmitter>
     {
-	    private const ushort DIGITAL_HDMI_DETECTED_JOIN = 106;
-	    private const ushort DIGITAL_VGA_DETECTED_JOIN = 112;
+	    private const ushort DIGITAL_HDMI_DETECTED_JOIN = 6;
+	    private const ushort DIGITAL_VGA_DETECTED_JOIN = 12;
 
 	    private const ushort ANALOG_DISABLE_FREERUN_JOIN = 48;
 
