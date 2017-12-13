@@ -76,6 +76,7 @@
     <Compile Include="Devices\Endpoints\Transmitter\Dmps300CTransmitter.cs" />
     <Compile Include="Devices\Endpoints\Transmitter\Dmps300CTransmitterSettings.cs" />
     <Compile Include="Devices\Endpoints\Transmitter\Dmps300CTransmitterSourceControl.cs" />
+    <Compile Include="Devices\IDmps300CComPortDevice.cs" />
     <Compile Include="Devices\IDmps300CDevice.cs" />
     <Compile Include="Devices\IDmps300CDeviceSettings.cs" />
     <Compile Include="KrangPlugin.cs" />
