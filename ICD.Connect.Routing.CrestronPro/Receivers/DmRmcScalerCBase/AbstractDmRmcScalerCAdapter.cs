@@ -296,7 +296,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		    catch (Exception e)
 		    {
 				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate internal {1} - {2}",
-								GetType().Name, typeof(TScaler).Name, e.Message);
+								this, typeof(TScaler).Name, e.Message);
 		    }
 
 		    SetScaler(scaler, settings.DmSwitch);

@@ -45,6 +45,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 	    {
 		    base.ConfigureSwitcher(switcher);
 
+		    if (switcher == null)
+			    return;
+
 			switcher.EnableAudioBreakaway.BoolValue = true;
 			switcher.AudioEnter.BoolValue = true;
 	    }
