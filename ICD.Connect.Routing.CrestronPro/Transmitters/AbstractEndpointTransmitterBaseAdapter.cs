@@ -236,7 +236,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			catch (Exception e)
 			{
 				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate internal {1} - {2}",
-				                GetType().Name, typeof(TTransmitter).Name, e.Message);
+				                this, typeof(TTransmitter).Name, e.Message);
 			}
 			SetTransmitter(transmitter, settings.DmSwitch);
 #else
