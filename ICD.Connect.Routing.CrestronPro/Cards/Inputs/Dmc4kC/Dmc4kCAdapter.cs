@@ -16,6 +16,11 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kC
             Controls.Add(new Dmc4kCAdapterRoutingControl(this, 0));
         }
 
+        protected override bool GetIsOnlineStatus()
+        {
+            return Card != null && Card.OnlineFeedback.BoolValue;
+        }
+
         /// <summary>
         /// Instantiates an external card.
         /// </summary>

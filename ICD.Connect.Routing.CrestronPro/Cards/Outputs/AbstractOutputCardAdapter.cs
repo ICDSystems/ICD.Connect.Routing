@@ -185,18 +185,5 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
 #endif
 
         #endregion
-
-        /// <summary>
-        /// Gets the current online status of the device.
-        /// </summary>
-        /// <returns></returns>
-        protected override bool GetIsOnlineStatus()
-        {
-#if SIMPLSHARP
-            return Card != null && GetInternalCards().AnyAndAll(c => c.IsOnline);
-#else
-            return false;
-#endif
-        }
     }
 }

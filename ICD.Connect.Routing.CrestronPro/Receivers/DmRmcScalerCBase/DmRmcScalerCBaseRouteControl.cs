@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Common.Services.Logging;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -111,7 +112,22 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 				case eConnectionType.Audio:
 					return true;
 				case eConnectionType.Video:
-					return m_Scaler.DmInput.SyncDetectedFeedback.BoolValue;
+			        if (m_Scaler == null)
+			        {
+			            Logger.AddEntry(eSeverity.Debug, "m_Scaler is null");
+			            return false;
+			        }
+                    if (m_Scaler.DmInput == null)
+                    {
+                        Logger.AddEntry(eSeverity.Debug, "DMINPUT is null");
+                        return false;
+                    }
+                    if (m_Scaler.DmInput.SyncDetectedFeedback == null)
+                    {
+                        Logger.AddEntry(eSeverity.Debug, "SYNC DETECTED FEEDBACK is null");
+                        return false;
+                    }
+			        return m_Scaler.DmInput.SyncDetectedFeedback.BoolValue;
 
 				default:
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));

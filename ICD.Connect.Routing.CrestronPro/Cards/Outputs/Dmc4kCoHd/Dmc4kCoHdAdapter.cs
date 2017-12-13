@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Linq;
+using ICD.Common.Utils.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
@@ -7,7 +9,7 @@ using Crestron.SimplSharpPro.DM.Cards;
 namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
 {
 #if SIMPLSHARP
-// ReSharper disable once InconsistentNaming
+    // ReSharper disable once InconsistentNaming
     public sealed class Dmc4kCoHdAdapter : AbstractOutputCardAdapter<Dmc4kCoHdSingle, Dmc4kCoHdAdapterSettings>
     {
         /// <summary>
@@ -16,6 +18,17 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
         public Dmc4kCoHdAdapter()
         {
             Controls.Add(new Dmc4kCoHdAdapterRoutingControl(this, 0));
+        }
+
+        /// <summary>
+        /// Gets the current online status of the device.
+        /// </summary>
+        /// <returns></returns>
+        protected override bool GetIsOnlineStatus()
+        {
+            return Card != null && 
+                   GetInternalCards().Select(internalCard => internalCard as DmcCoBaseB)
+                                     .All(internalBase => internalBase == null || internalBase.OnlineFeedback.BoolValue);
         }
 
         public override IEnumerable<CardDevice> GetInternalCards()
