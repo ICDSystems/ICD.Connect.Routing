@@ -126,7 +126,13 @@ namespace ICD.Connect.Routing.ConnectionUsage
 
 			try
 			{
-				return m_Rooms.ContainsKey(type) ? m_Rooms[type].ToArray() : Enumerable.Empty<int>();
+				if (!m_Rooms.ContainsKey(type))
+					return Enumerable.Empty<int>();
+
+				IcdHashSet<int> rooms = m_Rooms[type];
+				
+				// Copy for threadsafety
+				return rooms.ToArray(rooms.Count);
 			}
 			finally
 			{

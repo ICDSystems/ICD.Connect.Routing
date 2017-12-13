@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Settings;
@@ -110,7 +111,7 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		public IEnumerable<int> GetSourceDeviceRestrictions()
 		{
-			return m_SourceDeviceRestrictionsSection.Execute(() => m_SourceDeviceRestrictions.ToArray());
+			return m_SourceDeviceRestrictionsSection.Execute(() => m_SourceDeviceRestrictions.ToArray(m_SourceDeviceRestrictions.Count));
 		}
 
 		/// <summary>
@@ -118,7 +119,7 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		public IEnumerable<int> GetRoomRestrictions()
 		{
-			return m_RoomRestrictionsSection.Execute(() => m_SourceDeviceRestrictions.ToArray());
+			return m_RoomRestrictionsSection.Execute(() => m_RoomRestrictions.ToArray(m_RoomRestrictions.Count));
 		}
 
 		/// <summary>
