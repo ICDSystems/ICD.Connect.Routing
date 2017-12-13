@@ -26,9 +26,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 
 		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateScaler(DMOutput output)
 		{
-			IcdConsole.PrintLine("{0} {1} {2} {3}", output, output.Number, output.Name, output.EndpointOnlineFeedback);
-
-
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC(output);
 		}
 	}
