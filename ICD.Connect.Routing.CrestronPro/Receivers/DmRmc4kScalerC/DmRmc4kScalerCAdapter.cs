@@ -1,7 +1,6 @@
 ﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
-using ICD.Common.Utils;
 #endif
 using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
 
