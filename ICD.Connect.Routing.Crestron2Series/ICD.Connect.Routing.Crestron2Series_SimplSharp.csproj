@@ -79,6 +79,8 @@
     <Compile Include="Devices\IDmps300CComPortDevice.cs" />
     <Compile Include="Devices\IDmps300CDevice.cs" />
     <Compile Include="Devices\IDmps300CDeviceSettings.cs" />
+    <Compile Include="Devices\IDmps300CDigitalInputPortDevice.cs" />
+    <Compile Include="Devices\IDmps300CRelayPortDevice.cs" />
     <Compile Include="KrangPlugin.cs" />
     <None Include="ObfuscationSettings.cs" />
     <Compile Include="Ports\ComPort\Dmps300CComPort.cs" />

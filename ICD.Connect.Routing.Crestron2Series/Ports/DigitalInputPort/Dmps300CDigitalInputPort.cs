@@ -9,9 +9,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 {
 	public sealed class Dmps300CDigitalInputPort : AbstractDigitalInputPort<Dmps300CDigitalInputPortSettings>
 	{
-		private const ushort START_DIGITAL_JOIN = 695;
-
-		private IDmps300CDevice m_Device;
+		private IDmps300CDigitalInputPortDevice m_Device;
 
 		#region Properties
 
@@ -23,7 +21,13 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 		/// <summary>
 		/// Gets the digital join index for the relay.
 		/// </summary>
-		private ushort DigitalJoinIndex { get { return (ushort)(START_DIGITAL_JOIN + (Address - 1)); } }
+		private ushort DigitalJoinIndex {
+		    get
+		    {
+		        if (m_Device == null)
+		            return 0;
+		        return (ushort)(m_Device.DigitalInputStartJoin + (Address - 1));
+		    } }
 
 		#endregion
 
@@ -33,7 +37,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 		/// Sets the wrapped parent device.
 		/// </summary>
 		/// <param name="device"></param>
-		public void SetDevice(IDmps300CDevice device)
+		public void SetDevice(IDmps300CDigitalInputPortDevice device)
 		{
 			if (device == m_Device)
 				return;
@@ -92,7 +96,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 
 			Address = settings.Address;
 
-			IDmps300CDevice device = factory.GetOriginatorById<IDmps300CDevice>(settings.Device);
+			IDmps300CDigitalInputPortDevice device = factory.GetOriginatorById<IDmps300CDigitalInputPortDevice>(settings.Device);
 			SetDevice(device);
 		}
 
@@ -104,7 +108,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="device"></param>
-		private void Subscribe(IDmps300CDevice device)
+		private void Subscribe(IDmps300CDigitalInputPortDevice device)
 		{
 			if (device == null)
 				return;
@@ -117,7 +121,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="device"></param>
-		private void Unsubscribe(IDmps300CDevice device)
+		private void Unsubscribe(IDmps300CDigitalInputPortDevice device)
 		{
 			if (device == null)
 				return;

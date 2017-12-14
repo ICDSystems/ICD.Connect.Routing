@@ -2,10 +2,12 @@
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 {
-	public sealed class Dmps300CControlSystem : AbstractDmps300CDevice<Dmps300CControlSystemSettings>, IDmps300CComPortDevice
+	public sealed class Dmps300CControlSystem : AbstractDmps300CDevice<Dmps300CControlSystemSettings>, IDmps300CComPortDevice, IDmps300CDigitalInputPortDevice, IDmps300CRelayPortDevice
 	{
 		private const ushort PORT = 8700;
 		private const ushort SERIAL_COMSPEC_JOIN = 317;
+        private const ushort START_DIGITAL_INPUT_JOIN = 695;
+	    private const ushort START_RELAY_OUT_JOIN = 695;
 
 		/// <summary>
 		/// Constructor.
@@ -23,7 +25,17 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			get { return SERIAL_COMSPEC_JOIN; }
 		}
 
-		#region Settings
+	    /// <summary>
+	    /// Gets the xsig start join for digital inputs
+	    /// </summary>
+	    public ushort DigitalInputStartJoin { get { return START_DIGITAL_INPUT_JOIN; } }
+
+	    /// <summary>
+	    /// Gets the xsig start join for relay outputs
+	    /// </summary>
+	    public ushort RelayOutputStartJoin { get { return START_RELAY_OUT_JOIN; } }
+
+	    #region Settings
 
 		/// <summary>
 		/// Override to clear the instance settings.
