@@ -30,16 +30,5 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kC
             ParseXml(output, xml);
             return output;
         }
-
-        /// <summary>
-        /// Loads the settings from XML.
-        /// </summary>
-        /// <param name="xml"></param>
-        /// <returns></returns>
-        [PublicAPI, XmlFactoryMethod(FACTORY_NAME + "Hdcp2")]
-        public static Dmc4kCAdapterSettings FromXmlHdcp2(string xml)
-        {
-            return FromXml(xml);
-        }
     }
 }
