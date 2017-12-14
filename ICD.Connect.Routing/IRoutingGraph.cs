@@ -65,10 +65,11 @@ namespace ICD.Connect.Routing
 		/// <param name="destinationInput"></param>
 		/// <param name="type"></param>
 		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The sources</returns>
 		IEnumerable<EndpointInfo> GetActiveSourceEndpoints(EndpointInfo destinationInput, eConnectionType type,
-		                                                   bool signalDetected);
+		                                                   bool signalDetected, bool inputActive);
 
 		/// <summary>
 		/// Finds the actively routed source for the destination at the given input address.
@@ -77,10 +78,11 @@ namespace ICD.Connect.Routing
 		/// <param name="input"></param>
 		/// <param name="type"></param>
 		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The source</returns>
 		EndpointInfo? GetActiveSourceEndpoint(IRouteDestinationControl destination, int input,
-		                                      eConnectionType type, bool signalDetected);
+		                                      eConnectionType type, bool signalDetected, bool inputActive);
 
 		/// <summary>
 		/// Finds the destinations that the source is actively routed to.
@@ -89,10 +91,11 @@ namespace ICD.Connect.Routing
 		/// <param name="sourceOutput"></param>
 		/// <param name="type"></param>
 		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The sources</returns>
 		IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(IRouteSourceControl sourceControl, int sourceOutput,
-		                                                        eConnectionType type, bool signalDetected);
+		                                                        eConnectionType type, bool signalDetected, bool inputActive);
 
 		/// <summary>
 		/// Recurses over all of the source devices that can be routed to the destination.
@@ -150,9 +153,10 @@ namespace ICD.Connect.Routing
 		/// <param name="destination"></param>
 		/// <param name="type"></param>
 		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
 		/// <returns></returns>
 		IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, EndpointInfo destination, eConnectionType type,
-		                                          bool signalDetected);
+		                                          bool signalDetected, bool inputActive);
 
 		/// <summary>
 		/// Finds all of the active paths from the given source.
@@ -160,8 +164,9 @@ namespace ICD.Connect.Routing
 		/// <param name="source"></param>
 		/// <param name="type"></param>
 		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
 		/// <returns></returns>
-		IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type, bool signalDetected);
+		IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type, bool signalDetected, bool inputActive);
 
 		#endregion
 
