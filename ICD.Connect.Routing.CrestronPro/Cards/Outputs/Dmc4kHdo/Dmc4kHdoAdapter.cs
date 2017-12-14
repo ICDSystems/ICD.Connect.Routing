@@ -27,7 +27,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kHdo
         {
             return Card != null && 
                    GetInternalCards().Select(internalCard => internalCard as Crestron.SimplSharpPro.DM.Cards.Dmc4kHdo)
-                                     .All(internalBase => internalBase == null || internalBase.OnlineFeedback.BoolValue);
+                                     .All(internalBase => internalBase == null || internalBase.PresentFeedback.BoolValue);
         }
 
         public override IEnumerable<CardDevice> GetInternalCards()

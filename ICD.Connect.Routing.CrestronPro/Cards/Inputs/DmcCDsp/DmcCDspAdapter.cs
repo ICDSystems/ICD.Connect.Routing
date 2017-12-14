@@ -18,7 +18,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcCDsp
 
         protected override bool GetIsOnlineStatus()
         {
-            return Card != null && Card.OnlineFeedback.BoolValue;
+            return Card != null && Card.PresentFeedback.BoolValue;
         }
 
 		/// <summary>
