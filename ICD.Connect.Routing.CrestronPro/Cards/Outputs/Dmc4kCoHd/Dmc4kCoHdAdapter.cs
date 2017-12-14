@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using System.Linq;
-using ICD.Common.Utils.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;

@@ -107,11 +107,10 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
         [CanBeNull]
         private IRouteSwitcherControl GetParentSwitcherControl()
         {
-            if (Parent == null || Parent.Switcher == null)
-            {
-                return null;
-            }
-            return Parent.Switcher.Controls.GetControl<IRouteSwitcherControl>();
+// ReSharper disable once CompareNonConstrainedGenericWithNull
+	        if (Parent == null || Parent.Switcher == null)
+		        return null;
+	        return Parent.Switcher.Controls.GetControl<IRouteSwitcherControl>();
         }
 
         #endregion
