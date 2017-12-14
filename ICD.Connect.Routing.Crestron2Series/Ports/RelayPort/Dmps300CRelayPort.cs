@@ -9,9 +9,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 {
 	public sealed class Dmps300CRelayPort : AbstractRelayPort<Dmps300CRelayPortSettings>
 	{
-		private const ushort START_DIGITAL_JOIN = 695;
-
-		private IDmps300CDevice m_Device;
+		private IDmps300CRelayPortDevice m_Device;
 
 		#region Properties
 
@@ -23,7 +21,13 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 		/// <summary>
 		/// Gets the digital join index for the relay.
 		/// </summary>
-		private ushort DigitalJoinIndex { get { return (ushort)(START_DIGITAL_JOIN + (Address - 1)); } }
+		private ushort DigitalJoinIndex {
+		    get
+		    {
+		        if (m_Device == null)
+		            return 0;
+		        return (ushort)(m_Device.RelayOutputStartJoin + (Address - 1));
+		    } }
 
 		#endregion
 
@@ -33,7 +37,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 		/// Sets the wrapped parent device.
 		/// </summary>
 		/// <param name="device"></param>
-		public void SetDevice(IDmps300CDevice device)
+		public void SetDevice(IDmps300CRelayPortDevice device)
 		{
 			if (device == m_Device)
 				return;
@@ -122,7 +126,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 
 			Address = settings.Address;
 
-			IDmps300CDevice device = factory.GetOriginatorById<IDmps300CDevice>(settings.Device);
+			IDmps300CRelayPortDevice device = factory.GetOriginatorById<IDmps300CRelayPortDevice>(settings.Device);
 			SetDevice(device);
 		}
 
@@ -134,7 +138,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="device"></param>
-		private void Subscribe(IDmps300CDevice device)
+		private void Subscribe(IDmps300CRelayPortDevice device)
 		{
 			if (device == null)
 				return;
@@ -146,7 +150,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="device"></param>
-		private void Unsubscribe(IDmps300CDevice device)
+		private void Unsubscribe(IDmps300CRelayPortDevice device)
 		{
 			if (device == null)
 				return;
