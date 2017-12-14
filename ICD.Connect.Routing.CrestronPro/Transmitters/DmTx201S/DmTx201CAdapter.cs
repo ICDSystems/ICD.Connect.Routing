@@ -38,7 +38,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 		}
 	}
 #else
-    public sealed class DmTx201CAdapter : AbstractDmTx200BaseAdapter<DmTx201CAdapterSettings>
+    public sealed class DmTx201CAdapter : AbstractDmTx201SAdapter<DmTx201CAdapterSettings>
     {
     }
 #endif

@@ -1,5 +1,5 @@
 ﻿using ICD.Common.Utils.Xml;
-using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints
 {
@@ -8,7 +8,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints
 	{
 		private const string PARENT_DEVICE_ELEMENT = "Device";
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(IDmps300CDevice))]
+		[OriginatorIdSettingsProperty(typeof(IDmps300CDevice))]
 		public int Device { get; set; }
 
 		/// <summary>

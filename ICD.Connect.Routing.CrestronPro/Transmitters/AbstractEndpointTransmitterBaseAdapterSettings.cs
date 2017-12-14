@@ -1,8 +1,6 @@
 ﻿using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
-using ICD.Connect.Misc.CrestronPro.Devices;
-using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters
@@ -39,7 +37,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// </summary>
 		/// <param name="instance"></param>
 		/// <param name="xml"></param>
-		protected static void ParseXml(AbstractDmTx200BaseAdapterSettings instance, string xml)
+		protected static void ParseXml(AbstractEndpointTransmitterBaseAdapterSettings instance, string xml)
 		{
 			instance.Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT);
 			instance.DmSwitch = XmlUtils.TryReadChildElementContentAsInt(xml, DM_SWITCH_ELEMENT);

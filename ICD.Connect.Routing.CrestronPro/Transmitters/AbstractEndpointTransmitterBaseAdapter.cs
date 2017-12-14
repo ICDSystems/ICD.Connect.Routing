@@ -1,3 +1,4 @@
+﻿using ICD.Connect.Routing.CrestronPro.Cards;
 ﻿using System;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -47,10 +48,13 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// </summary>
 		public TTransmitter Transmitter
 		{
-			get { return m_Transmitter; }
+		    get
+		    {
+                return m_Transmitter;
+		    }
 			private set
 			{
-				if (value == m_Transmitter)
+                if (value == m_Transmitter)
 					return;
 
 				m_Transmitter = value;
@@ -66,7 +70,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// </summary>
 		Crestron.SimplSharpPro.DM.Endpoints.Transmitters.EndpointTransmitterBase IEndpointTransmitterBaseAdapter.Transmitter
 		{
-			get { return Transmitter; }
+		    get
+		    {
+		        return Transmitter;
+		    }
 		}
 #endif
 
@@ -96,7 +103,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		[PublicAPI]
 		public void SetTransmitter(TTransmitter transmitter, int? parentId)
 		{
-			Unsubscribe(Transmitter);
+            Unsubscribe(Transmitter);
 			Unregister(Transmitter);
 
 			m_ParentId = parentId;
@@ -211,6 +218,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="factory"></param>
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
+		    factory.LoadOriginators<ICardAdapter>();
 			base.ApplySettingsFinal(settings, factory);
 
 #if SIMPLSHARP
@@ -230,7 +238,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate internal {1} - {2}",
 				                GetType().Name, typeof(TTransmitter).Name, e.Message);
 			}
-
 			SetTransmitter(transmitter, settings.DmSwitch);
 #else
             throw new NotImplementedException();

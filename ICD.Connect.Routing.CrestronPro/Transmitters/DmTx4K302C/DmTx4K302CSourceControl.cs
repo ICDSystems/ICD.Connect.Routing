@@ -172,9 +172,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="transmitter"></param>
-		private void ParentOnTransmitterChanged(DmTx4K302CAdapter sender, DmTx4k302C transmitter)
+		private void ParentOnTransmitterChanged(IEndpointTransmitterBaseAdapter sender, EndpointTransmitterBase transmitter)
 		{
-			SetTransmitter(transmitter);
+			SetTransmitter(transmitter as DmTx4k302C);
 		}
 
 		private void SetTransmitter(DmTx4k302C transmitter)

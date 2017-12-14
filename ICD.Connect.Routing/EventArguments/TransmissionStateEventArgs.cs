@@ -46,7 +46,7 @@ namespace ICD.Connect.Routing.EventArguments
 			: this(args.Output, args.Type, args.State)
 		{
 		}
-
+		
 		/// <summary>
 		/// Gets the string representation for this instance.
 		/// </summary>

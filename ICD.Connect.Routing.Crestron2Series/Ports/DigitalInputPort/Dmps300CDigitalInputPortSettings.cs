@@ -4,6 +4,7 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Protocol.Ports.DigitalInput;
 using ICD.Connect.Routing.Crestron2Series.Devices;
 using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 {
@@ -14,7 +15,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 		private const string DEVICE_ELEMENT = "Device";
 		private const string ADDRESS_ELEMENT = "Address";
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Id, typeof(IDmps300CDevice))]
+		[OriginatorIdSettingsProperty(typeof(IDmps300CDevice))]
 		public int Device { get; set; }
 
 		public int Address { get; set; }
