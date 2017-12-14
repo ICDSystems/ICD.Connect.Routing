@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Extensions;
 #if SIMPLSHARP
@@ -66,6 +67,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
             foreach (var card in cards)
             {
                 card.OnlineStatusChange += CardOnLineStatusChange;
+                card.BaseEvent += CardOnBaseEvent;
             }
         }
 
@@ -78,6 +80,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
             foreach (var card in cards)
             {
                 card.OnlineStatusChange -= CardOnLineStatusChange;
+                card.BaseEvent -= CardOnBaseEvent;
             }
         }
 
@@ -110,7 +113,18 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
         /// </summary>
         /// <param name="currentDevice"></param>
         /// <param name="args"></param>
-        protected void CardOnLineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
+        private void CardOnLineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
+        {
+            UpdateCachedOnlineStatus();
+        }
+
+        /// <summary>
+        /// Called whenever the card fires any event. 
+        /// Needed because Crestron does not properly update the online status of the cards.
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="args"></param>
+        private void CardOnBaseEvent(GenericBase device, BaseEventArgs args)
         {
             UpdateCachedOnlineStatus();
         }
