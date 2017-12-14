@@ -97,6 +97,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
                 return;
 
             card.OnlineStatusChange -= CardOnLineStatusChange;
+            card.BaseEvent -= CardOnBaseEvent;
         }
 
         /// <summary>

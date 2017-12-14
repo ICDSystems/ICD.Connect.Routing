@@ -6,7 +6,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kHdo
 {
     public sealed class Dmc4kHdoAdapterSettings : AbstractOutputCardSettings
 	{
-        private const string FACTORY_NAME = "Dmc4kCoHd";
+        private const string FACTORY_NAME = "Dmc4kHdo";
 
 		/// <summary>
 		/// Gets the originator factory name.
