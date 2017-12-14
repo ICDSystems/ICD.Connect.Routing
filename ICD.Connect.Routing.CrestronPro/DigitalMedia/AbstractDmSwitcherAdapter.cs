@@ -95,36 +95,53 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		protected void SetSwitcher(TSwitcher switcher)
 		{
 			Unsubscribe(Switcher);
-
-			if (Switcher != null)
-			{
-				if (Switcher.Registered)
-					Switcher.UnRegister();
-
-				try
-				{
-					Switcher.Dispose();
-				}
-				catch
-				{
-				}
-			}
+			Unregister(Switcher);
 
 			Switcher = switcher;
 
-			if (Switcher != null && !Switcher.Registered)
-			{
-				if (Name != null)
-					Switcher.Description = Name;
-                
-				eDeviceRegistrationUnRegistrationResponse result = Switcher.Register();
-				if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-					Logger.AddEntry(eSeverity.Error, "Unable to register {0} - {1}", Switcher.GetType().Name, result);
-			}
-
+			Register(Switcher);
 			Subscribe(Switcher);
 
+			ConfigureSwitcher(Switcher);
+
 			UpdateCachedOnlineStatus();
+		}
+
+		/// <summary>
+		/// Unregisters the given switcher.
+		/// </summary>
+		/// <param name="switcher"></param>
+		private void Unregister(TSwitcher switcher)
+		{
+			if (switcher == null || !switcher.Registered)
+				return;
+
+			switcher.UnRegister();
+
+			try
+			{
+				switcher.Dispose();
+			}
+			catch
+			{
+			}
+		}
+
+		/// <summary>
+		/// Registers the given switcher.
+		/// </summary>
+		/// <param name="switcher"></param>
+		private void Register(TSwitcher switcher)
+		{
+			if (switcher == null || switcher.Registered)
+				return;
+
+			if (Name != null)
+				switcher.Description = Name;
+
+			eDeviceRegistrationUnRegistrationResponse result = switcher.Register();
+			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
+				Logger.AddEntry(eSeverity.Error, "{0} unable to register {1} - {2}", this, switcher.GetType().Name, result);
 		}
 
 		/// <summary>
@@ -133,6 +150,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// <param name="switcher"></param>
 		protected virtual void ConfigureSwitcher(TSwitcher switcher)
 		{
+			if (switcher == null)
+				return;
+
 			switcher.EnableUSBBreakaway.BoolValue = true;
 			switcher.VideoEnter.BoolValue = true;
 			switcher.USBEnter.BoolValue = true;

@@ -2,9 +2,10 @@
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 {
-	public sealed class Dmps300CControlSystem : AbstractDmps300CDevice<Dmps300CControlSystemSettings>
+	public sealed class Dmps300CControlSystem : AbstractDmps300CDevice<Dmps300CControlSystemSettings>, IDmps300CComPortDevice
 	{
 		private const ushort PORT = 8700;
+		private const ushort SERIAL_COMSPEC_JOIN = 317;
 
 		/// <summary>
 		/// Constructor.
@@ -12,6 +13,14 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		public Dmps300CControlSystem()
 		{
 			Controls.Add(new Dmps300CControlSystemSwitcherControl(this));
+		}
+
+		/// <summary>
+		/// Gets the com spec join for the device.
+		/// </summary>
+		public ushort ComSpecJoin
+		{
+			get { return SERIAL_COMSPEC_JOIN; }
 		}
 
 		#region Settings

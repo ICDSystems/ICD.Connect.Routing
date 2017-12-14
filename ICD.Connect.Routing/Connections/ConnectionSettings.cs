@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
@@ -127,12 +126,12 @@ namespace ICD.Connect.Routing.Connections
 
 		public IEnumerable<int> GetSourceDeviceRestrictions()
 		{
-			return m_SourceDeviceRestrictionsSection.Execute(() => m_SourceDeviceRestrictions.Order().ToArray());
+			return m_SourceDeviceRestrictionsSection.Execute(() => m_SourceDeviceRestrictions.Order().ToArray(m_SourceDeviceRestrictions.Count));
 		}
 
 		public IEnumerable<int> GetRoomRestrictions()
 		{
-			return m_RoomRestrictionsSection.Execute(() => m_RoomRestrictions.Order().ToArray());
+			return m_RoomRestrictionsSection.Execute(() => m_RoomRestrictions.Order().ToArray(m_RoomRestrictions.Count));
 		}
 
 		/// <summary>

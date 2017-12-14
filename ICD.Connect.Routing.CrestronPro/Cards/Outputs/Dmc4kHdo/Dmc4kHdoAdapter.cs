@@ -1,23 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
-using ICD.Common.Utils.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
+namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kHdo
 {
 #if SIMPLSHARP
     // ReSharper disable once InconsistentNaming
-    public sealed class Dmc4kCoHdAdapter : AbstractOutputCardAdapter<Dmc4kCoHdSingle, Dmc4kCoHdAdapterSettings>
+    public sealed class Dmc4kHdoAdapter : AbstractOutputCardAdapter<Dmc4kHdoSingle, Dmc4kHdoAdapterSettings>
     {
         /// <summary>
         /// Constructor.
         /// </summary>
-        public Dmc4kCoHdAdapter()
+        public Dmc4kHdoAdapter()
         {
-            Controls.Add(new Dmc4kCoHdAdapterRoutingControl(this, 0));
+            Controls.Add(new Dmc4kHdoAdapterRoutingControl(this, 0));
         }
 
         /// <summary>
@@ -27,7 +26,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
         protected override bool GetIsOnlineStatus()
         {
             return Card != null && 
-                   GetInternalCards().Select(internalCard => internalCard as DmcCoBaseB)
+                   GetInternalCards().Select(internalCard => internalCard as Crestron.SimplSharpPro.DM.Cards.Dmc4kHdo)
                                      .All(internalBase => internalBase == null || internalBase.PresentFeedback.BoolValue);
         }
 
@@ -46,9 +45,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
         /// <param name="cardNumber"></param>
         /// <param name="switcher"></param>
         /// <returns></returns>
-        protected override Dmc4kCoHdSingle InstantiateCardInternal(uint cardNumber, Switch switcher)
+        protected override Dmc4kHdoSingle InstantiateCardInternal(uint cardNumber, Switch switcher)
         {
-            return new Dmc4kCoHdSingle(cardNumber, switcher);
+            return new Dmc4kHdoSingle(cardNumber, switcher);
         }
     }
 #else

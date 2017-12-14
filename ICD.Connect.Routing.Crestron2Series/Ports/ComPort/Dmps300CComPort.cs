@@ -12,11 +12,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 {
 	public sealed class Dmps300CComPort : AbstractComPort<Dmps300CComPortSettings>
 	{
-		private const ushort SERIAL_COMSPEC_JOIN = 317;
-
 		private readonly AsyncTcpClient m_Client;
 
-		private IDmps300CDevice m_Device;
+		private IDmps300CComPortDevice m_Device;
 
 		#region Properties
 
@@ -100,7 +98,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 			                                           numberOfStopBits, protocolType, hardwareHandShake,
 			                                           softwareHandshake, reportCtsChanges);
 
-			m_Device.SendData(new SerialXSig(spec, SERIAL_COMSPEC_JOIN));
+			m_Device.SendData(new SerialXSig(spec, m_Device.ComSpecJoin));
 		}
 
 		#endregion
@@ -166,7 +164,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			m_Device = factory.GetOriginatorById<IDmps300CDevice>(settings.Device);
+			m_Device = factory.GetOriginatorById<IDmps300CComPortDevice>(settings.Device);
 			Address = settings.Address;
 		}
 

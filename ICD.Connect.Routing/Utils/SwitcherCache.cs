@@ -268,7 +268,7 @@ namespace ICD.Connect.Routing.Utils
 		/// </summary>
 		private void ClearOutputInputMap()
 		{
-			int[] outputs = m_OutputInputMapSection.Execute(() => m_OutputInputMap.Keys.ToArray());
+			int[] outputs = m_OutputInputMapSection.Execute(() => m_OutputInputMap.Keys.ToArray(m_OutputInputMap.Count));
 			eConnectionType allTypes = EnumUtils.GetFlagsAllValue<eConnectionType>();
 
 			foreach (int output in outputs)
@@ -280,7 +280,7 @@ namespace ICD.Connect.Routing.Utils
 		/// </summary>
 		private void ClearSourceDetectedStates()
 		{
-			int[] inputs = m_SourceDetectionStatesSection.Execute(() => m_SourceDetectionStates.Keys.ToArray());
+			int[] inputs = m_SourceDetectionStatesSection.Execute(() => m_SourceDetectionStates.Keys.ToArray(m_SourceDetectionStates.Count));
 			eConnectionType allTypes = EnumUtils.GetFlagsAllValue<eConnectionType>();
 
 			foreach (int input in inputs)

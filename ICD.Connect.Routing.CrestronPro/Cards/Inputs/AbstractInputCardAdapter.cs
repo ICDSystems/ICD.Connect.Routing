@@ -1,4 +1,5 @@
-﻿using ICD.Common.Properties;
+﻿using System;
+using ICD.Common.Properties;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -70,19 +71,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
         }
 #endif
 
-        /// <summary>
-        /// Gets the current online status of the device.
-        /// </summary>
-        /// <returns></returns>
-        protected override bool GetIsOnlineStatus()
-        {
-#if SIMPLSHARP
-            return Card != null && Card.IsOnline;
-#else
-			return false;
-#endif
-        }
-
         #region Card Callbacks
 
 #if SIMPLSHARP
@@ -96,6 +84,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
                 return;
 
             card.OnlineStatusChange += CardOnLineStatusChange;
+            card.BaseEvent += CardOnBaseEvent;
         }
 
         /// <summary>
@@ -108,6 +97,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
                 return;
 
             card.OnlineStatusChange -= CardOnLineStatusChange;
+            card.BaseEvent -= CardOnBaseEvent;
         }
 
         /// <summary>
@@ -130,7 +120,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
             eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
             if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
             {
-                Logger.AddEntry(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
+                Logger.AddEntry(eSeverity.Error, "{0} unable to register parent {1} - {2}", this, parent.GetType().Name, parentResult);
             }
         }
 
@@ -150,6 +140,17 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
         /// <param name="currentDevice"></param>
         /// <param name="args"></param>
         private void CardOnLineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
+        {
+            UpdateCachedOnlineStatus();
+        }
+
+        /// <summary>
+        /// Called whenever the card fires any event. 
+        /// Needed because Crestron does not properly update the online status of the cards.
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="args"></param>
+        private void CardOnBaseEvent(GenericBase device, BaseEventArgs args)
         {
             UpdateCachedOnlineStatus();
         }

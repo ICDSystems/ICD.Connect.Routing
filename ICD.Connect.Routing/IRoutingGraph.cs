@@ -18,7 +18,25 @@ namespace ICD.Connect.Routing
 	{
 		#region Events
 
+		/// <summary>
+		/// Raised when a route operation fails or succeeds.
+		/// </summary>
 		event EventHandler<RouteFinishedEventArgs> OnRouteFinished;
+
+		/// <summary>
+		/// Raised when a switcher changes routing.
+		/// </summary>
+		event EventHandler OnRouteChanged;
+
+		/// <summary>
+		/// Raised when a source device starts/stops sending video.
+		/// </summary>
+		event EventHandler<EndpointStateEventArgs> OnSourceTransmissionStateChanged;
+
+		/// <summary>
+		/// Raised when a source device is connected or disconnected.
+		/// </summary>
+		event EventHandler<EndpointStateEventArgs> OnSourceDetectionStateChanged;
 
 		#endregion
 
@@ -103,6 +121,47 @@ namespace ICD.Connect.Routing
 		/// <returns></returns>
 		[PublicAPI]
 		bool SourceDetected(IRouteSourceControl sourceControl, int output, eConnectionType type);
+
+		/// <summary>
+		/// Returns true if there is a path from the given source to the given destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		bool HasPath(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Finds the shortest available path from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		[CanBeNull]
+		ConnectionPath FindPath(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Finds the current paths from the given source to the destination.
+		/// Return multiple paths if multiple connection types are provided.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <returns></returns>
+		IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, EndpointInfo destination, eConnectionType type,
+		                                          bool signalDetected);
+
+		/// <summary>
+		/// Finds all of the active paths from the given source.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <returns></returns>
+		IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type, bool signalDetected);
 
 		#endregion
 
@@ -201,6 +260,14 @@ namespace ICD.Connect.Routing
 		/// <returns>False if the devices could not be unrouted.</returns>
 		void Unroute(IRouteSourceControl sourceControl, IRouteDestinationControl destinationControl, eConnectionType type,
 		             int roomId);
+
+		/// <summary>
+		/// Unroutes the given connection path.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		void Unroute(Connection[] path, eConnectionType type, int roomId);
 
 		#endregion
 

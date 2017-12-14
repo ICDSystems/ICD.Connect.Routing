@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Extensions;
 #if SIMPLSHARP
@@ -42,9 +43,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
             if (Card != null)
             {
                 Unsubscribe(GetInternalCards());
-                UnRegister(GetInternalCards());
-
-                card.Dispose();
+                Card.Dispose();
             }
             Card = card;
 
@@ -68,6 +67,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
             foreach (var card in cards)
             {
                 card.OnlineStatusChange += CardOnLineStatusChange;
+                card.BaseEvent += CardOnBaseEvent;
             }
         }
 
@@ -80,11 +80,12 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
             foreach (var card in cards)
             {
                 card.OnlineStatusChange -= CardOnLineStatusChange;
+                card.BaseEvent -= CardOnBaseEvent;
             }
         }
 
         /// <summary>
-        /// Registers the internal cards from this output card and then re-registers their parents.
+        /// Reregisters the parent switcher from the first output card on this list.
         /// </summary>
         /// <param name="cards"></param>
         protected void Register(IEnumerable<CardDevice> cards)
@@ -103,19 +104,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
             eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
             if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
             {
-                Logger.AddEntry(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
-            }
-        }
-
-        /// <summary>
-        /// Unregisters the internal cards from this output card. 
-        /// </summary>
-        /// <param name="cards"></param>
-        protected void UnRegister(IEnumerable<CardDevice> cards)
-        {
-            foreach (var card in cards.Where(card => card.Registered))
-            {
-                card.UnRegister();
+                Logger.AddEntry(eSeverity.Error, "{0} unable to register parent {1} - {2}", this, parent.GetType().Name, parentResult);
             }
         }
 
@@ -124,7 +113,18 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
         /// </summary>
         /// <param name="currentDevice"></param>
         /// <param name="args"></param>
-        protected void CardOnLineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
+        private void CardOnLineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
+        {
+            UpdateCachedOnlineStatus();
+        }
+
+        /// <summary>
+        /// Called whenever the card fires any event. 
+        /// Needed because Crestron does not properly update the online status of the cards.
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="args"></param>
+        private void CardOnBaseEvent(GenericBase device, BaseEventArgs args)
         {
             UpdateCachedOnlineStatus();
         }
@@ -199,18 +199,5 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
 #endif
 
         #endregion
-
-        /// <summary>
-        /// Gets the current online status of the device.
-        /// </summary>
-        /// <returns></returns>
-        protected override bool GetIsOnlineStatus()
-        {
-#if SIMPLSHARP
-            return Card != null && GetInternalCards().AnyAndAll(c => c.IsOnline);
-#else
-            return false;
-#endif
-        }
     }
 }

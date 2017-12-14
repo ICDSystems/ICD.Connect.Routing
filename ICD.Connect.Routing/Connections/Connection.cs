@@ -111,7 +111,7 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		public IEnumerable<int> GetSourceDeviceRestrictions()
 		{
-			return m_SourceDeviceRestrictionsSection.Execute(() => m_SourceDeviceRestrictions.Order().ToArray());
+			return m_SourceDeviceRestrictionsSection.Execute(() => m_SourceDeviceRestrictions.ToArray(m_SourceDeviceRestrictions.Count));
 		}
 
 		/// <summary>
@@ -119,7 +119,7 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		public IEnumerable<int> GetRoomRestrictions()
 		{
-			return m_RoomRestrictionsSection.Execute(() => m_SourceDeviceRestrictions.Order().ToArray());
+			return m_RoomRestrictionsSection.Execute(() => m_RoomRestrictions.ToArray(m_RoomRestrictions.Count));
 		}
 
 		/// <summary>
