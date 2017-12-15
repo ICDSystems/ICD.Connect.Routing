@@ -5,6 +5,7 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices;
+using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Core;
@@ -249,12 +250,18 @@ namespace ICD.Connect.Routing.Connections
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			factory.GetOriginatorById<IDevice>(settings.SourceDeviceId);
-			factory.GetOriginatorById<IDevice>(settings.DestinationDeviceId);
+			IDevice source = factory.GetOriginatorById<IDevice>(settings.SourceDeviceId);
+			IDevice destination = factory.GetOriginatorById<IDevice>(settings.DestinationDeviceId);
+
+			// Validate the source and destination controls
+			source.Controls.GetControl<IRouteSourceControl>(settings.SourceControlId);
+			destination.Controls.GetControl<IRouteDestinationControl>(settings.DestinationControlId);
+	
 			Source = new EndpointInfo(
 				settings.SourceDeviceId,
 				settings.SourceControlId,
 				settings.SourceAddress);
+
 			Destination = new EndpointInfo(
 				settings.DestinationDeviceId,
 				settings.DestinationControlId,
