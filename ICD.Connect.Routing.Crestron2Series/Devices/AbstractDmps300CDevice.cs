@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
@@ -178,6 +179,27 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		#endregion
 
 		#region Console
+
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
+
+			yield return m_Client;
+		}
+
+		/// <summary>
+		/// Workaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
+		{
+			return base.GetConsoleNodes();
+		}
 
 		/// <summary>
 		/// Calls the delegate for each console status item.
