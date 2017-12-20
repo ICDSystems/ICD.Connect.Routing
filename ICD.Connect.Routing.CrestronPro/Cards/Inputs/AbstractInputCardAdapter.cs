@@ -110,7 +110,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
                 return;
             }
 
-            GenericDevice parent = card.Parent as GenericDevice;
+            GenericBase parent = ((DMInputOutputBase)card.Parent).Parent as GenericBase;
             if (parent == null)
             {
                 return;
