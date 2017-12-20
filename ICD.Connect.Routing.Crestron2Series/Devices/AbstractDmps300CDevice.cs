@@ -6,6 +6,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol.EventArguments;
+using ICD.Connect.Protocol.Heartbeat;
 using ICD.Connect.Protocol.Network.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.SerialBuffers;
@@ -13,10 +14,18 @@ using ICD.Connect.Protocol.XSig;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices
 {
-	public abstract class AbstractDmps300CDevice<TSettings> : AbstractDevice<TSettings>, IDmps300CDevice
+	public abstract class AbstractDmps300CDevice<TSettings> : AbstractDevice<TSettings>, IDmps300CDevice, IConnectable
 		where TSettings : IDmps300CDeviceSettings, new()
 	{
 		public event EventHandler<XSigEventArgs> OnSigEvent;
+        public event EventHandler<BoolEventArgs> OnConnectedStateChanged;
+
+	    public bool IsConnected
+	    {
+	        get { return GetIsOnlineStatus(); }
+	    }
+
+	    public Heartbeat Heartbeat { get; private set; }
 
 		private readonly AsyncTcpClient m_Client;
 		private readonly XSigSerialBuffer m_Buffer;
@@ -40,11 +49,14 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// </summary>
 		protected AbstractDmps300CDevice()
 		{
+            Heartbeat = new Heartbeat(this);
 			m_Client = new AsyncTcpClient();
 			m_Buffer = new XSigSerialBuffer();
 
 			Subscribe(m_Buffer);
 			Subscribe(m_Client);
+
+            Heartbeat.StartMonitoring();
 		}
 
 		/// <summary>
@@ -59,6 +71,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 			Unsubscribe(m_Buffer);
 			Unsubscribe(m_Client);
 
+            Heartbeat.StopMonitoring();
+            Heartbeat.Dispose();
+
 			m_Client.Dispose();
 		}
 
@@ -68,12 +83,14 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return m_Client != null && m_Client.IsOnline;
+		    bool value = m_Client != null && m_Client.IsOnline;
+            OnConnectedStateChanged.Raise(this, new BoolEventArgs(value));
+			return value;
 		}
 
 		#region Methods
 
-		/// <summary>
+	    /// <summary>
 		/// Connect to the device.
 		/// </summary>
 		public void Connect()
