@@ -106,8 +106,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 						control.VideoEnter.BoolValue = true;
 					if (control.AudioEnter.Type == eSigType.Bool)
 						control.AudioEnter.BoolValue = true;
+				    if (control.EnableAudioBreakaway.Type == eSigType.Bool)
+				        control.EnableAudioBreakaway.BoolValue = true;
 					if (control.USBEnter.Type == eSigType.Bool)
 						control.USBEnter.BoolValue = true;
+				    if (control.EnableUSBBreakaway.Type == eSigType.Bool)
+				        control.EnableUSBBreakaway.BoolValue = true;
 				}
 			}
 
