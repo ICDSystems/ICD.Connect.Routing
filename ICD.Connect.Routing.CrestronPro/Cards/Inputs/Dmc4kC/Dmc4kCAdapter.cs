@@ -18,6 +18,8 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kC
 
         protected override bool GetIsOnlineStatus()
         {
+            return true;
+            //TODO: Crestron api broken, re enable this line when a resolution comes back from them
             return Card != null && Card.PresentFeedback.BoolValue;
         }
 

@@ -25,6 +25,8 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
         /// <returns></returns>
         protected override bool GetIsOnlineStatus()
         {
+            return true;
+            //TODO: Crestron api broken, re enable this line when a resolution comes back from them
             return Card != null && 
                    GetInternalCards().Select(internalCard => internalCard as DmcCoBaseB)
                                      .All(internalBase => internalBase == null || internalBase.PresentFeedback.BoolValue);
