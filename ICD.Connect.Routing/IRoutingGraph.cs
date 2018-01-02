@@ -146,6 +146,21 @@ namespace ICD.Connect.Routing
 		ConnectionPath FindPath(EndpointInfo source, EndpointInfo destination, eConnectionType flag, int roomId);
 
 		/// <summary>
+		/// Returns the shortest paths from the source to the given destinations.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinations"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		[NotNull]
+		IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPaths(
+			EndpointInfo source,
+			IEnumerable<EndpointInfo> destinations,
+			eConnectionType flag,
+			int roomId);
+
+		/// <summary>
 		/// Finds the current paths from the given source to the destination.
 		/// Return multiple paths if multiple connection types are provided.
 		/// </summary>
@@ -189,7 +204,14 @@ namespace ICD.Connect.Routing
 		/// <param name="destinations"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-	    void RouteMultiple(EndpointInfo source, IEnumerable<EndpointInfo> destinations, eConnectionType type, int roomId); 
+	    void RouteMultiple(EndpointInfo source, IEnumerable<EndpointInfo> destinations, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Applies the given path to the switchers.
+		/// </summary>
+		/// <param name="op"></param>
+		/// <param name="path"></param>
+		void RoutePath(RouteOperation op, IEnumerable<Connection> path);
 
 		/// <summary>
 		/// Routes the source to the destination.
