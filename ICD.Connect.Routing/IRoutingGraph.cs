@@ -140,10 +140,10 @@ namespace ICD.Connect.Routing
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="destination"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		[CanBeNull]
-		ConnectionPath FindPath(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
+		ConnectionPath FindPath(EndpointInfo source, EndpointInfo destination, eConnectionType flag, int roomId);
 
 		/// <summary>
 		/// Finds the current paths from the given source to the destination.
