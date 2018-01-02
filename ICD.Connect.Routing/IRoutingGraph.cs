@@ -182,7 +182,7 @@ namespace ICD.Connect.Routing
 		/// <returns>False if route could not be established</returns>
 		void Route(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
 
-	    IEnumerable<RouteOperation> Route(EndpointInfo source, IEnumerable<EndpointInfo> destinations, eConnectionType type, int roomId); 
+	    IEnumerable<RouteOperation> RouteMultiple(EndpointInfo source, IEnumerable<EndpointInfo> destinations, eConnectionType type, int roomId); 
 
 		/// <summary>
 		/// Routes the source to the destination.
