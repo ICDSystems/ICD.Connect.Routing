@@ -152,10 +152,12 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			if (switcher == null)
 				return;
-
-			switcher.EnableUSBBreakaway.BoolValue = true;
-			switcher.VideoEnter.BoolValue = true;
-			switcher.USBEnter.BoolValue = true;
+            if(switcher.EnableUSBBreakaway.Supported)
+			    switcher.EnableUSBBreakaway.BoolValue = true;
+            if(switcher.VideoEnter.Supported)
+			    switcher.VideoEnter.BoolValue = true;
+			if(switcher.USBEnter.Supported)
+                switcher.USBEnter.BoolValue = true;
 		}
 
 		/// <summary>
