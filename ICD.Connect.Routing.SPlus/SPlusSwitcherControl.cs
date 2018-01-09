@@ -64,8 +64,17 @@ namespace ICD.Connect.Routing.SPlus
 			Subscribe(m_Cache);
 		}
 
+		/// <summary>
+		/// Release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
+			OnRouteChange = null;
+			OnActiveTransmissionStateChanged = null;
+			OnSourceDetectionStateChange = null;
+			OnActiveInputsChanged = null;
+
 			GetSignalDetectedStateCallback = null;
 			GetInputsCallback = null;
 			GetOutputsCallback = null;
