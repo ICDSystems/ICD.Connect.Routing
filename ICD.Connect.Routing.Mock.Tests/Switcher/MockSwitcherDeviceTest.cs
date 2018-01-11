@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace ICD.Connection.Routing.Mock.Tests.Switcher
+namespace ICD.Connect.Routing.Mock.Tests.Switcher
 {
 	[TestFixture]
     public sealed class MockSwitcherDeviceTest

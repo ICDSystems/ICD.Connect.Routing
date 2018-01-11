@@ -1,6 +1,6 @@
 ﻿using NUnit.Framework;
 
-namespace ICD.Connection.Routing.Mock.Tests.Midpoint
+namespace ICD.Connect.Routing.Mock.Tests.Midpoint
 {
 	[TestFixture]
     public sealed class MockRouteMidpointControlTest
