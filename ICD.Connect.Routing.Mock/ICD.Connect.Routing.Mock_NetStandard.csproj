@@ -32,6 +32,7 @@
     <None Remove="ICD.Connect.Routing.Mock_SimplSharp.suo" />
     <None Remove="ICD.Connect.Routing.projectinfo" />
     <None Remove="ICD.SimplSharp.projectinfo" />
+    <None Remove="Properties\ControlSystem.cfg" />
   </ItemGroup>
 
   <ItemGroup>

@@ -31,6 +31,7 @@
   <ItemGroup>
     <None Remove=".gitignore" />
     <None Remove="ICD.Connect.Routing.projectinfo" />
+    <None Remove="Properties\ControlSystem.cfg" />
   </ItemGroup>
 
   <ItemGroup>
