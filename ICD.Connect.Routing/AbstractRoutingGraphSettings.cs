@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings;
 
@@ -62,6 +63,9 @@ namespace ICD.Connect.Routing
 
 		protected static void ParseXml(AbstractRoutingGraphSettings instance, string xml)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			IEnumerable<ISettings> connections = PluginFactory.GetSettingsFromXml(xml, CONNECTIONS_ELEMENT);
 			IEnumerable<ISettings> staticRoutes = PluginFactory.GetSettingsFromXml(xml, STATIC_ROUTES_ELEMENT);
 			IEnumerable<ISettings> sources = PluginFactory.GetSettingsFromXml(xml, SOURCES_ELEMENT);
