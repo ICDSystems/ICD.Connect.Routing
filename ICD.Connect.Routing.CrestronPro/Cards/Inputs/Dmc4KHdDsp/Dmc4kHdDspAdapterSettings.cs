@@ -2,7 +2,7 @@
 using ICD.Common.Properties;
 using ICD.Connect.Settings.Attributes;
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDsp
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4KHdDsp
 {
     public sealed class Dmc4kHdDspAdapterSettings : AbstractInputCardSettings
 	{

@@ -3,7 +3,7 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDsp
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4KHdDsp
 {
 #if SIMPLSHARP
 	public sealed class Dmc4kHdDspAdapter : AbstractInputCardAdapter<Crestron.SimplSharpPro.DM.Cards.Dmc4kHdDsp, Dmc4kHdDspAdapterSettings>

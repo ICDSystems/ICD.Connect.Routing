@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using ICD.Connect.Routing.Connections;
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDsp
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4KHdDsp
 {
 	public sealed class Dmc4kHdDspAdapterRoutingControl : AbstractInputCardAdapterRoutingControl<Dmc4kHdDspAdapter>
 	{
