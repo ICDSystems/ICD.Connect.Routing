@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using ICD.Common.Utils.Services.Logging;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
 using ICD.Common.Properties;
-using ICD.Common.Services.Logging;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Core;
 

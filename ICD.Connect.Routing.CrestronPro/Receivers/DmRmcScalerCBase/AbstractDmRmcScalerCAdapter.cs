@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Common.Utils.Services.Logging;
 #if SIMPLSHARP
 using System.Collections.Generic;
 using Crestron.SimplSharpPro;
@@ -7,7 +8,6 @@ using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Common.Properties;
-using ICD.Common.Services.Logging;
 using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
 #endif

@@ -1,4 +1,5 @@
 ﻿using ICD.Common.Properties;
+using ICD.Common.Utils.Services.Logging;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -6,7 +7,6 @@ using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 #endif
-using ICD.Common.Services.Logging;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
