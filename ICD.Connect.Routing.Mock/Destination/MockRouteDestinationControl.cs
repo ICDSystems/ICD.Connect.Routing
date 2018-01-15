@@ -89,7 +89,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 		{
 			return
 				ServiceProvider.GetService<IRoutingGraph>()
-				               .Connections.GetConnections()
+				               .Connections.GetChildren()
 				               .Where(c => c.Destination.Device == Parent.Id && c.Destination.Control == Id)
 				               .Select(c => new ConnectorInfo(c.Destination.Address, c.ConnectionType));
 		}

@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing
 
 		public abstract IConnectionsCollection Connections { get; }
 		public abstract IConnectionUsageCollection ConnectionUsages { get; }
-		public abstract IStaticRoutesCollection StaticRoutes { get; }
+		public abstract IOriginatorCollection<StaticRoute> StaticRoutes { get; }
 		public abstract IOriginatorCollection<ISource> Sources { get; }
 		public abstract IOriginatorCollection<IDestination> Destinations { get; }
 		public abstract IOriginatorCollection<IDestinationGroup> DestinationGroups { get; }
@@ -426,7 +426,7 @@ namespace ICD.Connect.Routing
 		{
 			TableBuilder builder = new TableBuilder("Source", "Output", "Destination", "Input", "Type");
 
-			foreach (var con in Connections.GetConnections().OrderBy(c => c.Source.Device).ThenBy(c => c.Source.Address))
+			foreach (var con in Connections.GetChildren().OrderBy(c => c.Source.Device).ThenBy(c => c.Source.Address))
 				builder.AddRow(con.Source, con.Source.Address, con.Destination, con.Destination.Address, con.ConnectionType);
 
 			return builder.ToString();

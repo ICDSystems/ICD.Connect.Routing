@@ -46,7 +46,7 @@ namespace ICD.Connect.Routing
 
 		IConnectionUsageCollection ConnectionUsages { get; }
 
-		IStaticRoutesCollection StaticRoutes { get; }
+		IOriginatorCollection<StaticRoute> StaticRoutes { get; }
 
 		IOriginatorCollection<ISource> Sources { get; }
 

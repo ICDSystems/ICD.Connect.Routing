@@ -58,7 +58,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		{
 			return
 				ServiceProvider.GetService<IRoutingGraph>()
-				               .Connections.GetConnections()
+				               .Connections.GetChildren()
 				               .Where(c => c.Source.Device == Parent.Id && c.Source.Control == Id)
 				               .Select(c => new ConnectorInfo(c.Source.Address, c.ConnectionType));
 		}
@@ -94,7 +94,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		{
 			return
 				ServiceProvider.GetService<IRoutingGraph>()
-				               .Connections.GetConnections()
+							   .Connections.GetChildren()
 				               .Where(c => c.Destination.Device == Parent.Id && c.Destination.Control == Id)
 				               .Select(c => new ConnectorInfo(c.Destination.Address, c.ConnectionType));
 		}
