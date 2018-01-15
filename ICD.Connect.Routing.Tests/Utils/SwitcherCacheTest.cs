@@ -1,11 +1,11 @@
-﻿using ICD.Connect.Routing.Connections;
+﻿using System;
+using System.Collections.Generic;
+using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
 
-namespace ICD.Connection.Routing.Tests.Utils
+namespace ICD.Connect.Routing.Tests.Utils
 {
 	[TestFixture]
 	public sealed class SwitcherCacheTest

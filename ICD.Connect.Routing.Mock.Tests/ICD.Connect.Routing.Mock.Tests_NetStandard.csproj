@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
-	<RootNamespace>ICD.Connect.Routing.Tests</RootNamespace>
+	<RootNamespace>ICD.Connect.Routing.Mock.Tests</RootNamespace>
 	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 	<Deterministic>false</Deterministic>
   </PropertyGroup>
@@ -24,9 +24,9 @@
   </ItemGroup>
   
   <ItemGroup>
-    <ProjectReference Include="..\ICD.Connect.Routing\ICD.Connect.Routing_NetStandard.csproj" />
+    <ProjectReference Include="..\ICD.Connect.Routing.Mock\ICD.Connect.Routing.Mock_NetStandard.csproj" />
   </ItemGroup>
-
+  
   <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
