@@ -14,7 +14,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 {
 	public sealed class ConnectionsCollection : AbstractOriginatorCollection<Connection>, IConnectionsCollection
 	{
-		private readonly Dictionary<int, Connection> m_Connections;
 		private readonly SafeCriticalSection m_ConnectionsSection;
 
 		/// <summary>
@@ -33,7 +32,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="routingGraph"></param>
 		public ConnectionsCollection(RoutingGraph routingGraph)
 		{
-			m_Connections = new Dictionary<int, Connection>();
 			m_OutputConnectionLookup = new Dictionary<DeviceControlInfo, Dictionary<int, Connection>>();
 			m_InputConnectionLookup = new Dictionary<DeviceControlInfo, Dictionary<int, Connection>>();
 			m_ConnectionsSection = new SafeCriticalSection();
@@ -432,7 +430,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				m_OutputConnectionLookup.Clear();
 				m_InputConnectionLookup.Clear();
 
-				foreach (Connection connection in m_Connections.Values)
+				foreach (Connection connection in GetChildren())
 				{
 					DeviceControlInfo sourceInfo = new DeviceControlInfo(connection.Source.Device, connection.Source.Control);
 					DeviceControlInfo destinationInfo = new DeviceControlInfo(connection.Destination.Device,
