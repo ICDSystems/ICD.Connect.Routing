@@ -1,6 +1,6 @@
 ﻿using ICD.Connect.Settings;
 
-namespace ICD.Connect.Routing
+namespace ICD.Connect.Routing.RoutingGraphs
 {
 	public interface IRoutingGraphSettings : ISettings
 	{

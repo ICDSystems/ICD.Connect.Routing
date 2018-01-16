@@ -9,6 +9,7 @@ using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.RoutingGraphs;
 using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Mock.Switcher

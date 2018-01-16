@@ -12,7 +12,7 @@ using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.StaticRoutes;
 using ICD.Connect.Settings;
 
-namespace ICD.Connect.Routing
+namespace ICD.Connect.Routing.RoutingGraphs
 {
 	public interface IRoutingGraph : IOriginator
 	{

@@ -17,7 +17,7 @@ using ICD.Connect.Routing.StaticRoutes;
 using ICD.Connect.Routing.Utils;
 using ICD.Connect.Settings;
 
-namespace ICD.Connect.Routing
+namespace ICD.Connect.Routing.RoutingGraphs
 {
 	public abstract class AbstractRoutingGraph<TSettings> : AbstractOriginator<TSettings>, IRoutingGraph, IConsoleNode
 		where TSettings : IRoutingGraphSettings, new()
