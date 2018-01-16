@@ -11,7 +11,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 #endif
 
 	public interface IDmSwitcherAdapter : IDevice, IDmParent
-    {
+	{
 #if SIMPLSHARP
 		event DmSwitcherChangeCallback OnSwitcherChanged;
 

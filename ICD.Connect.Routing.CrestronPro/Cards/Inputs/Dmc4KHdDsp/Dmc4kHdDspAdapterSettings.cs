@@ -4,9 +4,9 @@ using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4KHdDsp
 {
-    public sealed class Dmc4kHdDspAdapterSettings : AbstractInputCardSettings
+	public sealed class Dmc4kHdDspAdapterSettings : AbstractInputCardSettings
 	{
-        private const string FACTORY_NAME = "Dmc4kHdDsp";
+		private const string FACTORY_NAME = "Dmc4kHdDsp";
 
 		/// <summary>
 		/// Gets the originator factory name.
@@ -16,7 +16,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4KHdDsp
 		/// <summary>
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
-        public override Type OriginatorType { get { return typeof(Dmc4kHdDspAdapter); } }
+		public override Type OriginatorType { get { return typeof(Dmc4kHdDspAdapter); } }
 
 		/// <summary>
 		/// Loads the settings from XML.
@@ -24,9 +24,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4KHdDsp
 		/// <param name="xml"></param>
 		/// <returns></returns>
 		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-        public static Dmc4kHdDspAdapterSettings FromXml(string xml)
+		public static Dmc4kHdDspAdapterSettings FromXml(string xml)
 		{
-            Dmc4kHdDspAdapterSettings output = new Dmc4kHdDspAdapterSettings();
+			Dmc4kHdDspAdapterSettings output = new Dmc4kHdDspAdapterSettings();
 			ParseXml(output, xml);
 			return output;
 		}

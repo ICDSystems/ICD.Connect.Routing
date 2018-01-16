@@ -181,7 +181,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="signalDetected"></param>
 		/// <param name="inputActive"></param>
 		/// <returns></returns>
-		IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type, bool signalDetected, bool inputActive);
+		IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type, bool signalDetected,
+		                                          bool inputActive);
 
 		#endregion
 
@@ -204,7 +205,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="destinations"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-	    void RouteMultiple(EndpointInfo source, IEnumerable<EndpointInfo> destinations, eConnectionType type, int roomId);
+		void RouteMultiple(EndpointInfo source, IEnumerable<EndpointInfo> destinations, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Applies the given path to the switchers.

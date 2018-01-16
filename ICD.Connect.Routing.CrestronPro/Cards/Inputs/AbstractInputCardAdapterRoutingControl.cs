@@ -53,7 +53,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 
 			Unsubscribe(m_Cache);
 			Unsubscribe(Parent);
-		    Unsubscribe(Card);
+			Unsubscribe(Card);
 		}
 
 		/// <summary>
@@ -95,7 +95,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		private void ParentOnCardChanged(ICardAdapter sender, object card)
 		{
 			Unsubscribe(Card);
-                      
+
 			m_Cache.Clear();
 			Card = card as CardDevice;
 
@@ -139,9 +139,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// </summary>
 		/// <param name="card"></param>
 		private void Unsubscribe(CardDevice card)
-        {
-            if (card == null)
-                return;
+		{
+			if (card == null)
+				return;
 			card.Switcher.DMInputChange -= SwitcherOnDmInputChange;
 		}
 
@@ -198,4 +198,5 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		#endregion
 	}
 }
+
 #endif

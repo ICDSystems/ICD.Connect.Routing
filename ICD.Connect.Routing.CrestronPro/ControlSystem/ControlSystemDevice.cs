@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
+using ICD.Common.Properties;
+using ICD.Connect.Devices;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Misc.CrestronPro.Devices;
 #endif
-using ICD.Common.Properties;
-using ICD.Connect.Devices;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 {
@@ -15,27 +15,27 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 	/// </summary>
 	public sealed class ControlSystemDevice : AbstractDevice<ControlSystemDeviceSettings>
 #if SIMPLSHARP
-        , IPortParent, IDmParent
+	                                          , IPortParent, IDmParent
 #endif
-    {
+	{
 #if SIMPLSHARP
-        public delegate void ControlSystemChangeCallback(ControlSystemDevice sender, CrestronControlSystem controlSystem);
+		public delegate void ControlSystemChangeCallback(ControlSystemDevice sender, CrestronControlSystem controlSystem);
 
 		/// <summary>
 		/// Raised when the wrapped control system changes.
 		/// </summary>
 		public event ControlSystemChangeCallback OnControlSystemChanged;
 
-        private CrestronControlSystem m_ControlSystem;
+		private CrestronControlSystem m_ControlSystem;
 #endif
 
-        #region Controls
+		#region Controls
 
 #if SIMPLSHARP
-        /// <summary>
-        /// Gets the wrapped Crestron control system.
-        /// </summary>
-        public CrestronControlSystem ControlSystem
+		/// <summary>
+		/// Gets the wrapped Crestron control system.
+		/// </summary>
+		public CrestronControlSystem ControlSystem
 		{
 			get { return m_ControlSystem; }
 			private set
@@ -52,21 +52,21 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		}
 #endif
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public ControlSystemDevice()
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public ControlSystemDevice()
 		{
 #if SIMPLSHARP
-            SetControlSystem(ProgramInfo.ControlSystem);
+			SetControlSystem(ProgramInfo.ControlSystem);
 
 			Controls.Add(new ControlSystemSwitcherControl(this));
 #endif
 		}
 
-#region Methods
+		#region Methods
 
 		/// <summary>
 		/// Release resources.
@@ -76,16 +76,16 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			base.DisposeFinal(disposing);
 
 #if SIMPLSHARP
-            SetControlSystem(null);
+			SetControlSystem(null);
 #endif
 		}
 
 #if SIMPLSHARP
-        /// <summary>
-        /// Sets the wrapped CrestronControlSystem instance.
-        /// </summary>
-        /// <param name="controlSystem"></param>
-        [PublicAPI]
+		/// <summary>
+		/// Sets the wrapped CrestronControlSystem instance.
+		/// </summary>
+		/// <param name="controlSystem"></param>
+		[PublicAPI]
 		public void SetControlSystem(CrestronControlSystem controlSystem)
 		{
 			if (controlSystem == ControlSystem)
@@ -106,12 +106,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 						control.VideoEnter.BoolValue = true;
 					if (control.AudioEnter.Type == eSigType.Bool)
 						control.AudioEnter.BoolValue = true;
-				    if (control.EnableAudioBreakaway.Type == eSigType.Bool)
-				        control.EnableAudioBreakaway.BoolValue = true;
+					if (control.EnableAudioBreakaway.Type == eSigType.Bool)
+						control.EnableAudioBreakaway.BoolValue = true;
 					if (control.USBEnter.Type == eSigType.Bool)
 						control.USBEnter.BoolValue = true;
-				    if (control.EnableUSBBreakaway.Type == eSigType.Bool)
-				        control.EnableUSBBreakaway.BoolValue = true;
+					if (control.EnableUSBBreakaway.Type == eSigType.Bool)
+						control.EnableUSBBreakaway.BoolValue = true;
 				}
 			}
 
@@ -119,15 +119,15 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		}
 #endif
 
-#region IO
+		#region IO
 
 #if SIMPLSHARP
-        /// <summary>
-        /// Gets the port at the given addres.
-        /// </summary>
-        /// <param name="address"></param>
-        /// <returns></returns>
-        public IROutputPort GetIrOutputPort(int address)
+		/// <summary>
+		/// Gets the port at the given addres.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public IROutputPort GetIrOutputPort(int address)
 		{
 			if (ControlSystem.IROutputPorts == null)
 				throw new KeyNotFoundException("Control System has no IrPorts");
@@ -235,11 +235,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		}
 #endif
 
-#endregion
+		#endregion
 
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 
 		/// <summary>
 		/// Gets the current online status of the device.
@@ -248,12 +248,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		protected override bool GetIsOnlineStatus()
 		{
 #if SIMPLSHARP
-            return ControlSystem != null;
+			return ControlSystem != null;
 #else
             return false;
 #endif
-        }
+		}
 
-#endregion
+		#endregion
 	}
 }

@@ -9,4 +9,5 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		new DmMDMnxn Switcher { get; }
 	}
 }
+
 #endif

@@ -11,9 +11,11 @@ namespace ICD.Connect.Routing.Extensions
 	public sealed class CoreSourceCollection : AbstractOriginatorCollection<ISource>
 	{
 	}
+
 	public sealed class CoreDestinationCollection : AbstractOriginatorCollection<IDestination>
 	{
 	}
+
 	public sealed class CoreDestinationGroupCollection : AbstractOriginatorCollection<IDestinationGroup>
 	{
 	}

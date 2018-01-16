@@ -9,13 +9,12 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		int? SwitcherId { get; set; }
 	}
 
-    public interface IInputCardSettings : ICardSettings
-    {
-        byte? CresnetId { get; set; }
-    }
+	public interface IInputCardSettings : ICardSettings
+	{
+		byte? CresnetId { get; set; }
+	}
 
-    public interface IOutputCardSettings : ICardSettings
-    {
-        
-    }
+	public interface IOutputCardSettings : ICardSettings
+	{
+	}
 }

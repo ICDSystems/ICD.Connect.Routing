@@ -124,8 +124,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 			{
 				return
 					EnumUtils.GetFlagsExceptNone(type)
-							 .Select(f => GetActiveTransmissionState(output, f))
-							 .Unanimous(false);
+					         .Select(f => GetActiveTransmissionState(output, f))
+					         .Unanimous(false);
 			}
 
 			if (output != 1)
@@ -259,4 +259,5 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		#endregion
 	}
 }
+
 #endif

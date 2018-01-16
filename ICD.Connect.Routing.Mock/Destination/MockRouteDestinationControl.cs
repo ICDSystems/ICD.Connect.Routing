@@ -55,8 +55,8 @@ namespace ICD.Connect.Routing.Mock.Destination
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(t => GetSignalDetectedState(input, t))
-								.Unanimous(false);
+				                .Select(t => GetSignalDetectedState(input, t))
+				                .Unanimous(false);
 			}
 
 			return m_Cache.GetSourceDetectedState(input, type);

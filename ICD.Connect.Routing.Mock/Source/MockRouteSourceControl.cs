@@ -57,7 +57,7 @@ namespace ICD.Connect.Routing.Mock.Source
 		{
 			return
 				ServiceProvider.GetService<IRoutingGraph>()
-							   .Connections.GetChildren()
+				               .Connections.GetChildren()
 				               .Where(c => c.Source.Device == Parent.Id && c.Source.Control == Id)
 				               .Select(c => new ConnectorInfo(c.Source.Address, c.ConnectionType));
 		}

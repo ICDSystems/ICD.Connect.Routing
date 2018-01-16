@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
+using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Devices;
+using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
-using ICD.Common.Properties;
-using ICD.Connect.Devices;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
@@ -152,12 +152,12 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			if (switcher == null)
 				return;
-            if(switcher.EnableUSBBreakaway.Supported)
-			    switcher.EnableUSBBreakaway.BoolValue = true;
-            if(switcher.VideoEnter.Supported)
-			    switcher.VideoEnter.BoolValue = true;
-			if(switcher.USBEnter.Supported)
-                switcher.USBEnter.BoolValue = true;
+			if (switcher.EnableUSBBreakaway.Supported)
+				switcher.EnableUSBBreakaway.BoolValue = true;
+			if (switcher.VideoEnter.Supported)
+				switcher.VideoEnter.BoolValue = true;
+			if (switcher.USBEnter.Supported)
+				switcher.USBEnter.BoolValue = true;
 		}
 
 		/// <summary>
@@ -187,9 +187,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		}
 #endif
 
-#endregion
+		#endregion
 
-#region Switcher Callbacks
+		#region Switcher Callbacks
 
 #if SIMPLSHARP
 		/// <summary>
@@ -227,9 +227,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		}
 #endif
 
-#endregion
+		#endregion
 
-#region Settings
+		#region Settings
 
 		/// <summary>
 		/// Override to apply properties to the settings instance.
@@ -265,9 +265,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// <param name="factory"></param>
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
-            base.ApplySettingsFinal(settings, factory);
+			base.ApplySettingsFinal(settings, factory);
 #if SIMPLSHARP
-            
+
 			SetSwitcher(settings);
 #endif
 		}
@@ -291,6 +291,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		protected abstract TSwitcher InstantiateSwitcher(TSettings settings);
 #endif
 
-#endregion
+		#endregion
 	}
 }

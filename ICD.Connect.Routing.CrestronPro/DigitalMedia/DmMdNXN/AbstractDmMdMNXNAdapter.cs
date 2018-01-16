@@ -8,52 +8,53 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 {
 #if SIMPLSHARP
 // ReSharper disable once InconsistentNaming
-    public abstract class AbstractDmMdMNXNAdapter<TSwitcher, TSettings> : AbstractDmSwitcherAdapter<TSwitcher, TSettings>, IDmMdMNXNAdapter
+	public abstract class AbstractDmMdMNXNAdapter<TSwitcher, TSettings> : AbstractDmSwitcherAdapter<TSwitcher, TSettings>,
+	                                                                      IDmMdMNXNAdapter
 		where TSwitcher : DmMDMnxn
 #else
     public abstract class AbstractDmMdMNXNAdapter<TSettings> : AbstractDmSwitcherAdapter<TSettings>
 #endif
 		where TSettings : IDmMdNXNAdapterSettings, new()
 	{
-        #region Properties
+		#region Properties
 
 #if SIMPLSHARP
 		DmMDMnxn IDmMdMNXNAdapter.Switcher { get { return Switcher; } }
 #endif
 
-        #endregion
+		#endregion
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        protected AbstractDmMdMNXNAdapter()
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractDmMdMNXNAdapter()
 		{
 #if SIMPLSHARP
-            Controls.Add(new DmMdMNXNSwitcherControl(this));
+			Controls.Add(new DmMdMNXNSwitcherControl(this));
 #endif
 		}
 
-#region Methods
+		#region Methods
 
 #if SIMPLSHARP
 
-	    /// <summary>
-	    /// Override to control how the assigned switcher behaves.
-	    /// </summary>
-	    /// <param name="switcher"></param>
-	    protected override void ConfigureSwitcher(TSwitcher switcher)
-	    {
-		    base.ConfigureSwitcher(switcher);
+		/// <summary>
+		/// Override to control how the assigned switcher behaves.
+		/// </summary>
+		/// <param name="switcher"></param>
+		protected override void ConfigureSwitcher(TSwitcher switcher)
+		{
+			base.ConfigureSwitcher(switcher);
 
-		    if (switcher == null)
-			    return;
+			if (switcher == null)
+				return;
 
 			switcher.EnableAudioBreakaway.BoolValue = true;
 			switcher.AudioEnter.BoolValue = true;
-	    }
+		}
 
 #endif
 
-        #endregion
+		#endregion
 	}
 }

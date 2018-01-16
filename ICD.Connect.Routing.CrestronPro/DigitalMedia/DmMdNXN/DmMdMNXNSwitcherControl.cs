@@ -26,8 +26,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 
 		private readonly SwitcherCache m_Cache;
 
-		[CanBeNull]
-		private DmMDMnxn m_Switcher;
+		[CanBeNull] private DmMDMnxn m_Switcher;
 
 		/// <summary>
 		/// Constructor.
@@ -76,8 +75,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(t => GetSignalDetectedState(input, t))
-								.Unanimous(false);
+				                .Select(t => GetSignalDetectedState(input, t))
+				                .Unanimous(false);
 			}
 
 			return m_Cache.GetSourceDetectedState(input, type);
@@ -100,8 +99,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(t => this.Route(input, output, t))
-								.Unanimous(false);
+				                .Select(t => this.Route(input, output, t))
+				                .Unanimous(false);
 			}
 
 			DMOutput switcherOutput = m_Switcher.Outputs[(uint)output];
@@ -139,8 +138,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(t => ClearOutput(output, t))
-								.Unanimous(false);
+				                .Select(t => ClearOutput(output, t))
+				                .Unanimous(false);
 			}
 
 			DMOutput switcherOutput = m_Switcher.Outputs[(uint)output];
@@ -227,7 +226,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(t => GetSignalDetectedFeedback(input, t))
+				                .Select(t => GetSignalDetectedFeedback(input, t))
 				                .Unanimous(false);
 			}
 
@@ -321,7 +320,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		/// <param name="switcher"></param>
 		private void SetSwitcher(DmMDMnxn switcher)
 		{
-            Unsubscribe(m_Switcher);
+			Unsubscribe(m_Switcher);
 			m_Switcher = switcher;
 			Subscribe(m_Switcher);
 
@@ -465,4 +464,5 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		#endregion
 	}
 }
+
 #endif

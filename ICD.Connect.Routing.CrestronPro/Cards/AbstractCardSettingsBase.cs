@@ -23,10 +23,10 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		{
 			base.WriteElements(writer);
 
-            writer.WriteElementString(CARD_NUMBER_ELEMENT, CardNumber == null ? null : IcdXmlConvert.ToString((int)CardNumber));
+			writer.WriteElementString(CARD_NUMBER_ELEMENT, CardNumber == null ? null : IcdXmlConvert.ToString((int)CardNumber));
 
-            writer.WriteElementString(SWITCHER_ID_ELEMENT, SwitcherId == null ? null : IcdXmlConvert.ToString((int)SwitcherId));
-        }
+			writer.WriteElementString(SWITCHER_ID_ELEMENT, SwitcherId == null ? null : IcdXmlConvert.ToString((int)SwitcherId));
+		}
 
 		/// <summary>
 		/// Parses the xml and applies the properties to the instance.

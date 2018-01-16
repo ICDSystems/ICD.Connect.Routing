@@ -63,53 +63,54 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcC
 			yield return GetOutput(1);
 		}
 
-        /// <summary>
-        /// Gets the outputs for the given input.
-        /// </summary>
-        /// <param name="input"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
-        {
-            if (input != 1)
-                throw new ArgumentException(string.Format("{0} only has 1 input", GetType().Name), "input");
+		/// <summary>
+		/// Gets the outputs for the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
+		{
+			if (input != 1)
+				throw new ArgumentException(string.Format("{0} only has 1 input", GetType().Name), "input");
 
-            switch (type)
-            {
-                case eConnectionType.Audio:
-                case eConnectionType.Video:
-                case eConnectionType.Audio | eConnectionType.Video:
-                    yield return GetOutput(1);
-                    break;
+			switch (type)
+			{
+				case eConnectionType.Audio:
+				case eConnectionType.Video:
+				case eConnectionType.Audio | eConnectionType.Video:
+					yield return GetOutput(1);
+					break;
 
-                default:
-                    throw new ArgumentException("type");
-            }
-        }
+				default:
+					throw new ArgumentException("type");
+			}
+		}
 
-        /// <summary>
-        /// Gets the input routed to the given output matching the given type.
-        /// </summary>
-        /// <param name="output"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
-        public override ConnectorInfo? GetInput(int output, eConnectionType type)
-        {
-            if (output != 1)
-                throw new ArgumentException(string.Format("{0} only has 1 output", GetType().Name), "output");
+		/// <summary>
+		/// Gets the input routed to the given output matching the given type.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
+		public override ConnectorInfo? GetInput(int output, eConnectionType type)
+		{
+			if (output != 1)
+				throw new ArgumentException(string.Format("{0} only has 1 output", GetType().Name), "output");
 
-            switch (type)
-            {
-                case eConnectionType.Audio:
-                case eConnectionType.Video:
-                case eConnectionType.Audio | eConnectionType.Video:
-                    return GetInput(1);
+			switch (type)
+			{
+				case eConnectionType.Audio:
+				case eConnectionType.Video:
+				case eConnectionType.Audio | eConnectionType.Video:
+					return GetInput(1);
 
-                default:
-                    throw new ArgumentException("type");
-            }
-        }
+				default:
+					throw new ArgumentException("type");
+			}
+		}
 	}
 }
+
 #endif

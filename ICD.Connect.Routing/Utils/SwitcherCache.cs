@@ -83,7 +83,7 @@ namespace ICD.Connect.Routing.Utils
 			try
 			{
 				return m_SourceDetectionStates.ContainsKey(input)
-					&& m_SourceDetectionStates[input].GetDefault(type, false);
+				       && m_SourceDetectionStates[input].GetDefault(type, false);
 			}
 			finally
 			{
@@ -215,11 +215,11 @@ namespace ICD.Connect.Routing.Utils
 				                        {
 					                        int? input = GetInputForOutput(output, f);
 					                        return input == null
-												? (ConnectorInfo?)null
-												: new ConnectorInfo((int)input, f);
+						                               ? (ConnectorInfo?)null
+						                               : new ConnectorInfo((int)input, f);
 				                        })
 				                .ExceptNulls()
-								.ToArray();
+				                .ToArray();
 			}
 			finally
 			{
@@ -244,14 +244,14 @@ namespace ICD.Connect.Routing.Utils
 					return Enumerable.Empty<ConnectorInfo>();
 
 				return EnumUtils.GetFlagsExceptNone(type)
-								.SelectMany(f =>
-								            {
-									            IcdHashSet<int> collection;
-									            return dict.TryGetValue(f, out collection)
-										                   ? collection.Select(i => new ConnectorInfo(i, f))
-										                   : Enumerable.Empty<ConnectorInfo>();
-								            })
-								.ToArray();
+				                .SelectMany(f =>
+				                            {
+					                            IcdHashSet<int> collection;
+					                            return dict.TryGetValue(f, out collection)
+						                                   ? collection.Select(i => new ConnectorInfo(i, f))
+						                                   : Enumerable.Empty<ConnectorInfo>();
+				                            })
+				                .ToArray();
 			}
 			finally
 			{
@@ -280,7 +280,8 @@ namespace ICD.Connect.Routing.Utils
 		/// </summary>
 		private void ClearSourceDetectedStates()
 		{
-			int[] inputs = m_SourceDetectionStatesSection.Execute(() => m_SourceDetectionStates.Keys.ToArray(m_SourceDetectionStates.Count));
+			int[] inputs =
+				m_SourceDetectionStatesSection.Execute(() => m_SourceDetectionStates.Keys.ToArray(m_SourceDetectionStates.Count));
 			eConnectionType allTypes = EnumUtils.GetFlagsAllValue<eConnectionType>();
 
 			foreach (int input in inputs)

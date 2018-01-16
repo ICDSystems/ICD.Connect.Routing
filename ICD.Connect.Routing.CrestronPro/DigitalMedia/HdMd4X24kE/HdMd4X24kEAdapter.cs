@@ -24,7 +24,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		public HdMd4X24kEAdapter()
 		{
 #if SIMPLSHARP
-            Controls.Add(new HdMd4X24kESwitcherControl(this));
+			Controls.Add(new HdMd4X24kESwitcherControl(this));
 #endif
 		}
 
@@ -41,7 +41,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		}
 #endif
 
-#region Settings
+		#region Settings
 
 		/// <summary>
 		/// Override to apply properties to the settings instance.
@@ -51,8 +51,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		{
 			base.CopySettingsFinal(settings);
 
-            settings.Address = m_Address;
-        }
+			settings.Address = m_Address;
+		}
 
 		/// <summary>
 		/// Override to clear the instance settings.
@@ -86,6 +86,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		}
 #endif
 
-#endregion
+		#endregion
 	}
 }

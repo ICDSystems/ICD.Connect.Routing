@@ -29,9 +29,9 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 		/// <returns></returns>
 		[NotNull]
 		public static TCard InstantiateCard<TCard>(byte? cresnetId, int? cardNumber, int? switcherId,
-												   IDeviceFactory factory,
-												   Func<byte, CrestronControlSystem, TCard> instantiateExternal,
-												   Func<uint, Switch, TCard> instantiateInternal)
+		                                           IDeviceFactory factory,
+		                                           Func<byte, CrestronControlSystem, TCard> instantiateExternal,
+		                                           Func<uint, Switch, TCard> instantiateInternal)
 		{
 			if (switcherId == null)
 			{
@@ -44,26 +44,26 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 				throw new ArgumentNullException("cardNumber", "Can't instantiate internal card without card number");
 
 			IDmSwitcherAdapter switcher = factory.GetOriginatorById<IDmSwitcherAdapter>((int)switcherId);
-				return instantiateInternal((uint)cardNumber, switcher.Switcher);
+			return instantiateInternal((uint)cardNumber, switcher.Switcher);
 		}
 
-        /// <summary>
-        /// Determines the best way to instantiate a card based on the available information.
-        /// Instantiates via parent Switch if specified, otherwise uses the ControlSystem.
-        /// </summary>
-        /// <typeparam name="TCard"></typeparam>
-        /// <param name="cardNumber"></param>
-        /// <param name="switcherId"></param>
-        /// <param name="factory"></param>
-        /// <param name="instantiateInternal"></param>
-        /// <returns></returns>
+		/// <summary>
+		/// Determines the best way to instantiate a card based on the available information.
+		/// Instantiates via parent Switch if specified, otherwise uses the ControlSystem.
+		/// </summary>
+		/// <typeparam name="TCard"></typeparam>
+		/// <param name="cardNumber"></param>
+		/// <param name="switcherId"></param>
+		/// <param name="factory"></param>
+		/// <param name="instantiateInternal"></param>
+		/// <returns></returns>
 		[NotNull]
-        public static TCard InstantiateCard<TCard>(int? cardNumber, int? switcherId,
-                                                   IDeviceFactory factory,
-                                                   Func<uint, Switch, TCard> instantiateInternal)
-        {
-            return InstantiateCard(null, cardNumber, switcherId, factory, null, instantiateInternal);
-        }
+		public static TCard InstantiateCard<TCard>(int? cardNumber, int? switcherId,
+		                                           IDeviceFactory factory,
+		                                           Func<uint, Switch, TCard> instantiateInternal)
+		{
+			return InstantiateCard(null, cardNumber, switcherId, factory, null, instantiateInternal);
+		}
 
 		/// <summary>
 		/// Determines the best way to instantiate a DMEndpoint based on the available information.
@@ -106,7 +106,6 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 			return ipid == null ? instantiate3(input) : instantiate2((byte)ipid, input);
 		}
 
-
 		/// <summary>
 		/// Determines the best way to instantiate a DMEndpoint based on the available information.
 		/// Instantiates via parent DM Switch if specified, otherwise uses the ControlSystem.
@@ -141,17 +140,18 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 			if (provider == null)
 			{
 				throw new ArgumentException(string.Format("Device {0} is not a {1}", dmSwitchId, typeof(IDmParent).Name),
-											"dmSwitchId");
+				                            "dmSwitchId");
 			}
 
 			DMOutput output = provider.GetDmOutput((int)dmAddress);
 			return ipid == null ? instantiate3(output) : instantiate2((byte)ipid, output);
 		}
 
-	    public static int GetSwitcherOutputPortNumber(int physicalCardSlot, int outputOnCard)
-	    {
-	        return ((physicalCardSlot - 1) * 2) + outputOnCard;
-	    }
+		public static int GetSwitcherOutputPortNumber(int physicalCardSlot, int outputOnCard)
+		{
+			return ((physicalCardSlot - 1) * 2) + outputOnCard;
+		}
 	}
 }
+
 #endif

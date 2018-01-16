@@ -16,7 +16,7 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Raised when the disable state changes.
 		/// </summary>
 		event EventHandler<BoolEventArgs> OnDisableStateChanged;
-		
+
 		/// <summary>
 		/// Device id
 		/// </summary>

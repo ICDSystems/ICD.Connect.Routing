@@ -23,9 +23,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		private readonly SwitcherCache m_Cache;
-		
-		[CanBeNull]
-		private HdMd8x2 m_Switcher;
+
+		[CanBeNull] private HdMd8x2 m_Switcher;
 
 		/// <summary>
 		/// Constructor.
@@ -74,8 +73,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(t => GetSignalDetectedState(input, t))
-								.Unanimous(false);
+				                .Select(t => GetSignalDetectedState(input, t))
+				                .Unanimous(false);
 			}
 
 			return m_Cache.GetSourceDetectedState(input, type);
@@ -98,8 +97,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(t => this.Route(input, output, t))
-								.Unanimous(false);
+				                .Select(t => this.Route(input, output, t))
+				                .Unanimous(false);
 			}
 
 			DMOutput switcherOutput = m_Switcher.Outputs[(uint)output];
@@ -137,8 +136,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(t => ClearOutput(output, t))
-								.Unanimous(false);
+				                .Select(t => ClearOutput(output, t))
+				                .Unanimous(false);
 			}
 
 			DMOutput switcherOutput = m_Switcher.Outputs[(uint)output];
@@ -219,7 +218,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(t => GetSignalDetectedFeedback(input, t))
+				                .Select(t => GetSignalDetectedFeedback(input, t))
 				                .Unanimous(false);
 			}
 
@@ -450,4 +449,5 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		#endregion
 	}
 }
+
 #endif

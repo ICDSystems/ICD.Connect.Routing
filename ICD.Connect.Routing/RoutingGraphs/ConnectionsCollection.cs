@@ -442,7 +442,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					if (!m_OutputConnectionLookup.ContainsKey(sourceInfo))
 						m_OutputConnectionLookup.Add(sourceInfo, new Dictionary<int, Connection>());
 					if (!m_InputConnectionLookup.ContainsKey(destinationInfo))
-						m_InputConnectionLookup.Add(destinationInfo,new Dictionary<int, Connection>());
+						m_InputConnectionLookup.Add(destinationInfo, new Dictionary<int, Connection>());
 
 					// Add connections to the maps
 					m_OutputConnectionLookup[sourceInfo][connection.Source.Address] = connection;

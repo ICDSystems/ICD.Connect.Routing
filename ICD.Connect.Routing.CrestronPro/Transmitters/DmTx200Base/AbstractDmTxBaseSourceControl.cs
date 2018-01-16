@@ -82,9 +82,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 				m_ActiveTransmissionState = value;
 
 				OnActiveTransmissionStateChanged.Raise(this,
-													   new TransmissionStateEventArgs(OUTPUT_HDMI,
-																					  eConnectionType.Audio | eConnectionType.Video,
-																					  m_ActiveTransmissionState));
+				                                       new TransmissionStateEventArgs(OUTPUT_HDMI,
+				                                                                      eConnectionType.Audio | eConnectionType.Video,
+				                                                                      m_ActiveTransmissionState));
 			}
 		}
 
@@ -255,7 +255,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		private void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
 		{
 			if (args.EventId == EndpointTransmitterBase.AudioSourceFeedbackEventId ||
-				args.EventId == EndpointTransmitterBase.VideoSourceFeedbackEventId)
+			    args.EventId == EndpointTransmitterBase.VideoSourceFeedbackEventId)
 				UpdateActiveTransmissionState();
 
 			if (args.EventId != DMOutputEventIds.ContentLanModeEventId)
@@ -291,4 +291,5 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		#endregion
 	}
 }
+
 #endif

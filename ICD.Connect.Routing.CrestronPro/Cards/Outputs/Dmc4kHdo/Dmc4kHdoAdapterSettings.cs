@@ -4,9 +4,9 @@ using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kHdo
 {
-    public sealed class Dmc4kHdoAdapterSettings : AbstractOutputCardSettings
+	public sealed class Dmc4kHdoAdapterSettings : AbstractOutputCardSettings
 	{
-        private const string FACTORY_NAME = "Dmc4kHdo";
+		private const string FACTORY_NAME = "Dmc4kHdo";
 
 		/// <summary>
 		/// Gets the originator factory name.
@@ -24,9 +24,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kHdo
 		/// <param name="xml"></param>
 		/// <returns></returns>
 		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-        public static Dmc4kHdoAdapterSettings FromXml(string xml)
+		public static Dmc4kHdoAdapterSettings FromXml(string xml)
 		{
-            Dmc4kHdoAdapterSettings output = new Dmc4kHdoAdapterSettings();
+			Dmc4kHdoAdapterSettings output = new Dmc4kHdoAdapterSettings();
 			ParseXml(output, xml);
 			return output;
 		}

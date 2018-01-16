@@ -1,18 +1,19 @@
 ﻿using System;
+using ICD.Common.Properties;
+using ICD.Connect.Settings.Attributes;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
-using ICD.Common.Properties;
-using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 {
-    /// <summary>
-    /// DmTx201CAdapter wraps a DmTx201C to provide a routing device.
-    /// </summary>
+	/// <summary>
+	/// DmTx201CAdapter wraps a DmTx201C to provide a routing device.
+	/// </summary>
 #if SIMPLSHARP
-	public sealed class DmTx201CAdapter : AbstractDmTx201SAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C, DmTx201CAdapterSettings>
+	public sealed class DmTx201CAdapter :
+		AbstractDmTx201SAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C, DmTx201CAdapterSettings>
 	{
 		/// <summary>
 		/// Constructor.
@@ -22,12 +23,15 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 			Controls.Add(new DmTx201CSourceControl(this));
 		}
 
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
+		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid,
+		                                                                                                    CrestronControlSystem
+			                                                                                                    controlSystem)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(ipid, controlSystem);
 		}
 
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid, DMInput input)
+		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid,
+		                                                                                                    DMInput input)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(ipid, input);
 		}

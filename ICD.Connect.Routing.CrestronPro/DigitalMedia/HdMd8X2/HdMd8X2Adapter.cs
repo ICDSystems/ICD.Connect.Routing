@@ -13,7 +13,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		/// </summary>
 		public HdMd8X2Adapter()
 		{
-            Controls.Add(new HdMd8X2SwitcherControl(this));
+			Controls.Add(new HdMd8X2SwitcherControl(this));
 		}
 
 		/// <summary>

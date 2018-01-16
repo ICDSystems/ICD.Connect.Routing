@@ -33,7 +33,7 @@ namespace ICD.Connect.Routing.Connections
 		/// <param name="type"></param>
 		/// <returns></returns>
 		IEnumerable<Connection> GetInputConnections(int destinationDeviceId, int destinationControlId,
-		                                                   eConnectionType type);
+		                                            eConnectionType type);
 
 		/// <summary>
 		/// Gets the input connections for the device matching any of the given type flags.

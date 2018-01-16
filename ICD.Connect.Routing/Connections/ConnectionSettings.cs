@@ -75,7 +75,6 @@ namespace ICD.Connect.Routing.Connections
 
 		public int DestinationAddress { get { return m_DestinationAddress; } set { m_DestinationAddress = value; } }
 
-
 		public eConnectionType ConnectionType { get; set; }
 
 		#endregion
@@ -158,32 +157,32 @@ namespace ICD.Connect.Routing.Connections
 				XmlUtils.WriteListToXml(writer, GetRoomRestrictions(), ROOM_RESTRICTIONS_ELEMENT, ROOM_ELEMENT);
 		}
 
-        /// <summary>
-        /// Returns true if the settings depend on a device with the given ID.
-        /// For example, to instantiate an IR Port from settings, the device the physical port
-        /// belongs to will need to be instantiated first.
-        /// </summary>
-        /// <returns></returns>
-        public override bool HasDeviceDependency(int id)
-        {
-            return id != 0 && (id == SourceDeviceId || id == DestinationDeviceId);
-        }
+		/// <summary>
+		/// Returns true if the settings depend on a device with the given ID.
+		/// For example, to instantiate an IR Port from settings, the device the physical port
+		/// belongs to will need to be instantiated first.
+		/// </summary>
+		/// <returns></returns>
+		public override bool HasDeviceDependency(int id)
+		{
+			return id != 0 && (id == SourceDeviceId || id == DestinationDeviceId);
+		}
 
-        /// <summary>
-        /// Returns the count from the collection of ids that the settings depends on.
-        /// </summary>
-        public override int DependencyCount
-        {
-            get
-            {
-                int count = 0;
-                if (SourceDeviceId != 0)
-                    count++;
-                if (DestinationDeviceId != 0)
-                    count++;
-                return count;
-            }
-        }
+		/// <summary>
+		/// Returns the count from the collection of ids that the settings depends on.
+		/// </summary>
+		public override int DependencyCount
+		{
+			get
+			{
+				int count = 0;
+				if (SourceDeviceId != 0)
+					count++;
+				if (DestinationDeviceId != 0)
+					count++;
+				return count;
+			}
+		}
 
 		/// <summary>
 		/// Instantiates Connection settings from an xml element.

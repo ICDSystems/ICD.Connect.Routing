@@ -5,4 +5,3 @@
 [assembly: AssemblyProduct("ICD.Connect.Routing")]
 [assembly: AssemblyCopyright("Copyright © ICD Systems 2018")]
 [assembly: AssemblyVersion("1.0.0.*")]
-

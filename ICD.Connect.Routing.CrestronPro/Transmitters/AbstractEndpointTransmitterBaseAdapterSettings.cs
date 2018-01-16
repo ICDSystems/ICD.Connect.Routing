@@ -5,7 +5,8 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters
 {
-	public abstract class AbstractEndpointTransmitterBaseAdapterSettings : AbstractDeviceSettings, IEndpointTransmitterBaseAdapterSettings
+	public abstract class AbstractEndpointTransmitterBaseAdapterSettings : AbstractDeviceSettings,
+	                                                                       IEndpointTransmitterBaseAdapterSettings
 	{
 		private const string IPID_ELEMENT = "IPID";
 		private const string DM_SWITCH_ELEMENT = "DmSwitch";

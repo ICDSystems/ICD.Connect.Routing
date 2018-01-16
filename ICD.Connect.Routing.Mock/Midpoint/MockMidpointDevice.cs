@@ -69,7 +69,8 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 			yield return
 				new GenericConsoleCommand<int>("AddMidpointControl", "AddMidpointControl <ID>", id => AddMidpointControl(id));
 			yield return
-				new GenericConsoleCommand<int>("RemoveMidpointControl", "RemoveMidpointControl <ID>", id => RemoveMidpointControl(id));
+				new GenericConsoleCommand<int>("RemoveMidpointControl", "RemoveMidpointControl <ID>",
+				                               id => RemoveMidpointControl(id));
 		}
 
 		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()

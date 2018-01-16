@@ -6,7 +6,8 @@ using Crestron.SimplSharpPro.DM;
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcCDsp
 {
 #if SIMPLSHARP
-	public sealed class DmcCDspAdapter : AbstractInputCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcCDsp, DmcCDspAdapterSettings>
+	public sealed class DmcCDspAdapter :
+		AbstractInputCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcCDsp, DmcCDspAdapterSettings>
 	{
 		/// <summary>
 		/// Constructor.
@@ -16,12 +17,12 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcCDsp
 			Controls.Add(new DmcCDspAdapterRoutingControl(this, 0));
 		}
 
-        protected override bool GetIsOnlineStatus()
-        {
-            return true;
-            //TODO: Crestron api broken, re enable this line when a resolution comes back from them
-            return Card != null && Card.PresentFeedback.BoolValue;
-        }
+		protected override bool GetIsOnlineStatus()
+		{
+			return true;
+			//TODO: Crestron api broken, re enable this line when a resolution comes back from them
+			return Card != null && Card.PresentFeedback.BoolValue;
+		}
 
 		/// <summary>
 		/// Instantiates an external card.
@@ -30,9 +31,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcCDsp
 		/// <param name="controlSystem"></param>
 		/// <returns></returns>
 		protected override Crestron.SimplSharpPro.DM.Cards.DmcCDsp InstantiateCardExternal(byte cresnetId,
-		                                                                                 CrestronControlSystem controlSystem)
+		                                                                                   CrestronControlSystem controlSystem)
 		{
-		    return new Crestron.SimplSharpPro.DM.Cards.DmcCDsp(cresnetId, controlSystem);
+			return new Crestron.SimplSharpPro.DM.Cards.DmcCDsp(cresnetId, controlSystem);
 		}
 
 		/// <summary>
@@ -43,7 +44,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcCDsp
 		/// <returns></returns>
 		protected override Crestron.SimplSharpPro.DM.Cards.DmcCDsp InstantiateCardInternal(uint cardNumber, Switch switcher)
 		{
-            return new Crestron.SimplSharpPro.DM.Cards.DmcCDsp(cardNumber, switcher);
+			return new Crestron.SimplSharpPro.DM.Cards.DmcCDsp(cardNumber, switcher);
 		}
 	}
 #else

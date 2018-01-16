@@ -25,8 +25,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		// so lets just cache the assigned routes until the device tells us otherwise.
 		private readonly SwitcherCache m_Cache;
 
-		[CanBeNull]
-		private HdMd4x24kE m_Switcher;
+		[CanBeNull] private HdMd4x24kE m_Switcher;
 
 		/// <summary>
 		/// Constructor.
@@ -137,7 +136,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(f => GetSignalDetectedState(input, f)).Unanimous(false);
+				                .Select(f => GetSignalDetectedState(input, f)).Unanimous(false);
 			}
 
 			switch (type)
@@ -385,4 +384,5 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		#endregion
 	}
 }
+
 #endif

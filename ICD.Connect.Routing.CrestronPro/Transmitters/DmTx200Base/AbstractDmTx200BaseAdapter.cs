@@ -15,11 +15,11 @@
 		where TSettings : IDmTx200BaseAdapterSettings, new()
 	{
 #if SIMPLSHARP
-        /// <summary>
-        /// Called when the wrapped transmitter is assigned.
-        /// </summary>
-        /// <param name="transmitter"></param>
-        protected override void ConfigureTransmitter(TTransmitter transmitter)
+		/// <summary>
+		/// Called when the wrapped transmitter is assigned.
+		/// </summary>
+		/// <param name="transmitter"></param>
+		protected override void ConfigureTransmitter(TTransmitter transmitter)
 		{
 			if (transmitter == null)
 				return;
