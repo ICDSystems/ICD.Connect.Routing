@@ -123,6 +123,11 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 			m_Cache.SetSourceDetectedState(input, type, state);
 		}
 
+		public void SetInputForOutput(int output, int? input, eConnectionType type)
+		{
+			m_Cache.SetInputForOutput(output, input, type);
+		}
+
 		#endregion
 
 		#region Cache Callbacks
@@ -177,6 +182,10 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 				"SetSignalDetectedState",
 				"<input> <connectionType> <true/false>",
 				(a, b, c) => SetSignalDetectedState(a, b, c));
+			yield return new GenericConsoleCommand<int, int, eConnectionType>(
+				"SetInputForOutput",
+				"<input><output><Audio, Video, USB, None>",
+				(a, b, c) => SetInputForOutput(b, a, c));
 		}
 
 		/// <summary>
