@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices;
@@ -168,7 +168,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		public DMInput GetDmInput(int address)
 		{
 			if (address < 0 || !m_Switcher.Inputs.Contains((uint)address))
-				throw new KeyNotFoundException(string.Format("{0} has no input at address {1}", this, address));
+				throw new IndexOutOfRangeException(string.Format("{0} has no input at address {1}", this, address));
 
 			return m_Switcher.Inputs[(uint)address];
 		}
@@ -181,7 +181,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		public DMOutput GetDmOutput(int address)
 		{
 			if (address < 0 || !m_Switcher.Outputs.Contains((uint)address))
-				throw new KeyNotFoundException(string.Format("{0} has no output at address {1}", this, address));
+				throw new IndexOutOfRangeException(string.Format("{0} has no output at address {1}", this, address));
 
 			return m_Switcher.Outputs[(uint)address];
 		}

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using ICD.Common.Properties;
 using ICD.Connect.Devices;
 #if SIMPLSHARP
@@ -130,10 +130,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public IROutputPort GetIrOutputPort(int address)
 		{
 			if (ControlSystem.IROutputPorts == null)
-				throw new KeyNotFoundException("Control System has no IrPorts");
+				throw new NotSupportedException("Control System has no IrPorts");
 
 			if (address < 0 || !ControlSystem.IROutputPorts.Contains((uint)address))
-				throw new KeyNotFoundException(string.Format("{0} has no IrPort at address {1}", this, address));
+				throw new IndexOutOfRangeException(string.Format("{0} has no IrPort at address {1}", this, address));
 
 			return ControlSystem.IROutputPorts[(uint)address];
 		}
@@ -146,10 +146,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public Relay GetRelayPort(int address)
 		{
 			if (ControlSystem.RelayPorts == null)
-				throw new KeyNotFoundException("Control System has no RelayPorts");
+				throw new NotSupportedException("Control System has no RelayPorts");
 
 			if (address < 0 || !ControlSystem.RelayPorts.Contains((uint)address))
-				throw new KeyNotFoundException(string.Format("{0} has no RelayPort at address {1}", this, address));
+				throw new IndexOutOfRangeException(string.Format("{0} has no RelayPort at address {1}", this, address));
 
 			return ControlSystem.RelayPorts[(uint)address];
 		}
@@ -162,10 +162,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public Versiport GetIoPort(int address)
 		{
 			if (ControlSystem.VersiPorts == null)
-				throw new KeyNotFoundException("Control System has no IoPorts");
+				throw new NotSupportedException("Control System has no IoPorts");
 
 			if (address < 0 || !ControlSystem.VersiPorts.Contains((uint)address))
-				throw new KeyNotFoundException(string.Format("{0} has no IoPort at address {1}", this, address));
+				throw new IndexOutOfRangeException(string.Format("{0} has no IoPort at address {1}", this, address));
 
 			return ControlSystem.VersiPorts[(uint)address];
 		}
@@ -178,10 +178,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public DigitalInput GetDigitalInputPort(int address)
 		{
 			if (ControlSystem.ComPorts == null)
-				throw new KeyNotFoundException("Control System has no DigitalInputPorts");
+				throw new NotSupportedException("Control System has no DigitalInputPorts");
 
 			if (address < 0 || !ControlSystem.DigitalInputPorts.Contains((uint)address))
-				throw new KeyNotFoundException(string.Format("{0} has no DigitalInput at address {1}", this, address));
+				throw new IndexOutOfRangeException(string.Format("{0} has no DigitalInput at address {1}", this, address));
 
 			return ControlSystem.DigitalInputPorts[(uint)address];
 		}
@@ -194,10 +194,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public ComPort GetComPort(int address)
 		{
 			if (ControlSystem.ComPorts == null)
-				throw new KeyNotFoundException("Control System has no ComPorts");
+				throw new NotSupportedException("Control System has no ComPorts");
 
 			if (address < 0 || !ControlSystem.ComPorts.Contains((uint)address))
-				throw new KeyNotFoundException(string.Format("{0} has no ComPort at address {1}", this, address));
+				throw new IndexOutOfRangeException(string.Format("{0} has no ComPort at address {1}", this, address));
 
 			return ControlSystem.ComPorts[(uint)address];
 		}
@@ -210,10 +210,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public DMInput GetDmInput(int address)
 		{
 			if (ControlSystem.SwitcherInputs == null)
-				throw new KeyNotFoundException("Control System has no DmInputs");
+				throw new NotSupportedException("Control System has no DmInputs");
 
 			if (address < 0 || !ControlSystem.SwitcherInputs.Contains((uint)address))
-				throw new KeyNotFoundException(string.Format("{0} has no input at address {1}", this, address));
+				throw new IndexOutOfRangeException(string.Format("{0} has no input at address {1}", this, address));
 
 			return ControlSystem.SwitcherInputs[(uint)address] as DMInput;
 		}
@@ -226,10 +226,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public DMOutput GetDmOutput(int address)
 		{
 			if (ControlSystem.SwitcherOutputs == null)
-				throw new KeyNotFoundException("Control System has no DmOutputs");
+				throw new NotSupportedException("Control System has no DmOutputs");
 
 			if (address < 0 || !ControlSystem.SwitcherOutputs.Contains((uint)address))
-				throw new KeyNotFoundException(string.Format("{0} has no output at address {1}", this, address));
+				throw new IndexOutOfRangeException(string.Format("{0} has no output at address {1}", this, address));
 
 			return ControlSystem.SwitcherOutputs[(uint)address] as DMOutput;
 		}

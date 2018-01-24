@@ -169,7 +169,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		public override ConnectorInfo GetInput(int input)
 		{
 			if (!ContainsInput(input))
-				throw new KeyNotFoundException(string.Format("{0} has no input with address {1}", GetType().Name, input));
+				throw new IndexOutOfRangeException(string.Format("{0} has no input with address {1}", GetType().Name, input));
 			return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
 		}
 

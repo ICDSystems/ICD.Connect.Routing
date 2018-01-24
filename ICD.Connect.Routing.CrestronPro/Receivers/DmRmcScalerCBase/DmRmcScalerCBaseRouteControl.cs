@@ -103,7 +103,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			if (input != 1)
 			{
 				string message = string.Format("{0} has no {1} input at address {2}", this, type, input);
-				throw new KeyNotFoundException(message);
+				throw new IndexOutOfRangeException(message);
 			}
 
 			switch (type)
@@ -139,7 +139,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			if (output != 1)
 			{
 				string message = string.Format("{0} has no {1} output at address {2}", this, type, output);
-				throw new KeyNotFoundException(message);
+				throw new IndexOutOfRangeException(message);
 			}
 
 			switch (type)

@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 				return Scaler.RelayPorts[1];
 
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(IROutputPort).Name, address);
-			throw new KeyNotFoundException(message);
+			throw new IndexOutOfRangeException(message);
 		}
 
 		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp InstantiateScaler(byte ipid,

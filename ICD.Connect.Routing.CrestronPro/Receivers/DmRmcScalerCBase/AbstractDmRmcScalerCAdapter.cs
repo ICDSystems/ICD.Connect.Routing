@@ -3,7 +3,6 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
-using System.Collections.Generic;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Devices;
@@ -176,7 +175,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 				return Scaler.ComPorts[1];
 
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(ComPort).Name, address);
-			throw new KeyNotFoundException(message);
+			throw new IndexOutOfRangeException(message);
 		}
 
 		/// <summary>
@@ -193,7 +192,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 				return Scaler.IROutputPorts[1];
 
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(IROutputPort).Name, address);
-			throw new KeyNotFoundException(message);
+			throw new IndexOutOfRangeException(message);
 		}
 
 		/// <summary>
@@ -203,11 +202,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// <returns></returns>
 		public virtual Relay GetRelayPort(int address)
 		{
-			if (Scaler == null)
-				throw new InvalidOperationException("No scaler instantiated");
-
-			string message = string.Format("{0} has no {1} with address {2}", this, typeof(Relay).Name, address);
-			throw new KeyNotFoundException(message);
+			string message = string.Format("{0} has no {1}", this, typeof(Relay).Name);
+			throw new NotSupportedException(message);
 		}
 
 		/// <summary>
@@ -217,11 +213,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// <returns></returns>
 		public virtual Versiport GetIoPort(int address)
 		{
-			if (Scaler == null)
-				throw new InvalidOperationException("No scaler instantiated");
-
-			string message = string.Format("{0} has no {1} with address {2}", this, typeof(Versiport).Name, address);
-			throw new KeyNotFoundException(message);
+			string message = string.Format("{0} has no {1}", this, typeof(Versiport).Name);
+			throw new NotSupportedException(message);
 		}
 
 		/// <summary>
@@ -231,11 +224,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// <returns></returns>
 		public DigitalInput GetDigitalInputPort(int address)
 		{
-			if (Scaler == null)
-				throw new InvalidOperationException("No scaler instantiated");
-
-			string message = string.Format("{0} has no {1} with address {2}", this, typeof(DigitalInput).Name, address);
-			throw new KeyNotFoundException(message);
+			string message = string.Format("{0} has no {1}", this, typeof(DigitalInput).Name);
+			throw new NotSupportedException(message);
 		}
 #endif
 

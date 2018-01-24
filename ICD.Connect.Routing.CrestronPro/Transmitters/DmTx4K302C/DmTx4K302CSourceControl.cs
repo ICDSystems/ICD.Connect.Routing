@@ -131,7 +131,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 			if (output != 1)
 			{
 				string message = string.Format("{0} has no {1} output at address {2}", this, type, output);
-				throw new KeyNotFoundException(message);
+				throw new IndexOutOfRangeException(message);
 			}
 
 			switch (type)
