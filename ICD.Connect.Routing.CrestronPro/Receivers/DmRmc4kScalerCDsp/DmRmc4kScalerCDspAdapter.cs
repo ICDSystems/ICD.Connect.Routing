@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
