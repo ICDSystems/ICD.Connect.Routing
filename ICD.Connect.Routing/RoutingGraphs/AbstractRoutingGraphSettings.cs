@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Utils.Services;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings;
 
@@ -72,13 +74,26 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			IEnumerable<ISettings> destinations = PluginFactory.GetSettingsFromXml(xml, DESTINATIONS_ELEMENT);
 			IEnumerable<ISettings> destinationGroups = PluginFactory.GetSettingsFromXml(xml, DESTINATION_GROUPS_ELEMENT);
 
-			instance.ConnectionSettings.SetRange(connections);
-			instance.StaticRouteSettings.SetRange(staticRoutes);
-			instance.SourceSettings.SetRange(sources);
-			instance.DestinationSettings.SetRange(destinations);
-			instance.DestinationGroupSettings.SetRange(destinationGroups);
+			AddSettingsLogDuplicates(instance, instance.ConnectionSettings, connections);
+			AddSettingsLogDuplicates(instance, instance.StaticRouteSettings, staticRoutes);
+			AddSettingsLogDuplicates(instance, instance.SourceSettings, sources);
+			AddSettingsLogDuplicates(instance, instance.DestinationSettings, destinations);
+			AddSettingsLogDuplicates(instance, instance.DestinationGroupSettings, destinationGroups);
 
 			AbstractSettings.ParseXml(instance, xml);
+		}
+
+		private static void AddSettingsLogDuplicates(AbstractRoutingGraphSettings instance, SettingsCollection collection,
+		                                             IEnumerable<ISettings> settings)
+		{
+			foreach (ISettings item in settings)
+			{
+				if (collection.Add(item))
+					continue;
+
+				ServiceProvider.GetService<ILoggerService>()
+				               .AddEntry(eSeverity.Error, "{0} failed to add duplicate {1}", instance.GetType().Name, item);
+			}
 		}
 
 		#endregion
