@@ -75,9 +75,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		public override IConnectionUsageCollection ConnectionUsages { get { return m_ConnectionUsages; } }
 
-		public override IOriginatorCollection<ISource> Sources { get { return m_Sources; } }
+		public override ISourceCollection Sources { get { return m_Sources; } }
 
-		public override IOriginatorCollection<IDestination> Destinations { get { return m_Destinations; } }
+		public override IDestinationCollection Destinations { get { return m_Destinations; } }
 
 		public override IOriginatorCollection<IDestinationGroup> DestinationGroups { get { return m_DestinationGroups; } }
 

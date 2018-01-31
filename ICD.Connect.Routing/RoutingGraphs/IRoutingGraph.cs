@@ -48,9 +48,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		IOriginatorCollection<StaticRoute> StaticRoutes { get; }
 
-		IOriginatorCollection<ISource> Sources { get; }
+		ISourceCollection Sources { get; }
 
-		IOriginatorCollection<IDestination> Destinations { get; }
+		IDestinationCollection Destinations { get; }
 
 		IOriginatorCollection<IDestinationGroup> DestinationGroups { get; }
 

@@ -32,8 +32,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract IConnectionsCollection Connections { get; }
 		public abstract IConnectionUsageCollection ConnectionUsages { get; }
 		public abstract IOriginatorCollection<StaticRoute> StaticRoutes { get; }
-		public abstract IOriginatorCollection<ISource> Sources { get; }
-		public abstract IOriginatorCollection<IDestination> Destinations { get; }
+		public abstract ISourceCollection Sources { get; }
+		public abstract IDestinationCollection Destinations { get; }
 		public abstract IOriginatorCollection<IDestinationGroup> DestinationGroups { get; }
 
 		/// <summary>
