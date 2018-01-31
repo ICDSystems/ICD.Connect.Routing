@@ -19,7 +19,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 		public override string FactoryName { get { return FACTORY_NAME; } }
 
 		/// <summary>
-		/// Gets the type of the originator for this settings instance.C:\Workspace\ICD\ICD.MetLife.RoomOS\ICD.Connect.Routing\ICD.Connect.Routing.CrestronPro\DigitalMedia\
+		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(DmRmc4kScalerCDspAdapter); } }
 
