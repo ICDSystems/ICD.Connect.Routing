@@ -689,8 +689,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (path == null)
 				throw new ArgumentNullException("path");
 
-			int pendingRoutes;
-
 			// Configure the switchers
 			foreach (Connection[] pair in path.GetAdjacentPairs())
 			{
@@ -713,17 +711,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				switcher.Route(switchOperation);
 			}
 
-			try
-			{
-				m_PendingRoutesSection.Enter();
-
-				pendingRoutes = m_PendingRoutes.ContainsKey(op.Id) ? m_PendingRoutes[op.Id] : 0;
-			}
-			finally
-			{
-				m_PendingRoutesSection.Leave();
-			}
-
+			int pendingRoutes = m_PendingRoutesSection.Execute(() => m_PendingRoutes.GetDefault(op.Id, 0));
 			if (pendingRoutes > 0)
 				return;
 
