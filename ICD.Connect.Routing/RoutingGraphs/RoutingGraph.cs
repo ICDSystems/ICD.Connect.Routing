@@ -222,9 +222,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The sources</returns>
 		public override IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(IRouteSourceControl sourceControl,
-		                                                                        int sourceOutput,
-		                                                                        eConnectionType type, bool signalDetected,
-		                                                                        bool inputActive)
+		                                                                        int sourceOutput, eConnectionType type,
+		                                                                        bool signalDetected, bool inputActive)
 		{
 			if (sourceControl == null)
 				throw new ArgumentNullException("sourceControl");
@@ -423,8 +422,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="inputActive"></param>
 		/// <returns></returns>
 		public override IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, EndpointInfo destination,
-		                                                          eConnectionType type,
-		                                                          bool signalDetected, bool inputActive)
+		                                                          eConnectionType type, bool signalDetected,
+		                                                          bool inputActive)
 		{
 			foreach (Connection[] path in FindActivePaths(source, type, signalDetected, inputActive))
 			{
@@ -446,12 +445,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="inputActive"></param>
 		/// <returns></returns>
 		public override IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type,
-		                                                          bool signalDetected,
-		                                                          bool inputActive)
+		                                                          bool signalDetected, bool inputActive)
 		{
-			return EnumUtils.HasMultipleFlags(type)
-				       ? EnumUtils.GetFlagsExceptNone(type).SelectMany(f => FindActivePaths(source, f, signalDetected, inputActive))
-				       : FindActivePathsSingleFlag(source, type, signalDetected, inputActive);
+			return EnumUtils.GetFlagsExceptNone(type)
+							.SelectMany(f => FindActivePathsSingleFlag(source, f, signalDetected, inputActive));
 		}
 
 		/// <summary>
