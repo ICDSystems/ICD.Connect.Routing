@@ -140,10 +140,11 @@ namespace ICD.Connect.Routing.Utils
 		[PublicAPI]
 		public bool SetInputForOutput(int output, int? input, eConnectionType type)
 		{
-			return EnumUtils.GetFlagsExceptNone(type)
-			                .Select(f => SetInputForOutputSingle(output, input, f))
-			                .ToArray()
-			                .Any(e => e);
+			bool change = false;
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+			     change |= SetInputForOutputSingle(output, input, flag);
+
+			return change;
 		}
 
 		/// <summary>
