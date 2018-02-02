@@ -1,6 +1,8 @@
 ﻿using System;
 using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
@@ -290,6 +292,23 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// <returns></returns>
 		protected abstract TSwitcher InstantiateSwitcher(TSettings settings);
 #endif
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+#if SIMPLSHARP
+			addRow("IPID", Switcher == null ? null : StringUtils.ToIpIdString((byte)Switcher.ID));
+#endif
+		}
 
 		#endregion
 	}
