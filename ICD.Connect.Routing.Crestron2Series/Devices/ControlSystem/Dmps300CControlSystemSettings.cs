@@ -47,7 +47,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 				Address = XmlUtils.TryReadChildElementContentAsString(xml, ADDRESS_ELEMENT)
 			};
 
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
     }

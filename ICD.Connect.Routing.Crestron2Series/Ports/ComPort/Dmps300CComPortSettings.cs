@@ -56,7 +56,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 				Address = XmlUtils.TryReadChildElementContentAsInt(xml, ADDRESS_ELEMENT) ?? 0
 			};
 
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

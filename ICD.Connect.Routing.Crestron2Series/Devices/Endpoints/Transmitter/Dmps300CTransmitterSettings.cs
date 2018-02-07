@@ -47,7 +47,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 				DmInput = XmlUtils.TryReadChildElementContentAsInt(xml, DM_INPUT_ELEMENT) ?? 0
 			};
 
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

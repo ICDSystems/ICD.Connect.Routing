@@ -23,15 +23,14 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints
 		}
 
 		/// <summary>
-		/// Parses the xml and applies the properties to the instance.
+		/// Updates the settings from xml.
 		/// </summary>
-		/// <param name="instance"></param>
 		/// <param name="xml"></param>
-		protected static void ParseXml(AbstractDmps300CEndpointDeviceSettings instance, string xml)
+		public override void ParseXml(string xml)
 		{
-			instance.Device = XmlUtils.TryReadChildElementContentAsInt(xml, PARENT_DEVICE_ELEMENT) ?? 0;
+			base.ParseXml(xml);
 
-			ParseXml((AbstractDmps300CDeviceSettings)instance, xml);
+			Device = XmlUtils.TryReadChildElementContentAsInt(xml, PARENT_DEVICE_ELEMENT) ?? 0;
 		}
 	}
 }
