@@ -53,7 +53,7 @@ namespace ICD.Connect.Routing.Mock.Source
 				OutputCount = outputCount ?? 1
 			};
 
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

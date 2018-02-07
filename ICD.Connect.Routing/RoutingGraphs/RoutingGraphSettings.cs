@@ -28,7 +28,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public static RoutingGraphSettings FromXml(string xml)
 		{
 			RoutingGraphSettings output = new RoutingGraphSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

@@ -35,7 +35,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		{
 			MockSwitcherDeviceSettings output = new MockSwitcherDeviceSettings();
 
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 

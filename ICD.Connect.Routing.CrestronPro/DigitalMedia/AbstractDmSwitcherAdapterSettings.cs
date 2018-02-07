@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Common.Utils;
+﻿using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
@@ -25,19 +24,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		}
 
 		/// <summary>
-		/// Loads the settings from XML.
+		/// Updates the settings from xml.
 		/// </summary>
-		/// <param name="instance"></param>
 		/// <param name="xml"></param>
-		/// <returns></returns>
-		protected static void ParseXml(AbstractDmSwitcherAdapterSettings instance, string xml)
+		public override void ParseXml(string xml)
 		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
+			base.ParseXml(xml);
 
-			instance.Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT) ?? 0;
-
-			AbstractDeviceSettings.ParseXml(instance, xml);
+			Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT) ?? 0;
 		}
 	}
 }

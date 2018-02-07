@@ -27,7 +27,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		public static HdMd8X2AdapterSettings FromXml(string xml)
 		{
 			HdMd8X2AdapterSettings output = new HdMd8X2AdapterSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

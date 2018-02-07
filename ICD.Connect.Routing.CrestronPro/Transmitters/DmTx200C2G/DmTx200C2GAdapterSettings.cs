@@ -28,7 +28,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 		public static DmTx200C2GAdapterSettings FromXml(string xml)
 		{
 			DmTx200C2GAdapterSettings output = new DmTx200C2GAdapterSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

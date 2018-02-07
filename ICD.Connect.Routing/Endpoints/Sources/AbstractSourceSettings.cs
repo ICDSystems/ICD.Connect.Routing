@@ -8,10 +8,5 @@
 		/// Gets the xml element.
 		/// </summary>
 		protected override string Element { get { return SOURCE_ELEMENT; } }
-
-		protected static void ParseXml(AbstractSourceSettings instance, string xml)
-		{
-			AbstractSourceDestinationBaseSettings.ParseXml(instance, xml);
-		}
 	}
 }

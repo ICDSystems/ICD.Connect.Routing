@@ -138,7 +138,7 @@ namespace ICD.Connect.Routing.StaticRoutes
 
 			output.SetConnections(connections);
 
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

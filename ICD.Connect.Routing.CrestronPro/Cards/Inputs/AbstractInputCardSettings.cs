@@ -23,15 +23,14 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		}
 
 		/// <summary>
-		/// Parses the xml and applies the properties to the instance.
+		/// Updates the settings from xml.
 		/// </summary>
-		/// <param name="instance"></param>
 		/// <param name="xml"></param>
-		protected static void ParseXml(AbstractInputCardSettings instance, string xml)
+		public override void ParseXml(string xml)
 		{
-			instance.CresnetId = XmlUtils.TryReadChildElementContentAsByte(xml, CRESNET_ID_ELEMENT);
+			base.ParseXml(xml);
 
-			AbstractCardSettingsBase.ParseXml(instance, xml);
+			CresnetId = XmlUtils.TryReadChildElementContentAsByte(xml, CRESNET_ID_ELEMENT);
 		}
 	}
 }

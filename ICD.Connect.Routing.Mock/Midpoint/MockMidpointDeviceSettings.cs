@@ -35,7 +35,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		{
 			MockMidpointDeviceSettings output = new MockMidpointDeviceSettings();
 
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 

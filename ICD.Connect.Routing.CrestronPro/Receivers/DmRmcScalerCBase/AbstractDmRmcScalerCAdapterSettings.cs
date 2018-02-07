@@ -36,18 +36,16 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		}
 
 		/// <summary>
-		/// Loads the settings from XML.
+		/// Updates the settings from xml.
 		/// </summary>
-		/// <param name="instance"></param>
 		/// <param name="xml"></param>
-		/// <returns></returns>
-		protected static void ParseXml(AbstractDmRmcScalerCAdapterSettings instance, string xml)
+		public override void ParseXml(string xml)
 		{
-			instance.Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT);
-			instance.DmSwitch = XmlUtils.TryReadChildElementContentAsInt(xml, DM_SWITCH_ELEMENT);
-			instance.DmOutputAddress = XmlUtils.TryReadChildElementContentAsInt(xml, DM_OUTPUT_ELEMENT);
+			base.ParseXml(xml);
 
-			AbstractDeviceSettings.ParseXml(instance, xml);
+			Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT);
+			DmSwitch = XmlUtils.TryReadChildElementContentAsInt(xml, DM_SWITCH_ELEMENT);
+			DmOutputAddress = XmlUtils.TryReadChildElementContentAsInt(xml, DM_OUTPUT_ELEMENT);
 		}
 	}
 }

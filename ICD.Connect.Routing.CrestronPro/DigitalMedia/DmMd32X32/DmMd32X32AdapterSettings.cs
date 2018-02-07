@@ -28,7 +28,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd32X32
 		public static DmMd32X32AdapterSettings FromXml(string xml)
 		{
 			DmMd32X32AdapterSettings output = new DmMd32X32AdapterSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

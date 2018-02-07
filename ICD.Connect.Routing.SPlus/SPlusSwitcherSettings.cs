@@ -26,7 +26,7 @@ namespace ICD.Connect.Routing.SPlus
 		{
 			SPlusSwitcherSettings output = new SPlusSwitcherSettings();
 
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

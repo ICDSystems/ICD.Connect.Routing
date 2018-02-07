@@ -27,7 +27,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
 		public static Dmc4kCoHdAdapterSettings FromXml(string xml)
 		{
 			Dmc4kCoHdAdapterSettings output = new Dmc4kCoHdAdapterSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

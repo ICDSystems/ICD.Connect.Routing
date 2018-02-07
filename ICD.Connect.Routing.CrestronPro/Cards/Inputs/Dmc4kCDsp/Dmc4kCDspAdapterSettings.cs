@@ -27,7 +27,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kCDsp
 		public static Dmc4kCDspAdapterSettings FromXml(string xml)
 		{
 			Dmc4kCDspAdapterSettings output = new Dmc4kCDspAdapterSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

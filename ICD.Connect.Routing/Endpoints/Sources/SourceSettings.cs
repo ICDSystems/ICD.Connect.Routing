@@ -27,7 +27,7 @@ namespace ICD.Connect.Routing.Endpoints.Sources
 		public static SourceSettings FromXml(string xml)
 		{
 			SourceSettings output = new SourceSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

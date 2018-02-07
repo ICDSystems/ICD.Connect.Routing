@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
@@ -63,28 +62,26 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_DestinationGroupSettings.ToXml(writer, DESTINATION_GROUPS_ELEMENT);
 		}
 
-		protected static void ParseXml(AbstractRoutingGraphSettings instance, string xml)
+		/// <summary>
+		/// Updates the settings from xml.
+		/// </summary>
+		/// <param name="xml"></param>
+		public override void ParseXml(string xml)
 		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-
 			IEnumerable<ISettings> connections = PluginFactory.GetSettingsFromXml(xml, CONNECTIONS_ELEMENT);
 			IEnumerable<ISettings> staticRoutes = PluginFactory.GetSettingsFromXml(xml, STATIC_ROUTES_ELEMENT);
 			IEnumerable<ISettings> sources = PluginFactory.GetSettingsFromXml(xml, SOURCES_ELEMENT);
 			IEnumerable<ISettings> destinations = PluginFactory.GetSettingsFromXml(xml, DESTINATIONS_ELEMENT);
 			IEnumerable<ISettings> destinationGroups = PluginFactory.GetSettingsFromXml(xml, DESTINATION_GROUPS_ELEMENT);
 
-			AddSettingsLogDuplicates(instance, instance.ConnectionSettings, connections);
-			AddSettingsLogDuplicates(instance, instance.StaticRouteSettings, staticRoutes);
-			AddSettingsLogDuplicates(instance, instance.SourceSettings, sources);
-			AddSettingsLogDuplicates(instance, instance.DestinationSettings, destinations);
-			AddSettingsLogDuplicates(instance, instance.DestinationGroupSettings, destinationGroups);
-
-			AbstractSettings.ParseXml(instance, xml);
+			AddSettingsLogDuplicates(ConnectionSettings, connections);
+			AddSettingsLogDuplicates(StaticRouteSettings, staticRoutes);
+			AddSettingsLogDuplicates(SourceSettings, sources);
+			AddSettingsLogDuplicates(DestinationSettings, destinations);
+			AddSettingsLogDuplicates(DestinationGroupSettings, destinationGroups);
 		}
 
-		private static void AddSettingsLogDuplicates(AbstractRoutingGraphSettings instance, SettingsCollection collection,
-		                                             IEnumerable<ISettings> settings)
+		private void AddSettingsLogDuplicates(SettingsCollection collection, IEnumerable<ISettings> settings)
 		{
 			foreach (ISettings item in settings)
 			{
@@ -92,7 +89,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					continue;
 
 				ServiceProvider.GetService<ILoggerService>()
-				               .AddEntry(eSeverity.Error, "{0} failed to add duplicate {1}", instance.GetType().Name, item);
+				               .AddEntry(eSeverity.Error, "{0} failed to add duplicate {1}", GetType().Name, item);
 			}
 		}
 

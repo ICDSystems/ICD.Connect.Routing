@@ -34,17 +34,16 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		}
 
 		/// <summary>
-		/// Parses the xml and applies the properties to the instance.
+		/// Updates the settings from xml.
 		/// </summary>
-		/// <param name="instance"></param>
 		/// <param name="xml"></param>
-		protected static void ParseXml(AbstractEndpointTransmitterBaseAdapterSettings instance, string xml)
+		public override void ParseXml(string xml)
 		{
-			instance.Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT);
-			instance.DmSwitch = XmlUtils.TryReadChildElementContentAsInt(xml, DM_SWITCH_ELEMENT);
-			instance.DmInputAddress = XmlUtils.TryReadChildElementContentAsInt(xml, DM_INPUT_ELEMENT);
+			base.ParseXml(xml);
 
-			AbstractDeviceSettings.ParseXml(instance, xml);
+			Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT);
+			DmSwitch = XmlUtils.TryReadChildElementContentAsInt(xml, DM_SWITCH_ELEMENT);
+			DmInputAddress = XmlUtils.TryReadChildElementContentAsInt(xml, DM_INPUT_ELEMENT);
 		}
 	}
 }

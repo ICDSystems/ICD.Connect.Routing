@@ -70,7 +70,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 		public static DmTx201CAdapterSettings FromXml(string xml)
 		{
 			DmTx201CAdapterSettings output = new DmTx201CAdapterSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

@@ -27,7 +27,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		public static DmTx4K302CAdapterSettings FromXml(string xml)
 		{
 			DmTx4K302CAdapterSettings output = new DmTx4K302CAdapterSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

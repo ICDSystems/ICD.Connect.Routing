@@ -221,7 +221,7 @@ namespace ICD.Connect.Routing.Connections
 			output.SetRoomRestrictions(roomRestrictions);
 			output.SetSourceDeviceRestrictions(deviceRestictions);
 
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 

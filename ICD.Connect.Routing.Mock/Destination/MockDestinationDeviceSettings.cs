@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 		public static MockDestinationDeviceSettings FromXml(string xml)
 		{
 			MockDestinationDeviceSettings output = new MockDestinationDeviceSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

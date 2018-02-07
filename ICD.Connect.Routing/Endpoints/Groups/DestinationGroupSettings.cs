@@ -27,7 +27,7 @@ namespace ICD.Connect.Routing.Endpoints.Groups
 		public static DestinationGroupSettings FromXml(string xml)
 		{
 			DestinationGroupSettings output = new DestinationGroupSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

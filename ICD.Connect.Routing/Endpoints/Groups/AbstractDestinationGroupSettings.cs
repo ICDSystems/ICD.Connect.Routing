@@ -54,23 +54,27 @@ namespace ICD.Connect.Routing.Endpoints.Groups
 				writer.WriteElementString(DISABLE_ELEMENT, IcdXmlConvert.ToString(Disable));
 		}
 
-		protected static void ParseXml(AbstractDestinationGroupSettings instance, string xml)
+		/// <summary>
+		/// Updates the settings from xml.
+		/// </summary>
+		/// <param name="xml"></param>
+		public override void ParseXml(string xml)
 		{
+			base.ParseXml(xml);
+
 			IEnumerable<int> destinations = null;
 			string destinationsElement;
 			if (XmlUtils.TryGetChildElementAsString(xml, DESTINATIONS_ELEMENT, out destinationsElement))
 			{
 				destinations =
 					XmlUtils.GetChildElementsAsString(destinationsElement, DESTINATION_ELEMENT)
-					        .Select(d => XmlUtils.TryReadElementContentAsInt(d))
-					        .ExceptNulls();
+							.Select(d => XmlUtils.TryReadElementContentAsInt(d))
+							.ExceptNulls();
 			}
 
-			instance.Destinations = destinations;
-			instance.Order = XmlUtils.TryReadChildElementContentAsInt(xml, ORDER_ELEMENT) ?? int.MaxValue;
-			instance.Disable = XmlUtils.TryReadChildElementContentAsBoolean(xml, DISABLE_ELEMENT) ?? false;
-
-			AbstractSettings.ParseXml(instance, xml);
+			Destinations = destinations;
+			Order = XmlUtils.TryReadChildElementContentAsInt(xml, ORDER_ELEMENT) ?? int.MaxValue;
+			Disable = XmlUtils.TryReadChildElementContentAsBoolean(xml, DISABLE_ELEMENT) ?? false;
 		}
 	}
 }

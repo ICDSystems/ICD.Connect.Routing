@@ -24,21 +24,19 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 			base.WriteElements(writer);
 
 			writer.WriteElementString(CARD_NUMBER_ELEMENT, CardNumber == null ? null : IcdXmlConvert.ToString((int)CardNumber));
-
 			writer.WriteElementString(SWITCHER_ID_ELEMENT, SwitcherId == null ? null : IcdXmlConvert.ToString((int)SwitcherId));
 		}
 
 		/// <summary>
-		/// Parses the xml and applies the properties to the instance.
+		/// Updates the settings from xml.
 		/// </summary>
-		/// <param name="instance"></param>
 		/// <param name="xml"></param>
-		protected static void ParseXml(AbstractCardSettingsBase instance, string xml)
+		public override void ParseXml(string xml)
 		{
-			instance.CardNumber = XmlUtils.TryReadChildElementContentAsInt(xml, CARD_NUMBER_ELEMENT);
-			instance.SwitcherId = XmlUtils.TryReadChildElementContentAsInt(xml, SWITCHER_ID_ELEMENT);
+			base.ParseXml(xml);
 
-			AbstractDeviceSettings.ParseXml(instance, xml);
+			CardNumber = XmlUtils.TryReadChildElementContentAsInt(xml, CARD_NUMBER_ELEMENT);
+			SwitcherId = XmlUtils.TryReadChildElementContentAsInt(xml, SWITCHER_ID_ELEMENT);
 		}
 	}
 }

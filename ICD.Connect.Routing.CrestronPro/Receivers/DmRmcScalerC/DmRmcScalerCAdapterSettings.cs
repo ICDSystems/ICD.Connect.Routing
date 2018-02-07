@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 		public static DmRmcScalerCAdapterSettings FromXml(string xml)
 		{
 			DmRmcScalerCAdapterSettings output = new DmRmcScalerCAdapterSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

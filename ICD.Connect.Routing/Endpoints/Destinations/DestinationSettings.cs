@@ -27,7 +27,7 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 		public static DestinationSettings FromXml(string xml)
 		{
 			DestinationSettings output = new DestinationSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}

@@ -28,7 +28,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public static ControlSystemDeviceSettings FromXml(string xml)
 		{
 			ControlSystemDeviceSettings output = new ControlSystemDeviceSettings();
-			ParseXml(output, xml);
+			output.ParseXml(xml);
 			return output;
 		}
 	}
