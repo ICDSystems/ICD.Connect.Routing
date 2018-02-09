@@ -320,6 +320,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		/// <param name="switcher"></param>
 		private void SetSwitcher(DmMDMnxn switcher)
 		{
+			if (switcher == m_Switcher)
+				return;
+
 			Unsubscribe(m_Switcher);
 			m_Switcher = switcher;
 			Subscribe(m_Switcher);
