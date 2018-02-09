@@ -1,5 +1,4 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes;
@@ -9,6 +8,7 @@ namespace ICD.Connect.Routing.Mock.Source
 	/// <summary>
 	/// Settings for the MockSourceDevice.
 	/// </summary>
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class MockSourceDeviceSettings : AbstractDeviceSettings
 	{
 		private const string FACTORY_NAME = "MockSourceDevice";
@@ -39,22 +39,14 @@ namespace ICD.Connect.Routing.Mock.Source
 		}
 
 		/// <summary>
-		/// Loads the settings from XML.
+		/// Updates the settings from xml.
 		/// </summary>
 		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static MockSourceDeviceSettings FromXml(string xml)
+		public override void ParseXml(string xml)
 		{
-			int? outputCount = XmlUtils.TryReadChildElementContentAsInt(xml, OUTPUT_COUNT_ELEMENT);
+			base.ParseXml(xml);
 
-			MockSourceDeviceSettings output = new MockSourceDeviceSettings
-			{
-				OutputCount = outputCount ?? 1
-			};
-
-			output.ParseXml(xml);
-			return output;
+			OutputCount = XmlUtils.TryReadChildElementContentAsInt(xml, OUTPUT_COUNT_ELEMENT) ?? 1;
 		}
 	}
 }

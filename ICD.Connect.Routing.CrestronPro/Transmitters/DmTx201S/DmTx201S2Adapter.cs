@@ -1,5 +1,4 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Connect.Settings.Attributes;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -44,6 +43,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 	}
 #endif
 
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class DmTx201S2AdapterSettings : AbstractDmTx201SAdapterSettings
 	{
 		private const string FACTORY_NAME = "DmTx201S2";
@@ -57,18 +57,5 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(DmTx201S2Adapter); } }
-
-		/// <summary>
-		/// Loads the settings from XML.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static DmTx201S2AdapterSettings FromXml(string xml)
-		{
-			DmTx201S2AdapterSettings output = new DmTx201S2AdapterSettings();
-			output.ParseXml(xml);
-			return output;
-		}
 	}
 }

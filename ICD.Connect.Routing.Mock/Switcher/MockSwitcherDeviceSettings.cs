@@ -1,15 +1,13 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Mock.Switcher
 {
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class MockSwitcherDeviceSettings : AbstractDeviceSettings
 	{
 		private const string FACTORY_NAME = "MockSwitcherDevice";
-
-		#region Properties
 
 		/// <summary>
 		/// Gets the originator factory name.
@@ -20,25 +18,5 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(MockSwitcherDevice); } }
-
-		#endregion
-
-		#region Methods
-
-		/// <summary>
-		/// Loads the settings from XML.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static MockSwitcherDeviceSettings FromXml(string xml)
-		{
-			MockSwitcherDeviceSettings output = new MockSwitcherDeviceSettings();
-
-			output.ParseXml(xml);
-			return output;
-		}
-
-		#endregion
 	}
 }

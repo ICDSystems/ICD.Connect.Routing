@@ -1,9 +1,9 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kC
 {
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class Dmc4kCAdapterSettings : AbstractInputCardSettings
 	{
 		private const string FACTORY_NAME = "Dmc4kC";
@@ -17,18 +17,5 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kC
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(Dmc4kCAdapter); } }
-
-		/// <summary>
-		/// Loads the settings from XML.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static Dmc4kCAdapterSettings FromXml(string xml)
-		{
-			Dmc4kCAdapterSettings output = new Dmc4kCAdapterSettings();
-			output.ParseXml(xml);
-			return output;
-		}
 	}
 }

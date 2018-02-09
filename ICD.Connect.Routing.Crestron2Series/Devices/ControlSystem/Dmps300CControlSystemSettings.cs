@@ -1,7 +1,5 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 {
@@ -34,21 +32,15 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			writer.WriteElementString(ADDRESS_ELEMENT, Address);
 	    }
 
-		/// <summary>
-		/// Loads the settings from XML.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static Dmps300CControlSystemSettings FromXml(string xml)
-		{
-			Dmps300CControlSystemSettings output = new Dmps300CControlSystemSettings
-			{
-				Address = XmlUtils.TryReadChildElementContentAsString(xml, ADDRESS_ELEMENT)
-			};
+	    /// <summary>
+	    /// Updates the settings from xml.
+	    /// </summary>
+	    /// <param name="xml"></param>
+	    public override void ParseXml(string xml)
+	    {
+		    base.ParseXml(xml);
 
-			output.ParseXml(xml);
-			return output;
-		}
+		    Address = XmlUtils.TryReadChildElementContentAsString(xml, ADDRESS_ELEMENT);
+	    }
     }
 }

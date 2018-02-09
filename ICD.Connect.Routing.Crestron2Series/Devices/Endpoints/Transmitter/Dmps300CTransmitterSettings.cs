@@ -1,10 +1,10 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 {
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class Dmps300CTransmitterSettings : AbstractDmps300CEndpointDeviceSettings
 	{
 		private const string FACTORY_NAME = "Dmps300CTransmitter";
@@ -35,20 +35,14 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 		}
 
 		/// <summary>
-		/// Loads the settings from XML.
+		/// Updates the settings from xml.
 		/// </summary>
 		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static Dmps300CTransmitterSettings FromXml(string xml)
+		public override void ParseXml(string xml)
 		{
-			Dmps300CTransmitterSettings output = new Dmps300CTransmitterSettings
-			{
-				DmInput = XmlUtils.TryReadChildElementContentAsInt(xml, DM_INPUT_ELEMENT) ?? 0
-			};
+			base.ParseXml(xml);
 
-			output.ParseXml(xml);
-			return output;
+			DmInput = XmlUtils.TryReadChildElementContentAsInt(xml, DM_INPUT_ELEMENT) ?? 0;
 		}
 	}
 }

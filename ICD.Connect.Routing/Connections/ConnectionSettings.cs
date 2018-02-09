@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
@@ -15,6 +14,7 @@ namespace ICD.Connect.Routing.Connections
 	/// <summary>
 	/// Settings for a Connection.
 	/// </summary>
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class ConnectionSettings : AbstractSettings
 	{
 		private const string CONNECTION_ELEMENT = "Connection";
@@ -158,6 +158,41 @@ namespace ICD.Connect.Routing.Connections
 		}
 
 		/// <summary>
+		/// Updates the settings from xml.
+		/// </summary>
+		/// <param name="xml"></param>
+		public override void ParseXml(string xml)
+		{
+			base.ParseXml(xml);
+
+			eConnectionType connectionType;
+			if (!XmlUtils.TryReadChildElementContentAsEnum(xml, CONNECTION_TYPE_ELEMENT, true, out connectionType))
+				connectionType = eConnectionType.Audio | eConnectionType.Video;
+
+			int? sourceDeviceId = XmlUtils.TryReadChildElementContentAsInt(xml, SOURCE_DEVICE_ELEMENT);
+			int? sourceControlId = XmlUtils.TryReadChildElementContentAsInt(xml, SOURCE_CONTROL_ELEMENT);
+			int? sourceAddress = XmlUtils.TryReadChildElementContentAsInt(xml, SOURCEADDRESS_ELEMENT);
+
+			int? destinationDeviceId = XmlUtils.TryReadChildElementContentAsInt(xml, DESTINATION_DEVICE_ELEMENT);
+			int? destinationControlId = XmlUtils.TryReadChildElementContentAsInt(xml, DESTINATION_CONTROL_ELEMENT);
+			int? destinationAddress = XmlUtils.TryReadChildElementContentAsInt(xml, DESTINATIONADDRESS_ELEMENT);
+
+			IEnumerable<int> deviceRestictions = GetRestrictionsFromXml(xml, SOURCE_DEVICE_RESTRICTIONS_ELEMENT, DEVICE_ELEMENT);
+			IEnumerable<int> roomRestrictions = GetRestrictionsFromXml(xml, ROOM_RESTRICTIONS_ELEMENT, ROOM_ELEMENT);
+
+			SourceDeviceId = sourceDeviceId ?? 0;
+			SourceControlId = sourceControlId ?? 0;
+			SourceAddress = sourceAddress ?? 1;
+			DestinationDeviceId = destinationDeviceId ?? 0;
+			DestinationControlId = destinationControlId ?? 0;
+			DestinationAddress = destinationAddress ?? 1;
+			ConnectionType = connectionType;
+			
+			SetRoomRestrictions(roomRestrictions);
+			SetSourceDeviceRestrictions(deviceRestictions);
+		}
+
+		/// <summary>
 		/// Returns true if the settings depend on a device with the given ID.
 		/// For example, to instantiate an IR Port from settings, the device the physical port
 		/// belongs to will need to be instantiated first.
@@ -182,47 +217,6 @@ namespace ICD.Connect.Routing.Connections
 					count++;
 				return count;
 			}
-		}
-
-		/// <summary>
-		/// Instantiates Connection settings from an xml element.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static ConnectionSettings FromXml(string xml)
-		{
-			eConnectionType connectionType;
-			if (!XmlUtils.TryReadChildElementContentAsEnum(xml, CONNECTION_TYPE_ELEMENT, true, out connectionType))
-				connectionType = eConnectionType.Audio | eConnectionType.Video;
-
-			int? sourceDeviceId = XmlUtils.TryReadChildElementContentAsInt(xml, SOURCE_DEVICE_ELEMENT);
-			int? sourceControlId = XmlUtils.TryReadChildElementContentAsInt(xml, SOURCE_CONTROL_ELEMENT);
-			int? sourceAddress = XmlUtils.TryReadChildElementContentAsInt(xml, SOURCEADDRESS_ELEMENT);
-
-			int? destinationDeviceId = XmlUtils.TryReadChildElementContentAsInt(xml, DESTINATION_DEVICE_ELEMENT);
-			int? destinationControlId = XmlUtils.TryReadChildElementContentAsInt(xml, DESTINATION_CONTROL_ELEMENT);
-			int? destinationAddress = XmlUtils.TryReadChildElementContentAsInt(xml, DESTINATIONADDRESS_ELEMENT);
-
-			IEnumerable<int> deviceRestictions = GetRestrictionsFromXml(xml, SOURCE_DEVICE_RESTRICTIONS_ELEMENT, DEVICE_ELEMENT);
-			IEnumerable<int> roomRestrictions = GetRestrictionsFromXml(xml, ROOM_RESTRICTIONS_ELEMENT, ROOM_ELEMENT);
-
-			ConnectionSettings output = new ConnectionSettings
-			{
-				SourceDeviceId = sourceDeviceId ?? 0,
-				SourceControlId = sourceControlId ?? 0,
-				SourceAddress = sourceAddress ?? 1,
-				DestinationDeviceId = destinationDeviceId ?? 0,
-				DestinationControlId = destinationControlId ?? 0,
-				DestinationAddress = destinationAddress ?? 1,
-				ConnectionType = connectionType,
-			};
-
-			output.SetRoomRestrictions(roomRestrictions);
-			output.SetSourceDeviceRestrictions(deviceRestictions);
-
-			output.ParseXml(xml);
-			return output;
 		}
 
 		private static IEnumerable<int> GetRestrictionsFromXml(string xml, string parentElement, string childElement)

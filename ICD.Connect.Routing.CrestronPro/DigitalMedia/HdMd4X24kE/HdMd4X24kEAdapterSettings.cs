@@ -1,10 +1,10 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 {
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class HdMd4X24kEAdapterSettings : AbstractDmSwitcherAdapterSettings
 	{
 		private const string FACTORY_NAME = "HdMd4X24kE";
@@ -35,22 +35,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		}
 
 		/// <summary>
-		/// Loads the settings from XML.
+		/// Updates the settings from xml.
 		/// </summary>
 		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static HdMd4X24kEAdapterSettings FromXml(string xml)
+		public override void ParseXml(string xml)
 		{
-			string address = XmlUtils.TryReadChildElementContentAsString(xml, ADDRESS_ELEMENT);
+			base.ParseXml(xml);
 
-			HdMd4X24kEAdapterSettings output = new HdMd4X24kEAdapterSettings
-			{
-				Address = address
-			};
-
-			output.ParseXml(xml);
-			return output;
+			Address = XmlUtils.TryReadChildElementContentAsString(xml, ADDRESS_ELEMENT);
 		}
 	}
 }

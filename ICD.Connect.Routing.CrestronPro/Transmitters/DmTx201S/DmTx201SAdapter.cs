@@ -44,6 +44,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 	}
 #endif
 
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class DmTx201SAdapterSettings : AbstractDmTx201SAdapterSettings
 	{
 		private const string FACTORY_NAME = "DmTx201S";
@@ -57,18 +58,5 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(DmTx201SAdapter); } }
-
-		/// <summary>
-		/// Loads the settings from XML.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static DmTx201SAdapterSettings FromXml(string xml)
-		{
-			DmTx201SAdapterSettings output = new DmTx201SAdapterSettings();
-			output.ParseXml(xml);
-			return output;
-		}
 	}
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Protocol.Ports.DigitalInput;
 using ICD.Connect.Routing.Crestron2Series.Devices;
@@ -8,6 +7,7 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 {
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class Dmps300CDigitalInputPortSettings : AbstractDigitalInputPortSettings
 	{
 		private const string FACTORY_NAME = "Dmps300CDigitalInputPort";
@@ -43,21 +43,15 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.DigitalInputPort
 		}
 
 		/// <summary>
-		/// Loads the settings from XML.
+		/// Updates the settings from xml.
 		/// </summary>
 		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static Dmps300CDigitalInputPortSettings FromXml(string xml)
+		public override void ParseXml(string xml)
 		{
-			Dmps300CDigitalInputPortSettings output = new Dmps300CDigitalInputPortSettings
-			{
-				Device = XmlUtils.TryReadChildElementContentAsInt(xml, DEVICE_ELEMENT) ?? 0,
-				Address = XmlUtils.TryReadChildElementContentAsInt(xml, ADDRESS_ELEMENT) ?? 0
-			};
+			base.ParseXml(xml);
 
-			output.ParseXml(xml);
-			return output;
+			Device = XmlUtils.TryReadChildElementContentAsInt(xml, DEVICE_ELEMENT) ?? 0;
+			Address = XmlUtils.TryReadChildElementContentAsInt(xml, ADDRESS_ELEMENT) ?? 0;
 		}
 	}
 }

@@ -12,6 +12,7 @@ using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.StaticRoutes
 {
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class StaticRouteSettings : AbstractSettings
 	{
 		private const string STATIC_ROUTE_ELEMENT = "StaticRoute";
@@ -101,6 +102,26 @@ namespace ICD.Connect.Routing.StaticRoutes
 		}
 
 		/// <summary>
+		/// Updates the settings from xml.
+		/// </summary>
+		/// <param name="xml"></param>
+		public override void ParseXml(string xml)
+		{
+			base.ParseXml(xml);
+
+			string connectionsElement = XmlUtils.GetChildElementAsString(xml, CONNECTIONS_ELEMENT);
+			IEnumerable<int> connections = XmlUtils.GetChildElementsAsString(connectionsElement, CONNECTION_ELEMENT)
+			                                       .Select(x => XmlUtils.ReadElementContentAsInt(x));
+
+			eConnectionType connectionType =
+				XmlUtils.ReadChildElementContentAsEnum<eConnectionType>(xml, CONNECTION_TYPE_ELEMENT, true);
+
+			ConnectionType = connectionType;
+
+			SetConnections(connections);
+		}
+
+		/// <summary>
 		/// Returns true if the settings depend on a device with the given ID.
 		/// For example, to instantiate an IR Port from settings, the device the physical port
 		/// belongs to will need to be instantiated first.
@@ -115,31 +136,5 @@ namespace ICD.Connect.Routing.StaticRoutes
 		/// Returns the count from the collection of ids that the settings depends on.
 		/// </summary>
 		public override int DependencyCount { get { return m_Connections.Count; } }
-
-		/// <summary>
-		/// Instantiates Connection settings from an xml element.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static StaticRouteSettings FromXml(string xml)
-		{
-			string connectionsElement = XmlUtils.GetChildElementAsString(xml, CONNECTIONS_ELEMENT);
-			IEnumerable<int> connections = XmlUtils.GetChildElementsAsString(connectionsElement, CONNECTION_ELEMENT)
-			                                       .Select(x => XmlUtils.ReadElementContentAsInt(x));
-
-			eConnectionType connectionType =
-				XmlUtils.ReadChildElementContentAsEnum<eConnectionType>(xml, CONNECTION_TYPE_ELEMENT, true);
-
-			StaticRouteSettings output = new StaticRouteSettings
-			{
-				ConnectionType = connectionType
-			};
-
-			output.SetConnections(connections);
-
-			output.ParseXml(xml);
-			return output;
-		}
 	}
 }
