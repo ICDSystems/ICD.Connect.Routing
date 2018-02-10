@@ -14,7 +14,7 @@ using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Mock.Midpoint
 {
-	public sealed class MockRouteMidpointControl : AbstractRouteMidpointControl<IDevice>
+	public sealed class MockRouteMidpointControl : AbstractRouteMidpointControl<IDeviceBase>
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
@@ -27,7 +27,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteMidpointControl(IDevice parent, int id)
+		public MockRouteMidpointControl(IDeviceBase parent, int id)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();

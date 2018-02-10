@@ -61,14 +61,14 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(Connection); } }
 
-		[OriginatorIdSettingsProperty(typeof(IDevice))]
+		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int SourceDeviceId { get; set; }
 
 		public int SourceControlId { get; set; }
 
 		public int SourceAddress { get { return m_SourceAddress; } set { m_SourceAddress = value; } }
 
-		[OriginatorIdSettingsProperty(typeof(IDevice))]
+		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int DestinationDeviceId { get; set; }
 
 		public int DestinationControlId { get; set; }

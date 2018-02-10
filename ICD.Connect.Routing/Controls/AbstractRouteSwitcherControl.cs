@@ -9,7 +9,7 @@ using ICD.Connect.Routing.EventArguments;
 namespace ICD.Connect.Routing.Controls
 {
 	public abstract class AbstractRouteSwitcherControl<T> : AbstractRouteMidpointControl<T>, IRouteSwitcherControl
-		where T : IDevice
+		where T : IDeviceBase
 	{
 		public abstract event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
