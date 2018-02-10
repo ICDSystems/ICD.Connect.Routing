@@ -22,7 +22,7 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <summary>
 		/// Gets the endpoint device.
 		/// </summary>
-		[OriginatorIdSettingsProperty(typeof(IDevice))]
+		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int Device { get; set; }
 
 		/// <summary>

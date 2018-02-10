@@ -250,8 +250,8 @@ namespace ICD.Connect.Routing.Connections
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			IDevice source = factory.GetOriginatorById<IDevice>(settings.SourceDeviceId);
-			IDevice destination = factory.GetOriginatorById<IDevice>(settings.DestinationDeviceId);
+			IDeviceBase source = factory.GetOriginatorById<IDeviceBase>(settings.SourceDeviceId);
+			IDeviceBase destination = factory.GetOriginatorById<IDeviceBase>(settings.DestinationDeviceId);
 
 			// Validate the source and destination controls
 			source.Controls.GetControl<IRouteSourceControl>(settings.SourceControlId);

@@ -14,7 +14,7 @@ using ICD.Connect.Routing.RoutingGraphs;
 
 namespace ICD.Connect.Routing.Mock.Source
 {
-	public sealed class MockRouteSourceControl : AbstractRouteSourceControl<IDevice>
+	public sealed class MockRouteSourceControl : AbstractRouteSourceControl<IDeviceBase>
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
@@ -25,7 +25,7 @@ namespace ICD.Connect.Routing.Mock.Source
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteSourceControl(IDevice parent, int id)
+		public MockRouteSourceControl(IDeviceBase parent, int id)
 			: base(parent, id)
 		{
 			m_TransmissionStates = new Dictionary<int, Dictionary<eConnectionType, bool>>();

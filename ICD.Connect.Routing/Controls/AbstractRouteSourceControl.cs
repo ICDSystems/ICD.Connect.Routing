@@ -7,7 +7,7 @@ using ICD.Connect.Routing.EventArguments;
 namespace ICD.Connect.Routing.Controls
 {
 	public abstract class AbstractRouteSourceControl<T> : AbstractRouteControl<T>, IRouteSourceControl
-		where T : IDevice
+		where T : IDeviceBase
 	{
 		public abstract event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 

@@ -8,7 +8,7 @@ using ICD.Connect.Routing.EventArguments;
 namespace ICD.Connect.Routing.Controls
 {
 	public abstract class AbstractRouteDestinationControl<T> : AbstractRouteControl<T>, IRouteDestinationControl
-		where T : IDevice
+		where T : IDeviceBase
 	{
 		public abstract event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 		public abstract event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;

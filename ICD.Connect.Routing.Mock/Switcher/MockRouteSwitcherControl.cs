@@ -14,7 +14,7 @@ using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Mock.Switcher
 {
-	public sealed class MockRouteSwitcherControl : AbstractRouteSwitcherControl<IDevice>
+	public sealed class MockRouteSwitcherControl : AbstractRouteSwitcherControl<IDeviceBase>
 	{
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
@@ -28,7 +28,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteSwitcherControl(IDevice parent, int id)
+		public MockRouteSwitcherControl(IDeviceBase parent, int id)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
