@@ -406,8 +406,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				                                   inputConnection.Destination.Control,
 				                                   type)
 				             .Where(c =>
-				                    ConnectionUsages.CanRouteConnection(c, source, roomId, type) &&
-				                    c.IsAvailableToSourceDevice(source.Device) &&
+									// TODO - Needs to support combine spaces
+									//ConnectionUsages.CanRouteConnection(c, source, roomId, type) &&
+									c.IsAvailableToSourceDevice(source.Device) &&
 				                    c.IsAvailableToRoom(roomId));
 		}
 
@@ -699,7 +700,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				};
 
 				// Claim the connection leading up to the switcher
-				//ConnectionUsages.ClaimConnection(connection, switchOperation);
+				ConnectionUsages.ClaimConnection(connection, switchOperation);
 
 				IRouteSwitcherControl switcher = this.GetDestinationControl(connection) as IRouteSwitcherControl;
 				if (switcher == null)
@@ -965,8 +966,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			type = EnumUtils.GetFlagsIntersection(a.ConnectionType, b.ConnectionType, type);
 
 			ConnectionUsageInfo currentUsage = ConnectionUsages.GetConnectionUsageInfo(b);
-			if (!currentUsage.CanRoute(roomId, type))
-				return false;
+			// TODO - Needs to support combine spaces
+			//if (!currentUsage.CanRoute(roomId, type))
+			//	return false;
 
 			// Remove from usages
 			ConnectionUsageInfo previousUsage = ConnectionUsages.GetConnectionUsageInfo(a);
@@ -1310,7 +1312,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			// Update connection ownership
-			//ConnectionUsages.UpdateConnectionsUsage(switcher, args.Output, args.Type);
+			ConnectionUsages.UpdateConnectionsUsage(switcher, args.Output, args.Type);
 
 			// Re-enforce static routes
 			m_StaticRoutes.ReApplyStaticRoutesForSwitcher(switcher);
