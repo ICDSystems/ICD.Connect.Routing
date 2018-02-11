@@ -1322,6 +1322,25 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#region Settings
 
+		protected override void ClearSettingsFinal()
+		{
+			m_Connections.OnChildrenChanged -= ConnectionsOnConnectionsChanged;
+
+			base.ClearSettingsFinal();
+
+			m_Connections.SetChildren(Enumerable.Empty<Connection>());
+			m_StaticRoutes.SetChildren(Enumerable.Empty<StaticRoute>());
+			m_Sources.SetChildren(Enumerable.Empty<ISource>());
+			m_Destinations.SetChildren(Enumerable.Empty<IDestination>());
+			m_DestinationGroups.SetChildren(Enumerable.Empty<IDestinationGroup>());
+
+			SubscribeSwitchers();
+			SubscribeDestinations();
+			SubscribeSources();
+
+			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
+		}
+
 		protected override void ApplySettingsFinal(RoutingGraphSettings settings, IDeviceFactory factory)
 		{
 			m_Connections.OnChildrenChanged -= ConnectionsOnConnectionsChanged;
