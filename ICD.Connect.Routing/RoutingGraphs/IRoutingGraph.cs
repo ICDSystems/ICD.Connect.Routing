@@ -85,6 +85,17 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                      eConnectionType type, bool signalDetected, bool inputActive);
 
 		/// <summary>
+		/// Finds the actively routed source for the destination at the given input address.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <returns>The source</returns>
+		EndpointInfo? GetActiveSourceEndpoint(EndpointInfo destination, eConnectionType type, bool signalDetected, bool inputActive);
+
+		/// <summary>
 		/// Finds the destinations that the source is actively routed to.
 		/// </summary>
 		/// <param name="sourceControl"></param>
@@ -305,6 +316,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		void Unroute(Connection[] path, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Unroutes all switchers routing the active source to the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="id"></param>
+		void UnrouteDestination(EndpointInfo destination, eConnectionType type, int id);
 
 		#endregion
 

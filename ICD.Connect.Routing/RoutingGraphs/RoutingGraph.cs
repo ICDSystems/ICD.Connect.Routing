@@ -945,6 +945,22 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
+		/// Unroutes all switchers routing the active source to the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		public override void UnrouteDestination(EndpointInfo destination, eConnectionType type, int roomId)
+		{
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+			{
+				EndpointInfo? source = GetActiveSourceEndpoint(destination, flag, false, false);
+				if (source.HasValue)
+					Unroute(source.Value, destination, flag, roomId);
+			}
+		}
+
+		/// <summary>
 		/// Unroutes the consecutive connections a -> b.
 		/// </summary>
 		/// <param name="a"></param>
