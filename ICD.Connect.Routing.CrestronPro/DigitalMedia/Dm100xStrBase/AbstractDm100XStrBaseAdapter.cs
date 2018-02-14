@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using ICD.Common.Utils.Services.Logging;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 #endif
 using ICD.Common.Properties;
-using ICD.Common.Services.Logging;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Settings.Core;
@@ -151,11 +150,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 		/// <returns></returns>
 		public virtual Relay GetRelayPort(int address)
 		{
-			if (Switcher == null)
-				throw new InvalidOperationException("No switcher instantiated");
-
-			string message = string.Format("{0} has no {1} with address {2}", this, typeof(Relay).Name, address);
-			throw new KeyNotFoundException(message);
+			string message = string.Format("{0} has no {1}", this, typeof(Relay).Name);
+			throw new NotSupportedException(message);
 		}
 
 		/// <summary>
@@ -165,11 +161,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 		/// <returns></returns>
 		public virtual Versiport GetIoPort(int address)
 		{
-			if (Switcher == null)
-				throw new InvalidOperationException("No switcher instantiated");
+			string message = string.Format("{0} has no {1}", this, typeof(Versiport).Name);
+			throw new NotSupportedException(message);
+		}
 
-			string message = string.Format("{0} has no {1} with address {2}", this, typeof(Versiport).Name, address);
-			throw new KeyNotFoundException(message);
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public DigitalInput GetDigitalInputPort(int address)
+		{
+			string message = string.Format("{0} has no {1}", this, typeof(DigitalInput).Name);
+			throw new NotSupportedException(message);
 		}
 
 		#endregion

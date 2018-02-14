@@ -1,7 +1,7 @@
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
-using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 {
@@ -9,7 +9,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 	{
 		private const string ETHERNET_ID_ELEMENT = "EthernetId";
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
+		[IpIdSettingsProperty]
 		public byte EthernetId { get; set; }
 
 		/// <summary>
@@ -23,11 +23,15 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 			writer.WriteElementString(ETHERNET_ID_ELEMENT, StringUtils.ToIpIdString(EthernetId));
 		}
 
-		protected static void ParseXml(AbstractDm100XStrBaseAdapterSettings instance, string xml)
+		/// <summary>
+		/// Updates the settings from xml.
+		/// </summary>
+		/// <param name="xml"></param>
+		public override void ParseXml(string xml)
 		{
-			instance.EthernetId = XmlUtils.TryReadChildElementContentAsByte(xml, ETHERNET_ID_ELEMENT) ?? 0;
+			base.ParseXml(xml);
 
-			AbstractDeviceSettings.ParseXml(instance, xml);
+			EthernetId = XmlUtils.TryReadChildElementContentAsByte(xml, ETHERNET_ID_ELEMENT) ?? 0;
 		}
 	}
 }
