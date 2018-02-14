@@ -82,6 +82,13 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		object ICardAdapter.Card { get { return Card; } }
 #endif
 
+#if !SIMPLSHARP
+		protected override bool GetIsOnlineStatus()
+		{
+			return false;
+		}
+#endif
+
 		/// <summary>
 		/// Release resources.
 		/// </summary>
