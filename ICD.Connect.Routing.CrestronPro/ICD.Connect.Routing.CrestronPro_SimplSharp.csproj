@@ -151,6 +151,13 @@
     <Compile Include="DigitalMedia\DmMdNXN\AbstractDmMdMNXNAdapter.cs" />
     <Compile Include="DigitalMedia\DmMdNXN\IDmMdMNXNAdapter.cs" />
     <Compile Include="DigitalMedia\DmMdNXN\IDmMdNXNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx350C\DmNvx350CAdapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx350\DmNvx350Adapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx351C\DmNvx351CAdapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx351\DmNvx351Adapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx35X\AbstractDmNvx35xAdapter.cs" />
+    <Compile Include="DigitalMedia\DmNvxBaseClass\AbstractDmNvxBaseClassAdapter.cs" />
+    <Compile Include="DigitalMedia\DmRmc100Str\DmRmc100StrAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd4X24kE\HdMd4X24kESwitcherControl.cs" />
     <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2Adapter.cs" />
     <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2AdapterSettings.cs" />
