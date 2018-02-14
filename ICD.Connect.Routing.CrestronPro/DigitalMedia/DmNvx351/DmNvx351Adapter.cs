@@ -1,5 +1,7 @@
 ﻿using System;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
+#endif
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx35X;
 using ICD.Connect.Settings.Attributes;
 
@@ -12,6 +14,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx351
 	public sealed class DmNvx351Adapter : AbstractDmNvx35XAdapter<DmNvx351AdapterSettings>
 #endif
 	{
+#if SIMPLSHARP
 		/// <summary>
 		/// Creates a new instance of the wrapped internal switcher.
 		/// </summary>
@@ -24,6 +27,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx351
 		{
 			return new Crestron.SimplSharpPro.DM.Streaming.DmNvx351(ethernetId, controlSystem);
 		}
+#endif
 	}
 
 	[KrangSettings(FACTORY_NAME)]

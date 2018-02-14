@@ -117,6 +117,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 
 		#region Ports
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
@@ -175,6 +176,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 			string message = string.Format("{0} has no {1}", this, typeof(DigitalInput).Name);
 			throw new NotSupportedException(message);
 		}
+#endif
 
 		#endregion
 

@@ -1,5 +1,7 @@
 ﻿using System;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
+#endif
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase;
 using ICD.Connect.Settings.Attributes;
 
@@ -12,6 +14,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmRmc100Str
 	public sealed class DmRmc100StrAdapter : AbstractDm100XStrBaseAdapter<DmRmc100StrAdapterSettings>
 #endif
 	{
+#if SIMPLSHARP
 		/// <summary>
 		/// Creates a new instance of the wrapped internal switcher.
 		/// </summary>
@@ -24,6 +27,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmRmc100Str
 		{
 			return new Crestron.SimplSharpPro.DM.Streaming.DmRmc100Str(ethernetId, controlSystem);
 		}
+#endif
 	}
 
 	[KrangSettings(FACTORY_NAME)]
