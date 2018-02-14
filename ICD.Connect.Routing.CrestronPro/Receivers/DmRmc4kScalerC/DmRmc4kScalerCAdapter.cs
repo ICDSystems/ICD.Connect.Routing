@@ -1,34 +1,35 @@
 ﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
-using ICD.Common.Utils;
 #endif
 using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 {
-    /// <summary>
-    /// DmRmcScalerCAdapter wraps a DmRmcScalerC to provide a routing device.
-    /// </summary>
+	/// <summary>
+	/// DmRmcScalerCAdapter wraps a DmRmcScalerC to provide a routing device.
+	/// </summary>
 #if SIMPLSHARP
 // ReSharper disable once InconsistentNaming
-	public sealed class DmRmc4kScalerCAdapter : AbstractDmRmcScalerCAdapter<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC, DmRmc4kScalerCAdapterSettings>
+	public sealed class DmRmc4kScalerCAdapter :
+		AbstractDmRmcScalerCAdapter
+			<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC, DmRmc4kScalerCAdapterSettings>
 	{
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateScaler(byte ipid, CrestronControlSystem controlSystem)
+		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateScaler(byte ipid,
+		                                                                                                  CrestronControlSystem
+			                                                                                                  controlSystem)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC(ipid, controlSystem);
 		}
 
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateScaler(byte ipid, DMOutput output)
+		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateScaler(byte ipid,
+		                                                                                                  DMOutput output)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC(ipid, output);
 		}
 
 		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateScaler(DMOutput output)
 		{
-			IcdConsole.PrintLine("{0} {1} {2} {3}", output, output.Number, output.Name, output.EndpointOnlineFeedback);
-
-
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC(output);
 		}
 	}

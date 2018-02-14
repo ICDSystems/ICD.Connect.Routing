@@ -2,22 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
-using ICD.Common.Services;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.RoutingGraphs;
 
 namespace ICD.Connect.Routing.Mock.Source
 {
-	public sealed class MockRouteSourceControl : AbstractRouteSourceControl<IDevice>
+	public sealed class MockRouteSourceControl : AbstractRouteSourceControl<IDeviceBase>
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
-		private ConnectorInfo[] m_Outputs;
 		private readonly Dictionary<int, Dictionary<eConnectionType, bool>> m_TransmissionStates;
 
 		/// <summary>
@@ -25,10 +25,9 @@ namespace ICD.Connect.Routing.Mock.Source
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteSourceControl(IDevice parent, int id)
+		public MockRouteSourceControl(IDeviceBase parent, int id)
 			: base(parent, id)
 		{
-			m_Outputs = new ConnectorInfo[0];
 			m_TransmissionStates = new Dictionary<int, Dictionary<eConnectionType, bool>>();
 
 			foreach (ConnectorInfo output in GetOutputs())
@@ -58,18 +57,9 @@ namespace ICD.Connect.Routing.Mock.Source
 		{
 			return
 				ServiceProvider.GetService<IRoutingGraph>()
-				               .Connections.GetConnections()
+				               .Connections.GetChildren()
 				               .Where(c => c.Source.Device == Parent.Id && c.Source.Control == Id)
 				               .Select(c => new ConnectorInfo(c.Source.Address, c.ConnectionType));
-		}
-
-		/// <summary>
-		/// Sets the outputs.
-		/// </summary>
-		/// <param name="outputs"></param>
-		public void SetOutputs(IEnumerable<ConnectorInfo> outputs)
-		{
-			m_Outputs = outputs.ToArray();
 		}
 
 		/// <summary>
@@ -104,11 +94,6 @@ namespace ICD.Connect.Routing.Mock.Source
 			foreach (IConsoleCommand command in GetBaseConsoleCommands())
 				yield return command;
 
-			yield return new GenericConsoleCommand<int, eConnectionType>(
-				"AddOutput",
-				"Adds an output to the device",
-				(a, b) => AddOutput(a, b));
-
 			string help = string.Format("SetTransmissionState <output> <{0}> <true/false>",
 			                            StringUtils.ArrayFormat(EnumUtils.GetValues<eConnectionType>()));
 
@@ -120,11 +105,6 @@ namespace ICD.Connect.Routing.Mock.Source
 		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
 		{
 			return base.GetConsoleCommands();
-		}
-
-		private void AddOutput(int address, eConnectionType type)
-		{
-			SetOutputs(GetOutputs().Append(new ConnectorInfo(address, type)));
 		}
 
 		#endregion

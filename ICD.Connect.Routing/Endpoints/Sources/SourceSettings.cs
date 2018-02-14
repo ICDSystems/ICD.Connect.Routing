@@ -1,9 +1,9 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Endpoints.Sources
 {
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class SourceSettings : AbstractSourceSettings
 	{
 		private const string FACTORY_NAME = "Source";
@@ -17,18 +17,5 @@ namespace ICD.Connect.Routing.Endpoints.Sources
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(Source); } }
-
-		/// <summary>
-		/// Loads the settings from XML.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static SourceSettings FromXml(string xml)
-		{
-			SourceSettings output = new SourceSettings();
-			ParseXml(output, xml);
-			return output;
-		}
 	}
 }

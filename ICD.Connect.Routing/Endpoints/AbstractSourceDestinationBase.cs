@@ -121,6 +121,8 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <param name="factory"></param>
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
+			factory.LoadOriginator(settings.Device);
+
 			base.ApplySettingsFinal(settings, factory);
 
 			Endpoint = new EndpointInfo(settings.Device, settings.Control, settings.Address);

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using ICD.Common.Properties;
-using ICD.Common.Utils;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
 
@@ -19,6 +17,11 @@ namespace ICD.Connect.Routing.Controls
 		/// </summary>
 		event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
+		/// <summary>
+		/// Performs the given route operation.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <returns></returns>
 		bool Route(RouteOperation info);
 
 		/// <summary>
@@ -43,11 +46,11 @@ namespace ICD.Connect.Routing.Controls
 		[PublicAPI]
 		public static void Clear(this IRouteSwitcherControl extends)
 		{
-			foreach (ConnectorInfo input in extends.GetInputs())
-			{
-				foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(input.ConnectionType))
-					extends.ClearInput(input.Address, type);
-			}
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			foreach (ConnectorInfo output in extends.GetOutputs())
+				extends.ClearOutput(output.Address, output.ConnectionType);
 		}
 
 		/// <summary>
@@ -60,24 +63,31 @@ namespace ICD.Connect.Routing.Controls
 		[PublicAPI]
 		public static bool ClearInput(this IRouteSwitcherControl extends, int input, eConnectionType type)
 		{
-			return extends.GetOutputs(input, type)
-			              .Select(o => extends.ClearOutput(o.Address, type))
-			              .ToArray()
-			              .Any();
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			bool result = false;
+			foreach (ConnectorInfo item in extends.GetOutputs(input, type))
+				result |= extends.ClearOutput(item.Address, type);
+
+			return result;
 		}
 
 		/// <summary>
 		/// Routes the input to the given output.
 		/// </summary>
-		/// <param name="device"></param>
+		/// <param name="extends"></param>
 		/// <param name="input"></param>
 		/// <param name="output"></param>
 		/// <param name="type"></param>
 		/// <returns>True if the route changed.</returns>
 		[PublicAPI]
-		public static bool Route(this IRouteSwitcherControl device, int input, int output, eConnectionType type)
+		public static bool Route(this IRouteSwitcherControl extends, int input, int output, eConnectionType type)
 		{
-			return device.Route(new RouteOperation {ConnectionType = type, LocalInput = input, LocalOutput = output});
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			return extends.Route(new RouteOperation {ConnectionType = type, LocalInput = input, LocalOutput = output});
 		}
 	}
 }

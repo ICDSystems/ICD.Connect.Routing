@@ -14,6 +14,7 @@
 #endif
 		where TSettings : IDmTx200BaseAdapterSettings, new()
 	{
+#if SIMPLSHARP
 		/// <summary>
 		/// Called when the wrapped transmitter is assigned.
 		/// </summary>
@@ -25,6 +26,7 @@
 
 			transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
 		}
+#endif
 	}
 
 	public abstract class AbstractDmTx200BaseAdapterSettings : AbstractEndpointTransmitterBaseAdapterSettings,

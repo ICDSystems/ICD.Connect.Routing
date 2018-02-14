@@ -1,10 +1,10 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd16X16
 {
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class DmMd16X16AdapterSettings : AbstractDmMdMNXNAdapterSettings
 	{
 		private const string FACTORY_NAME = "DmMd16x16";
@@ -18,18 +18,5 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd16X16
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(DmMd16X16Adapter); } }
-
-		/// <summary>
-		/// Loads the settings from XML.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static DmMd16X16AdapterSettings FromXml(string xml)
-		{
-			DmMd16X16AdapterSettings output = new DmMd16X16AdapterSettings();
-			ParseXml(output, xml);
-			return output;
-		}
 	}
 }

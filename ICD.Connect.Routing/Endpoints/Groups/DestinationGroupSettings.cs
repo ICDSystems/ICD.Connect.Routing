@@ -1,9 +1,9 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Endpoints.Groups
 {
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class DestinationGroupSettings : AbstractDestinationGroupSettings
 	{
 		private const string FACTORY_NAME = "DestinationGroup";
@@ -17,18 +17,5 @@ namespace ICD.Connect.Routing.Endpoints.Groups
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(DestinationGroup); } }
-
-		/// <summary>
-		/// Loads the settings from XML.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static DestinationGroupSettings FromXml(string xml)
-		{
-			DestinationGroupSettings output = new DestinationGroupSettings();
-			ParseXml(output, xml);
-			return output;
-		}
 	}
 }

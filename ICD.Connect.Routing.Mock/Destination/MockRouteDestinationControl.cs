@@ -2,19 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
-using ICD.Common.Services;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.RoutingGraphs;
 using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Mock.Destination
 {
-	public sealed class MockRouteDestinationControl : AbstractRouteDestinationControl<IDevice>
+	public sealed class MockRouteDestinationControl : AbstractRouteDestinationControl<IDeviceBase>
 	{
 		/// <summary>
 		/// Called when an input source status changes.
@@ -31,7 +32,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteDestinationControl(IDevice parent, int id) :
+		public MockRouteDestinationControl(IDeviceBase parent, int id) :
 			base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
@@ -54,8 +55,8 @@ namespace ICD.Connect.Routing.Mock.Destination
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(t => GetSignalDetectedState(input, t))
-								.Unanimous(false);
+				                .Select(t => GetSignalDetectedState(input, t))
+				                .Unanimous(false);
 			}
 
 			return m_Cache.GetSourceDetectedState(input, type);
@@ -89,7 +90,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 		{
 			return
 				ServiceProvider.GetService<IRoutingGraph>()
-				               .Connections.GetConnections()
+				               .Connections.GetChildren()
 				               .Where(c => c.Destination.Device == Parent.Id && c.Destination.Control == Id)
 				               .Select(c => new ConnectorInfo(c.Destination.Address, c.ConnectionType));
 		}

@@ -25,8 +25,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		// so lets just cache the assigned routes until the device tells us otherwise.
 		private readonly SwitcherCache m_Cache;
 
-		[CanBeNull]
-		private HdMd4x24kE m_Switcher;
+		[CanBeNull] private HdMd4x24kE m_Switcher;
 
 		/// <summary>
 		/// Constructor.
@@ -137,7 +136,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(f => GetSignalDetectedState(input, f)).Unanimous(false);
+				                .Select(f => GetSignalDetectedState(input, f)).Unanimous(false);
 			}
 
 			switch (type)
@@ -170,7 +169,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		public override ConnectorInfo GetInput(int input)
 		{
 			if (!ContainsInput(input))
-				throw new KeyNotFoundException(string.Format("{0} has no input with address {1}", GetType().Name, input));
+				throw new IndexOutOfRangeException(string.Format("{0} has no input with address {1}", GetType().Name, input));
 			return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
 		}
 
@@ -193,14 +192,26 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		}
 
 		/// <summary>
-		/// Gets the inputs for the given output.
+		/// Gets the outputs for the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
+		{
+			return m_Cache.GetOutputsForInput(input, type);
+		}
+
+		/// <summary>
+		/// Gets the input routed to the given output matching the given type.
 		/// </summary>
 		/// <param name="output"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
+		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
+		public override ConnectorInfo? GetInput(int output, eConnectionType type)
 		{
-			return m_Cache.GetInputsForOutput(output, type);
+			return m_Cache.GetInputConnectorInfoForOutput(output, type);
 		}
 
 		#endregion
@@ -248,9 +259,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			parent.OnSwitcherChanged -= ParentOnSwitcherChanged;
 		}
 
-		private void ParentOnSwitcherChanged(HdMd4X24kEAdapter sender, HdMd4x24kE switcher)
+		private void ParentOnSwitcherChanged(IDmSwitcherAdapter dmSwitcherAdapter, Switch switcher)
 		{
-			SetSwitcher(switcher);
+			SetSwitcher(switcher as HdMd4x24kE);
 		}
 
 		private void SetSwitcher(HdMd4x24kE switcher)
@@ -373,4 +384,5 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		#endregion
 	}
 }
+
 #endif

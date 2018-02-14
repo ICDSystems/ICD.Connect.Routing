@@ -1,21 +1,15 @@
 ﻿using System;
-using ICD.Common.Properties;
-using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 {
-	public sealed class HdMd4X24kEAdapterSettings : AbstractDeviceSettings
+	[KrangSettings(FACTORY_NAME)]
+	public sealed class HdMd4X24kEAdapterSettings : AbstractDmSwitcherAdapterSettings
 	{
 		private const string FACTORY_NAME = "HdMd4X24kE";
 
-		private const string IPID_ELEMENT = "IPID";
 		private const string ADDRESS_ELEMENT = "Address";
-
-		[SettingsProperty(SettingsProperty.ePropertyType.Ipid)]
-		public byte Ipid { get; set; }
 
 		public string Address { get; set; }
 
@@ -38,28 +32,17 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			base.WriteElements(writer);
 
 			writer.WriteElementString(ADDRESS_ELEMENT, Address);
-			writer.WriteElementString(IPID_ELEMENT, StringUtils.ToIpIdString(Ipid));
 		}
 
 		/// <summary>
-		/// Loads the settings from XML.
+		/// Updates the settings from xml.
 		/// </summary>
 		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static HdMd4X24kEAdapterSettings FromXml(string xml)
+		public override void ParseXml(string xml)
 		{
-			byte ipid = XmlUtils.ReadChildElementContentAsByte(xml, IPID_ELEMENT);
-			string address = XmlUtils.ReadChildElementContentAsString(xml, ADDRESS_ELEMENT);
+			base.ParseXml(xml);
 
-			HdMd4X24kEAdapterSettings output = new HdMd4X24kEAdapterSettings
-			{
-				Ipid = ipid,
-				Address = address
-			};
-
-			ParseXml(output, xml);
-			return output;
+			Address = XmlUtils.TryReadChildElementContentAsString(xml, ADDRESS_ELEMENT);
 		}
 	}
 }

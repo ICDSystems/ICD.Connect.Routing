@@ -1,19 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.Devices;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Connections
 {
 	/// <summary>
 	/// Settings for a Connection.
 	/// </summary>
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class ConnectionSettings : AbstractSettings
 	{
 		private const string CONNECTION_ELEMENT = "Connection";
@@ -60,21 +61,20 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(Connection); } }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
+		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int SourceDeviceId { get; set; }
 
 		public int SourceControlId { get; set; }
 
 		public int SourceAddress { get { return m_SourceAddress; } set { m_SourceAddress = value; } }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
+		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int DestinationDeviceId { get; set; }
 
 		public int DestinationControlId { get; set; }
 
 		public int DestinationAddress { get { return m_DestinationAddress; } set { m_DestinationAddress = value; } }
 
-		[SettingsProperty(SettingsProperty.ePropertyType.Enum)]
 		public eConnectionType ConnectionType { get; set; }
 
 		#endregion
@@ -125,12 +125,12 @@ namespace ICD.Connect.Routing.Connections
 
 		public IEnumerable<int> GetSourceDeviceRestrictions()
 		{
-			return m_SourceDeviceRestrictionsSection.Execute(() => m_SourceDeviceRestrictions.Order().ToArray());
+			return m_SourceDeviceRestrictionsSection.Execute(() => m_SourceDeviceRestrictions.Order().ToArray(m_SourceDeviceRestrictions.Count));
 		}
 
 		public IEnumerable<int> GetRoomRestrictions()
 		{
-			return m_RoomRestrictionsSection.Execute(() => m_RoomRestrictions.Order().ToArray());
+			return m_RoomRestrictionsSection.Execute(() => m_RoomRestrictions.Order().ToArray(m_RoomRestrictions.Count));
 		}
 
 		/// <summary>
@@ -158,27 +158,13 @@ namespace ICD.Connect.Routing.Connections
 		}
 
 		/// <summary>
-		/// Returns the collection of ids that the settings will depend on.
-		/// For example, to instantiate an IR Port from settings, the device the physical port
-		/// belongs to will need to be instantiated first.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<int> GetDeviceDependencies()
-		{
-			if (SourceDeviceId != 0)
-				yield return SourceDeviceId;
-			if (DestinationDeviceId != 0)
-				yield return DestinationDeviceId;
-		}
-
-		/// <summary>
-		/// Instantiates Connection settings from an xml element.
+		/// Updates the settings from xml.
 		/// </summary>
 		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static ConnectionSettings FromXml(string xml)
+		public override void ParseXml(string xml)
 		{
+			base.ParseXml(xml);
+
 			eConnectionType connectionType;
 			if (!XmlUtils.TryReadChildElementContentAsEnum(xml, CONNECTION_TYPE_ELEMENT, true, out connectionType))
 				connectionType = eConnectionType.Audio | eConnectionType.Video;
@@ -194,22 +180,43 @@ namespace ICD.Connect.Routing.Connections
 			IEnumerable<int> deviceRestictions = GetRestrictionsFromXml(xml, SOURCE_DEVICE_RESTRICTIONS_ELEMENT, DEVICE_ELEMENT);
 			IEnumerable<int> roomRestrictions = GetRestrictionsFromXml(xml, ROOM_RESTRICTIONS_ELEMENT, ROOM_ELEMENT);
 
-			ConnectionSettings output = new ConnectionSettings
+			SourceDeviceId = sourceDeviceId ?? 0;
+			SourceControlId = sourceControlId ?? 0;
+			SourceAddress = sourceAddress ?? 1;
+			DestinationDeviceId = destinationDeviceId ?? 0;
+			DestinationControlId = destinationControlId ?? 0;
+			DestinationAddress = destinationAddress ?? 1;
+			ConnectionType = connectionType;
+			
+			SetRoomRestrictions(roomRestrictions);
+			SetSourceDeviceRestrictions(deviceRestictions);
+		}
+
+		/// <summary>
+		/// Returns true if the settings depend on a device with the given ID.
+		/// For example, to instantiate an IR Port from settings, the device the physical port
+		/// belongs to will need to be instantiated first.
+		/// </summary>
+		/// <returns></returns>
+		public override bool HasDeviceDependency(int id)
+		{
+			return id != 0 && (id == SourceDeviceId || id == DestinationDeviceId);
+		}
+
+		/// <summary>
+		/// Returns the count from the collection of ids that the settings depends on.
+		/// </summary>
+		public override int DependencyCount
+		{
+			get
 			{
-				SourceDeviceId = sourceDeviceId ?? 0,
-				SourceControlId = sourceControlId ?? 0,
-				SourceAddress = sourceAddress ?? 1,
-				DestinationDeviceId = destinationDeviceId ?? 0,
-				DestinationControlId = destinationControlId ?? 0,
-				DestinationAddress = destinationAddress ?? 1,
-				ConnectionType = connectionType,
-			};
-
-			output.SetRoomRestrictions(roomRestrictions);
-			output.SetSourceDeviceRestrictions(deviceRestictions);
-
-			ParseXml(output, xml);
-			return output;
+				int count = 0;
+				if (SourceDeviceId != 0)
+					count++;
+				if (DestinationDeviceId != 0)
+					count++;
+				return count;
+			}
 		}
 
 		private static IEnumerable<int> GetRestrictionsFromXml(string xml, string parentElement, string childElement)

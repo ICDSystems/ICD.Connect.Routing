@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using ICD.Common.Utils.Xml;
+﻿using ICD.Common.Utils.Xml;
+using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
-using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Endpoints
 {
@@ -22,7 +22,7 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <summary>
 		/// Gets the endpoint device.
 		/// </summary>
-		[SettingsProperty(SettingsProperty.ePropertyType.DeviceId)]
+		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int Device { get; set; }
 
 		/// <summary>
@@ -38,7 +38,6 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <summary>
 		/// Specifies which media types to use for the source.
 		/// </summary>
-		[SettingsProperty(SettingsProperty.ePropertyType.Enum)]
 		public eConnectionType ConnectionType { get; set; }
 
 		/// <summary>
@@ -73,29 +72,38 @@ namespace ICD.Connect.Routing.Endpoints
 				writer.WriteElementString(DISABLE_ELEMENT, IcdXmlConvert.ToString(Disable));
 		}
 
-		protected static void ParseXml(AbstractSourceDestinationBaseSettings instance, string xml)
+		/// <summary>
+		/// Updates the settings from xml.
+		/// </summary>
+		/// <param name="xml"></param>
+		public override void ParseXml(string xml)
 		{
-			instance.Device = XmlUtils.TryReadChildElementContentAsInt(xml, DEVICE_ELEMENT) ?? 0;
-			instance.Control = XmlUtils.TryReadChildElementContentAsInt(xml, CONTROL_ELEMENT) ?? 0;
-			instance.Address = XmlUtils.TryReadChildElementContentAsInt(xml, ADDRESS_ELEMENT) ?? 1;
-			instance.ConnectionType =
+			base.ParseXml(xml);
+
+			Device = XmlUtils.TryReadChildElementContentAsInt(xml, DEVICE_ELEMENT) ?? 0;
+			Control = XmlUtils.TryReadChildElementContentAsInt(xml, CONTROL_ELEMENT) ?? 0;
+			Address = XmlUtils.TryReadChildElementContentAsInt(xml, ADDRESS_ELEMENT) ?? 1;
+			ConnectionType =
 				XmlUtils.TryReadChildElementContentAsEnum<eConnectionType>(xml, CONNECTION_TYPE_ELEMENT, true) ??
 				eConnectionType.Audio | eConnectionType.Video;
-			instance.Order = XmlUtils.TryReadChildElementContentAsInt(xml, ORDER_ELEMENT) ?? 0;
-			instance.Disable = XmlUtils.TryReadChildElementContentAsBoolean(xml, DISABLE_ELEMENT) ?? false;
-
-			AbstractSettings.ParseXml(instance, xml);
+			Order = XmlUtils.TryReadChildElementContentAsInt(xml, ORDER_ELEMENT) ?? 0;
+			Disable = XmlUtils.TryReadChildElementContentAsBoolean(xml, DISABLE_ELEMENT) ?? false;
 		}
 
 		/// <summary>
-		/// Returns the collection of ids that the settings will depend on.
+		/// Returns true if the settings depend on a device with the given ID.
 		/// For example, to instantiate an IR Port from settings, the device the physical port
 		/// belongs to will need to be instantiated first.
 		/// </summary>
 		/// <returns></returns>
-		public override IEnumerable<int> GetDeviceDependencies()
+		public override bool HasDeviceDependency(int id)
 		{
-			yield return Device;
+			return Device == id;
 		}
+
+		/// <summary>
+		/// Returns the count from the collection of ids that the settings depends on.
+		/// </summary>
+		public override int DependencyCount { get { return 1; } }
 	}
 }

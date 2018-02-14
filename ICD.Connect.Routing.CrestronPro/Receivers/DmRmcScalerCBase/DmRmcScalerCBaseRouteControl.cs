@@ -38,14 +38,14 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 				m_VideoDetected = value;
 
 				OnSourceDetectionStateChange.Raise(this,
-												   new SourceDetectionStateChangeEventArgs(1,
-																						   eConnectionType.Audio |
-																						   eConnectionType.Video,
-																						   m_VideoDetected));
+				                                   new SourceDetectionStateChangeEventArgs(1,
+				                                                                           eConnectionType.Audio |
+				                                                                           eConnectionType.Video,
+				                                                                           m_VideoDetected));
 				OnActiveTransmissionStateChanged.Raise(this,
-													   new TransmissionStateEventArgs(1,
-																					  eConnectionType.Audio | eConnectionType.Video,
-																					  m_VideoDetected));
+				                                       new TransmissionStateEventArgs(1,
+				                                                                      eConnectionType.Audio | eConnectionType.Video,
+				                                                                      m_VideoDetected));
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			if (input != 1)
 			{
 				string message = string.Format("{0} has no {1} input at address {2}", this, type, input);
-				throw new KeyNotFoundException(message);
+				throw new IndexOutOfRangeException(message);
 			}
 
 			switch (type)
@@ -139,7 +139,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			if (output != 1)
 			{
 				string message = string.Format("{0} has no {1} output at address {2}", this, type, output);
-				throw new KeyNotFoundException(message);
+				throw new IndexOutOfRangeException(message);
 			}
 
 			switch (type)
@@ -150,6 +150,30 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 
 				default:
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
+			}
+		}
+
+		/// <summary>
+		/// Gets the input routed to the given output matching the given type.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
+		public override ConnectorInfo? GetInput(int output, eConnectionType type)
+		{
+			if (output != 1)
+				throw new ArgumentException(string.Format("{0} only has 1 output", GetType().Name), "output");
+
+			switch (type)
+			{
+				case eConnectionType.Audio:
+				case eConnectionType.Video:
+				case eConnectionType.Audio | eConnectionType.Video:
+					return GetInput(1);
+
+				default:
+					throw new ArgumentException("type");
 			}
 		}
 
@@ -173,23 +197,36 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		}
 
 		/// <summary>
-		/// Gets the input for the given output.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetInputs(int output, eConnectionType type)
-		{
-			return GetInputs().Where(c => c.ConnectionType.HasFlags(type));
-		}
-
-		/// <summary>
 		/// Returns the outputs.
 		/// </summary>
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
 			yield return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Gets the outputs for the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
+		{
+			if (input != 1)
+				throw new ArgumentException(string.Format("{0} only has 1 input", GetType().Name), "input");
+
+			switch (type)
+			{
+				case eConnectionType.Audio:
+				case eConnectionType.Video:
+				case eConnectionType.Audio | eConnectionType.Video:
+					yield return GetOutput(1);
+					break;
+
+				default:
+					throw new ArgumentException("type");
+			}
 		}
 
 		#endregion
@@ -274,4 +311,5 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		#endregion
 	}
 }
+
 #endif

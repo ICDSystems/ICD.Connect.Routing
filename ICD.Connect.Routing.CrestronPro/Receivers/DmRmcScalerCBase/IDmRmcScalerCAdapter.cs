@@ -13,4 +13,5 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC Scaler { get; }
 	}
 }
+
 #endif

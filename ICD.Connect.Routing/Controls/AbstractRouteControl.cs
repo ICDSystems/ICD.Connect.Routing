@@ -4,7 +4,7 @@ using ICD.Connect.Devices.Controls;
 namespace ICD.Connect.Routing.Controls
 {
 	public abstract class AbstractRouteControl<T> : AbstractDeviceControl<T>, IRouteControl
-		where T : IDevice
+		where T : IDeviceBase
 	{
 		/// <summary>
 		/// Constructor.

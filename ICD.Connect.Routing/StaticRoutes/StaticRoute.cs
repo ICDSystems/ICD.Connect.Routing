@@ -3,7 +3,6 @@ using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
-using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Core;
@@ -55,7 +54,7 @@ namespace ICD.Connect.Routing.StaticRoutes
 		[PublicAPI]
 		public IEnumerable<int> GetConnections()
 		{
-			return m_ConnectionsSection.Execute(() => m_Connections.Order().ToArray());
+			return m_ConnectionsSection.Execute(() => m_Connections.ToArray());
 		}
 
 		#endregion

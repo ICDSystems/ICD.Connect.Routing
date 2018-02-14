@@ -1,4 +1,12 @@
-﻿#if SIMPLSHARP
+﻿using System;
+using ICD.Common.Properties;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Nodes;
+using ICD.Connect.Devices;
+using ICD.Connect.Routing.CrestronPro.Cards;
+using ICD.Connect.Settings.Core;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
@@ -6,12 +14,6 @@ using ICD.Connect.Routing.CrestronPro.Utils;
 #else
 using System;
 #endif
-using ICD.Common.Properties;
-using ICD.Common.Services.Logging;
-using ICD.Common.Utils;
-using ICD.Connect.API.Nodes;
-using ICD.Connect.Devices;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters
 {
@@ -21,7 +23,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 	/// <typeparam name="TTransmitter"></typeparam>
 	/// <typeparam name="TSettings"></typeparam>
 #if SIMPLSHARP
-	public abstract class AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings> : AbstractDevice<TSettings>, IEndpointTransmitterBaseAdapter
+	public abstract class AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings> : AbstractDevice<TSettings>,
+	                                                                                        IEndpointTransmitterBaseAdapter
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.EndpointTransmitterBase
 #else
     public abstract class AbstractEndpointTransmitterBaseAdapter<TSettings> : AbstractDevice<TSettings>, IEndpointTransmitterBaseAdapter
@@ -152,7 +155,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			eDeviceRegistrationUnRegistrationResponse result = transmitter.Register();
 			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
 			{
-				Logger.AddEntry(eSeverity.Error, "Unable to register {0} - {1}", transmitter.GetType().Name, result);
+				Logger.AddEntry(eSeverity.Error, "{0} unable to register {1} - {2}", this, transmitter.GetType().Name, result);
 				return;
 			}
 
@@ -162,7 +165,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 			eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
 			if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
-				Logger.AddEntry(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
+			{
+				Logger.AddEntry(eSeverity.Error, "{0} unable to register parent {1} - {2}", this, parent.GetType().Name,
+				                parentResult);
+			}
 		}
 #endif
 
@@ -210,16 +216,26 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="factory"></param>
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
+			factory.LoadOriginators<ICardAdapter>();
 			base.ApplySettingsFinal(settings, factory);
 
 #if SIMPLSHARP
-			TTransmitter transmitter =
-				DmEndpointFactoryUtils.InstantiateEndpoint<TTransmitter>(settings.Ipid, settings.DmInputAddress,
-																		 settings.DmSwitch, factory,
-																		 InstantiateTransmitter,
-																		 InstantiateTransmitter,
-																		 InstantiateTransmitter);
+			TTransmitter transmitter = null;
 
+			try
+			{
+				transmitter =
+					DmEndpointFactoryUtils.InstantiateEndpoint<TTransmitter>(settings.Ipid, settings.DmInputAddress,
+					                                                         settings.DmSwitch, factory,
+					                                                         InstantiateTransmitter,
+					                                                         InstantiateTransmitter,
+					                                                         InstantiateTransmitter);
+			}
+			catch (Exception e)
+			{
+				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate internal {1} - {2}",
+				                this, typeof(TTransmitter).Name, e.Message);
+			}
 			SetTransmitter(transmitter, settings.DmSwitch);
 #else
             throw new NotImplementedException();

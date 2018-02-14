@@ -1,10 +1,10 @@
 ﻿using System;
-using ICD.Common.Properties;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.SPlus
 {
+	[KrangSettings(FACTORY_NAME)]
 	public sealed class SPlusSwitcherSettings : AbstractDeviceSettings
 	{
 		private const string FACTORY_NAME = "SPlusSwitcher";
@@ -15,19 +15,5 @@ namespace ICD.Connect.Routing.SPlus
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
 		public override Type OriginatorType { get { return typeof(SPlusSwitcher); } }
-
-		/// <summary>
-		/// Loads the settings from XML.
-		/// </summary>
-		/// <param name="xml"></param>
-		/// <returns></returns>
-		[PublicAPI, XmlFactoryMethod(FACTORY_NAME)]
-		public static SPlusSwitcherSettings FromXml(string xml)
-		{
-			SPlusSwitcherSettings output = new SPlusSwitcherSettings();
-
-			ParseXml(output, xml);
-			return output;
-		}
 	}
 }

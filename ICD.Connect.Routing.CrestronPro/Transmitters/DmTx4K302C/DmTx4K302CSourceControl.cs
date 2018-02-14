@@ -124,14 +124,14 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 			{
 				return
 					EnumUtils.GetFlagsExceptNone(type)
-							 .Select(f => GetActiveTransmissionState(output, f))
-							 .Unanimous(false);
+					         .Select(f => GetActiveTransmissionState(output, f))
+					         .Unanimous(false);
 			}
 
 			if (output != 1)
 			{
 				string message = string.Format("{0} has no {1} output at address {2}", this, type, output);
-				throw new KeyNotFoundException(message);
+				throw new IndexOutOfRangeException(message);
 			}
 
 			switch (type)
@@ -172,9 +172,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="transmitter"></param>
-		private void ParentOnTransmitterChanged(DmTx4K302CAdapter sender, DmTx4k302C transmitter)
+		private void ParentOnTransmitterChanged(IEndpointTransmitterBaseAdapter sender, EndpointTransmitterBase transmitter)
 		{
-			SetTransmitter(transmitter);
+			SetTransmitter(transmitter as DmTx4k302C);
 		}
 
 		private void SetTransmitter(DmTx4k302C transmitter)
@@ -259,4 +259,5 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		#endregion
 	}
 }
+
 #endif

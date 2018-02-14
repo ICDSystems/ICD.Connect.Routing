@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.API.Nodes;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -81,9 +82,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 				m_ActiveTransmissionState = value;
 
 				OnActiveTransmissionStateChanged.Raise(this,
-													   new TransmissionStateEventArgs(OUTPUT_HDMI,
-																					  eConnectionType.Audio | eConnectionType.Video,
-																					  m_ActiveTransmissionState));
+				                                       new TransmissionStateEventArgs(OUTPUT_HDMI,
+				                                                                      eConnectionType.Audio | eConnectionType.Video,
+				                                                                      m_ActiveTransmissionState));
 			}
 		}
 
@@ -134,7 +135,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			if (output != 1)
 			{
 				string message = string.Format("{0} has no {1} output at address {2}", this, type, output);
-				throw new KeyNotFoundException(message);
+				throw new IndexOutOfRangeException(message);
 			}
 
 			switch (type)
@@ -186,7 +187,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			m_Transmitter = transmitter;
 			Subscribe(m_Transmitter);
 
-			ActiveTransmissionState = HdmiDetected || VgaDetected;
+			UpdateActiveTransmissionState();
 		}
 
 		#endregion
@@ -228,7 +229,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <param name="args"></param>
 		private void VgaInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
-			ActiveTransmissionState = HdmiDetected || VgaDetected;
+			UpdateActiveTransmissionState();
 		}
 
 		/// <summary>
@@ -237,6 +238,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <param name="inputStream"></param>
 		/// <param name="args"></param>
 		private void HdmiInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
+		{
+			UpdateActiveTransmissionState();
+		}
+
+		private void UpdateActiveTransmissionState()
 		{
 			ActiveTransmissionState = HdmiDetected || VgaDetected;
 		}
@@ -248,6 +254,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <param name="args"></param>
 		private void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
 		{
+			if (args.EventId == EndpointTransmitterBase.AudioSourceFeedbackEventId ||
+			    args.EventId == EndpointTransmitterBase.VideoSourceFeedbackEventId)
+				UpdateActiveTransmissionState();
+
 			if (args.EventId != DMOutputEventIds.ContentLanModeEventId)
 				return;
 
@@ -262,6 +272,24 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		}
 
 		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			addRow("HDMI Detected", HdmiDetected);
+			addRow("VGA Detected", VgaDetected);
+			addRow("Active Transmission State", ActiveTransmissionState);
+		}
+
+		#endregion
 	}
 }
+
 #endif
