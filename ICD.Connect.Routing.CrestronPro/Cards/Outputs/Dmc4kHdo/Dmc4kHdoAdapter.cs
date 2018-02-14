@@ -53,12 +53,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kHdo
 		}
 	}
 #else
-	public sealed class Dmc4kCoHdAdapter : AbstractOutputCardAdapter<Dmc4kCoHdAdapterSettings>
+	// ReSharper disable once InconsistentNaming
+	public sealed class Dmc4kHdoAdapter : AbstractOutputCardAdapter<Dmc4kHdoAdapterSettings>
 	{
-	    protected override bool GetIsOnlineStatus()
-	    {
-	        return false;
-	    }
 	}
 #endif
 }
