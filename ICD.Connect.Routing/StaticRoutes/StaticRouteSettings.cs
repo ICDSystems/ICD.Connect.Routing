@@ -83,21 +83,9 @@ namespace ICD.Connect.Routing.StaticRoutes
 		{
 			base.WriteElements(writer);
 
-			writer.WriteStartElement(CONNECTIONS_ELEMENT);
-			{
-				m_ConnectionsSection.Enter();
+			writer.WriteElementString(CONNECTION_TYPE_ELEMENT, IcdXmlConvert.ToString(ConnectionType));
 
-				try
-				{
-					foreach (int connection in m_Connections)
-						writer.WriteElementString(CONNECTION_ELEMENT, IcdXmlConvert.ToString(connection));
-				}
-				finally
-				{
-					m_ConnectionsSection.Leave();
-				}
-			}
-			writer.WriteEndElement();
+			XmlUtils.WriteListToXml(writer, m_Connections, CONNECTIONS_ELEMENT, CONNECTION_ELEMENT);
 		}
 
 		/// <summary>
@@ -108,14 +96,12 @@ namespace ICD.Connect.Routing.StaticRoutes
 		{
 			base.ParseXml(xml);
 
-			string connectionsElement = XmlUtils.GetChildElementAsString(xml, CONNECTIONS_ELEMENT);
-			IEnumerable<int> connections = XmlUtils.GetChildElementsAsString(connectionsElement, CONNECTION_ELEMENT)
-			                                       .Select(x => XmlUtils.ReadElementContentAsInt(x));
+			ConnectionType =
+				XmlUtils.TryReadChildElementContentAsEnum<eConnectionType>(xml, CONNECTION_TYPE_ELEMENT, true) ??
+				eConnectionType.Audio | eConnectionType.Video;
 
-			eConnectionType connectionType =
-				XmlUtils.ReadChildElementContentAsEnum<eConnectionType>(xml, CONNECTION_TYPE_ELEMENT, true);
-
-			ConnectionType = connectionType;
+			IEnumerable<int> connections = XmlUtils.ReadListFromXml(xml, CONNECTIONS_ELEMENT, CONNECTION_ELEMENT,
+			                                                        x => XmlUtils.ReadElementContentAsInt(x));
 
 			SetConnections(connections);
 		}
