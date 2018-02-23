@@ -23,7 +23,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		where TSettings : IRoutingGraphSettings, new()
 	{
 		public abstract event EventHandler<RouteFinishedEventArgs> OnRouteFinished;
-		public abstract event EventHandler OnRouteChanged;
+		public abstract event EventHandler<SwitcherRouteChangeEventArgs> OnRouteChanged;
 		public abstract event EventHandler<EndpointStateEventArgs> OnSourceTransmissionStateChanged;
 		public abstract event EventHandler<EndpointStateEventArgs> OnSourceDetectionStateChanged;
 

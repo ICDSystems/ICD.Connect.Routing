@@ -26,7 +26,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Raised when a switcher changes routing.
 		/// </summary>
-		event EventHandler OnRouteChanged;
+		event EventHandler<SwitcherRouteChangeEventArgs> OnRouteChanged;
 
 		/// <summary>
 		/// Raised when a source device starts/stops sending video.

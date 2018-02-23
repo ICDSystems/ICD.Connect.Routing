@@ -75,6 +75,7 @@
     <Compile Include="Endpoints\Sources\CoreSourceCollection.cs" />
     <Compile Include="Endpoints\Destinations\CoreDestinationCollection.cs" />
     <Compile Include="Endpoints\Groups\CoreDestinationGroupCollection.cs" />
+    <Compile Include="EventArguments\SwitcherRouteChangeEventArgs.cs" />
     <Compile Include="RoutingGraphs\AbstractRoutingGraph.cs" />
     <Compile Include="RoutingGraphs\AbstractRoutingGraphSettings.cs" />
     <Compile Include="Connections\ConnectionPath.cs" />

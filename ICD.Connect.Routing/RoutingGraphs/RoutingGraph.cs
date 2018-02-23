@@ -52,7 +52,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Raised when a switcher changes routing.
 		/// </summary>
-		public override event EventHandler OnRouteChanged;
+		public override event EventHandler<SwitcherRouteChangeEventArgs> OnRouteChanged;
 
 		/// <summary>
 		/// Raised when a source device starts/stops sending video.
@@ -1333,7 +1333,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			// Re-enforce static routes
 			m_StaticRoutes.ReApplyStaticRoutesForSwitcher(switcher);
 
-			OnRouteChanged.Raise(this);
+			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args.Output, args.Type));
 		}
 
 		#endregion
