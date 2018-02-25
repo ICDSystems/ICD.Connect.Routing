@@ -1188,7 +1188,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			EndpointInfo info = source.GetOutputEndpointInfo(output);
-			OnSourceDetectionStateChanged.Raise(this, new EndpointStateEventArgs(info, args.State));
+			OnSourceDetectionStateChanged.Raise(this, new EndpointStateEventArgs(info, args.Type, args.State));
 		}
 
 		#endregion
@@ -1259,7 +1259,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			EndpointInfo endpoint = source.GetOutputEndpointInfo(args.Output);
-			OnSourceTransmissionStateChanged.Raise(this, new EndpointStateEventArgs(endpoint, args.State));
+			OnSourceTransmissionStateChanged.Raise(this, new EndpointStateEventArgs(endpoint, args.Type, args.State));
 		}
 
 		#endregion
