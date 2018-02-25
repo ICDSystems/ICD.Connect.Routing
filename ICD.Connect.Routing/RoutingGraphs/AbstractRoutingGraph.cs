@@ -350,6 +350,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract IEnumerable<IRouteControl> GetControls(Connection connection);
 
 		/// <summary>
+		/// Gets the control for the given device and control ids.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="control"></param>
+		/// <returns></returns>
+		public abstract T GetControl<T>(int device, int control) where T : IRouteControl;
+
+		/// <summary>
 		/// Gets the immediate destination control at the given address.
 		/// </summary>
 		/// <param name="sourceControl"></param>

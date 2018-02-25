@@ -1025,8 +1025,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="device"></param>
 		/// <param name="control"></param>
 		/// <returns></returns>
-		private T GetControl<T>(int device, int control)
-			where T : IRouteControl
+		public override T GetControl<T>(int device, int control)
 		{
 			return ServiceProvider.GetService<ICore>().GetControl<T>(device, control);
 		}
