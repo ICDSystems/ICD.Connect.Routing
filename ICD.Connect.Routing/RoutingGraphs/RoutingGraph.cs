@@ -208,7 +208,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, type);
 			return sourceConnector.HasValue
 				       ? GetActiveSourceEndpoint(sourceAsMidpoint, sourceConnector.Value.Address, type, signalDetected, inputActive)
-				       : null;
+				       : sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
 		}
 
 		/// <summary>
