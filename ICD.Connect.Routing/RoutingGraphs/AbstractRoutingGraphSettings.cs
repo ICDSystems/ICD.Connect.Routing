@@ -68,6 +68,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="xml"></param>
 		public override void ParseXml(string xml)
 		{
+			base.ParseXml(xml);
+
 			IEnumerable<ISettings> connections = PluginFactory.GetSettingsFromXml(xml, CONNECTIONS_ELEMENT);
 			IEnumerable<ISettings> staticRoutes = PluginFactory.GetSettingsFromXml(xml, STATIC_ROUTES_ELEMENT);
 			IEnumerable<ISettings> sources = PluginFactory.GetSettingsFromXml(xml, SOURCES_ELEMENT);
