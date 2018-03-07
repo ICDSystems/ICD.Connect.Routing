@@ -22,6 +22,11 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		public event EventHandler<BoolEventArgs> OnConnectedStateChanged;
 
+		/// <summary>
+		/// Raised when the device sends a response.
+		/// </summary>
+		public event EventHandler<StringEventArgs> OnResponseReceived; 
+
 		private readonly ISerialBuffer m_SerialBuffer;
 
 		private bool m_IsConnected;
@@ -79,6 +84,8 @@ namespace ICD.Connect.Routing.Atlona
 
 			m_SerialBuffer = new MultiDelimiterSerialBuffer(s_Delimiters);
 			Subscribe(m_SerialBuffer);
+
+			Controls.Add(new AtUhdHdvs300SwitcherControl(this, 0));
 		}
 
 		/// <summary>
@@ -87,6 +94,7 @@ namespace ICD.Connect.Routing.Atlona
 		protected override void DisposeFinal(bool disposing)
 		{
 			OnConnectedStateChanged = null;
+			OnResponseReceived = null;
 
 			Heartbeat.StopMonitoring();
 			Heartbeat.Dispose();
@@ -330,6 +338,10 @@ namespace ICD.Connect.Routing.Atlona
 
 				case "Password":
 					SendCommand(Password);
+					break;
+
+				default:
+					OnResponseReceived.Raise(this, new StringEventArgs(args.Data));
 					break;
 			}
 		}
