@@ -24,6 +24,11 @@
   </ItemGroup>
   
   <ItemGroup>
+    <ProjectReference Include="..\..\ICD.Common.Utils\ICD.Common.Utils\ICD.Common.Utils_NetStandard.csproj" />
+    <ProjectReference Include="..\ICD.Connect.Routing.Atlona\ICD.Connect.Routing.Atlona_NetStandard.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
 
