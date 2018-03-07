@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AtUhdHdvs300Device.cs" />
+    <Compile Include="AtUhdHdvs300DeviceSerialBuffer.cs" />
     <Compile Include="AtUhdHdvs300DeviceSettings.cs" />
     <Compile Include="AtUhdHdvs300SwitcherControl.cs" />
     <Compile Include="KrangPlugin.cs" />
