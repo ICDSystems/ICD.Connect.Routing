@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
@@ -15,6 +16,11 @@ namespace ICD.Connect.Routing.Atlona
 {
     public sealed class AtUhdHdvs300SwitcherControl : AbstractRouteSwitcherControl<AtUhdHdvs300Device>
     {
+		private const string REGEX_OUTPUT_ON = @"^x1\$ (on|off)";
+		private const string REGEX_SOURCE_DETECT = @"^^InputStatus (0|1)(0|1)(0|1)(0|1)(0|1)";
+		private const string REGEX_SOURCE_DETECT_SINGLE = @"^InputStatus(\d) (0|1)";
+		private const string REGEX_ROUTING = @"^x(\d)AVx1";
+
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
@@ -50,9 +56,9 @@ namespace ICD.Connect.Routing.Atlona
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
-			Subscribe(m_Cache);
 
-			parent.OnResponseReceived += ParentOnOnResponseReceived;
+			Subscribe(m_Cache);
+			Subscribe(parent);
 		}
 
 		/// <summary>
@@ -215,9 +221,70 @@ namespace ICD.Connect.Routing.Atlona
 
 		#region Parent Callbacks
 
+		/// <summary>
+		/// Subscribe to the parent events.
+		/// </summary>
+		/// <param name="parent"></param>
+		private void Subscribe(AtUhdHdvs300Device parent)
+		{
+			parent.OnResponseReceived += ParentOnOnResponseReceived;
+			parent.OnInitializedChanged += ParentOnOnInitializedChanged;
+		}
+
+		private void ParentOnOnInitializedChanged(object sender, BoolEventArgs boolEventArgs)
+		{
+			Parent.SendCommand("Statusx1"); // Routing
+			Parent.SendCommand("InputStatus"); // Source detection
+			Parent.SendCommand("x1$ sta"); // Output on state
+		}
+
 		private void ParentOnOnResponseReceived(object sender, StringEventArgs eventArgs)
 		{
-			//throw new NotImplementedException();
+			// Output on state
+			Match outputOnMatch = new Regex(REGEX_OUTPUT_ON).Match(eventArgs.Data);
+			if (outputOnMatch.Success)
+			{
+				OutputOn = outputOnMatch.Groups[1].Value == "on";
+				return;
+			}
+
+			// All source detection
+			Match sourceDetectMatch = new Regex(REGEX_SOURCE_DETECT).Match(eventArgs.Data);
+			if (sourceDetectMatch.Success)
+			{
+				for (int index = 1; index <= 5; index++)
+				{
+					int address = index;
+					bool detected = sourceDetectMatch.Groups[index].Value == "1";
+
+					m_Cache.SetSourceDetectedState(address, eConnectionType.Audio | eConnectionType.Video, detected);
+				}
+
+				return;
+			}
+
+			// Individual source detection
+			Match sourceDetectSingleMatch = new Regex(REGEX_SOURCE_DETECT_SINGLE).Match(eventArgs.Data);
+			if (sourceDetectSingleMatch.Success)
+			{
+				int address = int.Parse(sourceDetectSingleMatch.Groups[1].Value);
+				bool detected = sourceDetectSingleMatch.Groups[1].Value == "1";
+
+				m_Cache.SetSourceDetectedState(address, eConnectionType.Audio | eConnectionType.Video, detected);
+
+				return;
+			}
+
+			// Routing
+			Match routingMatch = new Regex(REGEX_ROUTING).Match(eventArgs.Data);
+			if (routingMatch.Success)
+			{
+				int input = int.Parse(routingMatch.Groups[1].Value);
+
+				m_Cache.SetInputForOutput(1, input, eConnectionType.Audio | eConnectionType.Video);
+
+				return;
+			}
 		}
 
 		#endregion

@@ -1,6 +1,5 @@
 ﻿using System;
 using ICD.Common.Properties;
-using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
@@ -10,7 +9,6 @@ using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Heartbeat;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
-using ICD.Connect.Protocol.SerialBuffers;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Atlona
@@ -23,24 +21,20 @@ namespace ICD.Connect.Routing.Atlona
 		public event EventHandler<BoolEventArgs> OnConnectedStateChanged;
 
 		/// <summary>
+		/// Raised when the class initializes.
+		/// </summary>
+		public event EventHandler<BoolEventArgs> OnInitializedChanged;
+
+		/// <summary>
 		/// Raised when the device sends a response.
 		/// </summary>
 		public event EventHandler<StringEventArgs> OnResponseReceived; 
 
-		private readonly ISerialBuffer m_SerialBuffer;
+		private readonly AtUhdHdvs300DeviceSerialBuffer m_SerialBuffer;
 
+		private bool m_Initialized;
 		private bool m_IsConnected;
 		private ISerialPort m_Port;
-
-		private static readonly char[] s_Delimiters =
-		{
-			'\r',
-			'\n',
-			'\0',
-			(char)0x02, // STX
-			(char)0x03, // ETX
-			':' // Hack for login prompts
-		};
 
 		#region Properties
 
@@ -69,7 +63,27 @@ namespace ICD.Connect.Routing.Atlona
 
 				m_IsConnected = value;
 
+				if (!m_IsConnected)
+					Initialized = false;
+
 				OnConnectedStateChanged.Raise(this, new BoolEventArgs(m_IsConnected));
+			}
+		}
+
+		/// <summary>
+		/// Device Initialized Status.
+		/// </summary>
+		public bool Initialized
+		{
+			get { return m_Initialized; }
+			private set
+			{
+				if (value == m_Initialized)
+					return;
+
+				m_Initialized = value;
+
+				OnInitializedChanged.Raise(this, new BoolEventArgs(m_Initialized));
 			}
 		}
 
@@ -82,7 +96,7 @@ namespace ICD.Connect.Routing.Atlona
 		{
 			Heartbeat = new Heartbeat(this);
 
-			m_SerialBuffer = new MultiDelimiterSerialBuffer(s_Delimiters);
+			m_SerialBuffer = new AtUhdHdvs300DeviceSerialBuffer();
 			Subscribe(m_SerialBuffer);
 
 			Controls.Add(new AtUhdHdvs300SwitcherControl(this, 0));
@@ -94,6 +108,7 @@ namespace ICD.Connect.Routing.Atlona
 		protected override void DisposeFinal(bool disposing)
 		{
 			OnConnectedStateChanged = null;
+			OnInitializedChanged = null;
 			OnResponseReceived = null;
 
 			Heartbeat.StopMonitoring();
@@ -235,6 +250,17 @@ namespace ICD.Connect.Routing.Atlona
 			return m_Port != null && m_Port.IsOnline;
 		}
 
+		/// <summary>
+		/// Initialize the CODEC.
+		/// </summary>
+		private void Initialize()
+		{
+			SendCommand("Broadcast on");
+			SendCommand("InputBroadcast on");
+
+			Initialized = true;
+		}
+
 		#endregion
 
 		#region Port Callbacks
@@ -307,18 +333,40 @@ namespace ICD.Connect.Routing.Atlona
 		/// Subscribes to the buffer events.
 		/// </summary>
 		/// <param name="buffer"></param>
-		private void Subscribe(ISerialBuffer buffer)
+		private void Subscribe(AtUhdHdvs300DeviceSerialBuffer buffer)
 		{
-			buffer.OnCompletedSerial += SerialBufferCompletedSerial;
+			buffer.OnCompletedSerial += BufferCompletedSerial;
+			buffer.OnLoginPrompt += BufferOnOnLoginPrompt;
+			buffer.OnPasswordPrompt += BufferOnOnPasswordPrompt;
+			buffer.OnEmptyPrompt += BufferOnOnEmptyPrompt;
 		}
 
 		/// <summary>
 		/// Unsubscribe from the buffer events.
 		/// </summary>
 		/// <param name="buffer"></param>
-		private void Unsubscribe(ISerialBuffer buffer)
+		private void Unsubscribe(AtUhdHdvs300DeviceSerialBuffer buffer)
 		{
-			buffer.OnCompletedSerial -= SerialBufferCompletedSerial;
+			buffer.OnCompletedSerial -= BufferCompletedSerial;
+			buffer.OnLoginPrompt -= BufferOnOnLoginPrompt;
+			buffer.OnPasswordPrompt -= BufferOnOnPasswordPrompt;
+			buffer.OnEmptyPrompt -= BufferOnOnEmptyPrompt;
+		}
+
+		private void BufferOnOnEmptyPrompt(object sender, EventArgs eventArgs)
+		{
+			// The empty prompt represents a successful login
+			Initialize();
+		}
+
+		private void BufferOnOnPasswordPrompt(object sender, EventArgs eventArgs)
+		{
+			SendCommand(Password);
+		}
+
+		private void BufferOnOnLoginPrompt(object sender, EventArgs eventArgs)
+		{
+			SendCommand(Username);
 		}
 
 		/// <summary>
@@ -326,24 +374,12 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="args"></param>
-		private void SerialBufferCompletedSerial(object sender, StringEventArgs args)
+		private void BufferCompletedSerial(object sender, StringEventArgs args)
 		{
-			IcdConsole.PrintLine(eConsoleColor.Magenta, StringUtils.ToMixedReadableHexLiteral(args.Data));
+			OnResponseReceived.Raise(this, new StringEventArgs(args.Data));
 
-			switch (args.Data)
-			{
-				case "Login":
-					SendCommand(Username);
-					break;
-
-				case "Password":
-					SendCommand(Password);
-					break;
-
-				default:
-					OnResponseReceived.Raise(this, new StringEventArgs(args.Data));
-					break;
-			}
+			if (args.Data.StartsWith("Command FAILED:"))
+				Logger.AddEntry(eSeverity.Error, "{0} - {1}", this, args.Data);
 		}
 
 		#endregion
