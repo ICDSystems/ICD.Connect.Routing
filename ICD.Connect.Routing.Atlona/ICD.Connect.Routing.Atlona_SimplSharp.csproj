@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="AtUhdHdvs300Device.cs" />
     <Compile Include="AtUhdHdvs300DeviceSettings.cs" />
+    <Compile Include="AtUhdHdvs300SwitcherControl.cs" />
     <Compile Include="KrangPlugin.cs" />
     <None Include="ObfuscationSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -87,6 +88,10 @@
     <ProjectReference Include="..\..\ICD.Connect.Settings\ICD.Connect.Settings\ICD.Connect.Settings_SimplSharp.csproj">
       <Project>{5B84EB3C-1C3A-4C4D-98C2-69F67CF51D5A}</Project>
       <Name>ICD.Connect.Settings_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ICD.Connect.Routing\ICD.Connect.Routing_SimplSharp.csproj">
+      <Project>{B0C0CA1C-FA55-4BEA-8A8B-EDB2141C523E}</Project>
+      <Name>ICD.Connect.Routing_SimplSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
