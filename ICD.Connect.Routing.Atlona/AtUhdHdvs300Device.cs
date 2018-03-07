@@ -15,8 +15,8 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Atlona
 {
-    public sealed class AtUhdHdvs300Device : AbstractDevice<AtUhdHdvs300DeviceSettings>, IConnectable
-    {
+	public sealed class AtUhdHdvs300Device : AbstractDevice<AtUhdHdvs300DeviceSettings>, IConnectable
+	{
 		/// <summary>
 		/// Raised when the device becomes connected or disconnected.
 		/// </summary>
@@ -34,6 +34,7 @@ namespace ICD.Connect.Routing.Atlona
 			'\0',
 			(char)0x02, // STX
 			(char)0x03, // ETX
+			':' // Hack for login prompts
 		};
 
 		#region Properties
@@ -99,6 +100,46 @@ namespace ICD.Connect.Routing.Atlona
 		#region Methods
 
 		/// <summary>
+		/// Send command.
+		/// </summary>
+		/// <param name="command"></param>
+		public void SendCommand(string command)
+		{
+			SendCommand(command, null);
+		}
+
+		/// <summary>
+		/// Send command.
+		/// </summary>
+		/// <param name="command"></param>
+		/// <param name="args"></param>
+		public void SendCommand(string command, params object[] args)
+		{
+			if (args != null)
+				command = string.Format(command, args);
+
+			if (m_Port == null)
+			{
+				Logger.AddEntry(eSeverity.Error, "{0} - Unable to communicate - port is null");
+				return;
+			}
+
+			if (!IsConnected)
+			{
+				Logger.AddEntry(eSeverity.Warning, "{0} - Disconnected, attempting reconnect");
+				Connect();
+			}
+
+			if (!IsConnected)
+			{
+				Logger.AddEntry(eSeverity.Critical, "{0} - Unable to connect");
+				return;
+			}
+
+			m_Port.Send(command + '\r');
+		}
+
+		/// <summary>
 		/// Sets the port for communicating with the device.
 		/// </summary>
 		/// <param name="port"></param>
@@ -138,13 +179,13 @@ namespace ICD.Connect.Routing.Atlona
 		public static void ConfigureComPort(IComPort port)
 		{
 			port.SetComPortSpec(eComBaudRates.ComspecBaudRate115200,
-								eComDataBits.ComspecDataBits8,
-								eComParityType.ComspecParityNone,
-								eComStopBits.ComspecStopBits1,
-								eComProtocolType.ComspecProtocolRS232,
-								eComHardwareHandshakeType.ComspecHardwareHandshakeNone,
-								eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
-								false);
+			                    eComDataBits.ComspecDataBits8,
+			                    eComParityType.ComspecParityNone,
+			                    eComStopBits.ComspecStopBits1,
+			                    eComProtocolType.ComspecProtocolRS232,
+			                    eComHardwareHandshakeType.ComspecHardwareHandshakeNone,
+			                    eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
+			                    false);
 		}
 
 		/// <summary>
@@ -280,6 +321,17 @@ namespace ICD.Connect.Routing.Atlona
 		private void SerialBufferCompletedSerial(object sender, StringEventArgs args)
 		{
 			IcdConsole.PrintLine(eConsoleColor.Magenta, StringUtils.ToMixedReadableHexLiteral(args.Data));
+
+			switch (args.Data)
+			{
+				case "Login":
+					SendCommand(Username);
+					break;
+
+				case "Password":
+					SendCommand(Password);
+					break;
+			}
 		}
 
 		#endregion
