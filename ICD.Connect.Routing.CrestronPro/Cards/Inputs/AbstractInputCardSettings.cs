@@ -6,7 +6,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 {
 	public abstract class AbstractInputCardSettings : AbstractCardSettingsBase, IInputCardSettings
 	{
-		private const string CRESNET_ID_ELEMENT = "CresnetId";
+		private const string CRESNET_ID_ELEMENT = "CresnetID";
 
 		[IpIdSettingsProperty]
 		public byte? CresnetId { get; set; }
