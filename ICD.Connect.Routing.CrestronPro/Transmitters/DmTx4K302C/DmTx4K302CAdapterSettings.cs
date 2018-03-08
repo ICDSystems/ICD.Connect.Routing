@@ -1,10 +1,10 @@
 ﻿using System;
 using ICD.Connect.Settings.Attributes;
 
-namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
+namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4k302C
 {
 	[KrangSettings(FACTORY_NAME)]
-	public sealed class DmTx4K302CAdapterSettings : AbstractEndpointTransmitterBaseAdapterSettings
+	public sealed class DmTx4k302CAdapterSettings : AbstractEndpointTransmitterBaseAdapterSettings
 	{
 		private const string FACTORY_NAME = "DmTx4k302C";
 
@@ -16,6 +16,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// <summary>
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
-		public override Type OriginatorType { get { return typeof(DmTx4K302CAdapter); } }
+		public override Type OriginatorType { get { return typeof(DmTx4k302CAdapter); } }
 	}
 }
