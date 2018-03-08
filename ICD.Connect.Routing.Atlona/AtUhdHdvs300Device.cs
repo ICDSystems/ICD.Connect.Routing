@@ -183,11 +183,7 @@ namespace ICD.Connect.Routing.Atlona
 			Subscribe(m_Port);
 
 			if (m_Port != null)
-			{
-				m_Port.DebugRx = true;
-				m_Port.DebugTx = true;
 				Connect();
-			}
 
 			Heartbeat.StartMonitoring();
 
