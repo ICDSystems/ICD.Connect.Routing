@@ -143,19 +143,19 @@ namespace ICD.Connect.Routing.Atlona
 
 			if (m_Port == null)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} - Unable to communicate - port is null");
+				Logger.AddEntry(eSeverity.Error, "{0} - Unable to communicate - port is null", this);
 				return;
 			}
 
 			if (!IsConnected)
 			{
-				Logger.AddEntry(eSeverity.Warning, "{0} - Disconnected, attempting reconnect");
+				Logger.AddEntry(eSeverity.Warning, "{0} - Disconnected, attempting reconnect", this);
 				Connect();
 			}
 
 			if (!IsConnected)
 			{
-				Logger.AddEntry(eSeverity.Critical, "{0} - Unable to connect");
+				Logger.AddEntry(eSeverity.Critical, "{0} - Unable to connect", this);
 				return;
 			}
 
