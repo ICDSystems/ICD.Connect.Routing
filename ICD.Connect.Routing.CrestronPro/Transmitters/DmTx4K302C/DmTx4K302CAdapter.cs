@@ -7,21 +7,21 @@ using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 using System;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4k302C
+namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 {
 #if SIMPLSHARP
-	public sealed class DmTx4k302CAdapter : AbstractEndpointTransmitterBaseAdapter<DmTx4k302C, DmTx4k302CAdapterSettings>
+	public sealed class DmTx4K302CAdapter : AbstractEndpointTransmitterBaseAdapter<DmTx4k302C, DmTx4K302CAdapterSettings>
 #else
-    public sealed class DmTx4k302CAdapter : AbstractEndpointTransmitterBaseAdapter<DmTx4k302C>
+    public sealed class DmTx4K302CAdapter : AbstractEndpointTransmitterBaseAdapter<DmTx4K302CAdapterSettings>
 #endif
 	{
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public DmTx4k302CAdapter()
+		public DmTx4K302CAdapter()
 		{
 #if SIMPLSHARP
-			Controls.Add(new DmTx4k302CSourceControl(this));
+			Controls.Add(new DmTx4K302CSourceControl(this));
 #endif
 		}
 

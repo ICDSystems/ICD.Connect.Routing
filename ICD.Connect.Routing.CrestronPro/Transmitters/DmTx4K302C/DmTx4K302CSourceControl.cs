@@ -14,9 +14,9 @@ using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 
-namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4k302C
+namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 {
-	public sealed class DmTx4k302CSourceControl : AbstractRouteSourceControl<DmTx4k302CAdapter>
+	public sealed class DmTx4K302CSourceControl : AbstractRouteSourceControl<DmTx4K302CAdapter>
 	{
 		private const int HDMI_INPUT_1 = 1;
 		private const int HDMI_INPUT_2 = 2;
@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4k302C
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		public DmTx4k302CSourceControl(DmTx4k302CAdapter parent)
+		public DmTx4K302CSourceControl(DmTx4K302CAdapter parent)
 			: base(parent, 0)
 		{
 			Subscribe(parent);
@@ -153,7 +153,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4k302C
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(DmTx4k302CAdapter parent)
+		private void Subscribe(DmTx4K302CAdapter parent)
 		{
 			parent.OnTransmitterChanged += ParentOnTransmitterChanged;
 		}
@@ -162,7 +162,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4k302C
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(DmTx4k302CAdapter parent)
+		private void Unsubscribe(DmTx4K302CAdapter parent)
 		{
 			parent.OnTransmitterChanged -= ParentOnTransmitterChanged;
 		}
