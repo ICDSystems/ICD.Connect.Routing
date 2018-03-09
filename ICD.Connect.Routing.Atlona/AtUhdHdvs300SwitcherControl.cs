@@ -42,6 +42,8 @@ namespace ICD.Connect.Routing.Atlona
 
 				m_OutputOn = value;
 
+				OnRouteChange.Raise(this, new RouteChangeEventArgs(1, eConnectionType.Audio | eConnectionType.Video));
+
 				OnActiveTransmissionStateChanged.Raise(this,
 													   new TransmissionStateEventArgs(1, eConnectionType.Audio | eConnectionType.Video, m_OutputOn));
 			}
@@ -114,7 +116,7 @@ namespace ICD.Connect.Routing.Atlona
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
 		{
-			return m_Cache.GetOutputsForInput(input, type);
+			return OutputOn ? m_Cache.GetOutputsForInput(input, type) : Enumerable.Empty<ConnectorInfo>();
 		}
 
 		/// <summary>
@@ -126,7 +128,7 @@ namespace ICD.Connect.Routing.Atlona
 		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
 		public override ConnectorInfo? GetInput(int output, eConnectionType type)
 		{
-			return m_Cache.GetInputConnectorInfoForOutput(output, type);
+			return OutputOn ? m_Cache.GetInputConnectorInfoForOutput(output, type) : null;
 		}
 
 		/// <summary>Performs the given route operation.</summary>
@@ -305,7 +307,8 @@ namespace ICD.Connect.Routing.Atlona
 
 		private void CacheOnOnRouteChange(object sender, RouteChangeEventArgs eventArgs)
 		{
-			OnRouteChange.Raise(this, new RouteChangeEventArgs(eventArgs));
+			if (OutputOn)
+				OnRouteChange.Raise(this, new RouteChangeEventArgs(eventArgs));
 		}
 
 		private void CacheOnOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs eventArgs)
@@ -326,6 +329,7 @@ namespace ICD.Connect.Routing.Atlona
 			base.BuildConsoleStatus(addRow);
 
 			addRow("Output On", OutputOn);
+			addRow("Routed Input", m_Cache.GetInputForOutput(1, eConnectionType.Video));
 		}
 
 		/// <summary>
