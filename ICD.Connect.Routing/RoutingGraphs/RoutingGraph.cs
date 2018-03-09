@@ -700,7 +700,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				};
 
 				// Claim the connection leading up to the switcher
-				ConnectionUsages.ClaimConnection(connection, switchOperation);
+				//ConnectionUsages.ClaimConnection(connection, switchOperation);
 
 				IRouteSwitcherControl switcher = this.GetDestinationControl(connection) as IRouteSwitcherControl;
 				if (switcher == null)
