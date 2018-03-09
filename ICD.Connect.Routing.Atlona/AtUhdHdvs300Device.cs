@@ -3,6 +3,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Common.Utils.Timers;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol.Extensions;
@@ -15,6 +16,12 @@ namespace ICD.Connect.Routing.Atlona
 {
 	public sealed class AtUhdHdvs300Device : AbstractDevice<AtUhdHdvs300DeviceSettings>, IConnectable
 	{
+		/// <summary>
+		/// The device likes to drop connection if there's no activity for 5 mins,
+		/// so lets occasionally send something to keep connection from dropping.
+		/// </summary>
+		private const long KEEPALIVE_INTERVAL = 2 * 60 * 1000;
+
 		/// <summary>
 		/// Raised when the device becomes connected or disconnected.
 		/// </summary>
@@ -31,6 +38,7 @@ namespace ICD.Connect.Routing.Atlona
 		public event EventHandler<StringEventArgs> OnResponseReceived; 
 
 		private readonly AtUhdHdvs300DeviceSerialBuffer m_SerialBuffer;
+		private readonly SafeTimer m_KeepAliveTimer;
 
 		private bool m_Initialized;
 		private bool m_IsConnected;
@@ -100,6 +108,9 @@ namespace ICD.Connect.Routing.Atlona
 			Subscribe(m_SerialBuffer);
 
 			Controls.Add(new AtUhdHdvs300SwitcherControl(this, 0));
+
+			m_KeepAliveTimer = SafeTimer.Stopped(KeepAliveCallback);
+			m_KeepAliveTimer.Reset(KEEPALIVE_INTERVAL);
 		}
 
 		/// <summary>
@@ -110,6 +121,8 @@ namespace ICD.Connect.Routing.Atlona
 			OnConnectedStateChanged = null;
 			OnInitializedChanged = null;
 			OnResponseReceived = null;
+
+			m_KeepAliveTimer.Dispose();
 
 			Heartbeat.StopMonitoring();
 			Heartbeat.Dispose();
@@ -251,10 +264,27 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		private void Initialize()
 		{
-			SendCommand("Broadcast on");
-			SendCommand("InputBroadcast on");
+			EnableFeedback();
 
 			Initialized = true;
+		}
+
+		/// <summary>
+		/// Called periodically to keep the connection alive.
+		/// </summary>
+		private void KeepAliveCallback()
+		{
+			if (Initialized)
+				EnableFeedback();
+		}
+
+		/// <summary>
+		/// Tell the device to echo any status changes.
+		/// </summary>
+		private void EnableFeedback()
+		{
+			SendCommand("Broadcast on");
+			SendCommand("InputBroadcast on");
 		}
 
 		#endregion
