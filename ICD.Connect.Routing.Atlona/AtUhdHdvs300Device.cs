@@ -110,7 +110,7 @@ namespace ICD.Connect.Routing.Atlona
 			Controls.Add(new AtUhdHdvs300SwitcherControl(this, 0));
 
 			m_KeepAliveTimer = SafeTimer.Stopped(KeepAliveCallback);
-			m_KeepAliveTimer.Reset(KEEPALIVE_INTERVAL);
+			m_KeepAliveTimer.Reset(KEEPALIVE_INTERVAL, KEEPALIVE_INTERVAL);
 		}
 
 		/// <summary>
