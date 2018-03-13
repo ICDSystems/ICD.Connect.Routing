@@ -112,7 +112,7 @@ namespace ICD.Connect.Routing.Atlona
 							data = data.Substring("\r\n".Length);
 						}
 
-						int index = data.IndexOf("\r\n");
+						int index = data.IndexOf("\r\n", StringComparison.Ordinal);
 
 						if (index < 0)
 						{
