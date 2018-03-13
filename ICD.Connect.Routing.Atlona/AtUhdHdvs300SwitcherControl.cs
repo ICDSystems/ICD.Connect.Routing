@@ -205,7 +205,6 @@ namespace ICD.Connect.Routing.Atlona
 			if (input < 1 || input > 5)
 				throw new ArgumentOutOfRangeException("input");
 
-			m_Cache.SetInputForOutput(1, input, eConnectionType.Audio | eConnectionType.Video);
 			Parent.SendCommand(string.Format("x{0}AVx1", input));
 		}
 
@@ -215,7 +214,6 @@ namespace ICD.Connect.Routing.Atlona
 		/// <param name="on"></param>
 		public void TurnOnOutput(bool on)
 		{
-			OutputOn = on;
 			Parent.SendCommand(string.Format("x1$ {0}", on ? "on" : "off"));
 		}
 
