@@ -16,7 +16,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd8X8
 		/// <returns></returns>
 		protected override DmMd8x8 InstantiateSwitcher(DmMd8X8AdapterSettings settings)
 		{
-			return new DmMd8x8(settings.Ipid, ProgramInfo.ControlSystem);
+			return settings.Ipid == null
+				   ? null 
+				   : new DmMd8x8(settings.Ipid.Value, ProgramInfo.ControlSystem);
 		}
 	}
 #else

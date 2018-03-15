@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Settings.Attributes.SettingsProperties;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
 #endif
@@ -16,7 +17,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd32X32
 		/// <returns></returns>
 		protected override DmMd32x32 InstantiateSwitcher(DmMd32X32AdapterSettings settings)
 		{
-			return new DmMd32x32(settings.Ipid, ProgramInfo.ControlSystem);
+			return settings.Ipid == null 
+				   ? null 
+				   : new DmMd32x32(settings.Ipid.Value, ProgramInfo.ControlSystem);
 		}
 	}
 #else

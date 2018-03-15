@@ -23,7 +23,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		/// <returns></returns>
 		protected override HdMd8x2 InstantiateSwitcher(HdMd8X2AdapterSettings settings)
 		{
-			return new HdMd8x2(settings.Ipid, ProgramInfo.ControlSystem);
+			return settings.Ipid == null 
+			       ? null
+				   : new HdMd8x2(settings.Ipid.Value, ProgramInfo.ControlSystem);
 		}
 	}
 #else

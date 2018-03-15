@@ -83,7 +83,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// <returns></returns>
 		protected override HdMd4x24kE InstantiateSwitcher(HdMd4X24kEAdapterSettings settings)
 		{
-			return new HdMd4x24kE(settings.Ipid, settings.Address, ProgramInfo.ControlSystem);
+			return settings.Ipid == null 
+				   ? null
+				   : new HdMd4x24kE(settings.Ipid.Value, settings.Address, ProgramInfo.ControlSystem);
 		}
 #endif
 
