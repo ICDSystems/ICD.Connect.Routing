@@ -142,11 +142,11 @@
     <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd8X8\DmMd8X8Adapter.cs" />
     <Compile Include="DigitalMedia\DmMd8X8\DmMd8X8AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMdNXN\AbstractDmMdMNXNAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMdNXN\DmMdMNXNSwitcherControl.cs" />
-    <Compile Include="DigitalMedia\DmMdNXN\AbstractDmMdMNXNAdapter.cs" />
-    <Compile Include="DigitalMedia\DmMdNXN\IDmMdMNXNAdapter.cs" />
-    <Compile Include="DigitalMedia\DmMdNXN\IDmMdNXNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMdMNXN\AbstractDmMdMNXNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMdMNXN\DmMdMNXNSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\DmMdMNXN\AbstractDmMdMNXNAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMdMNXN\IDmMdMNXNAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMdMNXN\IDmMdNXNAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd4X24kE\HdMd4X24kESwitcherControl.cs" />
     <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2Adapter.cs" />
     <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2AdapterSettings.cs" />

@@ -14,7 +14,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdMNXN
 {
 // ReSharper disable once InconsistentNaming
 	public sealed class DmMdMNXNSwitcherControl : AbstractRouteSwitcherControl<IDmMdMNXNAdapter>
