@@ -259,7 +259,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			parent.OnSwitcherChanged -= ParentOnSwitcherChanged;
 		}
 
-		private void ParentOnSwitcherChanged(IDmSwitcherAdapter dmSwitcherAdapter, Switch switcher)
+		private void ParentOnSwitcherChanged(ICrestronSwitchAdapter crestronSwitchAdapter, Switch switcher)
 		{
 			SetSwitcher(switcher as HdMd4x24kE);
 		}

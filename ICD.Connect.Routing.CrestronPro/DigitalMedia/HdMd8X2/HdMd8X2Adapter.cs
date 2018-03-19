@@ -6,7 +6,7 @@ using ICD.Connect.Misc.CrestronPro;
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 {
 #if SIMPLSHARP
-	public sealed class HdMd8X2Adapter : AbstractDmSwitcherAdapter<HdMd8x2, HdMd8X2AdapterSettings>
+	public sealed class HdMd8X2Adapter : AbstractCrestronSwitchAdapter<HdMd8x2, HdMd8X2AdapterSettings>
 	{
 		/// <summary>
 		/// Constructor.
@@ -29,7 +29,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		}
 	}
 #else
-	public sealed class HdMd8X2Adapter : AbstractDmSwitcherAdapter<HdMd8X2AdapterSettings>
+	public sealed class HdMd8X2Adapter : AbstractCrestronSwitchAdapter<HdMd8X2AdapterSettings>
 	{
 	}
 #endif

@@ -64,14 +64,14 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		/// Returns the Switcher
 		/// </summary>
 		[PublicAPI]
-		public IDmSwitcherAdapter Switcher
+		public ICrestronSwitchAdapter Switcher
 		{
 			get
 			{
 				if (SwitcherId == null)
 					return null;
 				ICore core = ServiceProvider.GetService<ICore>();
-				return core.Originators.GetChild<IDmSwitcherAdapter>((int)SwitcherId);
+				return core.Originators.GetChild<ICrestronSwitchAdapter>((int)SwitcherId);
 			}
 		}
 

@@ -5,7 +5,7 @@ using Crestron.SimplSharpPro.DM;
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdMNXN
 {
 // ReSharper disable once InconsistentNaming
-	public interface IDmMdMNXNAdapter : IDmSwitcherAdapter
+	public interface IDmMdMNXNAdapter : ICrestronSwitchAdapter
 	{
 #if SIMPLSHARP
 		new DmMDMnxn Switcher { get; }

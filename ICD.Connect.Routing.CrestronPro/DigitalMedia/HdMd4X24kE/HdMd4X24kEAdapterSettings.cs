@@ -5,7 +5,7 @@ using ICD.Connect.Settings.Attributes;
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 {
 	[KrangSettings(FACTORY_NAME)]
-	public sealed class HdMd4X24kEAdapterSettings : AbstractDmSwitcherAdapterSettings
+	public sealed class HdMd4X24kEAdapterSettings : AbstractCrestronSwitchAdapterSettings
 	{
 		private const string FACTORY_NAME = "HdMd4X24kE";
 

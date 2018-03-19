@@ -12,9 +12,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 	/// HdMd4X24kEAdapter wraps a HdMd4x24kE to provide a routing device.
 	/// </summary>
 #if SIMPLSHARP
-	public sealed class HdMd4X24kEAdapter : AbstractDmSwitcherAdapter<HdMd4x24kE, HdMd4X24kEAdapterSettings>
+	public sealed class HdMd4X24kEAdapter : AbstractCrestronSwitchAdapter<HdMd4x24kE, HdMd4X24kEAdapterSettings>
 #else
-	public sealed class HdMd4X24kEAdapter : AbstractDmSwitcherAdapter<HdMd4X24kEAdapterSettings>
+	public sealed class HdMd4X24kEAdapter : AbstractCrestronSwitchAdapter<HdMd4X24kEAdapterSettings>
 #endif
 	{
 		private string m_Address;
