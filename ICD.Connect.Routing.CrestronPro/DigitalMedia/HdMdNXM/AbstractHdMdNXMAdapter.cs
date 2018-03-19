@@ -1,7 +1,6 @@
 ﻿using ICD.Connect.API.Nodes;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
-using ICD.Connect.Misc.CrestronPro;
 #else
 using System;
 #endif
