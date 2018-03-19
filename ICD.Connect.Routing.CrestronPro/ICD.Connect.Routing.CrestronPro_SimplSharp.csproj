@@ -136,10 +136,15 @@
     <Compile Include="ControlSystem\ControlSystemSwitcherControl.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd8XN\AbstractHdMd8XNAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd8XN\AbstractHdMd8XNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd8XN\HdMd8XNSwitcherControl.cs" />
     <Compile Include="DigitalMedia\HdMd6X24kE\HdMd6X24kEAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd6X24kE\HdMd6X24kEAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd4X14kE\HdMd4X14kEAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd4X14kE\HdMd4X14kEAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd8XN\IHdMd8XNAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd8XN\IHdMd8XNAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMdNXM\AbstractHdMdNXMAdapter.cs" />
     <Compile Include="DigitalMedia\HdMdNXM\AbstarctHdMdNXMAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMdNXM\HdMdNXMSwitcherControl.cs" />

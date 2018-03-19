@@ -13,9 +13,9 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN
 {
-	public sealed class HdMd8X2SwitcherControl : AbstractRouteSwitcherControl<HdMd8X2Adapter>
+	public sealed class HdMd8XNSwitcherControl : AbstractRouteSwitcherControl<IHdMd8XNAdapter>
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
@@ -24,13 +24,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 
 		private readonly SwitcherCache m_Cache;
 
-		[CanBeNull] private HdMd8x2 m_Switcher;
+		[CanBeNull] private HdMd8xN m_Switcher;
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		public HdMd8X2SwitcherControl(HdMd8X2Adapter parent)
+		public HdMd8XNSwitcherControl(IHdMd8XNAdapter parent)
 			: base(parent, 0)
 		{
 			m_Cache = new SwitcherCache();
@@ -277,7 +277,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(HdMd8X2Adapter parent)
+		private void Subscribe(IHdMd8XNAdapter parent)
 		{
 			parent.OnSwitcherChanged += ParentOnSwitcherChanged;
 		}
@@ -286,21 +286,21 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(HdMd8X2Adapter parent)
+		private void Unsubscribe(IHdMd8XNAdapter parent)
 		{
 			parent.OnSwitcherChanged -= ParentOnSwitcherChanged;
 		}
 
 		private void ParentOnSwitcherChanged(ICrestronSwitchAdapter crestronSwitchAdapter, Switch switcher)
 		{
-			SetSwitcher(switcher as HdMd8x2);
+			SetSwitcher(switcher as HdMd8xN);
 		}
 
 		/// <summary>
 		/// Sets the wrapped switcher.
 		/// </summary>
 		/// <param name="switcher"></param>
-		private void SetSwitcher(HdMd8x2 switcher)
+		private void SetSwitcher(HdMd8xN switcher)
 		{
 			Unsubscribe(m_Switcher);
 			m_Switcher = switcher;
@@ -342,7 +342,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		/// Subscribe to the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		private void Subscribe(HdMd8x2 switcher)
+		private void Subscribe(HdMd8xN switcher)
 		{
 			if (switcher == null)
 				return;
@@ -355,7 +355,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		/// Unsubscribe from the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		private void Unsubscribe(HdMd8x2 switcher)
+		private void Unsubscribe(HdMd8xN switcher)
 		{
 			if (switcher == null)
 				return;
