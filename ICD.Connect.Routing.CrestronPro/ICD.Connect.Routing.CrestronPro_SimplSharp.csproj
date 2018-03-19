@@ -136,6 +136,8 @@
     <Compile Include="ControlSystem\ControlSystemSwitcherControl.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd8X14k\HdMd8X14kAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd8X14k\HdMd8X14kAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd8X1\HdMd8X1Adapter.cs" />
     <Compile Include="DigitalMedia\HdMd8X1\HdMd8X1AdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd8XN\AbstractHdMd8XNAdapter.cs" />
