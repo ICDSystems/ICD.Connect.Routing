@@ -12,9 +12,9 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM
 {
-	public sealed class HdMd4X24kESwitcherControl : AbstractRouteSwitcherControl<HdMd4X24kEAdapter>
+	public sealed class HdMdNXMSwitcherControl : AbstractRouteSwitcherControl<IHdMdNXMAdapter>
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
@@ -25,13 +25,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		// so lets just cache the assigned routes until the device tells us otherwise.
 		private readonly SwitcherCache m_Cache;
 
-		[CanBeNull] private HdMd4x24kE m_Switcher;
+		[CanBeNull] private HdMdNxM m_Switcher;
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		public HdMd4X24kESwitcherControl(HdMd4X24kEAdapter parent)
+		public HdMdNXMSwitcherControl(IHdMdNXMAdapter parent)
 			: base(parent, 0)
 		{
 			m_Cache = new SwitcherCache();
@@ -249,22 +249,22 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 
 		#region Parent Callbacks
 
-		private void Subscribe(HdMd4X24kEAdapter parent)
+		private void Subscribe(IHdMdNXMAdapter parent)
 		{
 			parent.OnSwitcherChanged += ParentOnSwitcherChanged;
 		}
 
-		private void Unsubscribe(HdMd4X24kEAdapter parent)
+		private void Unsubscribe(IHdMdNXMAdapter parent)
 		{
 			parent.OnSwitcherChanged -= ParentOnSwitcherChanged;
 		}
 
 		private void ParentOnSwitcherChanged(ICrestronSwitchAdapter crestronSwitchAdapter, Switch switcher)
 		{
-			SetSwitcher(switcher as HdMd4x24kE);
+			SetSwitcher(switcher as HdMdNxM);
 		}
 
-		private void SetSwitcher(HdMd4x24kE switcher)
+		private void SetSwitcher(HdMdNxM switcher)
 		{
 			Unsubscribe(m_Switcher);
 			m_Switcher = switcher;
@@ -303,7 +303,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// Subscribe to the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		private void Subscribe(HdMd4x24kE switcher)
+		private void Subscribe(HdMdNxM switcher)
 		{
 			if (switcher == null)
 				return;
@@ -316,7 +316,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// Unsubscribe from the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		private void Unsubscribe(HdMd4x24kE switcher)
+		private void Unsubscribe(HdMdNxM switcher)
 		{
 			if (switcher == null)
 				return;
