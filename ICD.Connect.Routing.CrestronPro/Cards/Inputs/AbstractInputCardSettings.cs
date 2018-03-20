@@ -8,7 +8,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 	{
 		private const string CRESNET_ID_ELEMENT = "CresnetID";
 
-		[IpIdSettingsProperty]
+		[CrestronByteSettingsProperty]
 		public byte? CresnetId { get; set; }
 
 		/// <summary>

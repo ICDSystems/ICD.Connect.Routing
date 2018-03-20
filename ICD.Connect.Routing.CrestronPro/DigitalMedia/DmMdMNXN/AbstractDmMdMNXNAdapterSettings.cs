@@ -10,7 +10,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdMNXN
 	{
 		private const string IPID_ELEMENT = "IPID";
 
-		[IpIdSettingsProperty]
+		[CrestronByteSettingsProperty]
 		public byte? Ipid { get; set; }
 
 		/// <summary>
