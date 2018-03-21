@@ -2,12 +2,12 @@ using System;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN;
 using ICD.Connect.Settings.Attributes;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X14k
 {
 	[KrangSettings(FACTORY_NAME)]
-	public sealed class HdMd8X2AdapterSettings : AbstractHdMd8XNAdapterSettings
+	public sealed class HdMd8X14kAdapterSettings : AbstractHdMd8XNAdapterSettings
 	{
-		private const string FACTORY_NAME = "HdMd8X2";
+		private const string FACTORY_NAME = "HdMd8X14k";
 
 		/// <summary>
 		/// Gets the originator factory name.
@@ -17,6 +17,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 		/// <summary>
 		/// Gets the type of the originator for this settings instance.
 		/// </summary>
-		public override Type OriginatorType { get { return typeof(HdMd8X2Adapter); } }
+		public override Type OriginatorType { get { return typeof(HdMd8X14kAdapter); } }
 	}
 }

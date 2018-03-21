@@ -5,7 +5,7 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
-	public abstract class AbstractDmSwitcherAdapterSettings : AbstractDeviceSettings, IDmSwitcherAdapterSettings
+	public abstract class AbstractCrestronSwitchAdapterSettings : AbstractDeviceSettings, ICrestronSwitchAdapterSettings
 	{
 		private const string IPID_ELEMENT = "IPID";
 

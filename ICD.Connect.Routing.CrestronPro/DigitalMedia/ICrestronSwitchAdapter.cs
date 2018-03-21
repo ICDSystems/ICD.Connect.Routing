@@ -7,10 +7,10 @@ using ICD.Connect.Devices;
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
 #if SIMPLSHARP
-	public delegate void DmSwitcherChangeCallback(IDmSwitcherAdapter sender, Switch switcher);
+	public delegate void DmSwitcherChangeCallback(ICrestronSwitchAdapter sender, Switch switcher);
 #endif
 
-	public interface IDmSwitcherAdapter : IDevice, IDmParent
+	public interface ICrestronSwitchAdapter : IDevice, IDmParent
 	{
 #if SIMPLSHARP
 		event DmSwitcherChangeCallback OnSwitcherChanged;

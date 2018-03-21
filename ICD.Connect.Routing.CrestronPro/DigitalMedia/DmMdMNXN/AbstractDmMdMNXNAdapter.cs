@@ -8,11 +8,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdMNXN
 {
 #if SIMPLSHARP
 // ReSharper disable once InconsistentNaming
-	public abstract class AbstractDmMdMNXNAdapter<TSwitcher, TSettings> : AbstractDmSwitcherAdapter<TSwitcher, TSettings>,
+	public abstract class AbstractDmMdMNXNAdapter<TSwitcher, TSettings> : AbstractCrestronSwitchAdapter<TSwitcher, TSettings>,
 	                                                                      IDmMdMNXNAdapter
 		where TSwitcher : DmMDMnxn
 #else
-    public abstract class AbstractDmMdMNXNAdapter<TSettings> : AbstractDmSwitcherAdapter<TSettings>, IDmMdMNXNAdapter
+    public abstract class AbstractDmMdMNXNAdapter<TSettings> : AbstractCrestronSwitchAdapter<TSettings>, IDmMdMNXNAdapter
 #endif
 		where TSettings : IDmMdNXNAdapterSettings, new()
 	{
