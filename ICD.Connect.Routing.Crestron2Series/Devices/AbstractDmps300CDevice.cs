@@ -71,7 +71,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 			Unsubscribe(m_Buffer);
 			Unsubscribe(m_Client);
 
-            Heartbeat.StopMonitoring();
             Heartbeat.Dispose();
 
 			m_Client.Dispose();
