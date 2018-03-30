@@ -9,7 +9,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 	{
 		private const string ETHERNET_ID_ELEMENT = "EthernetId";
 
-		[IpIdSettingsProperty]
+		[CrestronByteSettingsProperty]
 		public byte EthernetId { get; set; }
 
 		/// <summary>
