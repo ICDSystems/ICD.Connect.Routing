@@ -4,15 +4,15 @@ using Crestron.SimplSharpPro.DM;
 using System;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdMNXN
 {
 #if SIMPLSHARP
 // ReSharper disable once InconsistentNaming
-	public abstract class AbstractDmMdMNXNAdapter<TSwitcher, TSettings> : AbstractDmSwitcherAdapter<TSwitcher, TSettings>,
+	public abstract class AbstractDmMdMNXNAdapter<TSwitcher, TSettings> : AbstractCrestronSwitchAdapter<TSwitcher, TSettings>,
 	                                                                      IDmMdMNXNAdapter
 		where TSwitcher : DmMDMnxn
 #else
-    public abstract class AbstractDmMdMNXNAdapter<TSettings> : AbstractDmSwitcherAdapter<TSettings>
+    public abstract class AbstractDmMdMNXNAdapter<TSettings> : AbstractCrestronSwitchAdapter<TSettings>, IDmMdMNXNAdapter
 #endif
 		where TSettings : IDmMdNXNAdapterSettings, new()
 	{

@@ -23,7 +23,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		where TSettings : IRoutingGraphSettings, new()
 	{
 		public abstract event EventHandler<RouteFinishedEventArgs> OnRouteFinished;
-		public abstract event EventHandler OnRouteChanged;
+		public abstract event EventHandler<SwitcherRouteChangeEventArgs> OnRouteChanged;
 		public abstract event EventHandler<EndpointStateEventArgs> OnSourceTransmissionStateChanged;
 		public abstract event EventHandler<EndpointStateEventArgs> OnSourceDetectionStateChanged;
 
@@ -348,6 +348,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="connection"></param>
 		/// <returns></returns>
 		public abstract IEnumerable<IRouteControl> GetControls(Connection connection);
+
+		/// <summary>
+		/// Gets the control for the given device and control ids.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="control"></param>
+		/// <returns></returns>
+		public abstract T GetControl<T>(int device, int control) where T : IRouteControl;
 
 		/// <summary>
 		/// Gets the immediate destination control at the given address.

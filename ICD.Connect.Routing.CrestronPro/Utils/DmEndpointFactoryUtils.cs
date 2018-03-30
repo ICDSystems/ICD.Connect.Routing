@@ -43,7 +43,7 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 			if (cardNumber == null)
 				throw new ArgumentNullException("cardNumber", "Can't instantiate internal card without card number");
 
-			IDmSwitcherAdapter switcher = factory.GetOriginatorById<IDmSwitcherAdapter>((int)switcherId);
+			ICrestronSwitchAdapter switcher = factory.GetOriginatorById<ICrestronSwitchAdapter>((int)switcherId);
 			return instantiateInternal((uint)cardNumber, switcher.Switcher);
 		}
 

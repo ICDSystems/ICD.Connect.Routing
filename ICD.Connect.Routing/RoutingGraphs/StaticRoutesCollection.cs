@@ -36,51 +36,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		#region Methods
 
 		/// <summary>
-		/// Called each time a child is added to the collection before any events are raised.
-		/// </summary>
-		/// <param name="child"></param>
-		protected override void ChildAdded(StaticRoute child)
-		{
-			base.ChildAdded(child);
-
-			UpdateStaticRoutes();
-		}
-
-		/// <summary>
-		/// Rebuilds the mapping of switchers to static routes, subscribes to switcher feedback and
-		/// establishes the static routes.
-		/// </summary>
-		public void UpdateStaticRoutes()
-		{
-			m_StaticRoutesSection.Enter();
-
-			try
-			{
-				// Clear the old lookup
-				foreach (IRouteSwitcherControl switcher in m_SwitcherStaticRoutes.Keys.ToArray())
-					m_SwitcherStaticRoutes.Remove(switcher);
-
-				// Build the new lookup
-				foreach (StaticRoute staticRoute in GetChildren())
-				{
-					foreach (IRouteSwitcherControl switcher in GetSwitcherDevices(staticRoute))
-					{
-						if (!m_SwitcherStaticRoutes.ContainsKey(switcher))
-							m_SwitcherStaticRoutes[switcher] = new IcdHashSet<StaticRoute>();
-						m_SwitcherStaticRoutes[switcher].Add(staticRoute);
-					}
-
-					// Initialize this static route
-					Route(staticRoute);
-				}
-			}
-			finally
-			{
-				m_StaticRoutesSection.Leave();
-			}
-		}
-
-		/// <summary>
 		/// Re-applies the static routes that include the given switcher.
 		/// </summary>
 		/// <param name="switcher"></param>
@@ -204,5 +159,60 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Called each time a child is added to the collection before any events are raised.
+		/// </summary>
+		/// <param name="child"></param>
+		protected override void ChildAdded(StaticRoute child)
+		{
+			base.ChildAdded(child);
+
+			UpdateStaticRoutes();
+		}
+
+		/// <summary>
+		/// Called each time a child is removed from the collection before any events are raised.
+		/// </summary>
+		/// <param name="child"></param>
+		protected override void ChildRemoved(StaticRoute child)
+		{
+			base.ChildRemoved(child);
+
+			UpdateStaticRoutes();
+		}
+
+		/// <summary>
+		/// Rebuilds the mapping of switchers to static routes, subscribes to switcher feedback and
+		/// establishes the static routes.
+		/// </summary>
+		public void UpdateStaticRoutes()
+		{
+			m_StaticRoutesSection.Enter();
+
+			try
+			{
+				// Clear the old lookup
+				m_SwitcherStaticRoutes.Clear();
+
+				// Build the new lookup
+				foreach (StaticRoute staticRoute in GetChildren())
+				{
+					foreach (IRouteSwitcherControl switcher in GetSwitcherDevices(staticRoute))
+					{
+						if (!m_SwitcherStaticRoutes.ContainsKey(switcher))
+							m_SwitcherStaticRoutes[switcher] = new IcdHashSet<StaticRoute>();
+						m_SwitcherStaticRoutes[switcher].Add(staticRoute);
+					}
+
+					// Initialize this static route
+					Route(staticRoute);
+				}
+			}
+			finally
+			{
+				m_StaticRoutesSection.Leave();
+			}
+		}
 	}
 }

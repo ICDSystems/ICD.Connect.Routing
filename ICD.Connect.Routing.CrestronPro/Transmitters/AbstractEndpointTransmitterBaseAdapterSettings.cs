@@ -12,7 +12,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		private const string DM_SWITCH_ELEMENT = "DmSwitch";
 		private const string DM_INPUT_ELEMENT = "DmInput";
 
-		[IpIdSettingsProperty]
+		[CrestronByteSettingsProperty]
 		public byte? Ipid { get; set; }
 
 		[OriginatorIdSettingsProperty(typeof(IDmParent))]

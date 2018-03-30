@@ -1,10 +1,11 @@
 using System;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X2
 {
 	[KrangSettings(FACTORY_NAME)]
-	public sealed class HdMd8X2AdapterSettings : AbstractDmSwitcherAdapterSettings
+	public sealed class HdMd8X2AdapterSettings : AbstractHdMd8XNAdapterSettings
 	{
 		private const string FACTORY_NAME = "HdMd8X2";
 

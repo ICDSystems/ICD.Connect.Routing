@@ -1,9 +1,8 @@
-﻿#if SIMPLSHARP
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro.DM;
-using Crestron.SimplSharpPro;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
@@ -14,10 +13,9 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN
 {
-// ReSharper disable once InconsistentNaming
-	public sealed class DmMdMNXNSwitcherControl : AbstractRouteSwitcherControl<IDmMdMNXNAdapter>
+	public sealed class HdMd8XNSwitcherControl : AbstractRouteSwitcherControl<IHdMd8XNAdapter>
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
@@ -26,13 +24,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 
 		private readonly SwitcherCache m_Cache;
 
-		[CanBeNull] private DmMDMnxn m_Switcher;
+		[CanBeNull] private HdMd8xN m_Switcher;
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		public DmMdMNXNSwitcherControl(IDmMdMNXNAdapter parent)
+		public HdMd8XNSwitcherControl(IHdMd8XNAdapter parent)
 			: base(parent, 0)
 		{
 			m_Cache = new SwitcherCache();
@@ -121,7 +119,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 
-			return m_Cache.SetInputForOutput(output, input, type);
+			return m_Cache.SetInputForOutput(output, null, type);
 		}
 
 		/// <summary>
@@ -212,12 +210,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 
 		#region Private Methods
 
-		/// <summary>
-		/// Returns true if a signal is detected at the given input.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
 		private bool GetSignalDetectedFeedback(int input, eConnectionType type)
 		{
 			if (m_Switcher == null)
@@ -235,28 +227,20 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 			switch (type)
 			{
 				case eConnectionType.Video:
-					BoolOutputSig videoFeedbackSig = switcherInput.VideoDetectedFeedback;
-					return videoFeedbackSig != null && videoFeedbackSig.BoolValue;
+					return switcherInput.VideoDetectedFeedback.BoolValue;
 
 				case eConnectionType.Audio:
 					// No way of detecting audio?
 					return true;
 
 				case eConnectionType.Usb:
-					DMInputOutputBase usbFeedbackSig = switcherInput.USBRoutedToFeedback;
-					return usbFeedbackSig != null && usbFeedbackSig.EndpointOnlineFeedback;
+					return switcherInput.USBRoutedToFeedback.EndpointOnlineFeedback;
 
 				default:
 					return false;
 			}
 		}
 
-		/// <summary>
-		/// Gets the routed inputs for the given output.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
 		private IEnumerable<ConnectorInfo> GetInputsFeedback(int output, eConnectionType type)
 		{
 			if (m_Switcher == null)
@@ -280,10 +264,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 						continue;
 				}
 
-				if (input == null)
-					continue;
-
-				yield return new ConnectorInfo((int)input.Number, flag);
+				if (input != null)
+					yield return new ConnectorInfo((int)input.Number, flag);
 			}
 		}
 
@@ -295,7 +277,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(IDmMdMNXNAdapter parent)
+		private void Subscribe(IHdMd8XNAdapter parent)
 		{
 			parent.OnSwitcherChanged += ParentOnSwitcherChanged;
 		}
@@ -304,25 +286,22 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(IDmMdMNXNAdapter parent)
+		private void Unsubscribe(IHdMd8XNAdapter parent)
 		{
 			parent.OnSwitcherChanged -= ParentOnSwitcherChanged;
 		}
 
-		private void ParentOnSwitcherChanged(IDmSwitcherAdapter dmSwitcherAdapter, Switch @switch)
+		private void ParentOnSwitcherChanged(ICrestronSwitchAdapter crestronSwitchAdapter, Switch switcher)
 		{
-			SetSwitcher(dmSwitcherAdapter.Switcher as DmMDMnxn);
+			SetSwitcher(switcher as HdMd8xN);
 		}
 
 		/// <summary>
 		/// Sets the wrapped switcher.
 		/// </summary>
 		/// <param name="switcher"></param>
-		private void SetSwitcher(DmMDMnxn switcher)
+		private void SetSwitcher(HdMd8xN switcher)
 		{
-			if (switcher == m_Switcher)
-				return;
-
 			Unsubscribe(m_Switcher);
 			m_Switcher = switcher;
 			Subscribe(m_Switcher);
@@ -330,6 +309,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 			RebuildCache();
 		}
 
+		/// <summary>
+		/// Reverts the cache to the current state of the switcher.
+		/// </summary>
 		private void RebuildCache()
 		{
 			m_Cache.Clear();
@@ -360,7 +342,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		/// Subscribe to the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		private void Subscribe(DmMDMnxn switcher)
+		private void Subscribe(HdMd8xN switcher)
 		{
 			if (switcher == null)
 				return;
@@ -373,7 +355,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN
 		/// Unsubscribe from the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		private void Unsubscribe(DmMDMnxn switcher)
+		private void Unsubscribe(HdMd8xN switcher)
 		{
 			if (switcher == null)
 				return;

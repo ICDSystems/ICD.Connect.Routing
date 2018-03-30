@@ -14,7 +14,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		private const string DM_SWITCH_ELEMENT = "DmSwitch";
 		private const string DM_OUTPUT_ELEMENT = "DmOutput";
 
-		[IpIdSettingsProperty]
+		[CrestronByteSettingsProperty]
 		public byte? Ipid { get; set; }
 
 		[OriginatorIdSettingsProperty(typeof(IDmParent))]

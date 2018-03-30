@@ -13,12 +13,12 @@ using Crestron.SimplSharpPro.DM;
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
 #if SIMPLSHARP
-	public abstract class AbstractDmSwitcherAdapter<TSwitcher, TSettings> : AbstractDevice<TSettings>, IDmSwitcherAdapter
+	public abstract class AbstractCrestronSwitchAdapter<TSwitcher, TSettings> : AbstractDevice<TSettings>, ICrestronSwitchAdapter
 		where TSwitcher : Switch
 #else
-	public abstract class AbstractDmSwitcherAdapter<TSettings> : AbstractDevice<TSettings>, IDmSwitcherAdapter
+	public abstract class AbstractCrestronSwitchAdapter<TSettings> : AbstractDevice<TSettings>, ICrestronSwitchAdapter
 #endif
-		where TSettings : IDmSwitcherAdapterSettings, new()
+		where TSettings : ICrestronSwitchAdapterSettings, new()
 	{
 #if SIMPLSHARP
 		public event DmSwitcherChangeCallback OnSwitcherChanged;
@@ -51,7 +51,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// <summary>
 		/// Gets the wrapped switch instance.
 		/// </summary>
-		Switch IDmSwitcherAdapter.Switcher { get { return Switcher; } }
+		Switch ICrestronSwitchAdapter.Switcher { get { return Switcher; } }
 #endif
 
 		#endregion

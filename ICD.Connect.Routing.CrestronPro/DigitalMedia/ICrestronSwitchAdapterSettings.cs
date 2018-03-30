@@ -2,8 +2,8 @@
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
-	public interface IDmSwitcherAdapterSettings : IDeviceSettings
+	public interface ICrestronSwitchAdapterSettings : IDeviceSettings
 	{
-		byte Ipid { get; set; }
+		byte? Ipid { get; set; }
 	}
 }

@@ -35,8 +35,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_OutputConnectionLookup = new Dictionary<DeviceControlInfo, Dictionary<int, Connection>>();
 			m_InputConnectionLookup = new Dictionary<DeviceControlInfo, Dictionary<int, Connection>>();
 			m_ConnectionsSection = new SafeCriticalSection();
-
-			UpdateLookups();
 		}
 
 		#region Methods
@@ -260,13 +258,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			}
 		}
 
-		protected override void ChildAdded(Connection child)
-		{
-			base.ChildAdded(child);
-
-			UpdateLookups();
-		}
-
 		#endregion
 
 		#region Adjacency
@@ -421,31 +412,51 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#endregion
 
-		private void UpdateLookups()
+		protected override void ChildAdded(Connection child)
 		{
+			base.ChildAdded(child);
+
 			m_ConnectionsSection.Enter();
 
 			try
 			{
-				m_OutputConnectionLookup.Clear();
-				m_InputConnectionLookup.Clear();
+				DeviceControlInfo sourceInfo = new DeviceControlInfo(child.Source.Device, child.Source.Control);
+				DeviceControlInfo destinationInfo = new DeviceControlInfo(child.Destination.Device,
+				                                                          child.Destination.Control);
 
-				foreach (Connection connection in GetChildren())
-				{
-					DeviceControlInfo sourceInfo = new DeviceControlInfo(connection.Source.Device, connection.Source.Control);
-					DeviceControlInfo destinationInfo = new DeviceControlInfo(connection.Destination.Device,
-					                                                          connection.Destination.Control);
+				// Add device controls to the maps
+				if (!m_OutputConnectionLookup.ContainsKey(sourceInfo))
+					m_OutputConnectionLookup.Add(sourceInfo, new Dictionary<int, Connection>());
+				if (!m_InputConnectionLookup.ContainsKey(destinationInfo))
+					m_InputConnectionLookup.Add(destinationInfo, new Dictionary<int, Connection>());
 
-					// Add device controls to the maps
-					if (!m_OutputConnectionLookup.ContainsKey(sourceInfo))
-						m_OutputConnectionLookup.Add(sourceInfo, new Dictionary<int, Connection>());
-					if (!m_InputConnectionLookup.ContainsKey(destinationInfo))
-						m_InputConnectionLookup.Add(destinationInfo, new Dictionary<int, Connection>());
+				// Add connections to the maps
+				m_OutputConnectionLookup[sourceInfo][child.Source.Address] = child;
+				m_InputConnectionLookup[destinationInfo][child.Destination.Address] = child;
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
 
-					// Add connections to the maps
-					m_OutputConnectionLookup[sourceInfo][connection.Source.Address] = connection;
-					m_InputConnectionLookup[destinationInfo][connection.Destination.Address] = connection;
-				}
+		/// <summary>
+		/// Called each time a child is removed from the collection before any events are raised.
+		/// </summary>
+		/// <param name="child"></param>
+		protected override void ChildRemoved(Connection child)
+		{
+			base.ChildRemoved(child);
+
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+				foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_OutputConnectionLookup)
+					kvp.Value.RemoveAllValues(child);
+
+				foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_InputConnectionLookup)
+					kvp.Value.RemoveAllValues(child);
 			}
 			finally
 			{

@@ -26,7 +26,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Raised when a switcher changes routing.
 		/// </summary>
-		event EventHandler OnRouteChanged;
+		event EventHandler<SwitcherRouteChangeEventArgs> OnRouteChanged;
 
 		/// <summary>
 		/// Raised when a source device starts/stops sending video.
@@ -337,6 +337,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		IEnumerable<IRouteControl> GetControls(Connection connection);
 
 		/// <summary>
+		/// Gets the control for the given device and control ids.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="control"></param>
+		/// <returns></returns>
+		T GetControl<T>(int device, int control) where T : IRouteControl;
+
+		/// <summary>
 		/// Gets the immediate destination control at the given address.
 		/// </summary>
 		/// <param name="sourceControl"></param>
@@ -383,6 +391,21 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 	public static class RoutingGraphExtensions
 	{
+		/// <summary>
+		/// Gets the control for the given endpoint info.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="endpoint"></param>
+		/// <returns></returns>
+		public static T GetControl<T>(this IRoutingGraph extends, EndpointInfo endpoint)
+			where T : IRouteControl
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			return extends.GetControl<T>(endpoint.Device, endpoint.Control);
+		}
+
 		/// <summary>
 		/// Gets the destination control for the given destination.
 		/// </summary>

@@ -12,7 +12,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 
 		public int? CardNumber { get; set; }
 
-		[OriginatorIdSettingsProperty(typeof(IDmSwitcherAdapter))]
+		[OriginatorIdSettingsProperty(typeof(ICrestronSwitchAdapter))]
 		public int? SwitcherId { get; set; }
 
 		/// <summary>

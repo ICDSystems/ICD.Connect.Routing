@@ -18,7 +18,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 
 		object Card { get; }
 
-		IDmSwitcherAdapter Switcher { get; }
+		ICrestronSwitchAdapter Switcher { get; }
 #endif
 	}
 

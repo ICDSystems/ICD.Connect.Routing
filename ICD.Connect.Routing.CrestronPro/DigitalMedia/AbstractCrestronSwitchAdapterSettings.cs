@@ -5,12 +5,12 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
-	public abstract class AbstractDmSwitcherAdapterSettings : AbstractDeviceSettings, IDmSwitcherAdapterSettings
+	public abstract class AbstractCrestronSwitchAdapterSettings : AbstractDeviceSettings, ICrestronSwitchAdapterSettings
 	{
 		private const string IPID_ELEMENT = "IPID";
 
-		[IpIdSettingsProperty]
-		public byte Ipid { get; set; }
+		[CrestronByteSettingsProperty]
+		public byte? Ipid { get; set; }
 
 		/// <summary>
 		/// Writes property elements to xml.
@@ -20,7 +20,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			base.WriteElements(writer);
 
-			writer.WriteElementString(IPID_ELEMENT, StringUtils.ToIpIdString(Ipid));
+			writer.WriteElementString(IPID_ELEMENT, Ipid == null ? null : StringUtils.ToIpIdString(Ipid.Value));
 		}
 
 		/// <summary>

@@ -1,8 +1,8 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdMNXN;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
 #endif
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdNXN;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd16X16
 {
@@ -16,7 +16,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd16X16
 		/// <returns></returns>
 		protected override DmMd16x16 InstantiateSwitcher(DmMd16X16AdapterSettings settings)
 		{
-			return new DmMd16x16(settings.Ipid, ProgramInfo.ControlSystem);
+			return settings.Ipid == null 
+				   ? null 
+				   : new DmMd16x16(settings.Ipid.Value, ProgramInfo.ControlSystem);
 		}
 	}
 #else

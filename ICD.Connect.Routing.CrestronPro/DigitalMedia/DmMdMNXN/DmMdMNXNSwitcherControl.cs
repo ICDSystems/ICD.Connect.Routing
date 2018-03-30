@@ -3,35 +3,36 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdMNXN
 {
-	public sealed class HdMd4X24kESwitcherControl : AbstractRouteSwitcherControl<HdMd4X24kEAdapter>
+// ReSharper disable once InconsistentNaming
+	public sealed class DmMdMNXNSwitcherControl : AbstractRouteSwitcherControl<IDmMdMNXNAdapter>
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
-		// Crestron is garbage at tracking the active routing states on the 4x2,
-		// so lets just cache the assigned routes until the device tells us otherwise.
 		private readonly SwitcherCache m_Cache;
 
-		[CanBeNull] private HdMd4x24kE m_Switcher;
+		[CanBeNull] private DmMDMnxn m_Switcher;
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		public HdMd4X24kESwitcherControl(HdMd4X24kEAdapter parent)
+		public DmMdMNXNSwitcherControl(IDmMdMNXNAdapter parent)
 			: base(parent, 0)
 		{
 			m_Cache = new SwitcherCache();
@@ -64,9 +65,28 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		#region Methods
 
 		/// <summary>
+		/// Returns true if a signal is detected at the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override bool GetSignalDetectedState(int input, eConnectionType type)
+		{
+			if (EnumUtils.HasMultipleFlags(type))
+			{
+				return EnumUtils.GetFlagsExceptNone(type)
+				                .Select(t => GetSignalDetectedState(input, t))
+				                .Unanimous(false);
+			}
+
+			return m_Cache.GetSourceDetectedState(input, type);
+		}
+
+		/// <summary>
 		/// Routes the input to the given output.
 		/// </summary>
 		/// <param name="info"></param>
+		/// <returns>True if routing successful.</returns>
 		public override bool Route(RouteOperation info)
 		{
 			if (m_Switcher == null)
@@ -79,21 +99,29 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(f => this.Route(input, output, f))
+				                .Select(t => this.Route(input, output, t))
 				                .Unanimous(false);
 			}
+
+			DMOutput switcherOutput = m_Switcher.Outputs[(uint)output];
+			DMInput switcherInput = m_Switcher.Inputs[(uint)input];
 
 			switch (type)
 			{
 				case eConnectionType.Audio:
+					switcherOutput.AudioOut = switcherInput;
+					break;
+
 				case eConnectionType.Video:
-					m_Switcher.Outputs[(uint)output].VideoOut = m_Switcher.Inputs[(uint)input];
-					return m_Cache.SetInputForOutput(output, input, eConnectionType.Audio | eConnectionType.Video);
+					switcherOutput.VideoOut = switcherInput;
+					break;
 
 				default:
 // ReSharper disable once NotResolvedInText
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
+
+			return m_Cache.SetInputForOutput(output, input, type);
 		}
 
 		/// <summary>
@@ -101,6 +129,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// </summary>
 		/// <param name="output"></param>
 		/// <param name="type"></param>
+		/// <returns>True if unrouting successful.</returns>
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
 			if (m_Switcher == null)
@@ -109,77 +138,27 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(f => ClearOutput(output, f))
+				                .Select(t => ClearOutput(output, t))
 				                .Unanimous(false);
 			}
 
+			DMOutput switcherOutput = m_Switcher.Outputs[(uint)output];
+
 			switch (type)
 			{
-				case eConnectionType.Audio:
 				case eConnectionType.Video:
-					m_Switcher.Outputs[(uint)output].VideoOut = null;
-					return m_Cache.SetInputForOutput(output, null, eConnectionType.Audio | eConnectionType.Video);
+					switcherOutput.VideoOut = null;
+					break;
+
+				case eConnectionType.Audio:
+					switcherOutput.AudioOut = null;
+					break;
 
 				default:
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
-		}
 
-		/// <summary>
-		/// Returns true if a signal is detected at the given input.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public override bool GetSignalDetectedState(int input, eConnectionType type)
-		{
-			if (EnumUtils.HasMultipleFlags(type))
-			{
-				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(f => GetSignalDetectedState(input, f)).Unanimous(false);
-			}
-
-			switch (type)
-			{
-				case eConnectionType.Audio:
-					return true;
-				case eConnectionType.Video:
-					return m_Cache.GetSourceDetectedState(input, type);
-
-				default:
-					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
-			}
-		}
-
-		/// <summary>
-		/// Returns true if the destination contains an input at the given address.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		public override bool ContainsInput(int input)
-		{
-			return input > 0 && input <= 4;
-		}
-
-		/// <summary>
-		/// Gets the input at the given address.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		public override ConnectorInfo GetInput(int input)
-		{
-			if (!ContainsInput(input))
-				throw new IndexOutOfRangeException(string.Format("{0} has no input with address {1}", GetType().Name, input));
-			return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
-		}
-
-		/// <summary>
-		/// Returns the inputs.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetInputs()
-		{
-			return Enumerable.Range(1, 4).Select(i => GetInput(i));
+			return m_Cache.SetInputForOutput(output, null, type);
 		}
 
 		/// <summary>
@@ -188,7 +167,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			return Enumerable.Range(1, 2).Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
+			int outputs = m_Switcher == null ? 0 : m_Switcher.NumberOfOutputs;
+
+			return Enumerable.Range(1, outputs)
+			                 .Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
 		}
 
 		/// <summary>
@@ -214,58 +196,133 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			return m_Cache.GetInputConnectorInfoForOutput(output, type);
 		}
 
+		/// <summary>
+		/// Returns the inputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetInputs()
+		{
+			int inputs = m_Switcher == null ? 0 : m_Switcher.NumberOfInputs;
+
+			return Enumerable.Range(1, inputs)
+			                 .Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
+		}
+
 		#endregion
 
 		#region Private Methods
 
 		/// <summary>
-		/// Returns true if video is detected at the given input.
+		/// Returns true if a signal is detected at the given input.
 		/// </summary>
 		/// <param name="input"></param>
+		/// <param name="type"></param>
 		/// <returns></returns>
-		private bool GetVideoDetectedFeedback(int input)
+		private bool GetSignalDetectedFeedback(int input, eConnectionType type)
 		{
 			if (m_Switcher == null)
 				return false;
 
-			return m_Switcher.Inputs[(uint)input].VideoDetectedFeedback.BoolValue;
+			if (EnumUtils.HasMultipleFlags(type))
+			{
+				return EnumUtils.GetFlagsExceptNone(type)
+				                .Select(t => GetSignalDetectedFeedback(input, t))
+				                .Unanimous(false);
+			}
+
+			DMInput switcherInput = m_Switcher.Inputs[(uint)input];
+
+			switch (type)
+			{
+				case eConnectionType.Video:
+					BoolOutputSig videoFeedbackSig = switcherInput.VideoDetectedFeedback;
+					return videoFeedbackSig != null && videoFeedbackSig.BoolValue;
+
+				case eConnectionType.Audio:
+					// No way of detecting audio?
+					return true;
+
+				case eConnectionType.Usb:
+					DMInputOutputBase usbFeedbackSig = switcherInput.USBRoutedToFeedback;
+					return usbFeedbackSig != null && usbFeedbackSig.EndpointOnlineFeedback;
+
+				default:
+					return false;
+			}
 		}
 
 		/// <summary>
-		/// Gets the input for the given output.
+		/// Gets the routed inputs for the given output.
 		/// </summary>
 		/// <param name="output"></param>
+		/// <param name="type"></param>
 		/// <returns></returns>
-		private int? GetInputFeedback(int output)
+		private IEnumerable<ConnectorInfo> GetInputsFeedback(int output, eConnectionType type)
 		{
 			if (m_Switcher == null)
-				return null;
+				yield break;
 
-			DMInput input = m_Switcher.HdmiOutputs[(uint)output].GetSafeVideoOutFeedback();
-			return input == null ? null : (int?)input.Number;
+			DMOutput switcherOutput = m_Switcher.Outputs[(uint)output];
+
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+			{
+				DMInput input;
+
+				switch (flag)
+				{
+					case eConnectionType.Audio:
+						input = switcherOutput.GetSafeAudioOutFeedback();
+						break;
+					case eConnectionType.Video:
+						input = switcherOutput.GetSafeVideoOutFeedback();
+						break;
+					default:
+						continue;
+				}
+
+				if (input == null)
+					continue;
+
+				yield return new ConnectorInfo((int)input.Number, flag);
+			}
 		}
 
 		#endregion
 
 		#region Parent Callbacks
 
-		private void Subscribe(HdMd4X24kEAdapter parent)
+		/// <summary>
+		/// Subscribe to the parent events.
+		/// </summary>
+		/// <param name="parent"></param>
+		private void Subscribe(IDmMdMNXNAdapter parent)
 		{
 			parent.OnSwitcherChanged += ParentOnSwitcherChanged;
 		}
 
-		private void Unsubscribe(HdMd4X24kEAdapter parent)
+		/// <summary>
+		/// Unsubscribe from the parent events.
+		/// </summary>
+		/// <param name="parent"></param>
+		private void Unsubscribe(IDmMdMNXNAdapter parent)
 		{
 			parent.OnSwitcherChanged -= ParentOnSwitcherChanged;
 		}
 
-		private void ParentOnSwitcherChanged(IDmSwitcherAdapter dmSwitcherAdapter, Switch switcher)
+		private void ParentOnSwitcherChanged(ICrestronSwitchAdapter crestronSwitchAdapter, Switch switcher)
 		{
-			SetSwitcher(switcher as HdMd4x24kE);
+			SetSwitcher(crestronSwitchAdapter.Switcher as DmMDMnxn);
 		}
 
-		private void SetSwitcher(HdMd4x24kE switcher)
+		/// <summary>
+		/// Sets the wrapped switcher.
+		/// </summary>
+		/// <param name="switcher"></param>
+		private void SetSwitcher(DmMDMnxn switcher)
 		{
+			if (switcher == m_Switcher)
+				return;
+
 			Unsubscribe(m_Switcher);
 			m_Switcher = switcher;
 			Subscribe(m_Switcher);
@@ -273,9 +330,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			RebuildCache();
 		}
 
-		/// <summary>
-		/// Reverts the cache to the current state of the switcher.
-		/// </summary>
 		private void RebuildCache()
 		{
 			m_Cache.Clear();
@@ -283,15 +337,18 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 			// Source detection
 			foreach (ConnectorInfo input in GetInputs())
 			{
-				bool detected = GetVideoDetectedFeedback(input.Address);
-				m_Cache.SetSourceDetectedState(input.Address, eConnectionType.Audio | eConnectionType.Video, detected);
+				foreach (eConnectionType type in EnumUtils.GetValuesExceptNone<eConnectionType>())
+				{
+					bool detected = GetSignalDetectedFeedback(input.Address, type);
+					m_Cache.SetSourceDetectedState(input.Address, type, detected);
+				}
 			}
 
 			// Routing
 			foreach (ConnectorInfo output in GetOutputs())
 			{
-				int? input = GetInputFeedback(output.Address);
-				m_Cache.SetInputForOutput(output.Address, input, eConnectionType.Audio | eConnectionType.Video);
+				foreach (ConnectorInfo input in GetInputsFeedback(output.Address, EnumUtils.GetFlagsAllValue<eConnectionType>()))
+					m_Cache.SetInputForOutput(output.Address, input.Address, eConnectionType.Audio | eConnectionType.Video);
 			}
 		}
 
@@ -303,7 +360,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// Subscribe to the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		private void Subscribe(HdMd4x24kE switcher)
+		private void Subscribe(DmMDMnxn switcher)
 		{
 			if (switcher == null)
 				return;
@@ -316,7 +373,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// Unsubscribe from the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		private void Unsubscribe(HdMd4x24kE switcher)
+		private void Unsubscribe(DmMDMnxn switcher)
 		{
 			if (switcher == null)
 				return;
@@ -326,16 +383,27 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		}
 
 		/// <summary>
+		/// Handles the detection change for individual connection types.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		private void SourceDetectionChange(int input, eConnectionType type)
+		{
+			bool state = GetSignalDetectedFeedback(input, type);
+			m_Cache.SetSourceDetectedState(input, type, state);
+		}
+
+		/// <summary>
 		/// Called when an input state changes.
 		/// </summary>
 		/// <param name="device"></param>
 		/// <param name="args"></param>
 		private void SwitcherOnDmInputChange(Switch device, DMInputEventArgs args)
 		{
-			int input = (int)args.Number;
+			eConnectionType type = DmUtils.DmEventToConnectionType(args.EventId);
 
-			bool state = GetVideoDetectedFeedback(input);
-			m_Cache.SetSourceDetectedState(input, eConnectionType.Audio | eConnectionType.Video, state);
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+				SourceDetectionChange((int)args.Number, flag);
 		}
 
 		/// <summary>
@@ -345,16 +413,31 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
 		/// <param name="args"></param>
 		private void SwitcherOnDmOutputChange(Switch device, DMOutputEventArgs args)
 		{
-			if (m_Switcher == null)
-				return;
+			eConnectionType type;
 
-			if (args.EventId != DMOutputEventIds.VideoOutEventId)
-				return;
+			switch (args.EventId)
+			{
+				case DMOutputEventIds.VideoOutEventId:
+					type = eConnectionType.Video;
+					break;
 
-			DMInput input = m_Switcher.HdmiOutputs[args.Number].GetSafeVideoOutFeedback();
-			int? address = input == null ? null : (int?)input.Number;
+				case DMOutputEventIds.AudioOutEventId:
+					type = eConnectionType.Audio;
+					break;
 
-			m_Cache.SetInputForOutput((int)args.Number, address, eConnectionType.Audio | eConnectionType.Video);
+				case DMOutputEventIds.UsbRoutedToEventId:
+					type = eConnectionType.Usb;
+					break;
+
+				default:
+					return;
+			}
+
+			int output = (int)args.Number;
+			int? input = GetInputsFeedback(output, type).Select(c => (int?)c.Address)
+			                                            .FirstOrDefault();
+
+			m_Cache.SetInputForOutput(output, input, type);
 		}
 
 		#endregion

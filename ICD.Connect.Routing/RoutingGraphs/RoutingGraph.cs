@@ -52,7 +52,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Raised when a switcher changes routing.
 		/// </summary>
-		public override event EventHandler OnRouteChanged;
+		public override event EventHandler<SwitcherRouteChangeEventArgs> OnRouteChanged;
 
 		/// <summary>
 		/// Raised when a source device starts/stops sending video.
@@ -208,7 +208,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, type);
 			return sourceConnector.HasValue
 				       ? GetActiveSourceEndpoint(sourceAsMidpoint, sourceConnector.Value.Address, type, signalDetected, inputActive)
-				       : null;
+				       : sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
 		}
 
 		/// <summary>
@@ -700,7 +700,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				};
 
 				// Claim the connection leading up to the switcher
-				ConnectionUsages.ClaimConnection(connection, switchOperation);
+				//ConnectionUsages.ClaimConnection(connection, switchOperation);
 
 				IRouteSwitcherControl switcher = this.GetDestinationControl(connection) as IRouteSwitcherControl;
 				if (switcher == null)
@@ -1025,8 +1025,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="device"></param>
 		/// <param name="control"></param>
 		/// <returns></returns>
-		private T GetControl<T>(int device, int control)
-			where T : IRouteControl
+		public override T GetControl<T>(int device, int control)
 		{
 			return ServiceProvider.GetService<ICore>().GetControl<T>(device, control);
 		}
@@ -1188,7 +1187,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			EndpointInfo info = source.GetOutputEndpointInfo(output);
-			OnSourceDetectionStateChanged.Raise(this, new EndpointStateEventArgs(info, args.State));
+			OnSourceDetectionStateChanged.Raise(this, new EndpointStateEventArgs(info, args.Type, args.State));
 		}
 
 		#endregion
@@ -1259,7 +1258,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			EndpointInfo endpoint = source.GetOutputEndpointInfo(args.Output);
-			OnSourceTransmissionStateChanged.Raise(this, new EndpointStateEventArgs(endpoint, args.State));
+			OnSourceTransmissionStateChanged.Raise(this, new EndpointStateEventArgs(endpoint, args.Type, args.State));
 		}
 
 		#endregion
@@ -1333,7 +1332,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			// Re-enforce static routes
 			m_StaticRoutes.ReApplyStaticRoutesForSwitcher(switcher);
 
-			OnRouteChanged.Raise(this);
+			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args.Output, args.Type));
 		}
 
 		#endregion
