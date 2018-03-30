@@ -4,10 +4,13 @@ using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.API.Attributes;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Proxies;
 
 namespace ICD.Connect.Routing.Controls
 {
+	[ApiClass(typeof(ProxyRouteMidpointControl), typeof(IRouteSourceControl))]
 	public interface IRouteMidpointControl : IRouteSourceControl, IRouteDestinationControl
 	{
 		/// <summary>
