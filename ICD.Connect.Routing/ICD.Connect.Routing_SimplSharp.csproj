@@ -68,6 +68,8 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\RouteMidpointControlConsole.cs" />
+    <Compile Include="Controls\RouteSwitcherControlConsole.cs" />
     <Compile Include="Endpoints\AbstractSourceDestinationBaseCollection.cs" />
     <Compile Include="Endpoints\Destinations\IDestinationCollection.cs" />
     <Compile Include="Endpoints\ISourceDestinationBaseCollection.cs" />
