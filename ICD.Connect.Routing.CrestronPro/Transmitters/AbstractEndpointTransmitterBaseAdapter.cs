@@ -81,7 +81,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
+#if SIMPLSHARP
 			OnTransmitterChanged = null;
+#endif
 
 			base.DisposeFinal(disposing);
 
