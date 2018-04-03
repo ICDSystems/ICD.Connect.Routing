@@ -29,24 +29,21 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Gets the child with the given endpoint info.
 		/// </summary>
 		/// <param name="endpoint"></param>
-		/// <param name="flag"></param>
+		/// <param name="type"></param>
 		/// <returns></returns>
-		public IEnumerable<T> GetChildren(EndpointInfo endpoint, eConnectionType flag)
+		public IEnumerable<T> GetChildren(EndpointInfo endpoint, eConnectionType type)
 		{
-			if (!EnumUtils.HasSingleFlag(flag))
-				throw new ArgumentException("Connection type has multiple flags");
-
 			m_EndpointCacheSection.Enter();
 
 			try
 			{
 				if (!m_EndpointCache.ContainsKey(endpoint))
 					return Enumerable.Empty<T>();
-
-				if (!m_EndpointCache[endpoint].ContainsKey(flag))
+				
+				if (!m_EndpointCache[endpoint].ContainsKey(type))
 					return Enumerable.Empty<T>();
 
-				return m_EndpointCache[endpoint][flag];
+				return m_EndpointCache[endpoint][type];
 			}
 			finally
 			{
@@ -71,7 +68,7 @@ namespace ICD.Connect.Routing.Endpoints
 				if (!m_EndpointCache.ContainsKey(endpoint))
 					m_EndpointCache[endpoint] = new Dictionary<eConnectionType, List<T>>();
 
-				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(child.ConnectionType))
+				foreach (eConnectionType flag in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
 				{
 					if (!m_EndpointCache[endpoint].ContainsKey(flag))
 						m_EndpointCache[endpoint].Add(flag, new List<T>());
@@ -102,7 +99,7 @@ namespace ICD.Connect.Routing.Endpoints
 				if (!m_EndpointCache.ContainsKey(endpoint))
 					return;
 
-				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(child.ConnectionType))
+				foreach (eConnectionType flag in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
 				{
 					if (!m_EndpointCache[endpoint].ContainsKey(flag))
 						continue;
