@@ -17,10 +17,60 @@ namespace ICD.Connect.Routing.Connections
 		private readonly List<Connection> m_Ordered;
 		private readonly SafeCriticalSection m_Section;
 
+		#region Properties
+
 		/// <summary>
 		/// Gets the number of connections in the path.
 		/// </summary>
 		public int Count { get { return m_Section.Execute(() => m_Ordered.Count); } }
+
+		/// <summary>
+		/// Gets the source endpoint info for the path.
+		/// </summary>
+		public EndpointInfo SourceEndpoint
+		{
+			get
+			{
+				m_Section.Enter();
+
+				try
+				{
+					if (m_Ordered.Count == 0)
+						throw new InvalidOperationException("Path is empty.");
+
+					return m_Ordered[0].Source;
+				}
+				finally
+				{
+					m_Section.Leave();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the destination endpoint info for the path.
+		/// </summary>
+		public EndpointInfo DestinationEndpoint
+		{
+			get
+			{
+				m_Section.Enter();
+
+				try
+				{
+					if (m_Ordered.Count == 0)
+						throw new InvalidOperationException("Path is empty.");
+
+					return m_Ordered[m_Ordered.Count - 1].Destination;
+				}
+				finally
+				{
+					m_Section.Leave();
+				}
+			}
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Constructor.
