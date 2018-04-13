@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
@@ -10,6 +14,10 @@ namespace ICD.Connect.Routing.Endpoints
 	public abstract class AbstractSourceDestinationBase<TSettings> : AbstractOriginator<TSettings>, ISourceDestinationBase
 		where TSettings : ISourceDestinationBaseSettings, new()
 	{
+		private readonly List<int> m_AddressesOrdered;
+		private readonly IcdHashSet<int> m_Addresses;
+		private readonly SafeCriticalSection m_AddressesSection;
+
 		/// <summary>
 		/// Raised when the disable state changes.
 		/// </summary>
@@ -20,9 +28,14 @@ namespace ICD.Connect.Routing.Endpoints
 		#region Properties
 
 		/// <summary>
-		/// Contains information about the physical endpoint
+		/// Specifies the device this source/destination is pointing to.
 		/// </summary>
-		public EndpointInfo Endpoint { get; set; }
+		public int Device { get; set; }
+
+		/// <summary>
+		/// Specifies the control this source/destination is pointing to.
+		/// </summary>
+		public int Control { get; set; }
 
 		/// <summary>
 		/// Specifies which media types to use for this source.
@@ -59,6 +72,16 @@ namespace ICD.Connect.Routing.Endpoints
 		#endregion
 
 		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractSourceDestinationBase()
+		{
+			m_AddressesSection = new SafeCriticalSection();
+			m_Addresses = new IcdHashSet<int>();
+			m_AddressesOrdered = new List<int>();
+		}
+
+		/// <summary>
 		/// Override to release resources.
 		/// </summary>
 		/// <param name="disposing"></param>
@@ -77,11 +100,58 @@ namespace ICD.Connect.Routing.Endpoints
 		{
 			base.BuildStringRepresentationProperties(addPropertyAndValue);
 
-			addPropertyAndValue("Device", Endpoint.Device);
-			addPropertyAndValue("Control", Endpoint.Control);
-			addPropertyAndValue("Address", Endpoint.Address);
+			addPropertyAndValue("Device", Device);
+			addPropertyAndValue("Control", Control);
+			addPropertyAndValue("Addresses", StringUtils.ArrayRangeFormat(GetAddresses()));
 			addPropertyAndValue("ConnectionType", ConnectionType);
 		}
+
+		#region Methods
+
+		/// <summary>
+		/// Gets the addresses used by this source/destination.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<int> GetAddresses()
+		{
+			return m_AddressesSection.Execute(() => m_AddressesOrdered.ToArray(m_AddressesOrdered.Count));
+		}
+
+		/// <summary>
+		/// Sets the addresses used by this source/destination.
+		/// </summary>
+		/// <param name="addresses"></param>
+		public void SetAddresses(IEnumerable<int> addresses)
+		{
+			m_AddressesSection.Enter();
+
+			try
+			{
+				m_Addresses.Clear();
+				m_AddressesOrdered.Clear();
+
+				m_Addresses.AddRange(addresses);
+				m_AddressesOrdered.AddSorted(m_Addresses);
+			}
+			finally
+			{
+				m_AddressesSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Returns true if the source/destination contains the given endpoint info.
+		/// </summary>
+		/// <param name="endpoint"></param>
+		/// <returns></returns>
+		public bool Contains(EndpointInfo endpoint)
+		{
+			return endpoint.Device == Device &&
+			       endpoint.Control == Control &&
+			       m_AddressesSection.Execute(() => m_Addresses.Contains(endpoint.Address));
+		}
+
+		#endregion
 
 		#region Settings
 
@@ -92,10 +162,13 @@ namespace ICD.Connect.Routing.Endpoints
 		{
 			base.ClearSettingsFinal();
 
-			Endpoint = default(EndpointInfo);
+			Device = 0;
+			Control = 0;
 			Order = 0;
 			Disable = false;
 			ConnectionType = default(eConnectionType);
+
+			SetAddresses(Enumerable.Empty<int>());
 		}
 
 		/// <summary>
@@ -106,12 +179,13 @@ namespace ICD.Connect.Routing.Endpoints
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.Device = Endpoint.Device;
-			settings.Control = Endpoint.Control;
-			settings.Address = Endpoint.Address;
+			settings.Device = Device;
+			settings.Control = Control;
 			settings.Order = Order;
 			settings.Disable = Disable;
 			settings.ConnectionType = ConnectionType;
+
+			settings.SetAddresses(GetAddresses());
 		}
 
 		/// <summary>
@@ -125,10 +199,13 @@ namespace ICD.Connect.Routing.Endpoints
 
 			base.ApplySettingsFinal(settings, factory);
 
-			Endpoint = new EndpointInfo(settings.Device, settings.Control, settings.Address);
+			Device = settings.Device;
+			Control = settings.Control;
 			Order = settings.Order;
 			Disable = settings.Disable;
 			ConnectionType = settings.ConnectionType;
+
+			SetAddresses(settings.GetAddresses());
 		}
 
 		#endregion

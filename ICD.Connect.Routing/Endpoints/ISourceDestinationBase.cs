@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Services;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Core;
@@ -20,9 +23,14 @@ namespace ICD.Connect.Routing.Endpoints
 		#region Properties
 
 		/// <summary>
-		/// Device id
+		/// Specifies the device this source/destination is pointing to.
 		/// </summary>
-		EndpointInfo Endpoint { get; set; }
+		int Device { get; set; }
+
+		/// <summary>
+		/// Specifies the control this source/destination is pointing to.
+		/// </summary>
+		int Control { get; set; }
 
 		/// <summary>
 		/// Specifies which media types to use for this source/destination.
@@ -45,10 +53,47 @@ namespace ICD.Connect.Routing.Endpoints
 		bool Disable { get; set; }
 
 		#endregion
+
+		#region Methods
+
+		/// <summary>
+		/// Gets the addresses used by this source/destination.
+		/// </summary>
+		/// <returns></returns>
+		IEnumerable<int> GetAddresses();
+
+		/// <summary>
+		/// Sets the addresses used by this source/destination.
+		/// </summary>
+		/// <param name="addresses"></param>
+		void SetAddresses(IEnumerable<int> addresses);
+
+		/// <summary>
+		/// Returns true if the source/destination contains the given endpoint info.
+		/// </summary>
+		/// <param name="endpoint"></param>
+		/// <returns></returns>
+		bool Contains(EndpointInfo endpoint);
+
+		#endregion
 	}
 
 	public static class SourceDestinationBaseExtensions
 	{
+		/// <summary>
+		/// Gets all of the addresses as endpoint info.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <returns></returns>
+		public static IEnumerable<EndpointInfo> GetEndpoints(this ISourceDestinationBase extends)
+		{
+			if (extends == null)
+				throw new ArgumentNullException("extends");
+
+			return extends.GetAddresses()
+			              .Select(a => new EndpointInfo(extends.Device, extends.Control, a));
+		}
+
 		/// <summary>
 		/// Gets the DeviceControlInfo for the source/destination.
 		/// </summary>
@@ -91,7 +136,7 @@ namespace ICD.Connect.Routing.Endpoints
 			if (!string.IsNullOrEmpty(name))
 				return name;
 
-			IOriginator device = ServiceProvider.GetService<ICore>().Originators.GetChild(extends.Endpoint.Device);
+			IOriginator device = ServiceProvider.GetService<ICore>().Originators.GetChild(extends.Device);
 			return device.GetName(combine);
 		}
 	}

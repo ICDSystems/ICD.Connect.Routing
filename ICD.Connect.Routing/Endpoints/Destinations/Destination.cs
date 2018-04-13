@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace ICD.Connect.Routing.Endpoints.Destinations
 {
@@ -10,7 +12,7 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 		/// Constructor.
 		/// </summary>
 		public Destination()
-			: this(0, 0, 0)
+			: this(0, 0, Enumerable.Empty<int>())
 		{
 		}
 
@@ -19,9 +21,9 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 		/// </summary>
 		/// <param name="deviceId"></param>
 		/// <param name="controlId"></param>
-		/// <param name="inputAddress"></param>
-		public Destination(int deviceId, int controlId, int inputAddress)
-			: this(deviceId, controlId, inputAddress, null)
+		/// <param name="addresses"></param>
+		public Destination(int deviceId, int controlId, IEnumerable<int> addresses)
+			: this(deviceId, controlId, addresses, null)
 		{
 		}
 
@@ -30,19 +32,31 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 		/// </summary>
 		/// <param name="deviceId"></param>
 		/// <param name="controlId"></param>
-		/// <param name="inputAddress"></param>
+		/// <param name="addresses"></param>
 		/// <param name="name"></param>
-		public Destination(int deviceId, int controlId, int inputAddress, string name)
+		public Destination(int deviceId, int controlId, IEnumerable<int> addresses, string name)
+			: this(0, deviceId, controlId, addresses, name, false, int.MaxValue, false)
 		{
-			Endpoint = new EndpointInfo(deviceId, controlId, inputAddress);
-			Name = name;
 		}
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <param name="deviceId"></param>
+		/// <param name="controlId"></param>
+		/// <param name="addresses"></param>
+		/// <param name="name"></param>
+		/// <param name="remote"></param>
+		/// <param name="order"></param>
+		/// <param name="disable"></param>
 		[JsonConstructor]
-		public Destination(int id, EndpointInfo endpoint, string name, bool remote, int order, bool disable)
+		public Destination(int id, int deviceId, int controlId, IEnumerable<int> addresses, string name, bool remote, int order, bool disable)
 		{
 			Id = id;
-			Endpoint = endpoint;
+			Device = deviceId;
+			Control = controlId;
+			SetAddresses(addresses);
 			Name = name;
 			Remote = remote;
 			Order = order;
