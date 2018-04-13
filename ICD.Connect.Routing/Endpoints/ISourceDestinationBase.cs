@@ -17,13 +17,15 @@ namespace ICD.Connect.Routing.Endpoints
 		/// </summary>
 		event EventHandler<BoolEventArgs> OnDisableStateChanged;
 
+		#region Properties
+
 		/// <summary>
 		/// Device id
 		/// </summary>
 		EndpointInfo Endpoint { get; set; }
 
 		/// <summary>
-		/// Specifies which media types to use for this source.
+		/// Specifies which media types to use for this source/destination.
 		/// </summary>
 		eConnectionType ConnectionType { get; set; }
 
@@ -41,6 +43,8 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Shorthand for disabling an instance in the system.
 		/// </summary>
 		bool Disable { get; set; }
+
+		#endregion
 	}
 
 	public static class SourceDestinationBaseExtensions

@@ -67,7 +67,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			ServiceProvider.RemoveService<IRoutingGraph>(this);
 		}
 
-		#region Methods
+		#region Recursion
 
 		/// <summary>
 		/// Finds the actively routed sources for the destination at the given input address.
@@ -79,7 +79,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="inputActive"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The sources</returns>
-		public abstract IEnumerable<EndpointInfo> GetActiveSourceEndpoints(EndpointInfo destinationInput, eConnectionType type,
+		public abstract IEnumerable<EndpointInfo> GetActiveSourceEndpoints(EndpointInfo destinationInput,
+		                                                                   eConnectionType type,
 		                                                                   bool signalDetected,
 		                                                                   bool inputActive);
 
@@ -210,6 +211,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <returns></returns>
 		public abstract IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type,
 		                                                          bool signalDetected, bool inputActive);
+
+		#endregion
+
+		#region Routing
 
 		/// <summary>
 		/// Routes the source to the destination.
@@ -342,6 +347,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="id"></param>
 		public abstract void UnrouteDestination(EndpointInfo destination, eConnectionType type, int id);
 
+		#endregion
+
+		#region Devices
+
 		/// <summary>
 		/// Gets the controls for the given connection.
 		/// </summary>
@@ -438,11 +447,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			yield return new GenericConsoleCommand<int, int, eConnectionType, int>("Route",
 			                                                                       "Routes source to destination. Usage: Route <sourceId> <destId> <connType> <roomId>",
 			                                                                       (a, b, c, d) =>
-			                                                                       RouteConsoleCommand(a, b, c, d));
+				                                                                       RouteConsoleCommand(a, b, c, d));
 			yield return new GenericConsoleCommand<int, int, eConnectionType, int>("RouteGroup",
 			                                                                       "Routes source to destination group. Usage: Route <sourceId> <destGrpId> <connType> <roomId>",
 			                                                                       (a, b, c, d) =>
-			                                                                       RouteGroupConsoleCommand(a, b, c, d));
+				                                                                       RouteGroupConsoleCommand(a, b, c, d));
 		}
 
 		private string PrintSources()
@@ -555,7 +564,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		{
 			foreach (
 				IDestination destination in
-					destinationGroup.Destinations.Where(Destinations.ContainsChild).Select(d => Destinations.GetChild(d)))
+				destinationGroup.Destinations.Where(Destinations.ContainsChild).Select(d => Destinations.GetChild(d)))
 			{
 				IDestination destination1 = destination;
 				ThreadingUtils.SafeInvoke(() => Route(source, destination1, connectionType, roomId));

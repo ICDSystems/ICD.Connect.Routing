@@ -318,9 +318,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (inputConnection == null || !inputConnection.ConnectionType.HasFlag(flag))
 				return null;
 
-			IEnumerable<Connection> path = RecursionUtils.BreadthFirstSearchPath(outputConnection, inputConnection,
-			                                                                     c =>
-			                                                                     GetConnectionChildren(source, c, flag, roomId));
+			IEnumerable<Connection> path =
+				RecursionUtils.BreadthFirstSearchPath(outputConnection, inputConnection,
+				                                      c => GetConnectionChildren(source, c, flag, roomId));
+
 			return path == null ? null : new ConnectionPath(path);
 		}
 
@@ -385,7 +386,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
-		/// Gets the potential output connections for the given input connections.
+		/// Gets the potential output connections for the given input connection.
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="inputConnection"></param>
@@ -622,10 +623,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (op == null)
 				throw new ArgumentNullException("op");
 
-			foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(op.ConnectionType))
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(op.ConnectionType))
 			{
-				ConnectionPath path = FindPath(op.Source, op.Destination, type, op.RoomId);
-				RouteOperation operation = new RouteOperation(op) {ConnectionType = type};
+				ConnectionPath path = FindPath(op.Source, op.Destination, flag, op.RoomId);
+				RouteOperation operation = new RouteOperation(op) {ConnectionType = flag};
 
 				if (path == null)
 				{
