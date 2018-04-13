@@ -38,6 +38,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		event EventHandler<EndpointStateEventArgs> OnSourceDetectionStateChanged;
 
+		/// <summary>
+		/// Raised when a destination device changes active input state.
+		/// </summary>
+		event EventHandler<EndpointStateEventArgs> OnDestinationInputActiveStateChanged;
+
 		#endregion
 
 		#region Properties

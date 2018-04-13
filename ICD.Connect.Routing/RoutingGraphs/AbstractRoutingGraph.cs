@@ -26,6 +26,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract event EventHandler<SwitcherRouteChangeEventArgs> OnRouteChanged;
 		public abstract event EventHandler<EndpointStateEventArgs> OnSourceTransmissionStateChanged;
 		public abstract event EventHandler<EndpointStateEventArgs> OnSourceDetectionStateChanged;
+		public abstract event EventHandler<EndpointStateEventArgs> OnDestinationInputActiveStateChanged;
 
 		#region Properties
 

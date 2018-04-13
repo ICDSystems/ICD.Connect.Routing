@@ -64,6 +64,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		public override event EventHandler<EndpointStateEventArgs> OnSourceDetectionStateChanged;
 
+		/// <summary>
+		/// Raised when a destination device changes active input state.
+		/// </summary>
+		public override event EventHandler<EndpointStateEventArgs> OnDestinationInputActiveStateChanged;
+
 		#endregion
 
 		#region Properties
@@ -114,6 +119,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			OnRouteChanged = null;
 			OnSourceTransmissionStateChanged = null;
 			OnSourceDetectionStateChanged = null;
+			OnDestinationInputActiveStateChanged = null;
 
 			base.DisposeFinal(disposing);
 		}
@@ -1314,6 +1320,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			destinationControl.OnSourceDetectionStateChange += DestinationControlOnSourceDetectionStateChange;
+			destinationControl.OnActiveInputsChanged += DestinationControlOnActiveInputsChanged;
 		}
 
 		/// <summary>
@@ -1326,6 +1333,26 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			destinationControl.OnSourceDetectionStateChange -= DestinationControlOnSourceDetectionStateChange;
+			destinationControl.OnActiveInputsChanged -= DestinationControlOnActiveInputsChanged;
+		}
+
+		/// <summary>
+		/// Called when a destination input becomes active or inactive.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		private void DestinationControlOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
+		{
+			if (args == null)
+				throw new ArgumentNullException("args");
+
+			IRouteDestinationControl destination = sender as IRouteDestinationControl;
+			if (destination == null)
+				return;
+
+			EndpointInfo endpoint = destination.GetInputEndpointInfo(args.Input);
+
+			OnDestinationInputActiveStateChanged.Raise(this, new EndpointStateEventArgs(endpoint, args.Type, args.Active));
 		}
 
 		/// <summary>
