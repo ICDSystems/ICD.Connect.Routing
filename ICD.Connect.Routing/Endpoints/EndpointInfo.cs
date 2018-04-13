@@ -1,4 +1,5 @@
 ﻿using ICD.Common.Utils;
+using ICD.Connect.Devices.Controls;
 using Newtonsoft.Json;
 
 namespace ICD.Connect.Routing.Endpoints
@@ -58,6 +59,15 @@ namespace ICD.Connect.Routing.Endpoints
 			builder.AppendProperty("Address", Address);
 
 			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Gets the DeviceControlInfo for this endpoint.
+		/// </summary>
+		/// <returns></returns>
+		public DeviceControlInfo GetDeviceControlInfo()
+		{
+			return new DeviceControlInfo(Device, Control);
 		}
 
 		#region Equality
