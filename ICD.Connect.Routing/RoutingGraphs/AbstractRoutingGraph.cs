@@ -190,6 +190,27 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract ConnectionPath FindPath(ISource source, IDestination destination, eConnectionType flag, int roomId);
 
 		/// <summary>
+		/// Finds the best available path from the source to the destination.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="destination"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public abstract ConnectionPath FindPath(EndpointInfo sourceEndpoint, IDestination destination, eConnectionType flag,
+												int roomId);
+
+		/// <summary>
+		/// Finds the best available path from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinationEndpoint"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public abstract ConnectionPath FindPath(ISource source, EndpointInfo destinationEndpoint, eConnectionType flag, int roomId);
+
+		/// <summary>
 		/// Finds all of the available paths from the source to the destination.
 		/// </summary>
 		/// <param name="source"></param>
@@ -314,6 +335,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract void RoutePath(RouteOperation op, IEnumerable<Connection> path);
 
 		/// <summary>
+		/// Applies the given path to the switchers.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		public abstract void RoutePath(ConnectionPath path, eConnectionType type, int roomId);
+
+		/// <summary>
 		/// Routes the source to the destination.
 		/// </summary>
 		/// <param name="sourceControl"></param>
@@ -424,8 +453,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		/// <param name="destination"></param>
 		/// <param name="type"></param>
-		/// <param name="id"></param>
-		public abstract void UnrouteDestination(EndpointInfo destination, eConnectionType type, int id);
+		/// <param name="roomId"></param>
+		public abstract void Unroute(IDestination destination, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Unroutes all switchers routing the active source to the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		public abstract void UnrouteDestination(EndpointInfo destination, eConnectionType type, int roomId);
 
 		#endregion
 
