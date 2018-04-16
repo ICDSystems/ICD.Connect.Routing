@@ -211,14 +211,43 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract ConnectionPath FindPath(ISource source, EndpointInfo destinationEndpoint, eConnectionType flag, int roomId);
 
 		/// <summary>
-		/// Finds all of the available paths from the source to the destination.
+		/// Finds the best available paths from the source to the destination.
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="destination"></param>
-		/// <param name="flag"></param>
+		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public abstract IEnumerable<ConnectionPath> FindPaths(ISource source, IDestination destination, eConnectionType flag, int roomId);
+		public abstract IEnumerable<ConnectionPath> FindPaths(ISource source, IDestination destination, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Finds the best available paths from the source to the destination.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public abstract IEnumerable<ConnectionPath> FindPaths(EndpointInfo sourceEndpoint, IDestination destination, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Finds the best available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinationEndpoint"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public abstract IEnumerable<ConnectionPath> FindPaths(ISource source, EndpointInfo destinationEndpoint, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Finds the best available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		public abstract IEnumerable<ConnectionPath> FindPaths(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Finds the shortest available path from the source to the destination.
@@ -238,10 +267,21 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public abstract IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPaths(EndpointInfo source,
-		                                                                                  IEnumerable<EndpointInfo>
-			                                                                                  destinations, eConnectionType flag,
-		                                                                                  int roomId);
+		public abstract IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(EndpointInfo source,
+		                                                                                       IEnumerable<EndpointInfo>
+			                                                                                       destinations,
+		                                                                                       eConnectionType flag,
+		                                                                                       int roomId);
+
+		/// <summary>
+		/// Finds all of the available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public abstract IEnumerable<ConnectionPath> FindAllPaths(ISource source, IDestination destination, eConnectionType flag, int roomId);
 
 		/// <summary>
 		/// Finds the current paths from the given source to the destination.
