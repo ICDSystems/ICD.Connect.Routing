@@ -412,7 +412,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				RecursionUtils.BreadthFirstSearchPath(outputConnection, inputConnection,
 													  c => GetConnectionChildren(source, c, flag, roomId));
 
-			return path == null ? null : new ConnectionPath(path);
+			return path == null ? null : new ConnectionPath(path, flag);
 		}
 
 		/// <summary>
@@ -494,7 +494,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			foreach (KeyValuePair<Connection, IEnumerable<Connection>> kvp in paths)
 			{
-				ConnectionPath finalPath = kvp.Value == null ? null : new ConnectionPath(kvp.Value);
+				ConnectionPath finalPath = kvp.Value == null ? null : new ConnectionPath(kvp.Value, flag);
 				EndpointInfo destination = connectionToDestinations[kvp.Key];
 
 				yield return new KeyValuePair<EndpointInfo, ConnectionPath>(destination, finalPath);
