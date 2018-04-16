@@ -378,9 +378,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// Applies the given path to the switchers.
 		/// </summary>
 		/// <param name="path"></param>
-		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-		public abstract void RoutePath(ConnectionPath path, eConnectionType type, int roomId);
+		public abstract void RoutePath(ConnectionPath path, int roomId);
 
 		/// <summary>
 		/// Routes the source to the destination.
