@@ -16,6 +16,7 @@ namespace ICD.Connect.Routing.Connections
 		private readonly IcdHashSet<Connection> m_Contains;
 		private readonly List<Connection> m_Ordered;
 		private readonly SafeCriticalSection m_Section;
+		private readonly eConnectionType m_Type;
 
 		#region Properties
 
@@ -70,13 +71,19 @@ namespace ICD.Connect.Routing.Connections
 			}
 		}
 
+		/// <summary>
+		/// Gets the connection type associated with this path.
+		/// </summary>
+		public eConnectionType ConnectionType { get { return m_Type; } }
+
 		#endregion
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public ConnectionPath()
-			: this(Enumerable.Empty<Connection>())
+		/// <param name="type"></param>
+		public ConnectionPath(eConnectionType type)
+			: this(Enumerable.Empty<Connection>(), type)
 		{
 		}
 
@@ -84,11 +91,13 @@ namespace ICD.Connect.Routing.Connections
 		/// Constructor.
 		/// </summary>
 		/// <param name="connections"></param>
-		public ConnectionPath(IEnumerable<Connection> connections)
+		/// <param name="type"></param>
+		public ConnectionPath(IEnumerable<Connection> connections, eConnectionType type)
 		{
 			m_Contains = new IcdHashSet<Connection>();
 			m_Ordered = new List<Connection>();
 			m_Section = new SafeCriticalSection();
+			m_Type = type;
 
 			if (connections.Any(item => !Add(item)))
 				throw new ArgumentException("Given path is not contiguous", "connections");

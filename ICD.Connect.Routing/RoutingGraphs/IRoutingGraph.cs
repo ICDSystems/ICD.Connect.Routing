@@ -171,20 +171,33 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
+		[CanBeNull]
 		ConnectionPath FindPath(ISource source, IDestination destination, eConnectionType flag, int roomId);
 
 		/// <summary>
-		/// Finds all of the available paths from the source to the destination.
+		/// Finds the best available path from the source to the destination.
 		/// </summary>
-		/// <param name="source"></param>
+		/// <param name="sourceEndpoint"></param>
 		/// <param name="destination"></param>
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		IEnumerable<ConnectionPath> FindPaths(ISource source, IDestination destination, eConnectionType flag, int roomId);
+		[CanBeNull]
+		ConnectionPath FindPath(EndpointInfo sourceEndpoint, IDestination destination, eConnectionType flag, int roomId);
 
 		/// <summary>
-		/// Finds the shortest available path from the source to the destination.
+		/// Finds the best available path from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinationEndpoint"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		ConnectionPath FindPath(ISource source, EndpointInfo destinationEndpoint, eConnectionType flag, int roomId);
+
+		/// <summary>
+		/// Finds the best available path from the source to the destination.
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="destination"></param>
@@ -194,7 +207,50 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		ConnectionPath FindPath(EndpointInfo source, EndpointInfo destination, eConnectionType flag, int roomId);
 
 		/// <summary>
-		/// Returns the shortest paths from the source to the given destinations.
+		/// Finds the best available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		IEnumerable<ConnectionPath> FindPaths(ISource source, IDestination destination, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Finds the best available paths from the source to the destination.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		IEnumerable<ConnectionPath> FindPaths(EndpointInfo sourceEndpoint, IDestination destination, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Finds the best available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinationEndpoint"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		IEnumerable<ConnectionPath> FindPaths(ISource source, EndpointInfo destinationEndpoint, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Finds the best available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		[CanBeNull]
+		IEnumerable<ConnectionPath> FindPaths(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Returns the best available paths from the source to the given destinations.
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="destinations"></param>
@@ -202,11 +258,20 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="roomId"></param>
 		/// <returns></returns>
 		[NotNull]
-		IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPaths(
-			EndpointInfo source,
-			IEnumerable<EndpointInfo> destinations,
-			eConnectionType flag,
-			int roomId);
+		IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(EndpointInfo source,
+		                                                                       IEnumerable<EndpointInfo> destinations,
+		                                                                       eConnectionType flag,
+		                                                                       int roomId);
+
+		/// <summary>
+		/// Finds all of the available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		IEnumerable<ConnectionPath> FindAllPaths(ISource source, IDestination destination, eConnectionType flag, int roomId);
 
 		/// <summary>
 		/// Finds the current paths from the given source to the destination.
@@ -290,13 +355,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		void RouteMultiple(EndpointInfo source, IEnumerable<EndpointInfo> destinations, eConnectionType type, int roomId);
 
 		/// <summary>
-		/// Applies the given path to the switchers.
-		/// </summary>
-		/// <param name="op"></param>
-		/// <param name="path"></param>
-		void RoutePath(RouteOperation op, IEnumerable<Connection> path);
-
-		/// <summary>
 		/// Routes the source to the destination.
 		/// </summary>
 		/// <param name="sourceControl"></param>
@@ -315,6 +373,20 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="op"></param>>
 		/// <returns>False if route could not be established</returns>
 		void Route(RouteOperation op);
+
+		/// <summary>
+		/// Applies the given path to the switchers.
+		/// </summary>
+		/// <param name="op"></param>
+		/// <param name="path"></param>
+		void RoutePath(RouteOperation op, IEnumerable<Connection> path);
+
+		/// <summary>
+		/// Applies the given path to the switchers.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="roomId"></param>
+		void RoutePath(ConnectionPath path, int roomId);
 
 		/// <summary>
 		/// Searches for switchers currently routing the source to the destination and unroutes them.
@@ -403,8 +475,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		/// <param name="destination"></param>
 		/// <param name="type"></param>
-		/// <param name="id"></param>
-		void UnrouteDestination(EndpointInfo destination, eConnectionType type, int id);
+		/// <param name="roomId"></param>
+		void Unroute(IDestination destination, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Unroutes all switchers routing the active source to the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		void UnrouteDestination(EndpointInfo destination, eConnectionType type, int roomId);
 
 		#endregion
 

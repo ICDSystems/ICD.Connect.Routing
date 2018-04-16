@@ -333,30 +333,123 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <returns></returns>
 		public override ConnectionPath FindPath(ISource source, IDestination destination, eConnectionType flag, int roomId)
 		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
-			return FindPaths(source, destination, flag, roomId).FirstOrDefault();
+			return FindAllPaths(source, destination, flag, roomId).FirstOrDefault();
 		}
 
 		/// <summary>
-		/// Finds all of the available paths from the source to the destination.
+		/// Finds the best available path from the source to the destination.
 		/// </summary>
-		/// <param name="source"></param>
+		/// <param name="sourceEndpoint"></param>
 		/// <param name="destination"></param>
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public override IEnumerable<ConnectionPath> FindPaths(ISource source, IDestination destination, eConnectionType flag, int roomId)
+		public override ConnectionPath FindPath(EndpointInfo sourceEndpoint, IDestination destination, eConnectionType flag, int roomId)
 		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
-			EndpointInfo[] destinationEndpoints = destination.GetEndpoints().ToArray();
+			return FindPathsMulti(sourceEndpoint, destination.GetEndpoints(), flag, roomId).Select(kvp => kvp.Value).FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Finds the best available path from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinationEndpoint"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public override ConnectionPath FindPath(ISource source, EndpointInfo destinationEndpoint, eConnectionType flag, int roomId)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
 			return source.GetEndpoints()
-			             .SelectMany(s => FindPaths(s, destinationEndpoints, flag, roomId))
-			             .Select(kvp => kvp.Value);
+						 .Select(e => FindPath(e, destinationEndpoint, flag, roomId))
+						 .FirstOrDefault(p => p != null);
+		}
+
+		/// <summary>
+		/// Finds the best available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectionPath> FindPaths(ISource source, IDestination destination, eConnectionType type, int roomId)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			return EnumUtils.GetFlagsExceptNone(type)
+			                .Select(f => FindPath(source, destination, f, roomId));
+		}
+
+		/// <summary>
+		/// Finds the best available paths from the source to the destination.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectionPath> FindPaths(EndpointInfo sourceEndpoint, IDestination destination, eConnectionType type, int roomId)
+		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			return EnumUtils.GetFlagsExceptNone(type)
+							.Select(f => FindPath(sourceEndpoint, destination, f, roomId));
+		}
+
+		/// <summary>
+		/// Finds the best available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinationEndpoint"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectionPath> FindPaths(ISource source, EndpointInfo destinationEndpoint, eConnectionType type, int roomId)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			return EnumUtils.GetFlagsExceptNone(type)
+							.Select(f => FindPath(source, destinationEndpoint, f, roomId));
+		}
+
+		/// <summary>
+		/// Finds the best available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		public override IEnumerable<ConnectionPath> FindPaths(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId)
+		{
+			return EnumUtils.GetFlagsExceptNone(type)
+							.Select(f => FindPath(source, destination, f, roomId));
 		}
 
 		/// <summary>
@@ -367,7 +460,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		public override ConnectionPath FindPath(EndpointInfo source, EndpointInfo destination, eConnectionType flag,
-		                                        int roomId)
+												int roomId)
 		{
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
@@ -384,9 +477,35 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			IEnumerable<Connection> path =
 				RecursionUtils.BreadthFirstSearchPath(outputConnection, inputConnection,
-				                                      c => GetConnectionChildren(source, c, flag, roomId));
+													  c => GetConnectionChildren(source, c, flag, roomId));
 
-			return path == null ? null : new ConnectionPath(path);
+			return path == null ? null : new ConnectionPath(path, flag);
+		}
+
+		/// <summary>
+		/// Finds all of the available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectionPath> FindAllPaths(ISource source, IDestination destination, eConnectionType flag, int roomId)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("ConnectionType has multiple flags", "flag");
+
+			EndpointInfo[] destinationEndpoints = destination.GetEndpoints().ToArray();
+
+			return source.GetEndpoints()
+			             .SelectMany(s => FindPathsMulti(s, destinationEndpoints, flag, roomId))
+			             .Select(kvp => kvp.Value);
 		}
 
 		/// <summary>
@@ -397,7 +516,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public override IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPaths(
+		public override IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(
 			EndpointInfo source,
 			IEnumerable<EndpointInfo> destinations,
 			eConnectionType flag,
@@ -442,7 +561,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			foreach (KeyValuePair<Connection, IEnumerable<Connection>> kvp in paths)
 			{
-				ConnectionPath finalPath = kvp.Value == null ? null : new ConnectionPath(kvp.Value);
+				ConnectionPath finalPath = kvp.Value == null ? null : new ConnectionPath(kvp.Value, flag);
 				EndpointInfo destination = connectionToDestinations[kvp.Key];
 
 				yield return new KeyValuePair<EndpointInfo, ConnectionPath>(destination, finalPath);
@@ -802,7 +921,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 			{
 				IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> pathsForDestinations =
-					FindPaths(source, destinationsList, flag, roomId);
+					FindPathsMulti(source, destinationsList, flag, roomId);
 
 				foreach (KeyValuePair<EndpointInfo, ConnectionPath> kvp in pathsForDestinations)
 				{
@@ -861,6 +980,27 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			OnRouteFinished.Raise(this, new RouteFinishedEventArgs(op, true));
+		}
+
+		/// <summary>
+		/// Applies the given path to the switchers.
+		/// </summary>
+		/// <param name="path"></param>
+		/// <param name="roomId"></param>
+		public override void RoutePath(ConnectionPath path, int roomId)
+		{
+			if (path == null)
+				throw new ArgumentNullException("path");
+
+			RouteOperation operation = new RouteOperation
+			{
+				Source = path.SourceEndpoint,
+				Destination = path.DestinationEndpoint,
+				ConnectionType = path.ConnectionType,
+				RoomId = roomId
+			};
+
+			RoutePath(operation, path);
 		}
 
 		/// <summary>
@@ -1109,6 +1249,20 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				if (midpoint.GetOutputs(input, type).Any())
 					break;
 			}
+		}
+
+		/// <summary>
+		/// Unroutes all switchers routing the active source to the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		public override void Unroute(IDestination destination, eConnectionType type, int roomId)
+		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			destination.GetEndpoints().ForEach(e => UnrouteDestination(e, type, roomId));
 		}
 
 		/// <summary>
