@@ -170,6 +170,22 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract bool SourceDetected(IRouteSourceControl sourceControl, int output, eConnectionType type);
 
 		/// <summary>
+		/// Returns true if the source is detected by the next node in the graph at the given output.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public abstract bool SourceDetected(EndpointInfo sourceEndpoint, eConnectionType type);
+
+		/// <summary>
+		/// Returns true if the given destination endpoint is active for all of the given connection types.
+		/// </summary>
+		/// <param name="endpoint"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public abstract bool InputActive(EndpointInfo endpoint, eConnectionType type);
+
+		/// <summary>
 		/// Returns true if there is a path from the given source to the given destination.
 		/// </summary>
 		/// <param name="source"></param>
