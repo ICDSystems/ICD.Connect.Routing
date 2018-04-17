@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
@@ -11,12 +10,6 @@ using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.RoutingGraphs
 {
-	public sealed class RoutingGraphCacheSourceState
-	{
-		public bool Active { get; set; }
-		public bool Detected { get; set; }
-	}
-
 	/// <summary>
 	/// The RoutingGraphCache acts as a filter between the noisy switcher events and
 	/// useful routing changes such as active source routing.
@@ -31,8 +24,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private readonly
 			Dictionary<IDestination,
 				Dictionary<eConnectionType,
-					Dictionary<int,
-						Dictionary<ISource, RoutingGraphCacheSourceState>>>> m_RoutingMap;
+					Dictionary<int, ISource>>> m_RoutingMap;
 
 		private readonly SafeCriticalSection m_CacheSection;
 
@@ -51,8 +43,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_RoutingMap =
 				new Dictionary<IDestination,
 					Dictionary<eConnectionType,
-						Dictionary<int,
-							Dictionary<ISource, RoutingGraphCacheSourceState>>>>();
+						Dictionary<int, ISource>>>();
 
 			m_RoutingGraph = routingGraph;
 			Subscribe(m_RoutingGraph);
@@ -81,27 +72,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				Dictionary<eConnectionType, Dictionary<int, Dictionary<ISource, RoutingGraphCacheSourceState>>> types;
-				if (!m_RoutingMap.TryGetValue(destination, out types))
-					return Enumerable.Empty<ISource>();
-
-				Dictionary<int, Dictionary<ISource, RoutingGraphCacheSourceState>> addresses;
-				if (!types.TryGetValue(type, out addresses))
-					return Enumerable.Empty<ISource>();
-
-				Dictionary<ISource, RoutingGraphCacheSourceState> sources;
-				if (!addresses.TryGetValue(address, out sources))
-					return Enumerable.Empty<ISource>();
-
-				return sources.Where(kvp =>
-				                     {
-					                     if (active && !kvp.Value.Active)
-						                     return false;
-
-					                     return !detected || kvp.Value.Detected;
-				                     })
-				              .Select(kvp => kvp.Key)
-				              .ToArray();
+				throw new NotImplementedException();
 			}
 			finally
 			{
