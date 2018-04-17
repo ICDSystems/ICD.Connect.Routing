@@ -8,6 +8,8 @@ namespace ICD.Connect.Routing.Connections
 {
 	public interface IConnectionsCollection : IOriginatorCollection<Connection>
 	{
+		#region Methods
+
 		/// <summary>
 		/// Gets the connection for the given endpoint.
 		/// </summary>
@@ -88,6 +90,10 @@ namespace ICD.Connect.Routing.Connections
 		/// <returns></returns>
 		IEnumerable<Connection> GetOutputConnectionsAny(int sourceDeviceId, int sourceControlId, eConnectionType type);
 
+		#endregion
+
+		#region Adjacency
+
 		/// <summary>
 		/// Returns the destination input addresses where source and destination are directly connected.
 		/// </summary>
@@ -132,5 +138,7 @@ namespace ICD.Connect.Routing.Connections
 		/// <returns></returns>
 		IEnumerable<int> GetOutputs(IRouteSourceControl sourceControl, IRouteDestinationControl destinationControl,
 		                            eConnectionType type);
+
+		#endregion
 	}
 }
