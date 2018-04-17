@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Comparers;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
@@ -27,6 +28,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private readonly Dictionary<DeviceControlInfo, Dictionary<int, Connection>> m_InputConnectionLookup;
 
 		/// <summary>
+		/// Maps Source -> Final Destination -> Type -> Ordered connections that lead to the final destination.
+		/// </summary>
+		private readonly Dictionary<EndpointInfo,
+			Dictionary<EndpointInfo,
+				Dictionary<eConnectionType,
+					List<Connection>>>> m_FilteredConnectionLookup;
+
+		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="routingGraph"></param>
@@ -34,6 +43,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		{
 			m_OutputConnectionLookup = new Dictionary<DeviceControlInfo, Dictionary<int, Connection>>();
 			m_InputConnectionLookup = new Dictionary<DeviceControlInfo, Dictionary<int, Connection>>();
+			m_FilteredConnectionLookup =
+				new Dictionary<EndpointInfo,
+					Dictionary<EndpointInfo,
+						Dictionary<eConnectionType,
+							List<Connection>>>>();
+
 			m_ConnectionsSection = new SafeCriticalSection();
 		}
 
@@ -258,6 +273,110 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			}
 		}
 
+		/// <summary>
+		/// Given a source endpoint and a final destination endpoint,
+		/// returns the possible output connections from the source to reach the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="finalDestination"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable<Connection> GetFilteredConnections(EndpointInfo source, EndpointInfo finalDestination,
+		                                                      eConnectionType type)
+		{
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+				Dictionary<EndpointInfo, Dictionary<eConnectionType, List<Connection>>> destinationMap;
+				if (!m_FilteredConnectionLookup.TryGetValue(source, out destinationMap))
+					return Enumerable.Empty<Connection>();
+
+				Dictionary<eConnectionType, List<Connection>> connectionTypeMap;
+				if (!destinationMap.TryGetValue(finalDestination, out connectionTypeMap))
+					return Enumerable.Empty<Connection>();
+
+				List<Connection> connections;
+				if (!connectionTypeMap.TryGetValue(type, out connections))
+					return Enumerable.Empty<Connection>();
+
+				return connections.Count == 0
+					? Enumerable.Empty<Connection>()
+					: connections.ToArray(connections.Count);
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Given a source endpoint and a sequence of final destination endpoints,
+		/// returns the possible output connections to reach the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="finalDestinations"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable<Connection> GetFilteredConnections(EndpointInfo source,
+		                                                      IEnumerable<EndpointInfo> finalDestinations,
+		                                                      eConnectionType type)
+		{
+			if (finalDestinations == null)
+				throw new ArgumentNullException("finalDestinations");
+
+			return finalDestinations.SelectMany(d => GetFilteredConnections(source, d, type))
+			                        .Distinct();
+		}
+
+		/// <summary>
+		/// Given an input connection and a final destination endpoint,
+		/// returns the possible output connections to reach the destination.
+		/// </summary>
+		/// <param name="inputConnection"></param>
+		/// <param name="finalDestination"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable<Connection> GetFilteredConnections(Connection inputConnection, EndpointInfo finalDestination,
+		                                                      eConnectionType type)
+		{
+			if (inputConnection == null)
+				throw new ArgumentNullException("inputConnection");
+
+			int device = inputConnection.Destination.Device;
+			int control = inputConnection.Destination.Control;
+
+			return GetOutputs(device, control, type).Select(o => new EndpointInfo(device, control, o))
+			                                        .SelectMany(e => GetFilteredConnections(e, finalDestination, type))
+			                                        .Distinct();
+		}
+
+		/// <summary>
+		/// Given an input connection and a sequence of final destination endpoints,
+		/// returns the possible output connections to reach the destination.
+		/// </summary>
+		/// <param name="inputConnection"></param>
+		/// <param name="finalDestinations"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable<Connection> GetFilteredConnections(Connection inputConnection,
+		                                                      IEnumerable<EndpointInfo> finalDestinations,
+		                                                      eConnectionType type)
+		{
+			if (inputConnection == null)
+				throw new ArgumentNullException("inputConnection");
+
+			if (finalDestinations == null)
+				throw new ArgumentNullException("finalDestinations");
+
+			int device = inputConnection.Destination.Device;
+			int control = inputConnection.Destination.Control;
+
+			return GetOutputs(device, control, type).Select(o => new EndpointInfo(device, control, o))
+													.SelectMany(e => GetFilteredConnections(e, finalDestinations, type))
+													.Distinct();
+		}
+
 		#endregion
 
 		#region Adjacency
@@ -412,6 +531,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#endregion
 
+		#region Caching
+
+		/// <summary>
+		/// Called each time a child is added to the collection before any events are raised.
+		/// </summary>
+		/// <param name="child"></param>
 		protected override void ChildAdded(Connection child)
 		{
 			base.ChildAdded(child);
@@ -433,6 +558,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				// Add connections to the maps
 				m_OutputConnectionLookup[sourceInfo][child.Source.Address] = child;
 				m_InputConnectionLookup[destinationInfo][child.Destination.Address] = child;
+
+				AddToFilteredConnectionsMap(child);
 			}
 			finally
 			{
@@ -457,11 +584,80 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_InputConnectionLookup)
 					kvp.Value.RemoveAllValues(child);
+
+				RemoveFromFilteredConnectionsMap(child);
 			}
 			finally
 			{
 				m_ConnectionsSection.Leave();
 			}
 		}
+
+		/// <summary>
+		/// Adds the given connection to the filtered connections table.
+		/// </summary>
+		/// <param name="child"></param>
+		private void AddToFilteredConnectionsMap(Connection child)
+		{
+			if (child == null)
+				throw new ArgumentNullException("child");
+
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+				// Add the source as a primary key
+				if (!m_FilteredConnectionLookup.ContainsKey(child.Source))
+					m_FilteredConnectionLookup.Add(child.Source,
+					                               new Dictionary<EndpointInfo, Dictionary<eConnectionType, List<Connection>>>());
+
+				// Add the destination to all of the existing keys
+				foreach (EndpointInfo source in m_FilteredConnectionLookup.Keys)
+				{
+					if (!m_FilteredConnectionLookup[source].ContainsKey(child.Destination))
+						m_FilteredConnectionLookup[source].Add(child.Destination, new Dictionary<eConnectionType, List<Connection>>());
+				}
+
+				// Add the connection to the map
+				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(child.ConnectionType))
+				{
+					foreach (EndpointInfo source in m_FilteredConnectionLookup.Keys)
+					{
+						foreach (EndpointInfo destination in m_FilteredConnectionLookup[source].Keys)
+						{
+							if (GetPaths(source, destination, flag).Any(p => p.Contains(child)))
+								m_FilteredConnectionLookup[source][destination][flag].AddSorted(child, c => c.Source.Address);
+						}
+					}
+				}
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Removes the given connection from the filtered connections table.
+		/// </summary>
+		/// <param name="child"></param>
+		private void RemoveFromFilteredConnectionsMap(Connection child)
+		{
+			if (child == null)
+				throw new ArgumentNullException("child");
+
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
+
+		#endregion
 	}
 }

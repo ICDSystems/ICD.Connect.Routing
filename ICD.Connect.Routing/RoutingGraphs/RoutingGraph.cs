@@ -320,7 +320,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			IEnumerable<Connection> path = RecursionUtils.BreadthFirstSearchPath(outputConnection, inputConnection,
 			                                                                     c =>
-			                                                                     GetConnectionChildren(source, c, flag, roomId));
+			                                                                     GetConnectionChildren(source, destination, c,
+			                                                                                           flag, roomId));
 			return path == null ? null : new ConnectionPath(path);
 		}
 
@@ -373,7 +374,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			Dictionary<Connection, IEnumerable<Connection>> paths =
 				RecursionUtils.BreadthFirstSearchManyDestinations(sourceConnection,
 				                                                  destionationConnections,
-				                                                  c => GetConnectionChildren(source, c, flag, roomId));
+				                                                  c =>
+				                                                  GetConnectionChildren(source, connectionToDestinations.Values, c,
+				                                                                        flag, roomId));
 
 			foreach (KeyValuePair<Connection, IEnumerable<Connection>> kvp in paths)
 			{
@@ -385,31 +388,67 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
-		/// Gets the potential output connections for the given input connections.
+		/// Gets the potential output connections for the given input connection, filtering by source and destination.
 		/// </summary>
 		/// <param name="source"></param>
+		/// <param name="destinations"></param>
 		/// <param name="inputConnection"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		private IEnumerable<Connection> GetConnectionChildren(EndpointInfo source, Connection inputConnection,
+		private IEnumerable<Connection> GetConnectionChildren(EndpointInfo source, IEnumerable<EndpointInfo> destinations,
+		                                                      Connection inputConnection, eConnectionType type, int roomId)
+		{
+			if (destinations == null)
+				throw new ArgumentNullException("destinations");
+
+			if (inputConnection == null)
+				throw new ArgumentNullException("inputConnection");
+
+			IEnumerable<Connection> connections = m_Connections.GetFilteredConnections(inputConnection, destinations, type);
+			return FilterConnections(connections, source, type, roomId);
+		}
+
+		/// <summary>
+		/// Gets the potential output connections for the given input connection, filtering by source and destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="inputConnection"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		private IEnumerable<Connection> GetConnectionChildren(EndpointInfo source, EndpointInfo destination,
+		                                                      Connection inputConnection,
 		                                                      eConnectionType type, int roomId)
 		{
 			if (inputConnection == null)
 				throw new ArgumentNullException("inputConnection");
 
-			if (EnumUtils.HasMultipleFlags(type))
-				throw new ArgumentException("ConnectionType has multiple flags", "type");
+			IEnumerable<Connection> connections = m_Connections.GetFilteredConnections(inputConnection, destination, type);
+			return FilterConnections(connections, source, type, roomId);
+		}
 
-			return
-				m_Connections.GetOutputConnections(inputConnection.Destination.Device,
-				                                   inputConnection.Destination.Control,
-				                                   type)
-				             .Where(c =>
-									// TODO - Needs to support combine spaces
-									//ConnectionUsages.CanRouteConnection(c, source, roomId, type) &&
-									c.IsAvailableToSourceDevice(source.Device) &&
-				                    c.IsAvailableToRoom(roomId));
+		/// <summary>
+		/// Filters the given sequence of connections by availability to the source and room by type.
+		/// </summary>
+		/// <param name="connections"></param>
+		/// <param name="source"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		private IEnumerable<Connection> FilterConnections(IEnumerable<Connection> connections, EndpointInfo source,
+		                                                  eConnectionType type, int roomId)
+		{
+			if (connections == null)
+				throw new ArgumentNullException("connections");
+
+			return connections.Where(c =>
+			                         // TODO - Needs to support combine spaces
+			                         //ConnectionUsages.CanRouteConnection(c, source, roomId, type) &&
+			                         c.IsAvailableToSourceDevice(source.Device) &&
+			                         c.IsAvailableToRoom(roomId))
+			                  .OrderBy(c => c.Source.Address);
 		}
 
 		/// <summary>
