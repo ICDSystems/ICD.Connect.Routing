@@ -9,3 +9,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Added abstractions for DmMd6XN switchers
  - Adding DmMd6X1 adapter
  - Adding DmMd6X4 adapter
+ - Adding DmMd6X6 adapter
