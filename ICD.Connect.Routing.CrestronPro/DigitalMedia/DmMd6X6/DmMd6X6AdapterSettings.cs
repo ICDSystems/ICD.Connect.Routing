@@ -12,7 +12,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd6X6
 		/// <summary>
 		/// Gets the originator factory name.
 		/// </summary>
-		public override string FactoryName { get { throw new NotImplementedException(); } }
+		public override string FactoryName { get { return FACTORY_NAME; } }
 
 		/// <summary>
 		/// Gets the type of the originator for this settings instance.
