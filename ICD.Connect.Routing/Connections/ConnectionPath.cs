@@ -16,6 +16,9 @@ namespace ICD.Connect.Routing.Connections
 		private readonly IcdHashSet<Connection> m_Contains;
 		private readonly List<Connection> m_Ordered;
 		private readonly SafeCriticalSection m_Section;
+		private readonly eConnectionType m_Type;
+
+		#region Properties
 
 		/// <summary>
 		/// Gets the number of connections in the path.
@@ -23,10 +26,64 @@ namespace ICD.Connect.Routing.Connections
 		public int Count { get { return m_Section.Execute(() => m_Ordered.Count); } }
 
 		/// <summary>
+		/// Gets the source endpoint info for the path.
+		/// </summary>
+		public EndpointInfo SourceEndpoint
+		{
+			get
+			{
+				m_Section.Enter();
+
+				try
+				{
+					if (m_Ordered.Count == 0)
+						throw new InvalidOperationException("Path is empty.");
+
+					return m_Ordered[0].Source;
+				}
+				finally
+				{
+					m_Section.Leave();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the destination endpoint info for the path.
+		/// </summary>
+		public EndpointInfo DestinationEndpoint
+		{
+			get
+			{
+				m_Section.Enter();
+
+				try
+				{
+					if (m_Ordered.Count == 0)
+						throw new InvalidOperationException("Path is empty.");
+
+					return m_Ordered[m_Ordered.Count - 1].Destination;
+				}
+				finally
+				{
+					m_Section.Leave();
+				}
+			}
+		}
+
+		/// <summary>
+		/// Gets the connection type associated with this path.
+		/// </summary>
+		public eConnectionType ConnectionType { get { return m_Type; } }
+
+		#endregion
+
+		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public ConnectionPath()
-			: this(Enumerable.Empty<Connection>())
+		/// <param name="type"></param>
+		public ConnectionPath(eConnectionType type)
+			: this(Enumerable.Empty<Connection>(), type)
 		{
 		}
 
@@ -34,11 +91,13 @@ namespace ICD.Connect.Routing.Connections
 		/// Constructor.
 		/// </summary>
 		/// <param name="connections"></param>
-		public ConnectionPath(IEnumerable<Connection> connections)
+		/// <param name="type"></param>
+		public ConnectionPath(IEnumerable<Connection> connections, eConnectionType type)
 		{
 			m_Contains = new IcdHashSet<Connection>();
 			m_Ordered = new List<Connection>();
 			m_Section = new SafeCriticalSection();
+			m_Type = type;
 
 			if (connections.Any(item => !Add(item)))
 				throw new ArgumentException("Given path is not contiguous", "connections");
