@@ -4,7 +4,6 @@ using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
-using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.ConnectionUsage;
 using ICD.Connect.Routing.Controls;
@@ -19,7 +18,7 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.RoutingGraphs
 {
-	public abstract class AbstractRoutingGraph<TSettings> : AbstractOriginator<TSettings>, IRoutingGraph, IConsoleNode
+	public abstract class AbstractRoutingGraph<TSettings> : AbstractOriginator<TSettings>, IRoutingGraph
 		where TSettings : IRoutingGraphSettings, new()
 	{
 		public abstract event EventHandler<RouteFinishedEventArgs> OnRouteFinished;
@@ -38,14 +37,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract IOriginatorCollection<IDestinationGroup> DestinationGroups { get; }
 
 		/// <summary>
-		/// Gets the name of the node.
-		/// </summary>
-		public string ConsoleName { get { return string.IsNullOrEmpty(Name) ? GetType().Name : Name; } }
-
-		/// <summary>
 		/// Gets the help information for the node.
 		/// </summary>
-		public string ConsoleHelp { get { return "Maps the routing of device outputs to inputs."; } }
+		public override string ConsoleHelp { get { return "Maps the routing of device outputs to inputs."; } }
 
 		#endregion
 
@@ -570,28 +564,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		#region Console
 
 		/// <summary>
-		/// Gets the child console nodes.
-		/// </summary>
-		/// <returns></returns>
-		public virtual IEnumerable<IConsoleNodeBase> GetConsoleNodes()
-		{
-			yield break;
-		}
-
-		/// <summary>
-		/// Calls the delegate for each console status item.
-		/// </summary>
-		/// <param name="addRow"></param>
-		public virtual void BuildConsoleStatus(AddStatusRowDelegate addRow)
-		{
-		}
-
-		/// <summary>
 		/// Gets the child console commands.
 		/// </summary>
 		/// <returns></returns>
-		public virtual IEnumerable<IConsoleCommand> GetConsoleCommands()
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
 		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
 			yield return
 				new ConsoleCommand("PrintTable", "Prints a table of the routed devices and their input/output information.",
 				                   () => PrintTable());
@@ -608,6 +588,15 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			                                                                       "Routes source to destination group. Usage: Route <sourceId> <destGrpId> <connType> <roomId>",
 			                                                                       (a, b, c, d) =>
 				                                                                       RouteGroupConsoleCommand(a, b, c, d));
+		}
+
+		/// <summary>
+		/// Workaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
 		}
 
 		private string PrintSources()
