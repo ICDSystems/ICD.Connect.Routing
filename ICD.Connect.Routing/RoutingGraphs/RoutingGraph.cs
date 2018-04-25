@@ -242,6 +242,47 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Finds the destinations that the source is actively routed to.
 		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <returns>The sources</returns>
+		public override IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(ISource source, eConnectionType type,
+		                                                                        bool signalDetected, bool inputActive)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			return source.GetEndpoints()
+			             .SelectMany(e => GetActiveDestinationEndpoints(e, type, signalDetected, inputActive))
+			             .Distinct();
+		}
+
+		/// <summary>
+		/// Finds the destinations that the source is actively routed to.
+		/// </summary>
+		/// <param name="sourceOutput"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <returns>The sources</returns>
+		public override IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(EndpointInfo sourceOutput,
+		                                                                        eConnectionType type,
+		                                                                        bool signalDetected,
+		                                                                        bool inputActive)
+		{
+			IRouteSourceControl source = GetSourceControl(sourceOutput.Device, sourceOutput.Control);
+
+			return source == null
+				       ? Enumerable.Empty<EndpointInfo>()
+				       : GetActiveDestinationEndpoints(source, sourceOutput.Address, type, signalDetected, inputActive);
+		}
+
+		/// <summary>
+		/// Finds the destinations that the source is actively routed to.
+		/// </summary>
 		/// <param name="sourceControl"></param>
 		/// <param name="sourceOutput"></param>
 		/// <param name="type"></param>
