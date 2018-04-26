@@ -557,11 +557,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public override IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(
-			EndpointInfo source,
-			IEnumerable<EndpointInfo> destinations,
-			eConnectionType flag,
-			int roomId)
+		public override IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(EndpointInfo source,
+		                                                                                       IEnumerable<EndpointInfo>
+			                                                                                       destinations,
+		                                                                                       eConnectionType flag,
+		                                                                                       int roomId)
 		{
 			if (destinations == null)
 				throw new ArgumentNullException("destinations");
