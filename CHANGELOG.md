@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Adding extension method to TryGet routing graph from core
  - Adding extension method to get active destination endpoints for a given source
+ - Additional routing graph methods for better supporting sources/destinations with multiple addresses
 
 ## [5.0.0] - 2018-04-23
 ### Added
