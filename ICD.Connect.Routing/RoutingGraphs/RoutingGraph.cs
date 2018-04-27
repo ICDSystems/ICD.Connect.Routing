@@ -242,6 +242,47 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Finds the destinations that the source is actively routed to.
 		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <returns>The sources</returns>
+		public override IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(ISource source, eConnectionType type,
+		                                                                        bool signalDetected, bool inputActive)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			return source.GetEndpoints()
+			             .SelectMany(e => GetActiveDestinationEndpoints(e, type, signalDetected, inputActive))
+			             .Distinct();
+		}
+
+		/// <summary>
+		/// Finds the destinations that the source is actively routed to.
+		/// </summary>
+		/// <param name="sourceOutput"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <returns>The sources</returns>
+		public override IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(EndpointInfo sourceOutput,
+		                                                                        eConnectionType type,
+		                                                                        bool signalDetected,
+		                                                                        bool inputActive)
+		{
+			IRouteSourceControl source = GetSourceControl(sourceOutput.Device, sourceOutput.Control);
+
+			return source == null
+				       ? Enumerable.Empty<EndpointInfo>()
+				       : GetActiveDestinationEndpoints(source, sourceOutput.Address, type, signalDetected, inputActive);
+		}
+
+		/// <summary>
+		/// Finds the destinations that the source is actively routed to.
+		/// </summary>
 		/// <param name="sourceControl"></param>
 		/// <param name="sourceOutput"></param>
 		/// <param name="type"></param>
@@ -507,29 +548,31 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
-		/// Finds all of the available paths from the source to the destination.
+		/// Returns the best available paths from the source to the given destinations.
 		/// </summary>
 		/// <param name="source"></param>
-		/// <param name="destination"></param>
+		/// <param name="destinations"></param>
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public override IEnumerable<ConnectionPath> FindAllPaths(ISource source, IDestination destination, eConnectionType flag, int roomId)
+		public override IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(ISource source,
+		                                                                                       IEnumerable<IDestination>
+			                                                                                       destinations,
+		                                                                                       eConnectionType flag,
+		                                                                                       int roomId)
 		{
 			if (source == null)
 				throw new ArgumentNullException("source");
 
-			if (destination == null)
-				throw new ArgumentNullException("destination");
+			if (destinations == null)
+				throw new ArgumentNullException("destinations");
 
-			if (EnumUtils.HasMultipleFlags(flag))
-				throw new ArgumentException("ConnectionType has multiple flags", "flag");
-
-			EndpointInfo[] destinationEndpoints = destination.GetEndpoints().ToArray();
+			IcdHashSet<EndpointInfo> destinationEndpoints = destinations.SelectMany(d => d.GetEndpoints())
+			                                                            .ToIcdHashSet();
 
 			return source.GetEndpoints()
-			             .SelectMany(s => FindPathsMulti(s, destinationEndpoints, flag, roomId))
-			             .Select(kvp => kvp.Value);
+			             .SelectMany(e => FindPathsMulti(e, destinationEndpoints, flag, roomId))
+			             .Distinct(kvp => kvp.Key);
 		}
 
 		/// <summary>
@@ -540,11 +583,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public override IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(
-			EndpointInfo source,
-			IEnumerable<EndpointInfo> destinations,
-			eConnectionType flag,
-			int roomId)
+		public override IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(EndpointInfo source,
+		                                                                                       IEnumerable<EndpointInfo>
+			                                                                                       destinations,
+		                                                                                       eConnectionType flag,
+		                                                                                       int roomId)
 		{
 			if (destinations == null)
 				throw new ArgumentNullException("destinations");
@@ -590,6 +633,32 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				yield return new KeyValuePair<EndpointInfo, ConnectionPath>(destination, finalPath);
 			}
+		}
+
+		/// <summary>
+		/// Finds all of the available paths from the source to the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectionPath> FindAllPaths(ISource source, IDestination destination, eConnectionType flag, int roomId)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("ConnectionType has multiple flags", "flag");
+
+			EndpointInfo[] destinationEndpoints = destination.GetEndpoints().ToArray();
+
+			return source.GetEndpoints()
+			             .SelectMany(s => FindPathsMulti(s, destinationEndpoints, flag, roomId))
+			             .Select(kvp => kvp.Value);
 		}
 
 		/// <summary>
@@ -668,6 +737,48 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				yield return path.Take(index + 1).ToArray(index + 1);
 			}
+		}
+
+		/// <summary>
+		/// Finds the current paths from the given source to the destination.
+		/// Return multiple paths if multiple connection types are provided.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		public override IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, IDestination destination,
+		                                                          eConnectionType type, bool signalDetected,
+		                                                          bool inputActive)
+		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			return destination.GetEndpoints()
+			                  .SelectMany(e => FindActivePaths(source, e, type, signalDetected, inputActive));
+		}
+
+		/// <summary>
+		/// Finds the current paths from the given source to the destination.
+		/// Return multiple paths if multiple connection types are provided.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		public override IEnumerable<Connection[]> FindActivePaths(ISource source, EndpointInfo destination,
+		                                                          eConnectionType type,
+		                                                          bool signalDetected, bool inputActive)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			return source.GetEndpoints()
+			             .SelectMany(e => FindActivePaths(e, destination, type, signalDetected, inputActive));
 		}
 
 		/// <summary>
@@ -1102,6 +1213,23 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			if (destination == null)
 				throw new ArgumentNullException("destination");
+
+			foreach (Connection[] path in FindActivePaths(source, destination, type, false, false))
+				Unroute(path, type, roomId);
+		}
+
+		/// <summary>
+		/// Searches for switchers currently routing the source to the destination and unroutes them.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public override void Unroute(ISource source, EndpointInfo destination, eConnectionType type, int roomId)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
 
 			foreach (Connection[] path in FindActivePaths(source, destination, type, false, false))
 				Unroute(path, type, roomId);

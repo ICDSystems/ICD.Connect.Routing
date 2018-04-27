@@ -1,7 +1,7 @@
-﻿using ICD.Connect.Misc.CrestronPro;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM;
+﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X14kE

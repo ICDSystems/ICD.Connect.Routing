@@ -4,7 +4,6 @@ using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
-using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.ConnectionUsage;
 using ICD.Connect.Routing.Controls;
@@ -19,7 +18,7 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.RoutingGraphs
 {
-	public abstract class AbstractRoutingGraph<TSettings> : AbstractOriginator<TSettings>, IRoutingGraph, IConsoleNode
+	public abstract class AbstractRoutingGraph<TSettings> : AbstractOriginator<TSettings>, IRoutingGraph
 		where TSettings : IRoutingGraphSettings, new()
 	{
 		public abstract event EventHandler<RouteFinishedEventArgs> OnRouteFinished;
@@ -38,14 +37,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract IOriginatorCollection<IDestinationGroup> DestinationGroups { get; }
 
 		/// <summary>
-		/// Gets the name of the node.
-		/// </summary>
-		public string ConsoleName { get { return string.IsNullOrEmpty(Name) ? GetType().Name : Name; } }
-
-		/// <summary>
 		/// Gets the help information for the node.
 		/// </summary>
-		public string ConsoleHelp { get { return "Maps the routing of device outputs to inputs."; } }
+		public override string ConsoleHelp { get { return "Maps the routing of device outputs to inputs."; } }
 
 		#endregion
 
@@ -128,6 +122,31 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			IRouteDestinationControl control = GetDestinationControl(destination.Device, destination.Control);
 			return GetActiveSourceEndpoint(control, destination.Address, type, signalDetected, inputActive);
 		}
+
+		/// <summary>
+		/// Finds the destinations that the source is actively routed to.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <returns>The sources</returns>
+		public abstract IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(ISource source, eConnectionType type,
+		                                                                        bool signalDetected, bool inputActive);
+
+		/// <summary>
+		/// Finds the destinations that the source is actively routed to.
+		/// </summary>
+		/// <param name="sourceOutput"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <returns>The sources</returns>
+		public abstract IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(EndpointInfo sourceOutput,
+		                                                                        eConnectionType type, bool signalDetected,
+		                                                                        bool inputActive);
 
 		/// <summary>
 		/// Finds the destinations that the source is actively routed to.
@@ -224,7 +243,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public abstract ConnectionPath FindPath(ISource source, EndpointInfo destinationEndpoint, eConnectionType flag, int roomId);
+		public abstract ConnectionPath FindPath(ISource source, EndpointInfo destinationEndpoint, eConnectionType flag,
+		                                        int roomId);
 
 		/// <summary>
 		/// Finds the best available paths from the source to the destination.
@@ -234,7 +254,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public abstract IEnumerable<ConnectionPath> FindPaths(ISource source, IDestination destination, eConnectionType type, int roomId);
+		public abstract IEnumerable<ConnectionPath> FindPaths(ISource source, IDestination destination, eConnectionType type,
+		                                                      int roomId);
 
 		/// <summary>
 		/// Finds the best available paths from the source to the destination.
@@ -244,7 +265,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public abstract IEnumerable<ConnectionPath> FindPaths(EndpointInfo sourceEndpoint, IDestination destination, eConnectionType type, int roomId);
+		public abstract IEnumerable<ConnectionPath> FindPaths(EndpointInfo sourceEndpoint, IDestination destination,
+		                                                      eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Finds the best available paths from the source to the destination.
@@ -254,7 +276,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public abstract IEnumerable<ConnectionPath> FindPaths(ISource source, EndpointInfo destinationEndpoint, eConnectionType type, int roomId);
+		public abstract IEnumerable<ConnectionPath> FindPaths(ISource source, EndpointInfo destinationEndpoint,
+		                                                      eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Finds the best available paths from the source to the destination.
@@ -263,7 +286,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="destination"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-		public abstract IEnumerable<ConnectionPath> FindPaths(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
+		public abstract IEnumerable<ConnectionPath> FindPaths(EndpointInfo source, EndpointInfo destination,
+		                                                      eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Finds the shortest available path from the source to the destination.
@@ -290,6 +314,20 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                                                       int roomId);
 
 		/// <summary>
+		/// Returns the best available paths from the source to the given destinations.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinations"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public abstract IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(ISource source,
+		                                                                                       IEnumerable<IDestination>
+			                                                                                       destinations,
+		                                                                                       eConnectionType flag,
+		                                                                                       int roomId);
+
+		/// <summary>
 		/// Finds all of the available paths from the source to the destination.
 		/// </summary>
 		/// <param name="source"></param>
@@ -297,7 +335,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public abstract IEnumerable<ConnectionPath> FindAllPaths(ISource source, IDestination destination, eConnectionType flag, int roomId);
+		public abstract IEnumerable<ConnectionPath> FindAllPaths(ISource source, IDestination destination,
+		                                                         eConnectionType flag, int roomId);
 
 		/// <summary>
 		/// Finds the current paths from the given source to the destination.
@@ -324,6 +363,34 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="inputActive"></param>
 		/// <returns></returns>
 		public abstract IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, EndpointInfo destination,
+		                                                          eConnectionType type, bool signalDetected,
+		                                                          bool inputActive);
+
+		/// <summary>
+		/// Finds the current paths from the given source to the destination.
+		/// Return multiple paths if multiple connection types are provided.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		public abstract IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, IDestination destination,
+		                                                          eConnectionType type, bool signalDetected,
+		                                                          bool inputActive);
+
+		/// <summary>
+		/// Finds the current paths from the given source to the destination.
+		/// Return multiple paths if multiple connection types are provided.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		public abstract IEnumerable<Connection[]> FindActivePaths(ISource source, EndpointInfo destination,
 		                                                          eConnectionType type, bool signalDetected,
 		                                                          bool inputActive);
 
@@ -437,6 +504,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="roomId"></param>
 		/// <returns></returns>
 		public abstract void Unroute(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Searches for switchers currently routing the source to the destination and unroutes them.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		public abstract void Unroute(ISource source, EndpointInfo destination, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Searches for switchers currently routing the source and unroutes them.
@@ -586,28 +663,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		#region Console
 
 		/// <summary>
-		/// Gets the child console nodes.
-		/// </summary>
-		/// <returns></returns>
-		public virtual IEnumerable<IConsoleNodeBase> GetConsoleNodes()
-		{
-			yield break;
-		}
-
-		/// <summary>
-		/// Calls the delegate for each console status item.
-		/// </summary>
-		/// <param name="addRow"></param>
-		public virtual void BuildConsoleStatus(AddStatusRowDelegate addRow)
-		{
-		}
-
-		/// <summary>
 		/// Gets the child console commands.
 		/// </summary>
 		/// <returns></returns>
-		public virtual IEnumerable<IConsoleCommand> GetConsoleCommands()
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
 		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
 			yield return
 				new ConsoleCommand("PrintTable", "Prints a table of the routed devices and their input/output information.",
 				                   () => PrintTable());
@@ -624,6 +687,15 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			                                                                       "Routes source to destination group. Usage: Route <sourceId> <destGrpId> <connType> <roomId>",
 			                                                                       (a, b, c, d) =>
 				                                                                       RouteGroupConsoleCommand(a, b, c, d));
+		}
+
+		/// <summary>
+		/// Workaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
 		}
 
 		private string PrintSources()

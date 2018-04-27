@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
@@ -88,6 +89,17 @@ namespace ICD.Connect.Routing.Controls
 		#region Console
 
 		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			RouteMidpointControlConsole.BuildConsoleStatus(this, addRow);
+		}
+
+		/// <summary>
 		/// Gets the child console commands.
 		/// </summary>
 		/// <returns></returns>
@@ -96,8 +108,8 @@ namespace ICD.Connect.Routing.Controls
 			foreach (IConsoleCommand command in GetBaseConsoleCommands())
 				yield return command;
 
-			yield return
-				new ConsoleCommand("PrintRouting", "Prints a table of the current routing state", () => PrintRouteStatusTable());
+			foreach (IConsoleCommand command in RouteMidpointControlConsole.GetConsoleCommands(this))
+				yield return command;
 		}
 
 		/// <summary>
@@ -109,28 +121,26 @@ namespace ICD.Connect.Routing.Controls
 			return base.GetConsoleCommands();
 		}
 
-		private string PrintRouteStatusTable()
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
-			TableBuilder builder = new TableBuilder("Input", "Type", "Detected", "Outputs");
+			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
 
-			foreach (ConnectorInfo input in GetInputs().OrderBy(c => c.Address))
-			{
-				bool first = true;
+			foreach (IConsoleNodeBase node in RouteMidpointControlConsole.GetConsoleNodes(this))
+				yield return node;
+		}
 
-				foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(input.ConnectionType))
-				{
-					string inputString = first ? input.Address.ToString() : string.Empty;
-					first = false;
-
-					string typeString = type.ToString();
-					string detectedString = GetSignalDetectedState(input.Address, type) ? "True" : string.Empty;
-					string outputsString = StringUtils.ArrayFormat(GetOutputs(input.Address, type));
-
-					builder.AddRow(inputString, typeString, detectedString, outputsString);
-				}
-			}
-
-			return builder.ToString();
+		/// <summary>
+		/// Workaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
+		{
+			return base.GetConsoleNodes();
 		}
 
 		#endregion

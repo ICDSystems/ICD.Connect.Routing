@@ -5,6 +5,7 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
+using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Heartbeat;
 using ICD.Connect.Protocol.Network.Tcp;
@@ -153,8 +154,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// Called when the client online status changes.
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="boolEventArgs"></param>
-		private void ClientOnIsOnlineStateChanged(object sender, BoolEventArgs boolEventArgs)
+		/// <param name="args"></param>
+		private void ClientOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs args)
 		{
 			UpdateCachedOnlineStatus();
 		}

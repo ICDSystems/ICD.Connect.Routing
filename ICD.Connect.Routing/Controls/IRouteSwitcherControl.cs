@@ -1,7 +1,9 @@
 ﻿using System;
 using ICD.Common.Properties;
+using ICD.Connect.API.Attributes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.Proxies;
 
 namespace ICD.Connect.Routing.Controls
 {
@@ -9,7 +11,7 @@ namespace ICD.Connect.Routing.Controls
 	/// An IRouteSwitcherControl has inputs and outputs, and provides methods
 	/// for routing specific inputs to specific outputs.
 	/// </summary>
-	[PublicAPI]
+	[ApiClass(typeof(ProxyRouteSwitcherControl), typeof(IRouteMidpointControl))]
 	public interface IRouteSwitcherControl : IRouteMidpointControl
 	{
 		/// <summary>

@@ -115,6 +115,29 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Finds the destinations that the source is actively routed to.
 		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <returns>The sources</returns>
+		IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(ISource source, eConnectionType type, bool signalDetected, bool inputActive);
+
+		/// <summary>
+		/// Finds the destinations that the source is actively routed to.
+		/// </summary>
+		/// <param name="sourceOutput"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
+		/// <param name="inputActive"></param>
+		/// <exception cref="ArgumentNullException"></exception>
+		/// <returns>The sources</returns>
+		IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(EndpointInfo sourceOutput, eConnectionType type,
+		                                                        bool signalDetected, bool inputActive);
+
+		/// <summary>
+		/// Finds the destinations that the source is actively routed to.
+		/// </summary>
 		/// <param name="sourceControl"></param>
 		/// <param name="sourceOutput"></param>
 		/// <param name="type"></param>
@@ -278,6 +301,20 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                                       int roomId);
 
 		/// <summary>
+		/// Returns the best available paths from the source to the given destinations.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinations"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		[NotNull]
+		IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(ISource source,
+		                                                                       IEnumerable<IDestination> destinations,
+		                                                                       eConnectionType flag,
+		                                                                       int roomId);
+
+		/// <summary>
 		/// Finds all of the available paths from the source to the destination.
 		/// </summary>
 		/// <param name="source"></param>
@@ -314,6 +351,19 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                          bool signalDetected, bool inputActive);
 
 		/// <summary>
+		/// Finds the current paths from the given source to the destination.
+		/// Return multiple paths if multiple connection types are provided.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, IDestination destination, eConnectionType type,
+		                                          bool signalDetected, bool inputActive);
+
+		/// <summary>
 		/// Finds all of the active paths from the given source.
 		/// </summary>
 		/// <param name="source"></param>
@@ -333,6 +383,20 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="inputActive"></param>
 		/// <returns></returns>
 		IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type, bool signalDetected,
+		                                          bool inputActive);
+
+		/// <summary>
+		/// Finds the current paths from the given source to the destination.
+		/// Return multiple paths if multiple connection types are provided.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		IEnumerable<Connection[]> FindActivePaths(ISource source, EndpointInfo destination,
+		                                          eConnectionType type, bool signalDetected,
 		                                          bool inputActive);
 
 		#endregion
@@ -421,6 +485,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="roomId"></param>
 		/// <returns></returns>
 		void Unroute(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
+
+		/// <summary>
+		/// Searches for switchers currently routing the source to the destination and unroutes them.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		void Unroute(ISource source, EndpointInfo destination, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Searches for switchers currently routing the source and unroutes them.
