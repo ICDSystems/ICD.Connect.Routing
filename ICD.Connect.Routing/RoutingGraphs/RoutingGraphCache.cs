@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints;
-using ICD.Connect.Routing.Endpoints.Destinations;
-using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.RoutingGraphs
@@ -16,15 +16,32 @@ namespace ICD.Connect.Routing.RoutingGraphs
 	/// </summary>
 	public sealed class RoutingGraphCache
 	{
+		/// <summary>
+		/// Raised when a source device is connected or disconnected.
+		/// </summary>
+		public event EventHandler<EndpointStateEventArgs> OnSourceDetectionStateChanged;
+
+		/// <summary>
+		/// Raised when a destination device changes active input state.
+		/// </summary>
+		public event EventHandler<EndpointStateEventArgs> OnDestinationInputActiveStateChanged;
+
 		private readonly IRoutingGraph m_RoutingGraph;
 
+		/// <summary>
+		/// Maps destination to active input types.
+		/// </summary>
 		private readonly Dictionary<EndpointInfo, eConnectionType> m_DestinationEndpointActiveState;
+
+		/// <summary>
+		/// Maps source to detected types.
+		/// </summary>
 		private readonly Dictionary<EndpointInfo, eConnectionType> m_SourceEndpointDetectedState;
 
-		private readonly
-			Dictionary<IDestination,
-				Dictionary<eConnectionType,
-					Dictionary<int, ISource>>> m_RoutingMap;
+		/// <summary>
+		/// Maps destination to source to routed types.
+		/// </summary>
+		private readonly Dictionary<EndpointInfo, Dictionary<EndpointInfo, eConnectionType>> m_RoutingMap;
 
 		private readonly SafeCriticalSection m_CacheSection;
 
@@ -39,11 +56,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			m_DestinationEndpointActiveState = new Dictionary<EndpointInfo, eConnectionType>();
 			m_SourceEndpointDetectedState = new Dictionary<EndpointInfo, eConnectionType>();
+			m_RoutingMap = new Dictionary<EndpointInfo, Dictionary<EndpointInfo, eConnectionType>>();
 
-			m_RoutingMap =
-				new Dictionary<IDestination,
-					Dictionary<eConnectionType,
-						Dictionary<int, ISource>>>();
+			m_CacheSection = new SafeCriticalSection();
 
 			m_RoutingGraph = routingGraph;
 			Subscribe(m_RoutingGraph);
@@ -58,12 +73,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		/// <param name="destination"></param>
 		/// <param name="type"></param>
-		/// <param name="address"></param>
-		/// <param name="active"></param>
-		/// <param name="detected"></param>
 		/// <returns></returns>
-		public IEnumerable<ISource> GetSourcesForDestination(IDestination destination, eConnectionType type, int address,
-		                                                     bool active, bool detected)
+		[PublicAPI]
+		public IEnumerable<EndpointInfo> GetSourcesForDestination(EndpointInfo destination, eConnectionType type)
 		{
 			if (destination == null)
 				throw new ArgumentNullException();
@@ -72,7 +84,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				throw new NotImplementedException();
+				Dictionary<EndpointInfo, eConnectionType> sources;
+				if (!m_RoutingMap.TryGetValue(destination, out sources))
+					return Enumerable.Empty<EndpointInfo>();
+
+				return sources.Where(kvp => kvp.Value.HasFlags(type))
+				              .Select(kvp => kvp.Key);
 			}
 			finally
 			{
@@ -86,6 +103,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="endpoint"></param>
 		/// <param name="type"></param>
 		/// <returns>True if all of the flags in the connection type are active.</returns>
+		[PublicAPI]
 		public bool GetDestinationEndpointActiveState(EndpointInfo endpoint, eConnectionType type)
 		{
 			m_CacheSection.Enter();
@@ -107,6 +125,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="endpoint"></param>
 		/// <param name="type"></param>
 		/// <returns>True if all of the flags in the connection type are detected.</returns>
+		[PublicAPI]
 		public bool GetSourceEndpointDetectedState(EndpointInfo endpoint, eConnectionType type)
 		{
 			m_CacheSection.Enter();
@@ -131,6 +150,80 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			throw new NotImplementedException();
 		}
 
+		/// <summary>
+		/// Updates the input active cache for the given destination and type.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		private void UpdateDestinationInputActiveCache(EndpointInfo destination, eConnectionType type)
+		{
+			m_CacheSection.Enter();
+
+			try
+			{
+				eConnectionType oldValue = m_DestinationEndpointActiveState.GetDefault(destination);
+				eConnectionType newValue = oldValue;
+
+				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+				{
+					bool detected = m_RoutingGraph.InputActive(destination, flag);
+
+					if (detected)
+						newValue = newValue | flag;
+					else
+						newValue = newValue & ~flag;
+				}
+
+				if (newValue == oldValue)
+					return;
+
+				m_DestinationEndpointActiveState[destination] = newValue;
+
+				OnDestinationInputActiveStateChanged.Raise(this, new EndpointStateEventArgs(destination, newValue, true));
+			}
+			finally
+			{
+				m_CacheSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Updates the source detection cache for the given source and type.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="type"></param>
+		private void UpdateSourceDetectionCache(EndpointInfo source, eConnectionType type)
+		{
+			m_CacheSection.Enter();
+
+			try
+			{
+				eConnectionType oldValue = m_SourceEndpointDetectedState.GetDefault(source);
+				eConnectionType newValue = oldValue;
+
+				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+				{
+					bool detected = m_RoutingGraph.SourceDetected(source, flag);
+
+					if (detected)
+						newValue = newValue | flag;
+					else
+						newValue = newValue & ~flag;
+				}
+
+				if (newValue == oldValue)
+					return;
+
+				m_SourceEndpointDetectedState[source] = newValue;
+
+				OnSourceDetectionStateChanged.Raise(this, new EndpointStateEventArgs(source, newValue, true));
+			}
+			finally
+			{
+				m_CacheSection.Leave();
+			}
+		}
+
 		#endregion
 
 		#region Routing Graph Callbacks
@@ -153,37 +246,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="eventArgs"></param>
 		private void RoutingGraphOnDestinationInputActiveStateChanged(object sender, EndpointStateEventArgs eventArgs)
 		{
-			m_CacheSection.Enter();
-
-			try
-			{
-				eConnectionType oldValue = m_DestinationEndpointActiveState.GetDefault(eventArgs.Endpoint);
-				eConnectionType newValue = oldValue;
-
-				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(eventArgs.Type))
-				{
-					bool detected = m_RoutingGraph.InputActive(eventArgs.Endpoint, flag);
-
-					if (detected)
-						newValue = newValue | flag;
-					else
-						newValue = newValue & ~flag;
-				}
-
-				if (eventArgs.State)
-					newValue = oldValue | eventArgs.Type;
-				else
-					newValue = oldValue & ~eventArgs.Type;
-
-				if (newValue == oldValue)
-					return;
-
-				m_DestinationEndpointActiveState[eventArgs.Endpoint] = newValue;
-			}
-			finally
-			{
-				m_CacheSection.Leave();
-			}
+			UpdateDestinationInputActiveCache(eventArgs.Endpoint, eventArgs.Type);
 		}
 
 		/// <summary>
@@ -193,32 +256,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="eventArgs"></param>
 		private void RoutingGraphOnSourceDetectionStateChanged(object sender, EndpointStateEventArgs eventArgs)
 		{
-			m_CacheSection.Enter();
-
-			try
-			{
-				eConnectionType oldValue = m_SourceEndpointDetectedState.GetDefault(eventArgs.Endpoint);
-				eConnectionType newValue = oldValue;
-
-				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(eventArgs.Type))
-				{
-					bool detected = m_RoutingGraph.SourceDetected(eventArgs.Endpoint, flag);
-
-					if (detected)
-						newValue = newValue | flag;
-					else
-						newValue = newValue & ~flag;
-				}
-
-				if (newValue == oldValue)
-					return;
-
-				m_SourceEndpointDetectedState[eventArgs.Endpoint] = newValue;
-			}
-			finally
-			{
-				m_CacheSection.Leave();
-			}
+			UpdateSourceDetectionCache(eventArgs.Endpoint, eventArgs.Type);
 		}
 
 		/// <summary>
