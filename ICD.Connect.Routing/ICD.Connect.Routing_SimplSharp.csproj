@@ -68,6 +68,8 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\AbstractRouteInputSelectControl.cs" />
+    <Compile Include="Controls\IRouteInputSelectControl.cs" />
     <Compile Include="Controls\RouteMidpointControlConsole.cs" />
     <Compile Include="Controls\RouteSwitcherControlConsole.cs" />
     <Compile Include="Devices\GenericSpeakerDestinationControl.cs" />
