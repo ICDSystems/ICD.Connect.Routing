@@ -45,7 +45,7 @@ namespace ICD.Connect.Routing.Controls
 				{
 					ConnectorInfo newInfo = GetInput(m_ActiveInput.Value);
 					OnActiveInputsChanged.Raise(this,
-					                            new ActiveInputStateChangeEventArgs(m_ActiveInput.Value, newInfo.ConnectionType, false));
+					                            new ActiveInputStateChangeEventArgs(m_ActiveInput.Value, newInfo.ConnectionType, true));
 				}
 			}
 		}
