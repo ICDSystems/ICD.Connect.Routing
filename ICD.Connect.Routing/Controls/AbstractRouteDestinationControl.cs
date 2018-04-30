@@ -10,7 +10,14 @@ namespace ICD.Connect.Routing.Controls
 	public abstract class AbstractRouteDestinationControl<T> : AbstractRouteControl<T>, IRouteDestinationControl
 		where T : IDeviceBase
 	{
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public abstract event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public abstract event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		/// <summary>
