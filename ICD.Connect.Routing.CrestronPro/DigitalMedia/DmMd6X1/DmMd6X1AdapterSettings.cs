@@ -1,22 +1,10 @@
-﻿using System;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd6XN;
+﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd6XN;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd6X1
 {
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("DmMd6X1", typeof(DmMd6X1Adapter))]
 	public sealed class DmMd6X1AdapterSettings : AbstractDmMd6XNAdapterSettings
 	{
-		private const string FACTORY_NAME = "DmMd6X1";
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(DmMd6X1Adapter); } }
 	}
 }
