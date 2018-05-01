@@ -6,12 +6,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
 #if SIMPLSHARP
 	public abstract class AbstractCrestronBladeSwitchAdapter<TSwitch, TSettings> :
-		AbstractCrestronSwitchAdapter<TSwitch, TSettings>,
-		ICrestronBladeSwitchAdapter
+		AbstractCrestronSwitchAdapter<TSwitch, TSettings>, ICrestronBladeSwitchAdapter
 		where TSwitch : BladeSwitch
 #else
 	public abstract class AbstractCrestronBladeSwitchAdapter<TSettings> :
-		AbstractCrestronSwitchAdapter<TSettings>,
+		AbstractCrestronSwitchAdapter<TSettings>, ICrestronBladeSwitchAdapter
 #endif
 		where TSettings : ICrestronBladeSwitchAdapterSettings, new()
 	{
