@@ -163,7 +163,7 @@
     <Compile Include="DigitalMedia\HdMd8XN\IHdMd8XNAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd8XN\IHdMd8XNAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMdNXM\AbstractHdMdNXMAdapter.cs" />
-    <Compile Include="DigitalMedia\HdMdNXM\AbstarctHdMdNXMAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMdNXM\AbstractHdMdNXMAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMdNXM\HdMdNXMSwitcherControl.cs" />
     <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16Adapter.cs" />
     <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16AdapterSettings.cs" />
