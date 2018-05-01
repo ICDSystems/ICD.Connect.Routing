@@ -138,6 +138,10 @@
     <Compile Include="DigitalMedia\AbstractCrestronBladeSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd128X128\DmMd128X128Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd128X128\DmMd128X128AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd6X6\DmMd6X6Adapter.cs" />
     <Compile Include="DigitalMedia\DmMd6X6\DmMd6X6AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd6X4\DmMd6X4Adapter.cs" />
@@ -169,8 +173,8 @@
     <Compile Include="DigitalMedia\HdMdNXM\HdMdNXMSwitcherControl.cs" />
     <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16Adapter.cs" />
     <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32Adapter.cs" />
-    <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd64X64\DmMd64X64Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd64X64\DmMd64X64AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd8X8\DmMd8X8Adapter.cs" />
     <Compile Include="DigitalMedia\DmMd8X8\DmMd8X8AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMdMNXN\AbstractDmMdMNXNAdapterSettings.cs" />
