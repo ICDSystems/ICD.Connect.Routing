@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
  - Added interface and abstraction for routing destinations that can have 1 active input at a time (e.g. displays, receivers)
+ - Added abstractions and interfaces for BladeSwitch adapters
+ - Adding DmMd64X64 and DmMd128X128 adapters
 
 ## [5.1.0] - 2018-04-27
 ### Added
