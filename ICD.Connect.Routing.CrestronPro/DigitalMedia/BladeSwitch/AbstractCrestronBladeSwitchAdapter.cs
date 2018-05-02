@@ -10,7 +10,9 @@
 #endif
 		where TSettings : ICrestronBladeSwitchAdapterSettings, new()
 	{
+#if SIMPLSHARP
 		Crestron.SimplSharpPro.DM.BladeSwitch ICrestronBladeSwitchAdapter.Switcher { get { return Switcher; } }
+#endif
 
 		/// <summary>
 		/// Constructor.
