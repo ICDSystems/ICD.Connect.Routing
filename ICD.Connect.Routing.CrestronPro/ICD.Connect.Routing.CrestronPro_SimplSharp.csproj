@@ -138,6 +138,7 @@
     <Compile Include="DigitalMedia\BladeSwitch\AbstractCrestronBladeSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\BladeSwitch\BladeSwitchSwitcherControl.cs" />
     <Compile Include="DigitalMedia\DmMd128X128\DmMd128X128Adapter.cs" />
     <Compile Include="DigitalMedia\DmMd128X128\DmMd128X128AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32Adapter.cs" />

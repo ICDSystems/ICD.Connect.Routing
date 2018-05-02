@@ -1,8 +1,4 @@
-﻿#if SIMPLSHARP
-
-#endif
-
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.BladeSwitch
+﻿namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.BladeSwitch
 {
 #if SIMPLSHARP
 	public abstract class AbstractCrestronBladeSwitchAdapter<TSwitch, TSettings> :
@@ -14,5 +10,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.BladeSwitch
 #endif
 		where TSettings : ICrestronBladeSwitchAdapterSettings, new()
 	{
+		Crestron.SimplSharpPro.DM.BladeSwitch ICrestronBladeSwitchAdapter.Switcher { get { return Switcher; } }
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractCrestronBladeSwitchAdapter()
+		{
+#if SIMPLSHARP
+			Controls.Add(new BladeSwitchSwitcherControl(this));
+#endif
+		}
 	}
 }
