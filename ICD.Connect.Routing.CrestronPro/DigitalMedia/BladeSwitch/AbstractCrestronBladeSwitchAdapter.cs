@@ -1,13 +1,13 @@
 ﻿#if SIMPLSHARP
-using Crestron.SimplSharpPro.DM;
+
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.BladeSwitch
 {
 #if SIMPLSHARP
 	public abstract class AbstractCrestronBladeSwitchAdapter<TSwitch, TSettings> :
 		AbstractCrestronSwitchAdapter<TSwitch, TSettings>, ICrestronBladeSwitchAdapter
-		where TSwitch : BladeSwitch
+		where TSwitch : Crestron.SimplSharpPro.DM.BladeSwitch
 #else
 	public abstract class AbstractCrestronBladeSwitchAdapter<TSettings> :
 		AbstractCrestronSwitchAdapter<TSettings>, ICrestronBladeSwitchAdapter

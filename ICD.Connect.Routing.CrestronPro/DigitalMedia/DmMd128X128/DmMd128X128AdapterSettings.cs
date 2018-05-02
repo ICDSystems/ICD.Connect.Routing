@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Settings.Attributes;
+﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.BladeSwitch;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd128X128
 {

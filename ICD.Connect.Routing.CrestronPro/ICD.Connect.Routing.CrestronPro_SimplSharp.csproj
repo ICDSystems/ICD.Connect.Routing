@@ -134,8 +134,8 @@
     <Compile Include="ControlSystem\ControlSystemDevice.cs" />
     <Compile Include="ControlSystem\ControlSystemDeviceSettings.cs" />
     <Compile Include="ControlSystem\ControlSystemSwitcherControl.cs" />
-    <Compile Include="DigitalMedia\AbstractCrestronBladeSwitchAdapter.cs" />
-    <Compile Include="DigitalMedia\AbstractCrestronBladeSwitchAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\BladeSwitch\AbstractCrestronBladeSwitchAdapter.cs" />
+    <Compile Include="DigitalMedia\BladeSwitch\AbstractCrestronBladeSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd128X128\DmMd128X128Adapter.cs" />
@@ -186,8 +186,8 @@
     <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2AdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMdNXM\IHdMdNXMAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMdNXM\IHdMdNXMAdapter.cs" />
-    <Compile Include="DigitalMedia\ICrestronBladeSwitchAdapter.cs" />
-    <Compile Include="DigitalMedia\ICrestronBladeSwitchAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\BladeSwitch\ICrestronBladeSwitchAdapter.cs" />
+    <Compile Include="DigitalMedia\BladeSwitch\ICrestronBladeSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\ICrestronSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\ICrestronSwitchAdapterSettings.cs" />
     <Compile Include="IDmParent.cs" />
