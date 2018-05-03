@@ -619,7 +619,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public override IEnumerable<ConnectionPath> FindAllPaths(ISource source, IDestination destination, eConnectionType flag, int roomId)
+		public override IEnumerable<ConnectionPath> FindAllPaths(ISource source, IDestination destination,
+		                                                         eConnectionType flag, int roomId)
 		{
 			if (source == null)
 				throw new ArgumentNullException("source");
@@ -634,6 +635,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			return source.GetEndpoints()
 			             .SelectMany(s => FindPathsMulti(s, destinationEndpoints, flag, roomId))
+			             .Where(kvp => kvp.Value != null)
 			             .Select(kvp => kvp.Value);
 		}
 
