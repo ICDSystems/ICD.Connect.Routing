@@ -571,7 +571,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
-			IcdHashSet<Connection> destionationConnections = new IcdHashSet<Connection>();
+			IcdHashSet<Connection> destinationConnections = new IcdHashSet<Connection>();
 			Dictionary<Connection, EndpointInfo> connectionToDestinations = new Dictionary<Connection, EndpointInfo>();
 
 			Connection sourceConnection = m_Connections.GetOutputConnection(source);
@@ -593,13 +593,13 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					continue;
 				}
 
-				destionationConnections.Add(destinationConnection);
+				destinationConnections.Add(destinationConnection);
 				connectionToDestinations.Add(destinationConnection, destination);
 			}
 
 			Dictionary<Connection, IEnumerable<Connection>> paths =
 				RecursionUtils.BreadthFirstSearchManyDestinations(sourceConnection,
-				                                                  destionationConnections,
+				                                                  destinationConnections,
 				                                                  c => GetConnectionChildren(source, c, flag, roomId));
 
 			foreach (KeyValuePair<Connection, IEnumerable<Connection>> kvp in paths)
