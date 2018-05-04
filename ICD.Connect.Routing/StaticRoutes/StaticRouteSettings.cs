@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
@@ -14,8 +13,6 @@ namespace ICD.Connect.Routing.StaticRoutes
 	[KrangSettings("StaticRoute", typeof(StaticRoute))]
 	public sealed class StaticRouteSettings : AbstractSettings
 	{
-		private const string STATIC_ROUTE_ELEMENT = "StaticRoute";
-
 		private const string CONNECTIONS_ELEMENT = "Connections";
 		private const string CONNECTION_ELEMENT = "Connection";
 
@@ -25,11 +22,6 @@ namespace ICD.Connect.Routing.StaticRoutes
 		private readonly SafeCriticalSection m_ConnectionsSection;
 
 		#region Properties
-
-		/// <summary>
-		/// Gets the xml element.
-		/// </summary>
-		protected override string Element { get { return STATIC_ROUTE_ELEMENT; } }
 
 		public eConnectionType ConnectionType { get; set; }
 
