@@ -221,6 +221,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
 			factory.LoadOriginators<ICardAdapter>();
+
 			base.ApplySettingsFinal(settings, factory);
 
 #if SIMPLSHARP
@@ -240,6 +241,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate internal {1} - {2}",
 				                this, typeof(TTransmitter).Name, e.Message);
 			}
+
 			SetTransmitter(transmitter, settings.DmSwitch);
 #else
             throw new NotImplementedException();
