@@ -14,11 +14,10 @@ namespace ICD.Connect.Routing.Connections
 	/// <summary>
 	/// Settings for a Connection.
 	/// </summary>
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("Connection", typeof(Connection))]
 	public sealed class ConnectionSettings : AbstractSettings
 	{
 		private const string CONNECTION_ELEMENT = "Connection";
-		private const string FACTORY_NAME = "Connection";
 
 		private const string SOURCE_DEVICE_ELEMENT = "SourceDevice";
 		private const string SOURCE_CONTROL_ELEMENT = "SourceControl";
@@ -50,16 +49,6 @@ namespace ICD.Connect.Routing.Connections
 		/// Gets the xml element.
 		/// </summary>
 		protected override string Element { get { return CONNECTION_ELEMENT; } }
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(Connection); } }
 
 		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int SourceDeviceId { get; set; }
