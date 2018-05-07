@@ -818,6 +818,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                            bool signalDetected, bool inputActive,
 		                                                            ICollection<Connection> visited)
 		{
+			if (visited == null)
+				throw new ArgumentNullException("visited");
+
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type enum requires exactly 1 flag.", "type");
 
