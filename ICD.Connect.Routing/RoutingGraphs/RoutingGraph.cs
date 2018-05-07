@@ -402,7 +402,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
-			return FindPathsMulti(sourceEndpoint, destination.GetEndpoints(), flag, roomId).Select(kvp => kvp.Value).FirstOrDefault();
+			return FindPathsMulti(sourceEndpoint, destination.GetEndpoints(), flag, roomId).Select(kvp => kvp.Value)
+			                                                                               .FirstOrDefault(p => p != null);
 		}
 
 		/// <summary>
