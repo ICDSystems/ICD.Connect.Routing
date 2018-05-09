@@ -15,20 +15,20 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 		AbstractDmRmcScalerCAdapter
 			<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC, DmRmc4kScalerCAdapterSettings>
 	{
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateScaler(byte ipid,
-		                                                                                                  CrestronControlSystem
-			                                                                                                  controlSystem)
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateReceiver(byte ipid,
+		                                                                                                 CrestronControlSystem
+			                                                                                                 controlSystem)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC(ipid, controlSystem);
 		}
 
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateScaler(byte ipid,
-		                                                                                                  DMOutput output)
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateReceiver(byte ipid,
+		                                                                                                 DMOutput output)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC(ipid, output);
 		}
 
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateScaler(DMOutput output)
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateReceiver(DMOutput output)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC(output);
 		}

@@ -23,30 +23,29 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 		/// <returns></returns>
 		public override Relay GetRelayPort(int address)
 		{
-			if (Scaler == null)
+			if (Receiver == null)
 				throw new InvalidOperationException("No scaler instantiated");
 
 			if (address == 1)
-				return Scaler.RelayPorts[1];
+				return Receiver.RelayPorts[1];
 
-			string message = string.Format("{0} has no {1} with address {2}", this, typeof(IROutputPort).Name, address);
-			throw new IndexOutOfRangeException(message);
+			return base.GetRelayPort(address);
 		}
 
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp InstantiateScaler(byte ipid,
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp InstantiateReceiver(byte ipid,
 		                                                                                                     CrestronControlSystem
 			                                                                                                     controlSystem)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp(ipid, controlSystem);
 		}
 
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp InstantiateScaler(byte ipid,
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp InstantiateReceiver(byte ipid,
 		                                                                                                     DMOutput output)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp(ipid, output);
 		}
 
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp InstantiateScaler(DMOutput output)
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp InstantiateReceiver(DMOutput output)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp(output);
 		}

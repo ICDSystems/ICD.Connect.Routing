@@ -32,8 +32,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		protected AbstractDmTxBaseSourceControl(TDevice parent)
-			: base(parent, 0)
+		protected AbstractDmTxBaseSourceControl(TDevice parent, int id)
+			: base(parent, id)
 		{
 			Subscribe(parent);
 			SetTransmitter(parent.Transmitter as TTransmitter);

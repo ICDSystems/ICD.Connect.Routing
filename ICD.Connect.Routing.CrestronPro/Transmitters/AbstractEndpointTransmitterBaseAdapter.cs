@@ -5,12 +5,12 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.CrestronPro.Cards;
+using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
-using ICD.Connect.Routing.CrestronPro.Utils;
 #else
 using System;
 #endif
@@ -24,7 +24,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 	/// <typeparam name="TSettings"></typeparam>
 #if SIMPLSHARP
 	public abstract class AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings> : AbstractDevice<TSettings>,
-	                                                                                        IEndpointTransmitterBaseAdapter
+	                                                                                        IEndpointTransmitterBaseAdapter<TTransmitter>
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.EndpointTransmitterBase
 #else
     public abstract class AbstractEndpointTransmitterBaseAdapter<TSettings> : AbstractDevice<TSettings>, IEndpointTransmitterBaseAdapter
@@ -229,12 +229,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 			try
 			{
-				transmitter =
-					DmEndpointFactoryUtils.InstantiateEndpoint<TTransmitter>(settings.Ipid, settings.DmInputAddress,
-					                                                         settings.DmSwitch, factory,
-					                                                         InstantiateTransmitter,
-					                                                         InstantiateTransmitter,
-					                                                         InstantiateTransmitter);
+				transmitter = InstantiateTransmitter(settings, factory);
 			}
 			catch (Exception e)
 			{
@@ -249,11 +244,30 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		}
 
 #if SIMPLSHARP
-		protected abstract TTransmitter InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem);
+		/// <summary>
+		/// Determines the best way to instantiate the endpoint based on the available information.
+		/// Instantiates via parent DM Switch if specified, otherwise uses the ControlSystem.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <returns></returns>
+		[NotNull]
+		private TTransmitter InstantiateTransmitter(TSettings settings, IDeviceFactory factory)
+		{
+			if (settings == null)
+				throw new ArgumentNullException("settings");
 
-		protected abstract TTransmitter InstantiateTransmitter(byte ipid, DMInput input);
+			if (factory == null)
+				throw new ArgumentNullException("factory");
 
-		protected abstract TTransmitter InstantiateTransmitter(DMInput input);
+			return DmEndpointFactoryUtils.InstantiateTransmitter(settings, factory, this);
+		}
+
+		public abstract TTransmitter InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem);
+
+		public abstract TTransmitter InstantiateTransmitter(byte ipid, DMInput input);
+
+		public abstract TTransmitter InstantiateTransmitter(DMInput input);
 #endif
 
 		#endregion

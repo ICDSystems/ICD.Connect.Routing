@@ -28,17 +28,17 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		#region Settings
 
 #if SIMPLSHARP
-		protected override DmTx4k302C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
+		public override DmTx4k302C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
 		{
 			return new DmTx4k302C(ipid, controlSystem);
 		}
 
-		protected override DmTx4k302C InstantiateTransmitter(byte ipid, DMInput input)
+		public override DmTx4k302C InstantiateTransmitter(byte ipid, DMInput input)
 		{
 			return new DmTx4k302C(ipid, input);
 		}
 
-		protected override DmTx4k302C InstantiateTransmitter(DMInput input)
+		public override DmTx4k302C InstantiateTransmitter(DMInput input)
 		{
 			return new DmTx4k302C(input);
 		}

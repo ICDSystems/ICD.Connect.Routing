@@ -193,6 +193,8 @@
     <Compile Include="DigitalMedia\ICrestronSwitchAdapterSettings.cs" />
     <Compile Include="IDmParent.cs" />
     <Compile Include="KrangPlugin.cs" />
+    <Compile Include="Receivers\AbstractEndpointReceiverBaseAdapter.cs" />
+    <Compile Include="Receivers\AbstractEndpointReceiverBaseAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc4kScalerCDsp\DmRmc4kScalerCDspAdapter.cs" />
     <Compile Include="Receivers\DmRmc4kScalerCDsp\DmRmc4kScalerCDspAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc4kScalerC\DmRmc4kScalerCAdapter.cs" />
@@ -202,6 +204,8 @@
     <Compile Include="Receivers\DmRmcScalerCBase\DmRmcScalerCBaseRouteControl.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapter.cs" />
+    <Compile Include="Receivers\IEndpointReceiverBaseAdapter.cs" />
+    <Compile Include="Receivers\IEndpointReceiverBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapter.cs" />
     <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapter.cs" />

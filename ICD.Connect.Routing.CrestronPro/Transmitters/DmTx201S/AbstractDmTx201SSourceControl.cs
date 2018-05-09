@@ -12,8 +12,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		protected AbstractDmTx201SSourceControl(TDevice parent)
-			: base(parent)
+		/// <param name="id"></param>
+		protected AbstractDmTx201SSourceControl(TDevice parent, int id)
+			: base(parent, id)
 		{
 		}
 	}

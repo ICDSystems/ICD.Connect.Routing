@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro.DM.Endpoints;
+using Crestron.SimplSharpPro.DM.Endpoints.Receivers;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
@@ -12,13 +13,15 @@ using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 {
-	public sealed class DmRmcScalerCBaseRouteControl : AbstractRouteMidpointControl<IDmRmcScalerCAdapter>
+	public sealed class DmRmcScalerCBaseRouteControl<TDevice, TReceiver> : AbstractRouteMidpointControl<TDevice>
+		where TDevice : IDmRmcScalerCAdapter
+		where TReceiver : Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC
 	{
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
-		private Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC m_Scaler;
+		private TReceiver m_Scaler;
 		private bool m_VideoDetected;
 
 		#region Properties
@@ -61,11 +64,12 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		public DmRmcScalerCBaseRouteControl(IDmRmcScalerCAdapter parent)
-			: base(parent, 0)
+		/// <param name="id"></param>
+		public DmRmcScalerCBaseRouteControl(TDevice parent, int id)
+			: base(parent, id)
 		{
 			Subscribe(parent);
-			SetScaler(parent.Scaler);
+			SetScaler(parent.Receiver as TReceiver);
 		}
 
 		/// <summary>
@@ -241,7 +245,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// <param name="parent"></param>
 		private void Subscribe(IDmRmcScalerCAdapter parent)
 		{
-			parent.OnScalerChanged += ParentOnScalerChanged;
+			parent.OnReceiverChanged += ParentOnScalerChanged;
 		}
 
 		/// <summary>
@@ -250,7 +254,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// <param name="parent"></param>
 		private void Unsubscribe(IDmRmcScalerCAdapter parent)
 		{
-			parent.OnScalerChanged -= ParentOnScalerChanged;
+			parent.OnReceiverChanged -= ParentOnScalerChanged;
 		}
 
 		/// <summary>
@@ -258,13 +262,13 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="scaler"></param>
-		private void ParentOnScalerChanged(IDmRmcScalerCAdapter sender,
-		                                   Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
+		private void ParentOnScalerChanged(IEndpointReceiverBaseAdapter sender,
+										   EndpointReceiverBase scaler)
 		{
-			SetScaler(scaler);
+			SetScaler(scaler as TReceiver);
 		}
 
-		private void SetScaler(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
+		private void SetScaler(TReceiver scaler)
 		{
 			Unsubscribe(m_Scaler);
 			m_Scaler = scaler;
@@ -279,7 +283,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// Subscribe to the scaler events.
 		/// </summary>
 		/// <param name="scaler"></param>
-		private void Subscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
+		private void Subscribe(TReceiver scaler)
 		{
 			if (scaler == null)
 				return;
@@ -291,7 +295,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 		/// Unsubscribes from the scaler events.
 		/// </summary>
 		/// <param name="scaler"></param>
-		private void Unsubscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC scaler)
+		private void Unsubscribe(TReceiver scaler)
 		{
 			if (scaler == null)
 				return;

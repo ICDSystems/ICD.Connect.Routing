@@ -11,8 +11,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		public DmTx200C2GSourceControl(DmTx200C2GAdapter parent)
-			: base(parent)
+		/// <param name="id"></param>
+		public DmTx200C2GSourceControl(DmTx200C2GAdapter parent, int id)
+			: base(parent, id)
 		{
 		}
 	}
