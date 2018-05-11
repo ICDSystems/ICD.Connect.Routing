@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Settings;
+#if SIMPLSHARP
 using System;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -6,7 +7,6 @@ using ICD.Common.Properties;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.Utils
 {

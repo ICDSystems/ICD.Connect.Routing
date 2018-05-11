@@ -8,7 +8,7 @@ using ICD.Connect.Devices;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Settings;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Originators;
 using Newtonsoft.Json;
 
 namespace ICD.Connect.Routing.Connections

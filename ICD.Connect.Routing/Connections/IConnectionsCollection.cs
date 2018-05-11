@@ -3,6 +3,7 @@ using ICD.Common.Properties;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Settings;
+using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Routing.Connections
 {

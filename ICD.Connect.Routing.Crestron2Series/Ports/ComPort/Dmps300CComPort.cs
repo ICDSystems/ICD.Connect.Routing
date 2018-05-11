@@ -6,7 +6,7 @@ using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Protocol.Utils;
 using ICD.Connect.Protocol.XSig;
 using ICD.Connect.Routing.Crestron2Series.Devices;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 {

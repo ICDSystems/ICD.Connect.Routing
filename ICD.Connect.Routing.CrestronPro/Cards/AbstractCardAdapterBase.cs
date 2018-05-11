@@ -2,7 +2,7 @@
 using ICD.Common.Utils.Services;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Cores;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards
 {
