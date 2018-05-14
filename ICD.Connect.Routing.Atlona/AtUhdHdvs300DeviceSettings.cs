@@ -1,5 +1,6 @@
 ﻿using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
+using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
@@ -7,11 +8,13 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 namespace ICD.Connect.Routing.Atlona
 {
 	[KrangSettings("AtUhdHdvs300", typeof(AtUhdHdvs300Device))]
-	public sealed class AtUhdHdvs300DeviceSettings : AbstractDeviceSettings
+	public sealed class AtUhdHdvs300DeviceSettings : AbstractDeviceSettings, INetworkProperties
 	{
 		private const string ELEMENT_PORT = "Port";
-		private const string ELEMENT_USERNAME = "Username";
-		private const string ELEMENT_PASSWORD = "Password";
+
+		private readonly NetworkProperties m_NetworkProperties;
+
+		#region Properties
 
 		/// <summary>
 		/// The port id.
@@ -19,9 +22,50 @@ namespace ICD.Connect.Routing.Atlona
 		[OriginatorIdSettingsProperty(typeof(ISerialPort))]
 		public int? Port { get; set; }
 
-		public string Username { get; set; }
+		#endregion
 
-		public string Password { get; set; }
+		#region Network
+
+		/// <summary>
+		/// Gets/sets the configurable username.
+		/// </summary>
+		public string Username { get { return m_NetworkProperties.Username; } set { m_NetworkProperties.Username = value; } }
+
+		/// <summary>
+		/// Gets/sets the configurable password.
+		/// </summary>
+		public string Password { get { return m_NetworkProperties.Password; } set { m_NetworkProperties.Password = value; } }
+
+		/// <summary>
+		/// Gets/sets the configurable network address.
+		/// </summary>
+		public string NetworkAddress
+		{
+			get { return m_NetworkProperties.NetworkAddress; }
+			set { m_NetworkProperties.NetworkAddress = value; }
+		}
+
+		/// <summary>
+		/// Gets/sets the configurable network port.
+		/// </summary>
+		public ushort NetworkPort
+		{
+			get { return m_NetworkProperties.NetworkPort; }
+			set { m_NetworkProperties.NetworkPort = value; }
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public AtUhdHdvs300DeviceSettings()
+		{
+			m_NetworkProperties = new NetworkProperties
+			{
+				NetworkPort = 23
+			};
+		}
 
 		/// <summary>
 		/// Writes property elements to xml.
@@ -32,8 +76,8 @@ namespace ICD.Connect.Routing.Atlona
 			base.WriteElements(writer);
 
 			writer.WriteElementString(ELEMENT_PORT, IcdXmlConvert.ToString(Port));
-			writer.WriteElementString(ELEMENT_USERNAME, Username);
-			writer.WriteElementString(ELEMENT_PASSWORD, Password);
+
+			m_NetworkProperties.WriteElements(writer);
 		}
 
 		/// <summary>
@@ -45,8 +89,8 @@ namespace ICD.Connect.Routing.Atlona
 			base.ParseXml(xml);
 
 			Port = XmlUtils.TryReadChildElementContentAsInt(xml, ELEMENT_PORT);
-			Username = XmlUtils.TryReadChildElementContentAsString(xml, ELEMENT_USERNAME);
-			Password = XmlUtils.TryReadChildElementContentAsString(xml, ELEMENT_PASSWORD);
+
+			m_NetworkProperties.ParseXml(xml);
 		}
 	}
 }
