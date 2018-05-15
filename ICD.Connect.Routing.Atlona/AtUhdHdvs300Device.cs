@@ -9,6 +9,7 @@ using ICD.Connect.Devices;
 using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Heartbeat;
+using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Settings;
@@ -36,7 +37,9 @@ namespace ICD.Connect.Routing.Atlona
 		/// <summary>
 		/// Raised when the device sends a response.
 		/// </summary>
-		public event EventHandler<StringEventArgs> OnResponseReceived; 
+		public event EventHandler<StringEventArgs> OnResponseReceived;
+
+		private readonly NetworkProperties m_NetworkProperties;
 
 		private readonly AtUhdHdvs300DeviceSerialBuffer m_SerialBuffer;
 		private readonly SafeTimer m_KeepAliveTimer;
@@ -46,16 +49,6 @@ namespace ICD.Connect.Routing.Atlona
 		private ISerialPort m_Port;
 
 		#region Properties
-
-		/// <summary>
-		/// Gets/sets the username for logging into the device.
-		/// </summary>
-		public string Username { get; set; }
-
-		/// <summary>
-		/// Gets/sets the password for logging into the device.
-		/// </summary>
-		public string Password { get; set; }
 
 		public Heartbeat Heartbeat { get; private set; }
 
@@ -103,6 +96,8 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		public AtUhdHdvs300Device()
 		{
+			m_NetworkProperties = new NetworkProperties();
+
 			Heartbeat = new Heartbeat(this);
 
 			m_SerialBuffer = new AtUhdHdvs300DeviceSerialBuffer();
@@ -388,12 +383,12 @@ namespace ICD.Connect.Routing.Atlona
 
 		private void BufferOnOnPasswordPrompt(object sender, EventArgs eventArgs)
 		{
-			SendCommand(Password);
+			SendCommand(m_NetworkProperties.NetworkPassword);
 		}
 
 		private void BufferOnOnLoginPrompt(object sender, EventArgs eventArgs)
 		{
-			SendCommand(Username);
+			SendCommand(m_NetworkProperties.NetworkUsername);
 		}
 
 		/// <summary>
@@ -422,8 +417,8 @@ namespace ICD.Connect.Routing.Atlona
 			base.CopySettingsFinal(settings);
 
 			settings.Port = m_Port == null ? (int?)null : m_Port.Id;
-			settings.Username = Username;
-			settings.Password = Password;
+
+			settings.Copy(m_NetworkProperties);
 		}
 
 		/// <summary>
@@ -433,9 +428,9 @@ namespace ICD.Connect.Routing.Atlona
 		{
 			base.ClearSettingsFinal();
 
-			Username = null;
-			Password = null;
 			SetPort(null);
+
+			m_NetworkProperties.Clear();
 		}
 
 		/// <summary>
@@ -447,8 +442,7 @@ namespace ICD.Connect.Routing.Atlona
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			Username = settings.Username;
-			Password = settings.Password;
+			m_NetworkProperties.Copy(settings.NetworkProperties);
 
 			ISerialPort port = null;
 
