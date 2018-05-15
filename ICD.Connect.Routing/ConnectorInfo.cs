@@ -58,7 +58,7 @@ namespace ICD.Connect.Routing
 		#region Equality
 
 		/// <summary>
-		///     Implementing default equality.
+		/// Implementing default equality.
 		/// </summary>
 		/// <param name="a1"></param>
 		/// <param name="a2"></param>
@@ -69,7 +69,7 @@ namespace ICD.Connect.Routing
 		}
 
 		/// <summary>
-		///     Implementing default inequality.
+		/// Implementing default inequality.
 		/// </summary>
 		/// <param name="a1"></param>
 		/// <param name="a2"></param>
@@ -80,7 +80,7 @@ namespace ICD.Connect.Routing
 		}
 
 		/// <summary>
-		///     Returns true if this instance is equal to the given object.
+		/// Returns true if this instance is equal to the given object.
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
@@ -93,7 +93,7 @@ namespace ICD.Connect.Routing
 		}
 
 		/// <summary>
-		///     Gets the hashcode for this instance.
+		/// Gets the hashcode for this instance.
 		/// </summary>
 		/// <returns></returns>
 		public override int GetHashCode()
