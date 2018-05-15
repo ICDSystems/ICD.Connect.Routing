@@ -157,19 +157,19 @@ namespace ICD.Connect.Routing.Atlona
 
 			if (m_Port == null)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} - Unable to communicate - port is null", this);
+				Log(eSeverity.Error, "Unable to communicate - port is null");
 				return;
 			}
 
 			if (!IsConnected)
 			{
-				Logger.AddEntry(eSeverity.Warning, "{0} - Disconnected, attempting reconnect", this);
+				Log(eSeverity.Warning, "Disconnected, attempting reconnect");
 				Connect();
 			}
 
 			if (!IsConnected)
 			{
-				Logger.AddEntry(eSeverity.Critical, "{0} - Unable to connect", this);
+				Log(eSeverity.Critical, "Unable to connect");
 				return;
 			}
 
@@ -229,7 +229,7 @@ namespace ICD.Connect.Routing.Atlona
 		{
 			if (m_Port == null)
 			{
-				Logger.AddEntry(eSeverity.Critical, "{0} - Unable to connect, port is null");
+				Log(eSeverity.Critical, "Unable to connect, port is null");
 				return;
 			}
 
@@ -244,7 +244,7 @@ namespace ICD.Connect.Routing.Atlona
 		{
 			if (m_Port == null)
 			{
-				Logger.AddEntry(eSeverity.Critical, "{0} - Unable to disconnect, port is null");
+				Log(eSeverity.Critical, "Unable to disconnect, port is null");
 				return;
 			}
 
@@ -406,7 +406,7 @@ namespace ICD.Connect.Routing.Atlona
 			OnResponseReceived.Raise(this, new StringEventArgs(args.Data));
 
 			if (args.Data.StartsWith("Command FAILED:"))
-				Logger.AddEntry(eSeverity.Error, "{0} - {1}", this, args.Data);
+				Log(eSeverity.Error, args.Data);
 		}
 
 		#endregion
@@ -456,7 +456,7 @@ namespace ICD.Connect.Routing.Atlona
 			{
 				port = factory.GetPortById((int)settings.Port) as ISerialPort;
 				if (port == null)
-					Logger.AddEntry(eSeverity.Error, "No serial port with id {0}", settings.Port);
+					Log(eSeverity.Error, "No serial port with id {0}", settings.Port);
 			}
 
 			SetPort(port);
