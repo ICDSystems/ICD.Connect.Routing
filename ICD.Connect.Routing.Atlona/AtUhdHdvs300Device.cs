@@ -39,7 +39,7 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		public event EventHandler<StringEventArgs> OnResponseReceived;
 
-		private readonly NetworkProperties m_NetworkProperties;
+		private readonly SecureNetworkProperties m_NetworkProperties;
 
 		private readonly AtUhdHdvs300DeviceSerialBuffer m_SerialBuffer;
 		private readonly SafeTimer m_KeepAliveTimer;
@@ -96,7 +96,7 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		public AtUhdHdvs300Device()
 		{
-			m_NetworkProperties = new NetworkProperties();
+			m_NetworkProperties = new SecureNetworkProperties();
 
 			Heartbeat = new Heartbeat(this);
 
@@ -442,7 +442,7 @@ namespace ICD.Connect.Routing.Atlona
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			m_NetworkProperties.Copy(settings.NetworkProperties);
+			m_NetworkProperties.Copy(settings);
 
 			ISerialPort port = null;
 

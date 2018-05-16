@@ -8,13 +8,13 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 namespace ICD.Connect.Routing.Atlona
 {
 	[KrangSettings("AtUhdHdvs300", typeof(AtUhdHdvs300Device))]
-	public sealed class AtUhdHdvs300DeviceSettings : AbstractDeviceSettings, INetworkSettings
+	public sealed class AtUhdHdvs300DeviceSettings : AbstractDeviceSettings, ISecureNetworkSettings
 	{
 		private const ushort DEFAULT_NETWORK_PORT = 23;
 
 		private const string ELEMENT_PORT = "Port";
 
-		private readonly NetworkProperties m_NetworkProperties;
+		private readonly SecureNetworkProperties m_NetworkProperties;
 
 		#region Properties
 
@@ -23,11 +23,6 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		[OriginatorIdSettingsProperty(typeof(ISerialPort))]
 		public int? Port { get; set; }
-
-		/// <summary>
-		/// Gets the configurable network properties.
-		/// </summary>
-		public INetworkProperties NetworkProperties { get { return m_NetworkProperties; } }
 
 		#endregion
 
@@ -76,7 +71,7 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		public AtUhdHdvs300DeviceSettings()
 		{
-			m_NetworkProperties = new NetworkProperties
+			m_NetworkProperties = new SecureNetworkProperties
 			{
 				NetworkPort = DEFAULT_NETWORK_PORT
 			};
