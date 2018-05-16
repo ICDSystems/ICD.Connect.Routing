@@ -1,5 +1,4 @@
-﻿using ICD.Common.Utils.EventArguments;
-using ICD.Common.Utils.Services.Logging;
+﻿using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Protocol.Ports.RelayPort;
 using ICD.Connect.Protocol.XSig;

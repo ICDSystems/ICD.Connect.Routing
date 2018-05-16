@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd6XN;
+﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd6XN;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd6X4

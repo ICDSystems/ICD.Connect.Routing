@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [5.2.1] - 2018-05-09
+### Changed
+ - Fixed bug where cards were being instantiated in the wrong order
+ - Fixed bug where pathfinding would fail if a single address fails
+ - Fixed bug where we would try to unregister cards that would error
+
 ## [5.2.0] - 2018-05-02
 ### Added
  - Added interface and abstraction for routing destinations that can have 1 active input at a time (e.g. displays, receivers)

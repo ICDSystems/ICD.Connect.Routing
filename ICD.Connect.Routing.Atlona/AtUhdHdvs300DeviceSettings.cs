@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Common.Utils.Xml;
+﻿using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes;
@@ -7,24 +6,12 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Atlona
 {
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("AtUhdHdvs300", typeof(AtUhdHdvs300Device))]
 	public sealed class AtUhdHdvs300DeviceSettings : AbstractDeviceSettings
 	{
-		private const string FACTORY_NAME = "AtUhdHdvs300";
-
 		private const string ELEMENT_PORT = "Port";
 		private const string ELEMENT_USERNAME = "Username";
 		private const string ELEMENT_PASSWORD = "Password";
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(AtUhdHdvs300Device); } }
 
 		/// <summary>
 		/// The port id.

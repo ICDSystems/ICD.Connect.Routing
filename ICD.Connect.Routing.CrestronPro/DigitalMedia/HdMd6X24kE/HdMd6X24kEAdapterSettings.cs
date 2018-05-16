@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM;
+﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd6X24kE

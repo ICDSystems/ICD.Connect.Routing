@@ -1,5 +1,4 @@
-﻿using ICD.Common.Utils.EventArguments;
-using ICD.Connect.Devices.EventArguments;
+﻿using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Ports.DigitalInput;
 using ICD.Connect.Protocol.XSig;
