@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Settings;
 using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Routing.Endpoints

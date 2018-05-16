@@ -6,7 +6,6 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.StaticRoutes;
-using ICD.Connect.Settings;
 using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Routing.RoutingGraphs
