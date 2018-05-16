@@ -1,6 +1,6 @@
 ﻿using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.Protocol.Network.Tcp;
+using ICD.Connect.Protocol.Network.Ports.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Protocol.Utils;

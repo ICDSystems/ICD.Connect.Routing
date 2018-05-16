@@ -8,7 +8,7 @@ using ICD.Connect.Devices;
 using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Heartbeat;
-using ICD.Connect.Protocol.Network.Tcp;
+using ICD.Connect.Protocol.Network.Ports.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.SerialBuffers;
 using ICD.Connect.Protocol.XSig;
