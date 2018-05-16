@@ -8,13 +8,17 @@ namespace ICD.Connect.Routing.RoutingGraphs
 {
 	public abstract class AbstractRoutingGraphSettings : AbstractSettings, IRoutingGraphSettings
 	{
-		private const string ELEMENT_NAME = "Routing";
-
 		private const string CONNECTIONS_ELEMENT = "Connections";
 		private const string STATIC_ROUTES_ELEMENT = "StaticRoutes";
 		private const string SOURCES_ELEMENT = "Sources";
 		private const string DESTINATIONS_ELEMENT = "Destinations";
 		private const string DESTINATION_GROUPS_ELEMENT = "DestinationGroups";
+
+		private const string CONNECTION_ELEMENT = "Connection";
+		private const string STATIC_ROUTE_ELEMENT = "StaticRoute";
+		private const string SOURCE_ELEMENT = "Source";
+		private const string DESTINATION_ELEMENT = "Destination";
+		private const string DESTINATION_GROUP_ELEMENT = "DestinationGroup";
 
 		private readonly SettingsCollection m_ConnectionSettings;
 		private readonly SettingsCollection m_StaticRouteSettings;
@@ -24,7 +28,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#region Properties
 
-		protected override string Element { get { return ELEMENT_NAME; } }
 		public SettingsCollection ConnectionSettings { get { return m_ConnectionSettings; } }
 		public SettingsCollection StaticRouteSettings { get { return m_StaticRouteSettings; } }
 		public SettingsCollection SourceSettings { get { return m_SourceSettings; } }
@@ -55,11 +58,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		{
 			base.WriteElements(writer);
 
-			m_ConnectionSettings.ToXml(writer, CONNECTIONS_ELEMENT);
-			m_StaticRouteSettings.ToXml(writer, STATIC_ROUTES_ELEMENT);
-			m_SourceSettings.ToXml(writer, SOURCES_ELEMENT);
-			m_DestinationSettings.ToXml(writer, DESTINATIONS_ELEMENT);
-			m_DestinationGroupSettings.ToXml(writer, DESTINATION_GROUPS_ELEMENT);
+			m_ConnectionSettings.ToXml(writer, CONNECTIONS_ELEMENT, CONNECTION_ELEMENT);
+			m_StaticRouteSettings.ToXml(writer, STATIC_ROUTES_ELEMENT, STATIC_ROUTE_ELEMENT);
+			m_SourceSettings.ToXml(writer, SOURCES_ELEMENT, SOURCE_ELEMENT);
+			m_DestinationSettings.ToXml(writer, DESTINATIONS_ELEMENT, DESTINATION_ELEMENT);
+			m_DestinationGroupSettings.ToXml(writer, DESTINATION_GROUPS_ELEMENT, DESTINATION_GROUP_ELEMENT);
 		}
 
 		/// <summary>
