@@ -17,8 +17,6 @@ namespace ICD.Connect.Routing.Connections
 	[KrangSettings("Connection", typeof(Connection))]
 	public sealed class ConnectionSettings : AbstractSettings
 	{
-		private const string CONNECTION_ELEMENT = "Connection";
-
 		private const string SOURCE_DEVICE_ELEMENT = "SourceDevice";
 		private const string SOURCE_CONTROL_ELEMENT = "SourceControl";
 		private const string SOURCEADDRESS_ELEMENT = "SourceAddress";
@@ -44,11 +42,6 @@ namespace ICD.Connect.Routing.Connections
 		private int m_DestinationAddress = 1;
 
 		#region Properties
-
-		/// <summary>
-		/// Gets the xml element.
-		/// </summary>
-		protected override string Element { get { return CONNECTION_ELEMENT; } }
 
 		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int SourceDeviceId { get; set; }
