@@ -11,7 +11,7 @@ using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Heartbeat;
 using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
-using ICD.Connect.Protocol.Ports.ComPort;
+using ICD.Connect.Protocol.Settings;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Atlona
@@ -40,6 +40,7 @@ namespace ICD.Connect.Routing.Atlona
 		public event EventHandler<StringEventArgs> OnResponseReceived;
 
 		private readonly SecureNetworkProperties m_NetworkProperties;
+		private readonly ComSpecProperties m_ComSpecProperties;
 
 		private readonly AtUhdHdvs300DeviceSerialBuffer m_SerialBuffer;
 		private readonly SafeTimer m_KeepAliveTimer;
@@ -97,6 +98,7 @@ namespace ICD.Connect.Routing.Atlona
 		public AtUhdHdvs300Device()
 		{
 			m_NetworkProperties = new SecureNetworkProperties();
+			m_ComSpecProperties = new ComSpecProperties();
 
 			Heartbeat = new Heartbeat(this);
 
@@ -181,9 +183,6 @@ namespace ICD.Connect.Routing.Atlona
 			if (port == m_Port)
 				return;
 
-			if (port is IComPort)
-				ConfigureComPort(port as IComPort);
-
 			if (m_Port != null)
 				Disconnect();
 
@@ -197,23 +196,6 @@ namespace ICD.Connect.Routing.Atlona
 			Heartbeat.StartMonitoring();
 
 			UpdateCachedOnlineStatus();
-		}
-
-		/// <summary>
-		/// Configures a com port for communication with the hardware.
-		/// </summary>
-		/// <param name="port"></param>
-		[PublicAPI]
-		public static void ConfigureComPort(IComPort port)
-		{
-			port.SetComPortSpec(eComBaudRates.ComspecBaudRate115200,
-			                    eComDataBits.ComspecDataBits8,
-			                    eComParityType.ComspecParityNone,
-			                    eComStopBits.ComspecStopBits1,
-			                    eComProtocolType.ComspecProtocolRS232,
-			                    eComHardwareHandshakeType.ComspecHardwareHandshakeNone,
-			                    eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
-			                    false);
 		}
 
 		/// <summary>
@@ -419,6 +401,7 @@ namespace ICD.Connect.Routing.Atlona
 			settings.Port = m_Port == null ? (int?)null : m_Port.Id;
 
 			settings.Copy(m_NetworkProperties);
+			settings.Copy(m_ComSpecProperties);
 		}
 
 		/// <summary>
@@ -431,6 +414,7 @@ namespace ICD.Connect.Routing.Atlona
 			SetPort(null);
 
 			m_NetworkProperties.Clear();
+			m_ComSpecProperties.Clear();
 		}
 
 		/// <summary>
@@ -443,6 +427,7 @@ namespace ICD.Connect.Routing.Atlona
 			base.ApplySettingsFinal(settings, factory);
 
 			m_NetworkProperties.Copy(settings);
+			m_ComSpecProperties.Copy(settings);
 
 			ISerialPort port = null;
 
