@@ -3,6 +3,7 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Protocol.Network.Ports.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
+using ICD.Connect.Protocol.Settings;
 using ICD.Connect.Protocol.Utils;
 using ICD.Connect.Protocol.XSig;
 using ICD.Connect.Routing.Crestron2Series.Devices;
@@ -47,6 +48,18 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		}
 
 		#region Methods
+
+		/// <summary>
+		/// Gets the Com Spec configuration properties.
+		/// </summary>
+		protected override IComSpecProperties ComSpecProperties
+		{
+			get
+			{
+				// TODO
+				return new ComSpecProperties();
+			}
+		}
 
 		/// <summary>
 		/// Sets IsConnected to true.
