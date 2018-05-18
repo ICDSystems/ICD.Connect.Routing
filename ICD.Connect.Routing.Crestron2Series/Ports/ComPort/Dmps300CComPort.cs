@@ -55,7 +55,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		{
 			if (m_Device == null)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to connect - parent device is null", this);
+				Log(eSeverity.Error, "Unable to connect - parent device is null");
 				return;
 			}
 
@@ -90,7 +90,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		{
 			if (m_Device == null)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to set comspec - parent device is null", this);
+				Log(eSeverity.Error, "Unable to set comspec - parent device is null");
 				return;
 			}
 
