@@ -74,6 +74,7 @@
     <Compile Include="SPlusSwitcher.cs" />
     <Compile Include="SPlusSwitcherControl.cs" />
     <Compile Include="SPlusSwitcherSettings.cs" />
+    <Compile Include="SPlusSwitcherShim.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>

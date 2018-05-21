@@ -1,9 +1,9 @@
 ﻿using ICD.Common.Properties;
-using ICD.Connect.Devices;
+using ICD.Connect.Devices.Simpl;
 
 namespace ICD.Connect.Routing.SPlus
 {
-	public sealed class SPlusSwitcher : AbstractDevice<SPlusSwitcherSettings>
+	public sealed class SPlusSwitcher : AbstractSimplDevice<SPlusSwitcherSettings>
 	{
 		private bool m_OnlineStatus;
 
