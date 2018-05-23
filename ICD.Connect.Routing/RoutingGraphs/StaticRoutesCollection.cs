@@ -161,24 +161,20 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		#endregion
 
 		/// <summary>
-		/// Called each time a child is added to the collection before any events are raised.
+		/// Called when children are added to the collection before any events are raised.
 		/// </summary>
-		/// <param name="child"></param>
-		protected override void ChildAdded(StaticRoute child)
+		/// <param name="children"></param>
+		protected override void ChildrenAdded(IEnumerable<StaticRoute> children)
 		{
-			base.ChildAdded(child);
-
 			UpdateStaticRoutes();
 		}
 
 		/// <summary>
-		/// Called each time a child is removed from the collection before any events are raised.
+		/// Called when children are removed from the collection before any events are raised.
 		/// </summary>
-		/// <param name="child"></param>
-		protected override void ChildRemoved(StaticRoute child)
+		/// <param name="children"></param>
+		protected override void ChildrenRemoved(IEnumerable<StaticRoute> children)
 		{
-			base.ChildRemoved(child);
-
 			UpdateStaticRoutes();
 		}
 

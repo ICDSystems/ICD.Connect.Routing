@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
-using ICD.Common.Utils.Comparers;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
@@ -532,34 +531,34 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		#endregion
 
 		#region Caching
-
 		/// <summary>
-		/// Called each time a child is added to the collection before any events are raised.
+		/// Called when children are added to the collection before any events are raised.
 		/// </summary>
-		/// <param name="child"></param>
-		protected override void ChildAdded(Connection child)
+		/// <param name="children"></param>
+		protected override void ChildrenAdded(IEnumerable<Connection> children)
 		{
-			base.ChildAdded(child);
-
 			m_ConnectionsSection.Enter();
 
 			try
 			{
-				DeviceControlInfo sourceInfo = new DeviceControlInfo(child.Source.Device, child.Source.Control);
-				DeviceControlInfo destinationInfo = new DeviceControlInfo(child.Destination.Device,
-				                                                          child.Destination.Control);
+				foreach (Connection child in children)
+				{
+					DeviceControlInfo sourceInfo = new DeviceControlInfo(child.Source.Device, child.Source.Control);
+					DeviceControlInfo destinationInfo = new DeviceControlInfo(child.Destination.Device,
+					                                                          child.Destination.Control);
 
-				// Add device controls to the maps
-				if (!m_OutputConnectionLookup.ContainsKey(sourceInfo))
-					m_OutputConnectionLookup.Add(sourceInfo, new Dictionary<int, Connection>());
-				if (!m_InputConnectionLookup.ContainsKey(destinationInfo))
-					m_InputConnectionLookup.Add(destinationInfo, new Dictionary<int, Connection>());
+					// Add device controls to the maps
+					if (!m_OutputConnectionLookup.ContainsKey(sourceInfo))
+						m_OutputConnectionLookup.Add(sourceInfo, new Dictionary<int, Connection>());
+					if (!m_InputConnectionLookup.ContainsKey(destinationInfo))
+						m_InputConnectionLookup.Add(destinationInfo, new Dictionary<int, Connection>());
 
-				// Add connections to the maps
-				m_OutputConnectionLookup[sourceInfo][child.Source.Address] = child;
-				m_InputConnectionLookup[destinationInfo][child.Destination.Address] = child;
+					// Add connections to the maps
+					m_OutputConnectionLookup[sourceInfo][child.Source.Address] = child;
+					m_InputConnectionLookup[destinationInfo][child.Destination.Address] = child;
+				}
 
-				AddToFilteredConnectionsMap(child);
+				RebuildFilteredConnectionsMap();
 			}
 			finally
 			{
@@ -568,24 +567,26 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
-		/// Called each time a child is removed from the collection before any events are raised.
+		/// Called when children are removed from the collection before any events are raised.
 		/// </summary>
-		/// <param name="child"></param>
-		protected override void ChildRemoved(Connection child)
+		/// <param name="children"></param>
+		protected override void ChildrenRemoved(IEnumerable<Connection> children)
 		{
-			base.ChildRemoved(child);
-
 			m_ConnectionsSection.Enter();
 
 			try
 			{
-				foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_OutputConnectionLookup)
-					kvp.Value.RemoveAllValues(child);
 
-				foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_InputConnectionLookup)
-					kvp.Value.RemoveAllValues(child);
+				foreach (Connection child in children)
+				{
+					foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_OutputConnectionLookup)
+						kvp.Value.RemoveAllValues(child);
 
-				RemoveFromFilteredConnectionsMap(child);
+					foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_InputConnectionLookup)
+						kvp.Value.RemoveAllValues(child);
+				}
+
+				RebuildFilteredConnectionsMap();
 			}
 			finally
 			{
@@ -594,14 +595,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
-		/// Adds the given connection to the filtered connections table.
+		/// Clears and rebuilds the filtered connections table.
 		/// </summary>
-		/// <param name="child"></param>
-		private void AddToFilteredConnectionsMap(Connection child)
+		private void RebuildFilteredConnectionsMap()
 		{
-			if (child == null)
-				throw new ArgumentNullException("child");
-
 			m_ConnectionsSection.Enter();
 
 			try
@@ -630,27 +627,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 						}
 					}
 				}
-			}
-			finally
-			{
-				m_ConnectionsSection.Leave();
-			}
-		}
-
-		/// <summary>
-		/// Removes the given connection from the filtered connections table.
-		/// </summary>
-		/// <param name="child"></param>
-		private void RemoveFromFilteredConnectionsMap(Connection child)
-		{
-			if (child == null)
-				throw new ArgumentNullException("child");
-
-			m_ConnectionsSection.Enter();
-
-			try
-			{
-
 			}
 			finally
 			{
