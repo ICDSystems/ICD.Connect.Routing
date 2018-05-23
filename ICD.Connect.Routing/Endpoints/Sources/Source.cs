@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
 
 namespace ICD.Connect.Routing.Endpoints.Sources
 {
@@ -10,7 +12,7 @@ namespace ICD.Connect.Routing.Endpoints.Sources
 		/// Constructor.
 		/// </summary>
 		public Source()
-			: this(0, 0, 0)
+			: this(0, 0, Enumerable.Empty<int>())
 		{
 		}
 
@@ -19,9 +21,9 @@ namespace ICD.Connect.Routing.Endpoints.Sources
 		/// </summary>
 		/// <param name="deviceId"></param>
 		/// <param name="controlId"></param>
-		/// <param name="outputAddress"></param>
-		public Source(int deviceId, int controlId, int outputAddress)
-			: this(deviceId, controlId, outputAddress, null)
+		/// <param name="addresses"></param>
+		public Source(int deviceId, int controlId, IEnumerable<int> addresses)
+			: this(deviceId, controlId, addresses, null)
 		{
 		}
 
@@ -30,19 +32,20 @@ namespace ICD.Connect.Routing.Endpoints.Sources
 		/// </summary>
 		/// <param name="deviceId"></param>
 		/// <param name="controlId"></param>
-		/// <param name="outputAddress"></param>
+		/// <param name="addresses"></param>
 		/// <param name="name"></param>
-		public Source(int deviceId, int controlId, int outputAddress, string name)
+		public Source(int deviceId, int controlId, IEnumerable<int> addresses, string name)
+			: this(0, deviceId, controlId, addresses, name, false, int.MaxValue, false)
 		{
-			Endpoint = new EndpointInfo(deviceId, controlId, outputAddress);
-			Name = name;
 		}
 
 		[JsonConstructor]
-		public Source(int id, EndpointInfo endpoint, string name, bool remote, int order, bool disable)
+		public Source(int id, int deviceId, int controlId, IEnumerable<int> addresses, string name, bool remote, int order, bool disable)
 		{
 			Id = id;
-			Endpoint = endpoint;
+			Device = deviceId;
+			Control = controlId;
+			SetAddresses(addresses);
 			Name = name;
 			Remote = remote;
 			Disable = disable;

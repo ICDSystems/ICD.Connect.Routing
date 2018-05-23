@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.API.Attributes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.Proxies;
 
 namespace ICD.Connect.Routing.Controls
 {
 	/// <summary>
 	/// A destination control is a control with one or more input connectors.
 	/// </summary>
+	[ApiClass(typeof(ProxyRouteDestinationControl), typeof(IRouteControl))]
 	public interface IRouteDestinationControl : IRouteControl
 	{
 		/// <summary>

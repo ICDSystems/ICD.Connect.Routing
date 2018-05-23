@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Comparers;
@@ -13,7 +13,7 @@ namespace ICD.Connect.Routing.Endpoints
 	                                                                   ISourceDestinationBaseCollection<T>
 		where T : ISourceDestinationBase
 	{
-		private readonly Dictionary<EndpointInfo, Dictionary<eConnectionType, List<T>>> m_EndpointCache;
+		private readonly Dictionary<DeviceControlInfo, Dictionary<int, Dictionary<eConnectionType, List<T>>>> m_EndpointCache;
 		private readonly SafeCriticalSection m_EndpointCacheSection;
 
 		/// <summary>
@@ -21,7 +21,7 @@ namespace ICD.Connect.Routing.Endpoints
 		/// </summary>
 		protected AbstractSourceDestinationBaseCollection()
 		{
-			m_EndpointCache = new Dictionary<EndpointInfo, Dictionary<eConnectionType, List<T>>>();
+			m_EndpointCache = new Dictionary<DeviceControlInfo, Dictionary<int, Dictionary<eConnectionType, List<T>>>>();
 			m_EndpointCacheSection = new SafeCriticalSection();
 		}
 
@@ -37,13 +37,18 @@ namespace ICD.Connect.Routing.Endpoints
 
 			try
 			{
-				if (!m_EndpointCache.ContainsKey(endpoint))
+				DeviceControlInfo deviceControl = endpoint.GetDeviceControlInfo();
+
+				if (!m_EndpointCache.ContainsKey(deviceControl))
 					return Enumerable.Empty<T>();
 				
-				if (!m_EndpointCache[endpoint].ContainsKey(type))
+				if (!m_EndpointCache[deviceControl].ContainsKey(endpoint.Address))
 					return Enumerable.Empty<T>();
 
-				return m_EndpointCache[endpoint][type];
+				if (!m_EndpointCache[deviceControl][endpoint.Address].ContainsKey(type))
+					return Enumerable.Empty<T>();
+
+				return m_EndpointCache[deviceControl][endpoint.Address][type];
 			}
 			finally
 			{
@@ -63,17 +68,23 @@ namespace ICD.Connect.Routing.Endpoints
 
 			try
 			{
-				EndpointInfo endpoint = child.Endpoint;
+				DeviceControlInfo deviceControl = child.GetDeviceControlInfo();
 
-				if (!m_EndpointCache.ContainsKey(endpoint))
-					m_EndpointCache[endpoint] = new Dictionary<eConnectionType, List<T>>();
+				if (!m_EndpointCache.ContainsKey(deviceControl))
+					m_EndpointCache[deviceControl] = new Dictionary<int, Dictionary<eConnectionType, List<T>>>();
 
-				foreach (eConnectionType flag in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
+				foreach (int address in child.GetAddresses())
 				{
-					if (!m_EndpointCache[endpoint].ContainsKey(flag))
-						m_EndpointCache[endpoint].Add(flag, new List<T>());
+					if (!m_EndpointCache[deviceControl].ContainsKey(address))
+						m_EndpointCache[deviceControl].Add(address, new Dictionary<eConnectionType, List<T>>());
 
-					m_EndpointCache[endpoint][flag].AddSorted(child, new OriginatorIdComparer<T>());
+					foreach (eConnectionType combination in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
+					{
+						if (!m_EndpointCache[deviceControl][address].ContainsKey(combination))
+							m_EndpointCache[deviceControl][address].Add(combination, new List<T>());
+
+						m_EndpointCache[deviceControl][address][combination].AddSorted(child, new OriginatorIdComparer<T>());
+					}
 				}
 			}
 			finally
@@ -94,17 +105,23 @@ namespace ICD.Connect.Routing.Endpoints
 
 			try
 			{
-				EndpointInfo endpoint = child.Endpoint;
+				DeviceControlInfo deviceControl = child.GetDeviceControlInfo();
 
-				if (!m_EndpointCache.ContainsKey(endpoint))
+				if (!m_EndpointCache.ContainsKey(deviceControl))
 					return;
 
-				foreach (eConnectionType flag in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
+				foreach (int address in child.GetAddresses())
 				{
-					if (!m_EndpointCache[endpoint].ContainsKey(flag))
+					if (!m_EndpointCache[deviceControl].ContainsKey(address))
 						continue;
 
-					m_EndpointCache[endpoint][flag].Remove(child);
+					foreach (eConnectionType combination in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
+					{
+						if (!m_EndpointCache[deviceControl][address].ContainsKey(combination))
+							continue;
+
+						m_EndpointCache[deviceControl][address][combination].Remove(child);
+					}
 				}
 			}
 			finally

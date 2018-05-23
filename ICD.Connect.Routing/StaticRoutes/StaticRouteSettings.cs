@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
@@ -11,12 +10,9 @@ using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.StaticRoutes
 {
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("StaticRoute", typeof(StaticRoute))]
 	public sealed class StaticRouteSettings : AbstractSettings
 	{
-		private const string STATIC_ROUTE_ELEMENT = "StaticRoute";
-		private const string FACTORY_NAME = "StaticRoute";
-
 		private const string CONNECTIONS_ELEMENT = "Connections";
 		private const string CONNECTION_ELEMENT = "Connection";
 
@@ -26,21 +22,6 @@ namespace ICD.Connect.Routing.StaticRoutes
 		private readonly SafeCriticalSection m_ConnectionsSection;
 
 		#region Properties
-
-		/// <summary>
-		/// Gets the xml element.
-		/// </summary>
-		protected override string Element { get { return STATIC_ROUTE_ELEMENT; } }
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(StaticRoute); } }
 
 		public eConnectionType ConnectionType { get; set; }
 

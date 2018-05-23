@@ -1,5 +1,5 @@
-﻿using ICD.Common.Utils.EventArguments;
-using ICD.Common.Utils.Services.Logging;
+﻿using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Protocol.Ports.RelayPort;
 using ICD.Connect.Protocol.XSig;
 using ICD.Connect.Routing.Crestron2Series.Devices;
@@ -162,8 +162,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 		/// Called when the parent online state changes.
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="boolEventArgs"></param>
-		private void DeviceOnIsOnlineStateChanged(object sender, BoolEventArgs boolEventArgs)
+		/// <param name="args"></param>
+		private void DeviceOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs args)
 		{
 			UpdateCachedOnlineStatus();
 		}
