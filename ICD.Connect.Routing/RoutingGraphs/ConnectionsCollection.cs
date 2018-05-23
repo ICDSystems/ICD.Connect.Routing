@@ -412,27 +412,32 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#endregion
 
-		protected override void ChildAdded(Connection child)
+		/// <summary>
+		/// Called when children are added to the collection before any events are raised.
+		/// </summary>
+		/// <param name="children"></param>
+		protected override void ChildrenAdded(IEnumerable<Connection> children)
 		{
-			base.ChildAdded(child);
-
 			m_ConnectionsSection.Enter();
 
 			try
 			{
-				DeviceControlInfo sourceInfo = new DeviceControlInfo(child.Source.Device, child.Source.Control);
-				DeviceControlInfo destinationInfo = new DeviceControlInfo(child.Destination.Device,
-				                                                          child.Destination.Control);
+				foreach (Connection child in children)
+				{
+					DeviceControlInfo sourceInfo = new DeviceControlInfo(child.Source.Device, child.Source.Control);
+					DeviceControlInfo destinationInfo = new DeviceControlInfo(child.Destination.Device,
+					                                                          child.Destination.Control);
 
-				// Add device controls to the maps
-				if (!m_OutputConnectionLookup.ContainsKey(sourceInfo))
-					m_OutputConnectionLookup.Add(sourceInfo, new Dictionary<int, Connection>());
-				if (!m_InputConnectionLookup.ContainsKey(destinationInfo))
-					m_InputConnectionLookup.Add(destinationInfo, new Dictionary<int, Connection>());
+					// Add device controls to the maps
+					if (!m_OutputConnectionLookup.ContainsKey(sourceInfo))
+						m_OutputConnectionLookup.Add(sourceInfo, new Dictionary<int, Connection>());
+					if (!m_InputConnectionLookup.ContainsKey(destinationInfo))
+						m_InputConnectionLookup.Add(destinationInfo, new Dictionary<int, Connection>());
 
-				// Add connections to the maps
-				m_OutputConnectionLookup[sourceInfo][child.Source.Address] = child;
-				m_InputConnectionLookup[destinationInfo][child.Destination.Address] = child;
+					// Add connections to the maps
+					m_OutputConnectionLookup[sourceInfo][child.Source.Address] = child;
+					m_InputConnectionLookup[destinationInfo][child.Destination.Address] = child;
+				}
 			}
 			finally
 			{
@@ -441,22 +446,23 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
-		/// Called each time a child is removed from the collection before any events are raised.
+		/// Called when children are removed from the collection before any events are raised.
 		/// </summary>
-		/// <param name="child"></param>
-		protected override void ChildRemoved(Connection child)
+		/// <param name="children"></param>
+		protected override void ChildrenRemoved(IEnumerable<Connection> children)
 		{
-			base.ChildRemoved(child);
-
 			m_ConnectionsSection.Enter();
 
 			try
 			{
-				foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_OutputConnectionLookup)
-					kvp.Value.RemoveAllValues(child);
+				foreach (Connection child in children)
+				{
+					foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_OutputConnectionLookup)
+						kvp.Value.RemoveAllValues(child);
 
-				foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_InputConnectionLookup)
-					kvp.Value.RemoveAllValues(child);
+					foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_InputConnectionLookup)
+						kvp.Value.RemoveAllValues(child);
+				}
 			}
 			finally
 			{
