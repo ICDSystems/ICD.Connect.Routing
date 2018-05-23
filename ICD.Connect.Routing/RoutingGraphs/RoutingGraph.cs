@@ -961,7 +961,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				if (path == null)
 				{
-					Logger.AddEntry(eSeverity.Error, "No path found for route {0}", operation);
+					Log(eSeverity.Error, "No path found for route {0}", operation);
 					continue;
 				}
 
@@ -1012,7 +1012,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				if (path == null)
 				{
-					Logger.AddEntry(eSeverity.Error, "No path found for route {0}", operation);
+					Log(eSeverity.Error, "No path found for route {0}", operation);
 					continue;
 				}
 
@@ -1898,7 +1898,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				}
 				catch (Exception e)
 				{
-					Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate {1} with id {2} - {3}", this, typeof(T).Name,
+					Log(eSeverity.Error, "Failed to instantiate {0} with id {1} - {2}", typeof(T).Name,
 					                settings.Id, e.Message);
 					continue;
 				}
