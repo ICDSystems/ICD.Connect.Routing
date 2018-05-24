@@ -27,12 +27,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private readonly Dictionary<DeviceControlInfo, Dictionary<int, Connection>> m_InputConnectionLookup;
 
 		/// <summary>
-		/// Maps Source -> Final Destination -> Type -> Ordered connections that lead to the final destination.
+		/// Maps Source -> Final Destination -> Type -> Connection.
 		/// </summary>
 		private readonly Dictionary<EndpointInfo,
 			Dictionary<EndpointInfo,
-				Dictionary<eConnectionType,
-					List<Connection>>>> m_FilteredConnectionLookup;
+				Dictionary<eConnectionType, Connection>>> m_FilteredConnectionLookup;
 
 		/// <summary>
 		/// Constructor.
@@ -45,8 +44,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_FilteredConnectionLookup =
 				new Dictionary<EndpointInfo,
 					Dictionary<EndpointInfo,
-						Dictionary<eConnectionType,
-							List<Connection>>>>();
+						Dictionary<eConnectionType, Connection>>>();
 
 			m_ConnectionsSection = new SafeCriticalSection();
 		}
@@ -274,106 +272,36 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		/// <summary>
 		/// Given a source endpoint and a final destination endpoint,
-		/// returns the possible output connections from the source to reach the destination.
+		/// returns the possible output connection from the source to reach the destination.
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="finalDestination"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <returns></returns>
-		public IEnumerable<Connection> GetFilteredConnections(EndpointInfo source, EndpointInfo finalDestination,
-		                                                      eConnectionType type)
+		[CanBeNull]
+		public Connection GetOutputConnection(EndpointInfo source, EndpointInfo finalDestination, eConnectionType flag)
 		{
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("Connection type has multiple flags", "flag");
+
 			m_ConnectionsSection.Enter();
 
 			try
 			{
-				Dictionary<EndpointInfo, Dictionary<eConnectionType, List<Connection>>> destinationMap;
+				Dictionary<EndpointInfo, Dictionary<eConnectionType, Connection>> destinationMap;
 				if (!m_FilteredConnectionLookup.TryGetValue(source, out destinationMap))
-					return Enumerable.Empty<Connection>();
+					return null;
 
-				Dictionary<eConnectionType, List<Connection>> connectionTypeMap;
+				Dictionary<eConnectionType, Connection> connectionTypeMap;
 				if (!destinationMap.TryGetValue(finalDestination, out connectionTypeMap))
-					return Enumerable.Empty<Connection>();
+					return null;
 
-				List<Connection> connections;
-				if (!connectionTypeMap.TryGetValue(type, out connections))
-					return Enumerable.Empty<Connection>();
-
-				return connections.Count == 0
-					? Enumerable.Empty<Connection>()
-					: connections.ToArray(connections.Count);
+				return connectionTypeMap.GetDefault(flag, null);
 			}
 			finally
 			{
 				m_ConnectionsSection.Leave();
 			}
-		}
-
-		/// <summary>
-		/// Given a source endpoint and a sequence of final destination endpoints,
-		/// returns the possible output connections to reach the destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="finalDestinations"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public IEnumerable<Connection> GetFilteredConnections(EndpointInfo source,
-		                                                      IEnumerable<EndpointInfo> finalDestinations,
-		                                                      eConnectionType type)
-		{
-			if (finalDestinations == null)
-				throw new ArgumentNullException("finalDestinations");
-
-			return finalDestinations.SelectMany(d => GetFilteredConnections(source, d, type))
-			                        .Distinct();
-		}
-
-		/// <summary>
-		/// Given an input connection and a final destination endpoint,
-		/// returns the possible output connections to reach the destination.
-		/// </summary>
-		/// <param name="inputConnection"></param>
-		/// <param name="finalDestination"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public IEnumerable<Connection> GetFilteredConnections(Connection inputConnection, EndpointInfo finalDestination,
-		                                                      eConnectionType type)
-		{
-			if (inputConnection == null)
-				throw new ArgumentNullException("inputConnection");
-
-			int device = inputConnection.Destination.Device;
-			int control = inputConnection.Destination.Control;
-
-			return GetOutputs(device, control, type).Select(o => new EndpointInfo(device, control, o))
-			                                        .SelectMany(e => GetFilteredConnections(e, finalDestination, type))
-			                                        .Distinct();
-		}
-
-		/// <summary>
-		/// Given an input connection and a sequence of final destination endpoints,
-		/// returns the possible output connections to reach the destination.
-		/// </summary>
-		/// <param name="inputConnection"></param>
-		/// <param name="finalDestinations"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public IEnumerable<Connection> GetFilteredConnections(Connection inputConnection,
-		                                                      IEnumerable<EndpointInfo> finalDestinations,
-		                                                      eConnectionType type)
-		{
-			if (inputConnection == null)
-				throw new ArgumentNullException("inputConnection");
-
-			if (finalDestinations == null)
-				throw new ArgumentNullException("finalDestinations");
-
-			int device = inputConnection.Destination.Device;
-			int control = inputConnection.Destination.Control;
-
-			return GetOutputs(device, control, type).Select(o => new EndpointInfo(device, control, o))
-													.SelectMany(e => GetFilteredConnections(e, finalDestinations, type))
-													.Distinct();
 		}
 
 		#endregion
@@ -576,7 +504,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-
 				foreach (Connection child in children)
 				{
 					foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_OutputConnectionLookup)
@@ -603,27 +530,51 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
+				m_FilteredConnectionLookup.Clear();
+
+				Connection[] connections = GetChildren().ToArray();
+
 				// Add the source as a primary key
-				if (!m_FilteredConnectionLookup.ContainsKey(child.Source))
-					m_FilteredConnectionLookup.Add(child.Source,
-					                               new Dictionary<EndpointInfo, Dictionary<eConnectionType, List<Connection>>>());
+				foreach (Connection connection in connections)
+				{
+					if (!m_FilteredConnectionLookup.ContainsKey(connection.Source))
+						m_FilteredConnectionLookup.Add(connection.Source,
+						                               new Dictionary<EndpointInfo, Dictionary<eConnectionType, Connection>>());
+				}
 
 				// Add the destination to all of the existing keys
 				foreach (EndpointInfo source in m_FilteredConnectionLookup.Keys)
 				{
-					if (!m_FilteredConnectionLookup[source].ContainsKey(child.Destination))
-						m_FilteredConnectionLookup[source].Add(child.Destination, new Dictionary<eConnectionType, List<Connection>>());
+					foreach (Connection connection in connections)
+					{
+						if (!m_FilteredConnectionLookup[source].ContainsKey(connection.Destination))
+							m_FilteredConnectionLookup[source].Add(connection.Destination, new Dictionary<eConnectionType, Connection>());
+					}
 				}
 
-				// Add the connection to the map
-				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(child.ConnectionType))
+				// Perform the pathfinding
+				foreach (EndpointInfo source in m_FilteredConnectionLookup.Keys.OrderBy(s => s.Device).ThenBy(s => s.Control).ThenBy(s => s.Address))
 				{
-					foreach (EndpointInfo source in m_FilteredConnectionLookup.Keys)
+					Connection outputConnection = GetOutputConnection(source);
+					if (outputConnection == null)
+						continue;
+
+					foreach (EndpointInfo destination in m_FilteredConnectionLookup[source].Keys.OrderBy(d => d.Device).ThenBy(d => d.Control).ThenBy(d => d.Address))
 					{
-						foreach (EndpointInfo destination in m_FilteredConnectionLookup[source].Keys)
+						Connection inputConnection = GetInputConnection(destination);
+						if (inputConnection == null)
+							continue;
+
+						eConnectionType type =
+							EnumUtils.GetFlagsIntersection(outputConnection.ConnectionType, inputConnection.ConnectionType);
+
+						foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 						{
-							if (GetPaths(source, destination, flag).Any(p => p.Contains(child)))
-								m_FilteredConnectionLookup[source][destination][flag].AddSorted(child, c => c.Source.Address);
+							// TODO - This is extremely lazy and inefficient
+							if (!HasAnyPath(source, destination, flag))
+								continue;
+
+							m_FilteredConnectionLookup[source][destination].Add(flag, outputConnection);
 						}
 					}
 				}
@@ -632,6 +583,46 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			{
 				m_ConnectionsSection.Leave();
 			}
+		}
+
+		/// <summary>
+		/// Returns true if there is a connection path from the given source to the given destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		private bool HasAnyPath(EndpointInfo source, EndpointInfo destination, eConnectionType flag)
+		{
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("Connection type has multiple flags", "flag");
+
+			Connection outputConnection = GetOutputConnection(source);
+			if (outputConnection == null)
+				return false;
+
+			Connection inputConnection = GetInputConnection(destination);
+			if (inputConnection == null)
+				return false;
+
+			return RecursionUtils.BreadthFirstSearch(outputConnection, inputConnection, c => GetChildren(c, flag));
+		}
+
+		/// <summary>
+		/// Given an input connection returns the connected output connections.
+		/// </summary>
+		/// <param name="inputConnection"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		private IEnumerable<Connection> GetChildren(Connection inputConnection, eConnectionType flag)
+		{
+			if (inputConnection == null)
+				throw new ArgumentNullException("inputConnection");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("Connection type has multiple flags", "flag");
+
+			return GetOutputConnections(inputConnection.Destination.Device, inputConnection.Destination.Control, flag);
 		}
 
 		#endregion
