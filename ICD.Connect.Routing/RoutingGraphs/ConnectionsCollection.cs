@@ -219,9 +219,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		/// <param name="sourceDeviceId"></param>
 		/// <param name="sourceControlId"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <returns></returns>
-		public IEnumerable<Connection> GetOutputConnections(int sourceDeviceId, int sourceControlId, eConnectionType type)
+		public IEnumerable<Connection> GetOutputConnections(int sourceDeviceId, int sourceControlId, eConnectionType flag)
 		{
 			DeviceControlInfo info = new DeviceControlInfo(sourceDeviceId, sourceControlId);
 
@@ -232,7 +232,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				Dictionary<int, Connection> map;
 				return m_OutputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values
-					            .Where(c => EnumUtils.HasFlags(c.ConnectionType, type))
+					            .Where(c => EnumUtils.HasFlags(c.ConnectionType, flag))
 					            .ToArray()
 					       : Enumerable.Empty<Connection>();
 			}
@@ -297,6 +297,101 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					return null;
 
 				return connectionTypeMap.GetDefault(flag, null);
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Gets the output connections from the given source control in order to reach the given destination endpoint.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="finalDestination"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		public IEnumerable<Connection> GetOutputConnections(DeviceControlInfo sourceEndpoint, EndpointInfo finalDestination,
+		                                                    eConnectionType flag)
+		{
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("ConnectionType has multiple flags", "flag");
+
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+				Connection input = GetInputConnection(finalDestination);
+				if (input == null)
+					return Enumerable.Empty<Connection>();
+
+				return
+					GetOutputConnections(sourceEndpoint.DeviceId, sourceEndpoint.ControlId, flag)
+						.Where(c => HasPath(c, input, flag));
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Gets the output connections from the given source control in order to reach the given destination endpoints.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="finalDestinations"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		public IEnumerable<Connection> GetOutputConnections(DeviceControlInfo sourceEndpoint, IEnumerable<EndpointInfo> finalDestinations, eConnectionType flag)
+		{
+			if (finalDestinations == null)
+				throw new ArgumentNullException("finalDestinations");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("ConnectionType has multiple flags", "flag");
+
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+				Connection input = GetInputConnection(finalDestination);
+				if (input == null)
+					return Enumerable.Empty<Connection>();
+
+				return
+					GetOutputConnections(sourceEndpoint.DeviceId, sourceEndpoint.ControlId, flag)
+						.Where(c => HasPath(c, input, flag));
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
+
+		private bool HasPath(Connection output, Connection input, eConnectionType flag)
+		{
+			if (output == null)
+				throw new ArgumentNullException("output");
+
+			if (input == null)
+				throw new ArgumentNullException("input");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("ConnectionType has multiple flags", "flag");
+
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+				Dictionary<EndpointInfo, Dictionary<eConnectionType, Connection>> destinationMap;
+				if (!m_FilteredConnectionLookup.TryGetValue(output.Source, out destinationMap))
+					return false;
+
+				Dictionary<eConnectionType, Connection> typeMap;
+				if (!destinationMap.TryGetValue(input.Destination, out typeMap))
+					return false;
+
+				return typeMap.ContainsKey(flag);
 			}
 			finally
 			{
