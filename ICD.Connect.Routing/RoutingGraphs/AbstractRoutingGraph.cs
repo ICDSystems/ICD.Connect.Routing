@@ -19,19 +19,61 @@ namespace ICD.Connect.Routing.RoutingGraphs
 	public abstract class AbstractRoutingGraph<TSettings> : AbstractOriginator<TSettings>, IRoutingGraph
 		where TSettings : IRoutingGraphSettings, new()
 	{
+		/// <summary>
+		/// Raised when a route operation fails or succeeds.
+		/// </summary>
 		public abstract event EventHandler<RouteFinishedEventArgs> OnRouteFinished;
+
+		/// <summary>
+		/// Raised when a switcher changes routing.
+		/// </summary>
 		public abstract event EventHandler<SwitcherRouteChangeEventArgs> OnRouteChanged;
+
+		/// <summary>
+		/// Raised when a source device starts/stops sending video.
+		/// </summary>
 		public abstract event EventHandler<EndpointStateEventArgs> OnSourceTransmissionStateChanged;
+
+		/// <summary>
+		/// Raised when a source device is connected or disconnected.
+		/// </summary>
 		public abstract event EventHandler<EndpointStateEventArgs> OnSourceDetectionStateChanged;
+
+		/// <summary>
+		/// Raised when a destination device changes active input state.
+		/// </summary>
 		public abstract event EventHandler<EndpointStateEventArgs> OnDestinationInputActiveStateChanged;
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the connections collection.
+		/// </summary>
 		public abstract IConnectionsCollection Connections { get; }
+
+		/// <summary>
+		/// Gets the connection usages collection.
+		/// </summary>
 		public abstract IConnectionUsageCollection ConnectionUsages { get; }
+
+		/// <summary>
+		/// Gets the static routes collection.
+		/// </summary>
 		public abstract IOriginatorCollection<StaticRoute> StaticRoutes { get; }
+
+		/// <summary>
+		/// Gets the sources collection.
+		/// </summary>
 		public abstract ISourceCollection Sources { get; }
+
+		/// <summary>
+		/// Gets the destinations collection.
+		/// </summary>
 		public abstract IDestinationCollection Destinations { get; }
+
+		/// <summary>
+		/// Gets the destination groups collection.
+		/// </summary>
 		public abstract IOriginatorCollection<IDestinationGroup> DestinationGroups { get; }
 
 		/// <summary>

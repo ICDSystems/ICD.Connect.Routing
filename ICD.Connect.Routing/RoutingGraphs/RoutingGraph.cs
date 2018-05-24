@@ -73,16 +73,34 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the connections collection.
+		/// </summary>
 		public override IConnectionsCollection Connections { get { return m_Connections; } }
 
+		/// <summary>
+		/// Gets the static routes collection.
+		/// </summary>
 		public override IOriginatorCollection<StaticRoute> StaticRoutes { get { return m_StaticRoutes; } }
 
+		/// <summary>
+		/// Gets the connection usages collection.
+		/// </summary>
 		public override IConnectionUsageCollection ConnectionUsages { get { return m_ConnectionUsages; } }
 
+		/// <summary>
+		/// Gets the sources collection.
+		/// </summary>
 		public override ISourceCollection Sources { get { return m_Sources; } }
 
+		/// <summary>
+		/// Gets the destinations collection.
+		/// </summary>
 		public override IDestinationCollection Destinations { get { return m_Destinations; } }
 
+		/// <summary>
+		/// Gets the destination groups collection.
+		/// </summary>
 		public override IOriginatorCollection<IDestinationGroup> DestinationGroups { get { return m_DestinationGroups; } }
 
 		#endregion
