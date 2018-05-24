@@ -372,6 +372,13 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			}
 		}
 
+		/// <summary>
+		/// Returns true if there is a path from the given output connection to any of the given input connections.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="inputs"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
 		private bool HasPathAny(Connection output, IEnumerable<Connection> inputs, eConnectionType flag)
 		{
 			if (output == null)
@@ -386,6 +393,13 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			return inputs.Any(i => HasPath(output, i, flag));
 		}
 
+		/// <summary>
+		/// Returns true if there is a path from the given output connection to the given input connection.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="input"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
 		private bool HasPath(Connection output, Connection input, eConnectionType flag)
 		{
 			if (output == null)
