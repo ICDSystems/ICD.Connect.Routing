@@ -648,32 +648,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				Connection[] connections = GetChildren().ToArray();
 
-				// Add the source as a primary key
-				foreach (Connection connection in connections)
-				{
-					if (!m_FilteredConnectionLookup.ContainsKey(connection.Source))
-						m_FilteredConnectionLookup.Add(connection.Source,
-						                               new Dictionary<EndpointInfo, Dictionary<eConnectionType, Connection>>());
-				}
-
-				// Add the destination to all of the existing keys
-				foreach (EndpointInfo source in m_FilteredConnectionLookup.Keys)
-				{
-					foreach (Connection connection in connections)
-					{
-						if (!m_FilteredConnectionLookup[source].ContainsKey(connection.Destination))
-							m_FilteredConnectionLookup[source].Add(connection.Destination, new Dictionary<eConnectionType, Connection>());
-					}
-				}
-
 				// Perform the pathfinding
-				foreach (EndpointInfo source in m_FilteredConnectionLookup.Keys.OrderBy(s => s.Device).ThenBy(s => s.Control).ThenBy(s => s.Address))
+				foreach (EndpointInfo source in connections.Select(c => c.Source).Distinct())
 				{
 					Connection outputConnection = GetOutputConnection(source);
 					if (outputConnection == null)
 						continue;
 
-					foreach (EndpointInfo destination in m_FilteredConnectionLookup[source].Keys.OrderBy(d => d.Device).ThenBy(d => d.Control).ThenBy(d => d.Address))
+					foreach (EndpointInfo destination in connections.Select(d => d.Destination).Distinct())
 					{
 						Connection inputConnection = GetInputConnection(destination);
 						if (inputConnection == null)
@@ -685,8 +667,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 						foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 						{
 							// TODO - This is extremely lazy and inefficient
-							if (!HasAnyPath(source, destination, flag))
+							if (!RebuildFilteredConnectionsMapHasAnyPath(source, destination, flag))
 								continue;
+
+							if (!m_FilteredConnectionLookup.ContainsKey(source))
+								m_FilteredConnectionLookup.Add(source, new Dictionary<EndpointInfo, Dictionary<eConnectionType, Connection>>());
+
+							if (!m_FilteredConnectionLookup[source].ContainsKey(destination))
+								m_FilteredConnectionLookup[source].Add(destination, new Dictionary<eConnectionType, Connection>());
 
 							m_FilteredConnectionLookup[source][destination].Add(flag, outputConnection);
 						}
@@ -706,7 +694,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="destination"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		private bool HasAnyPath(EndpointInfo source, EndpointInfo destination, eConnectionType flag)
+		private bool RebuildFilteredConnectionsMapHasAnyPath(EndpointInfo source, EndpointInfo destination,
+		                                                     eConnectionType flag)
 		{
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("Connection type has multiple flags", "flag");
