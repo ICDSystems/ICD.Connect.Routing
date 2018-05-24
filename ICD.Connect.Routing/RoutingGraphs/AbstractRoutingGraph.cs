@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using ICD.Common.Utils;
 using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.ConnectionUsage;
 using ICD.Connect.Routing.Controls;
@@ -13,7 +12,6 @@ using ICD.Connect.Routing.Endpoints.Groups;
 using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.StaticRoutes;
-using ICD.Connect.Routing.Utils;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.RoutingGraphs
@@ -647,6 +645,39 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		#region Console
 
 		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
+
+			foreach (IConsoleNodeBase node in RoutingGraphConsole.GetConsoleNodes(this))
+				yield return node;
+		}
+
+		/// <summary>
+		/// Wrokaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
+		{
+			return base.GetConsoleNodes();
+		}
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			RoutingGraphConsole.BuildConsoleStatus(this, addRow);
+		}
+
+		/// <summary>
 		/// Gets the child console commands.
 		/// </summary>
 		/// <returns></returns>
@@ -655,22 +686,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			foreach (IConsoleCommand command in GetBaseConsoleCommands())
 				yield return command;
 
-			yield return
-				new ConsoleCommand("PrintTable", "Prints a table of the routed devices and their input/output information.",
-				                   () => PrintTable());
-			yield return new ConsoleCommand("PrintConnections", "Prints the list of all connections.", () => PrintConnections());
-			yield return new ConsoleCommand("PrintSources", "Prints the list of Sources", () => PrintSources());
-			yield return new ConsoleCommand("PrintDestinations", "Prints the list of Destinations", () => PrintDestinations());
-			yield return new ConsoleCommand("PrintUsages", "Prints a table of the connection usages.", () => PrintUsages());
-
-			yield return new GenericConsoleCommand<int, int, eConnectionType, int>("Route",
-			                                                                       "Routes source to destination. Usage: Route <sourceId> <destId> <connType> <roomId>",
-			                                                                       (a, b, c, d) =>
-				                                                                       RouteConsoleCommand(a, b, c, d));
-			yield return new GenericConsoleCommand<int, int, eConnectionType, int>("RouteGroup",
-			                                                                       "Routes source to destination group. Usage: Route <sourceId> <destGrpId> <connType> <roomId>",
-			                                                                       (a, b, c, d) =>
-				                                                                       RouteGroupConsoleCommand(a, b, c, d));
+			foreach (IConsoleCommand command in RoutingGraphConsole.GetConsoleCommands(this))
+				yield return command;
 		}
 
 		/// <summary>
@@ -680,110 +697,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
 		{
 			return base.GetConsoleCommands();
-		}
-
-		private string PrintSources()
-		{
-			TableBuilder builder = new TableBuilder("Id", "Source");
-
-			foreach (ISource source in Sources.GetChildren().OrderBy(c => c.Id))
-				builder.AddRow(source.Id, source);
-
-			return builder.ToString();
-		}
-
-		private string PrintDestinations()
-		{
-			TableBuilder builder = new TableBuilder("Id", "Destination");
-
-			foreach (IDestination destination in Destinations.GetChildren().OrderBy(c => c.Id))
-				builder.AddRow(destination.Id, destination);
-
-			return builder.ToString();
-		}
-
-		/// <summary>
-		/// Loop over the devices, build a table of inputs, outputs, and their statuses.
-		/// </summary>
-		private string PrintTable()
-		{
-			RoutingGraphTableBuilder builder = new RoutingGraphTableBuilder(this);
-			return builder.ToString();
-		}
-
-		private string PrintConnections()
-		{
-			TableBuilder builder = new TableBuilder("Source", "Output", "Destination", "Input", "Type");
-
-			foreach (Connection con in Connections.GetChildren().OrderBy(c => c.Source.Device).ThenBy(c => c.Source.Address))
-				builder.AddRow(con.Source, con.Source.Address, con.Destination, con.Destination.Address, con.ConnectionType);
-
-			return builder.ToString();
-		}
-
-		/// <summary>
-		/// Loop over the connections and build a table of usages.
-		/// </summary>
-		private string PrintUsages()
-		{
-			TableBuilder builder = new TableBuilder("Connection", "Type", "Source", "Rooms");
-
-			Connection[] connections = Connections.ToArray();
-
-			for (int index = 0; index < connections.Length; index++)
-			{
-				Connection connection = connections[index];
-				ConnectionUsageInfo info = ConnectionUsages.GetConnectionUsageInfo(connection);
-				int row = 0;
-
-				foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(connection.ConnectionType))
-				{
-					string connectionString = row == 0 ? string.Format("{0} - {1}", connection.Id, connection.Name) : string.Empty;
-					EndpointInfo? source = info.GetSource(type);
-					int[] rooms = info.GetRooms(type).ToArray();
-					string roomsString = rooms.Length == 0 ? string.Empty : StringUtils.ArrayFormat(rooms);
-
-					builder.AddRow(connectionString, type, source, roomsString);
-
-					row++;
-				}
-
-				if (index < connections.Length - 1)
-					builder.AddSeparator();
-			}
-
-			return builder.ToString();
-		}
-
-		private string RouteConsoleCommand(int source, int destination, eConnectionType connectionType, int roomId)
-		{
-			if (!Sources.ContainsChild(source) || !Destinations.ContainsChild(destination))
-				return "Krang does not contains a source or destination with that id";
-
-			Route(Sources.GetChild(source), Destinations.GetChild(destination), connectionType, roomId);
-
-			return "Sucessfully executed route command";
-		}
-
-		private string RouteGroupConsoleCommand(int source, int destination, eConnectionType connectionType, int roomId)
-		{
-			if (!Sources.ContainsChild(source) || !DestinationGroups.ContainsChild(destination))
-				return "Krang does not contains a source or destination group with that id";
-
-			Route(Sources.GetChild(source), DestinationGroups.GetChild(destination), connectionType, roomId);
-
-			return "Sucessfully executed route command";
-		}
-
-		private void Route(ISource source, IDestinationGroup destinationGroup, eConnectionType connectionType, int roomId)
-		{
-			foreach (
-				IDestination destination in
-				destinationGroup.Destinations.Where(Destinations.ContainsChild).Select(d => Destinations.GetChild(d)))
-			{
-				IDestination destination1 = destination;
-				ThreadingUtils.SafeInvoke(() => Route(source, destination1, connectionType, roomId));
-			}
 		}
 
 		#endregion
