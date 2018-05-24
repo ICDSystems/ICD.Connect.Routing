@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
@@ -342,7 +343,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="finalDestinations"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		public IEnumerable<Connection> GetOutputConnections(DeviceControlInfo sourceEndpoint, IEnumerable<EndpointInfo> finalDestinations, eConnectionType flag)
+		public IEnumerable<Connection> GetOutputConnections(DeviceControlInfo sourceEndpoint,
+		                                                    IEnumerable<EndpointInfo> finalDestinations, eConnectionType flag)
 		{
 			if (finalDestinations == null)
 				throw new ArgumentNullException("finalDestinations");
@@ -354,18 +356,34 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				Connection input = GetInputConnection(finalDestination);
-				if (input == null)
-					return Enumerable.Empty<Connection>();
+				IcdHashSet<Connection> inputs =
+					finalDestinations.Distinct()
+					                 .Select(d => GetInputConnection(d))
+					                 .Where(c => c != null)
+					                 .ToIcdHashSet();
 
 				return
 					GetOutputConnections(sourceEndpoint.DeviceId, sourceEndpoint.ControlId, flag)
-						.Where(c => HasPath(c, input, flag));
+						.Where(c => HasPathAny(c, inputs, flag));
 			}
 			finally
 			{
 				m_ConnectionsSection.Leave();
 			}
+		}
+
+		private bool HasPathAny(Connection output, IEnumerable<Connection> inputs, eConnectionType flag)
+		{
+			if (output == null)
+				throw new ArgumentNullException("output");
+
+			if (inputs == null)
+				throw new ArgumentNullException("input");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("ConnectionType has multiple flags", "flag");
+
+			return inputs.Any(i => HasPath(output, i, flag));
 		}
 
 		private bool HasPath(Connection output, Connection input, eConnectionType flag)
@@ -554,6 +572,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		#endregion
 
 		#region Caching
+
 		/// <summary>
 		/// Called when children are added to the collection before any events are raised.
 		/// </summary>
