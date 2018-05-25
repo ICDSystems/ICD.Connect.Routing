@@ -21,7 +21,7 @@ namespace ICD.Connect.Routing.SPlus
 	public delegate ushort SPlusSwitcherShimClearOutput(ushort output);
 
 
-	[PublicAPI("SPlus")]
+	[PublicAPI("S+")]
 	public sealed class SPlusSwitcherShim : AbstractSPlusDeviceShim<SPlusSwitcher>
 	{
 		#region Callbacks
@@ -55,21 +55,10 @@ namespace ICD.Connect.Routing.SPlus
 		#region Public Methods
 
 		/// <summary>
-		/// Sets the wrapped originator.
-		/// </summary>
-		/// <param name="id"></param>
-		public override void SetOriginator(int id)
-		{
-			base.SetOriginator(id);
-
-			m_Control = Originator.Controls.GetControl<SPlusSwitcherControl>();
-		}
-
-		/// <summary>
 		/// Triggers a source detection check for the given input.
 		/// </summary>
 		/// <param name="input"></param>
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public void UpdateSourceDetection(ushort input)
 		{
 			if (m_Control == null)
@@ -82,7 +71,7 @@ namespace ICD.Connect.Routing.SPlus
 		/// Triggers an input routing check for the given output.
 		/// </summary>
 		/// <param name="output"></param>
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public void UpdateSwitcherOutput(ushort output)
 		{
 			if (m_Control == null)
@@ -94,19 +83,6 @@ namespace ICD.Connect.Routing.SPlus
 				m_Control.ClearOutput(output, eConnectionType.Video | eConnectionType.Audio);
 			else
 				m_Control.SetInputForOutput(output, (int)input, eConnectionType.Video | eConnectionType.Audio);
-		}
-
-		/// <summary>
-		/// Sets the online state of the current switcher device.
-		/// </summary>
-		/// <param name="online"></param>
-		[PublicAPI("SPlus")]
-		public void SetDeviceOnline(ushort online)
-		{
-			if (m_Control == null)
-				return;
-
-			m_Control.Parent.SetOnlineStatus(online != 0);
 		}
          
 		#endregion
@@ -124,7 +100,9 @@ namespace ICD.Connect.Routing.SPlus
 			if(originator == null)
 				return;
 
-			Subscribe(originator.Controls.GetControl<SPlusSwitcherControl>());
+			m_Control = originator.Controls.GetControl<SPlusSwitcherControl>();
+
+			Subscribe(m_Control);
 		}
 
 		/// <summary>
@@ -139,20 +117,8 @@ namespace ICD.Connect.Routing.SPlus
 				return;
 
 			Unsubscribe(originator.Controls.GetControl<SPlusSwitcherControl>());
-		}
 
-		protected override void EnvironmentLoaded(EnvironmentLoadedEventInfo environmentLoadedEventInfo)
-		{
-			base.EnvironmentLoaded(environmentLoadedEventInfo);
-
-			SetOriginator(Originator.Id);
-		}
-
-		protected override void EnvironmentUnloaded(EnvironmentUnloadedEventInfo environmentUnloadedEventInfo)
-		{
-			base.EnvironmentUnloaded(environmentUnloadedEventInfo);
-
-			SetOriginator(0);
+			m_Control = null;
 		}
 
 		#endregion
