@@ -420,8 +420,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
-			return FindPathsMulti(sourceEndpoint, destination.GetEndpoints(), flag, roomId).Select(kvp => kvp.Value)
-			                                                                               .FirstOrDefault(p => p != null);
+			return destination.GetEndpoints()
+			                  .Select(d => FindPath(sourceEndpoint, d, flag, roomId))
+			                  .FirstOrDefault(p => p != null);
 		}
 
 		/// <summary>
@@ -526,8 +527,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
 			// Ensure the source has a valid output connection
-			Connection outputConnection = m_Connections.GetOutputConnection(source);
-			if (outputConnection == null || !outputConnection.ConnectionType.HasFlag(flag))
+			Connection outputConnection = m_Connections.GetOutputConnection(source, destination, flag);
+			if (outputConnection == null)
 				return null;
 
 			// Ensure the destination has a valid input connection
@@ -537,7 +538,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			IEnumerable<Connection> path =
 				RecursionUtils.BreadthFirstSearchPath(outputConnection, inputConnection,
-													  c => GetConnectionChildren(source, destination, c, flag, roomId));
+				                                      c => GetConnectionChildren(source, destination, c,
+				                                                                 flag, roomId));
 
 			return path == null ? null : new ConnectionPath(path, flag);
 		}
@@ -596,7 +598,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			Connection sourceConnection = m_Connections.GetOutputConnection(source);
 
-			foreach (EndpointInfo destination in destinationsSet.Distinct())
+			foreach (EndpointInfo destination in destinationsSet)
 			{
 				// Ensure the source has a valid output connection.
 				if (sourceConnection == null || !sourceConnection.ConnectionType.HasFlag(flag))
@@ -654,9 +656,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			EndpointInfo[] destinationEndpoints = destination.GetEndpoints().ToArray();
 
 			return source.GetEndpoints()
-			             .SelectMany(e => FindPathsMulti(e, destinationEndpoints, flag, roomId))
-			             .Where(kvp => kvp.Value != null)
-			             .Select(kvp => kvp.Value);
+			             .SelectMany(s => destinationEndpoints.SelectMany(d => FindPaths(s, d, flag, roomId)));
 		}
 
 		/// <summary>
