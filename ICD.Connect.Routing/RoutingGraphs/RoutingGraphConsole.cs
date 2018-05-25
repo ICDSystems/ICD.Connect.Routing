@@ -117,8 +117,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		{
 			TableBuilder builder = new TableBuilder("Source", "Type", "Destination");
 
-			foreach (ISource source in instance.Sources)
+			ISource[] sources = instance.Sources.ToArray();
+
+			for (int index = 0; index < sources.Length; index++)
 			{
+				ISource source = sources[index];
+
 				bool writeSource = true;
 
 				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
@@ -153,7 +157,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				}
 
 				// Put a separator between the sources
-				if (!writeSource)
+				if (!writeSource && index < sources.Length - 1)
 					builder.AddSeparator();
 			}
 
