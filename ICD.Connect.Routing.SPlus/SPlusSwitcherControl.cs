@@ -35,19 +35,19 @@ namespace ICD.Connect.Routing.SPlus
 
 		#region S+ Events
 
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public SPlusGetSignalDetectedState GetSignalDetectedStateCallback { get; set; }
 
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public SPlusGetInputs GetInputsCallback { get; set; }
 
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public SPlusGetOutputs GetOutputsCallback { get; set; }
 
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public SPlusRoute RouteCallback { get; set; }
 
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public SPlusClearOutput ClearOutputCallback { get; set; }
 
 		#endregion
@@ -93,7 +93,7 @@ namespace ICD.Connect.Routing.SPlus
 		/// </summary>
 		/// <param name="input"></param>
 		/// <param name="type"></param>
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public void UpdateSourceDetection(int input, eConnectionType type)
 		{
 			bool state = GetSignalDetectedStateCallback != null && GetSignalDetectedStateCallback(input, type);
@@ -106,7 +106,7 @@ namespace ICD.Connect.Routing.SPlus
 		/// <param name="output"></param>
 		/// <param name="input"></param>
 		/// <param name="type"></param>
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public void SetInputForOutput(int output, int input, eConnectionType type)
 		{
 			m_Cache.SetInputForOutput(output, input, type);
