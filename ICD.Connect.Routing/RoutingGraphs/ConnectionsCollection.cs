@@ -233,7 +233,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				Dictionary<int, Connection> map;
 				return m_OutputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values
-					            .Where(c => EnumUtils.HasFlags(c.ConnectionType, flag))
+					            .Where(c => c.ConnectionType.HasFlag(flag))
 					            .ToArray()
 					       : Enumerable.Empty<Connection>();
 			}
