@@ -47,16 +47,34 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the connections collection.
+		/// </summary>
 		IConnectionsCollection Connections { get; }
 
+		/// <summary>
+		/// Gets the connection usages collection.
+		/// </summary>
 		IConnectionUsageCollection ConnectionUsages { get; }
 
+		/// <summary>
+		/// Gets the static routes collection.
+		/// </summary>
 		IOriginatorCollection<StaticRoute> StaticRoutes { get; }
 
+		/// <summary>
+		/// Gets the sources collection.
+		/// </summary>
 		ISourceCollection Sources { get; }
 
+		/// <summary>
+		/// Gets the destinations collection.
+		/// </summary>
 		IDestinationCollection Destinations { get; }
 
+		/// <summary>
+		/// Gets the destination groups collection.
+		/// </summary>
 		IOriginatorCollection<IDestinationGroup> DestinationGroups { get; }
 
 		#endregion

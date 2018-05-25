@@ -77,9 +77,9 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		/// <param name="sourceDeviceId"></param>
 		/// <param name="sourceControlId"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <returns></returns>
-		IEnumerable<Connection> GetOutputConnections(int sourceDeviceId, int sourceControlId, eConnectionType type);
+		IEnumerable<Connection> GetOutputConnections(int sourceDeviceId, int sourceControlId, eConnectionType flag);
 
 		/// <summary>
 		/// Gets the output connections for the given source device matching any of the given type flags.
@@ -89,6 +89,17 @@ namespace ICD.Connect.Routing.Connections
 		/// <param name="type"></param>
 		/// <returns></returns>
 		IEnumerable<Connection> GetOutputConnectionsAny(int sourceDeviceId, int sourceControlId, eConnectionType type);
+
+		/// <summary>
+		/// Given a source endpoint and a final destination endpoint,
+		/// returns the possible output connection from the source to reach the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="finalDestination"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		Connection GetOutputConnection(EndpointInfo source, EndpointInfo finalDestination, eConnectionType flag);
 
 		#endregion
 
