@@ -5,6 +5,7 @@ using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Connect.Routing.Endpoints;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Connections
 {
@@ -202,6 +203,20 @@ namespace ICD.Connect.Routing.Connections
 				throw new ArgumentNullException("item");
 
 			return m_Section.Execute(() => m_Contains.Contains(item));
+		}
+
+		/// <summary>
+		/// Gets the string representation for this instance.
+		/// </summary>
+		/// <returns></returns>
+		public override string ToString()
+		{
+			ReprBuilder builder = new ReprBuilder(this);
+
+			builder.AppendProperty("Type", m_Type);
+			builder.AppendProperty("Connections", StringUtils.ArrayFormat(this.Select(c => c.ToStringShorthand())));
+
+			return builder.ToString();
 		}
 
 		#endregion
