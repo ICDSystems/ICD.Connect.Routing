@@ -111,13 +111,13 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		/// <param name="destination"></param>
 		/// <param name="input"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
 		/// <param name="inputActive"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The source</returns>
 		EndpointInfo? GetActiveSourceEndpoint(IRouteDestinationControl destination, int input,
-		                                      eConnectionType type, bool signalDetected, bool inputActive);
+		                                      eConnectionType flag, bool signalDetected, bool inputActive);
 
 		/// <summary>
 		/// Finds the actively routed source for the destination at the given input address.

@@ -215,24 +215,24 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		/// <param name="destination"></param>
 		/// <param name="input"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
 		/// <param name="inputActive"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The source</returns>
 		public override EndpointInfo? GetActiveSourceEndpoint(IRouteDestinationControl destination, int input,
-		                                                      eConnectionType type, bool signalDetected, bool inputActive)
+		                                                      eConnectionType flag, bool signalDetected, bool inputActive)
 		{
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			if (EnumUtils.HasMultipleFlags(type))
+			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentNullException("type", "type must have a single flag");
 
-			if (signalDetected && !destination.GetSignalDetectedState(input, type))
+			if (signalDetected && !destination.GetSignalDetectedState(input, flag))
 				return null;
 
-			if (inputActive && !destination.GetInputActiveState(input, type))
+			if (inputActive && !destination.GetInputActiveState(input, flag))
 				return null;
 
 			Connection inputConnection = m_Connections.GetInputConnection(destination, input);
@@ -240,7 +240,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return null;
 
 			// Narrow the type by what the connection supports
-			if (!inputConnection.ConnectionType.HasFlag(type))
+			if (!inputConnection.ConnectionType.HasFlag(flag))
 				return null;
 
 			IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
@@ -251,9 +251,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (sourceAsMidpoint == null)
 				return sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
 
-			ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, type);
+			ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, flag);
 			return sourceConnector.HasValue
-				       ? GetActiveSourceEndpoint(sourceAsMidpoint, sourceConnector.Value.Address, type, signalDetected, inputActive)
+				       ? GetActiveSourceEndpoint(sourceAsMidpoint, sourceConnector.Value.Address, flag, signalDetected, inputActive)
 				       : sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
 		}
 
