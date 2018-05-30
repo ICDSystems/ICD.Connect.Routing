@@ -159,10 +159,8 @@ namespace ICD.Connect.Routing.Atlona
 		[PublicAPI]
 		public void ConfigurePort(ISerialPort port)
 		{
-			if(port is IComPort)
+			if (port is IComPort)
 				ConfigureComPort(port as IComPort);
-
-			UpdateCachedOnlineStatus();
 		}
 
 		/// <summary>
@@ -241,6 +239,8 @@ namespace ICD.Connect.Routing.Atlona
 		private void PortOnConnectionStatusChanged(object sender, BoolEventArgs args)
 		{
 			m_SerialBuffer.Clear();
+
+			OnConnectedStateChanged.Raise(this, new BoolEventArgs(args.Data));
 		}
 
 		/// <summary>

@@ -17,7 +17,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		where TSettings : IDmps300CDeviceSettings, new()
 	{
 		public event EventHandler<XSigEventArgs> OnSigEvent;
-        public event EventHandler<BoolEventArgs> OnConnectedStateChanged;
 
 		private readonly AsyncTcpClient m_Client;
 		private readonly XSigSerialBuffer m_Buffer;
@@ -33,13 +32,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// <summary>
 		/// Gets the network port of the device.
 		/// </summary>
-		public ushort Port { 
-			get { return m_Client.Port; }
-			protected set
-			{
-				m_Client.Port = value; 
-				m_ConnectionStateManager.SetPort(m_Client);
-			} }
+		public ushort Port { get { return m_Client.Port; } protected set { m_Client.Port = value; } }
 
 		#endregion
 
@@ -56,6 +49,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 			m_ConnectionStateManager = new ConnectionStateManager(this);
 			m_ConnectionStateManager.OnIsOnlineStateChanged += ClientOnIsOnlineStateChanged;
 			m_ConnectionStateManager.OnSerialDataReceived += ClientOnSerialDataReceived;
+			
+			m_ConnectionStateManager.SetPort(m_Client);
 		}
 
 		/// <summary>
