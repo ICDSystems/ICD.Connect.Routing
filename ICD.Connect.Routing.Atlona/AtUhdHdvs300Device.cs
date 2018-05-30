@@ -6,15 +6,15 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Timers;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
+using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
-using ICD.Connect.Protocol.Heartbeat;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Atlona
 {
-	public sealed class AtUhdHdvs300Device : AbstractDevice<AtUhdHdvs300DeviceSettings>, IConnectable
+	public sealed class AtUhdHdvs300Device : AbstractDevice<AtUhdHdvs300DeviceSettings>
 	{
 		/// <summary>
 		/// The device likes to drop connection if there's no activity for 5 mins,
@@ -39,10 +39,9 @@ namespace ICD.Connect.Routing.Atlona
 
 		private readonly AtUhdHdvs300DeviceSerialBuffer m_SerialBuffer;
 		private readonly SafeTimer m_KeepAliveTimer;
+		private readonly ConnectionStateManager m_ConnectionStateManager;
 
 		private bool m_Initialized;
-		private bool m_IsConnected;
-		private ISerialPort m_Port;
 
 		#region Properties
 
@@ -56,26 +55,12 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		public string Password { get; set; }
 
-		public Heartbeat Heartbeat { get; private set; }
-
 		/// <summary>
 		/// Returns true when the codec is connected.
 		/// </summary>
 		public bool IsConnected
 		{
-			get { return m_IsConnected; }
-			private set
-			{
-				if (value == m_IsConnected)
-					return;
-
-				m_IsConnected = value;
-
-				if (!m_IsConnected)
-					Initialized = false;
-
-				OnConnectedStateChanged.Raise(this, new BoolEventArgs(m_IsConnected));
-			}
+			get { return m_ConnectionStateManager.IsConnected; }
 		}
 
 		/// <summary>
@@ -102,7 +87,10 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		public AtUhdHdvs300Device()
 		{
-			Heartbeat = new Heartbeat(this);
+			m_ConnectionStateManager = new ConnectionStateManager(this){ConfigurePort = ConfigurePort};
+			m_ConnectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
+			m_ConnectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
+			m_ConnectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived;
 
 			m_SerialBuffer = new AtUhdHdvs300DeviceSerialBuffer();
 			Subscribe(m_SerialBuffer);
@@ -122,13 +110,14 @@ namespace ICD.Connect.Routing.Atlona
 			OnInitializedChanged = null;
 			OnResponseReceived = null;
 
+			m_ConnectionStateManager.OnConnectedStateChanged -= PortOnConnectionStatusChanged;
+			m_ConnectionStateManager.OnIsOnlineStateChanged -= PortOnIsOnlineStateChanged;
+			m_ConnectionStateManager.OnSerialDataReceived -= PortOnSerialDataReceived;
+			m_ConnectionStateManager.Dispose();
+
 			m_KeepAliveTimer.Dispose();
 
-			Heartbeat.StopMonitoring();
-			Heartbeat.Dispose();
-
 			Unsubscribe(m_SerialBuffer);
-			Unsubscribe(m_Port);
 
 			base.DisposeFinal(disposing);
 		}
@@ -154,25 +143,13 @@ namespace ICD.Connect.Routing.Atlona
 			if (args != null)
 				command = string.Format(command, args);
 
-			if (m_Port == null)
-			{
-				Logger.AddEntry(eSeverity.Error, "{0} - Unable to communicate - port is null", this);
-				return;
-			}
-
-			if (!IsConnected)
-			{
-				Logger.AddEntry(eSeverity.Warning, "{0} - Disconnected, attempting reconnect", this);
-				Connect();
-			}
-
 			if (!IsConnected)
 			{
 				Logger.AddEntry(eSeverity.Critical, "{0} - Unable to connect", this);
 				return;
 			}
 
-			m_Port.Send(command + '\r');
+			m_ConnectionStateManager.Send(command + '\r');
 		}
 
 		/// <summary>
@@ -180,25 +157,10 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		/// <param name="port"></param>
 		[PublicAPI]
-		public void SetPort(ISerialPort port)
+		public void ConfigurePort(ISerialPort port)
 		{
-			if (port == m_Port)
-				return;
-
-			if (port is IComPort)
+			if(port is IComPort)
 				ConfigureComPort(port as IComPort);
-
-			if (m_Port != null)
-				Disconnect();
-
-			Unsubscribe(m_Port);
-			m_Port = port;
-			Subscribe(m_Port);
-
-			if (m_Port != null)
-				Connect();
-
-			Heartbeat.StartMonitoring();
 
 			UpdateCachedOnlineStatus();
 		}
@@ -221,42 +183,12 @@ namespace ICD.Connect.Routing.Atlona
 		}
 
 		/// <summary>
-		/// Connect to the codec.
-		/// </summary>
-		[PublicAPI]
-		public void Connect()
-		{
-			if (m_Port == null)
-			{
-				Logger.AddEntry(eSeverity.Critical, "{0} - Unable to connect, port is null");
-				return;
-			}
-
-			m_Port.Connect();
-		}
-
-		/// <summary>
-		/// Disconnect from the codec.
-		/// </summary>
-		[PublicAPI]
-		public void Disconnect()
-		{
-			if (m_Port == null)
-			{
-				Logger.AddEntry(eSeverity.Critical, "{0} - Unable to disconnect, port is null");
-				return;
-			}
-
-			m_Port.Disconnect();
-		}
-
-		/// <summary>
 		/// Gets the current online status of the device.
 		/// </summary>
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return m_Port != null && m_Port.IsOnline;
+			return m_ConnectionStateManager != null && m_ConnectionStateManager.IsConnected;
 		}
 
 		/// <summary>
@@ -292,34 +224,6 @@ namespace ICD.Connect.Routing.Atlona
 		#region Port Callbacks
 
 		/// <summary>
-		/// Subscribes to the port events.
-		/// </summary>
-		/// <param name="port"></param>
-		private void Subscribe(ISerialPort port)
-		{
-			if (port == null)
-				return;
-
-			port.OnSerialDataReceived += PortOnSerialDataReceived;
-			port.OnConnectedStateChanged += PortOnConnectionStatusChanged;
-			port.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
-		}
-
-		/// <summary>
-		/// Unsubscribe from the port events.
-		/// </summary>
-		/// <param name="port"></param>
-		private void Unsubscribe(ISerialPort port)
-		{
-			if (port == null)
-				return;
-
-			port.OnSerialDataReceived -= PortOnSerialDataReceived;
-			port.OnConnectedStateChanged -= PortOnConnectionStatusChanged;
-			port.OnIsOnlineStateChanged -= PortOnIsOnlineStateChanged;
-		}
-
-		/// <summary>
 		/// Called when serial data is recieved from the port.
 		/// </summary>
 		/// <param name="sender"></param>
@@ -337,8 +241,6 @@ namespace ICD.Connect.Routing.Atlona
 		private void PortOnConnectionStatusChanged(object sender, BoolEventArgs args)
 		{
 			m_SerialBuffer.Clear();
-
-			IsConnected = args.Data;
 		}
 
 		/// <summary>
@@ -420,7 +322,7 @@ namespace ICD.Connect.Routing.Atlona
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.Port = m_Port == null ? (int?)null : m_Port.Id;
+			settings.Port = m_ConnectionStateManager.PortNumber;
 			settings.Username = Username;
 			settings.Password = Password;
 		}
@@ -434,7 +336,7 @@ namespace ICD.Connect.Routing.Atlona
 
 			Username = null;
 			Password = null;
-			SetPort(null);
+			m_ConnectionStateManager.SetPort(null);
 		}
 
 		/// <summary>
@@ -458,7 +360,7 @@ namespace ICD.Connect.Routing.Atlona
 					Logger.AddEntry(eSeverity.Error, "No serial port with id {0}", settings.Port);
 			}
 
-			SetPort(port);
+			m_ConnectionStateManager.SetPort(port);
 		}
 
 		#endregion

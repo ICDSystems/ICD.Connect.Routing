@@ -47,8 +47,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Receiver
 
 			m_DmOutput = settings.DmOutput;
 			Port = (ushort)(START_PORT + PORT_INCREMENT * (m_DmOutput - START_DM_OUTPUT));
-
-			Connect();
 		}
 	}
 }
