@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
  - Adding new input and old input properties to route change event args
+ - Serial devices use ConnectionStateManager for maintaining connection to remote endpoints
 
 ### Changed
  - Pathfinding uses a prebuilt cache to narrow search results
