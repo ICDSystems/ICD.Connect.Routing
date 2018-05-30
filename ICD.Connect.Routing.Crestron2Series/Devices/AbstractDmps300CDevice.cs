@@ -5,7 +5,6 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
-using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Network.Tcp;
