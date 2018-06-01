@@ -8,6 +8,9 @@ namespace ICD.Connect.Routing.Proxies
 {
 	public abstract class AbstractProxyRouteSourceControl : AbstractProxyRouteControl, IProxyRouteSourceControl
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 		/// <summary>
