@@ -78,7 +78,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-			return m_ConnectionStateManager != null && m_ConnectionStateManager.IsConnected;
+			return m_ConnectionStateManager != null && m_ConnectionStateManager.IsOnline;
 		}
 
 		#region Methods
