@@ -32,6 +32,20 @@ namespace ICD.Connect.Routing.Controls
 		bool GetActiveTransmissionState(int output, eConnectionType type);
 
 		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		ConnectorInfo GetOutput(int output);
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		bool ContainsOutput(int output);
+
+		/// <summary>
 		/// Returns the outputs.
 		/// </summary>
 		/// <returns></returns>
