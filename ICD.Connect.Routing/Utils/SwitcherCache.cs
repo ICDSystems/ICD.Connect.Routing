@@ -331,7 +331,7 @@ namespace ICD.Connect.Routing.Utils
 			UpdateInputOutputMapSingle(oldInput, input, output, type);
 			SetActiveTransmissionStateSingle(output, type, input.HasValue);
 
-			OnRouteChange.Raise(this, new RouteChangeEventArgs(output, type));
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(oldInput, input, output, type));
 			return true;
 		}
 

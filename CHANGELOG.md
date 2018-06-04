@@ -5,6 +5,25 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+ - Adding new input and old input properties to route change event args
+ - Serial devices use ConnectionStateManager for maintaining connection to remote endpoints
+
+### Changed
+ - Pathfinding uses a prebuilt cache to narrow search results
+
+## [6.0.0] - 2018-05-24
+### Added
+ - Relocated SPlusSwitcherShim to this project.
+
+### Removed
+ - Removed element property from settings
+
+## [5.2.1] - 2018-05-09
+### Changed
+ - Fixed bug where cards were being instantiated in the wrong order
+ - Fixed bug where pathfinding would fail if a single address fails
+ - Fixed bug where we would try to unregister cards that would error
 
 ## [5.2.0] - 2018-05-02
 ### Added

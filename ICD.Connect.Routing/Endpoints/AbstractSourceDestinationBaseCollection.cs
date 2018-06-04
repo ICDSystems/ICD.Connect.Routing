@@ -57,33 +57,34 @@ namespace ICD.Connect.Routing.Endpoints
 		}
 
 		/// <summary>
-		/// Called each time a child is added to the collection before any events are raised.
+		/// Called when children are added to the collection before any events are raised.
 		/// </summary>
-		/// <param name="child"></param>
-		protected override void ChildAdded(T child)
+		/// <param name="children"></param>
+		protected override void ChildrenAdded(IEnumerable<T> children)
 		{
-			base.ChildAdded(child);
-
 			m_EndpointCacheSection.Enter();
 
 			try
 			{
-				DeviceControlInfo deviceControl = child.GetDeviceControlInfo();
-
-				if (!m_EndpointCache.ContainsKey(deviceControl))
-					m_EndpointCache[deviceControl] = new Dictionary<int, Dictionary<eConnectionType, List<T>>>();
-
-				foreach (int address in child.GetAddresses())
+				foreach (T child in children)
 				{
-					if (!m_EndpointCache[deviceControl].ContainsKey(address))
-						m_EndpointCache[deviceControl].Add(address, new Dictionary<eConnectionType, List<T>>());
+					DeviceControlInfo deviceControl = child.GetDeviceControlInfo();
 
-					foreach (eConnectionType combination in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
+					if (!m_EndpointCache.ContainsKey(deviceControl))
+						m_EndpointCache[deviceControl] = new Dictionary<int, Dictionary<eConnectionType, List<T>>>();
+
+					foreach (int address in child.GetAddresses())
 					{
-						if (!m_EndpointCache[deviceControl][address].ContainsKey(combination))
-							m_EndpointCache[deviceControl][address].Add(combination, new List<T>());
+						if (!m_EndpointCache[deviceControl].ContainsKey(address))
+							m_EndpointCache[deviceControl].Add(address, new Dictionary<eConnectionType, List<T>>());
 
-						m_EndpointCache[deviceControl][address][combination].AddSorted(child, new OriginatorIdComparer<T>());
+						foreach (eConnectionType combination in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
+						{
+							if (!m_EndpointCache[deviceControl][address].ContainsKey(combination))
+								m_EndpointCache[deviceControl][address].Add(combination, new List<T>());
+
+							m_EndpointCache[deviceControl][address][combination].AddSorted(child, new OriginatorIdComparer<T>());
+						}
 					}
 				}
 			}
@@ -94,33 +95,34 @@ namespace ICD.Connect.Routing.Endpoints
 		}
 
 		/// <summary>
-		/// Called each time a child is removed from the collection before any events are raised.
+		/// Called when children are removed from the collection before any events are raised.
 		/// </summary>
-		/// <param name="child"></param>
-		protected override void ChildRemoved(T child)
+		/// <param name="children"></param>
+		protected override void ChildrenRemoved(IEnumerable<T> children)
 		{
-			base.ChildRemoved(child);
-
 			m_EndpointCacheSection.Enter();
 
 			try
 			{
-				DeviceControlInfo deviceControl = child.GetDeviceControlInfo();
-
-				if (!m_EndpointCache.ContainsKey(deviceControl))
-					return;
-
-				foreach (int address in child.GetAddresses())
+				foreach (T child in children)
 				{
-					if (!m_EndpointCache[deviceControl].ContainsKey(address))
-						continue;
+					DeviceControlInfo deviceControl = child.GetDeviceControlInfo();
 
-					foreach (eConnectionType combination in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
+					if (!m_EndpointCache.ContainsKey(deviceControl))
+						return;
+
+					foreach (int address in child.GetAddresses())
 					{
-						if (!m_EndpointCache[deviceControl][address].ContainsKey(combination))
+						if (!m_EndpointCache[deviceControl].ContainsKey(address))
 							continue;
 
-						m_EndpointCache[deviceControl][address][combination].Remove(child);
+						foreach (eConnectionType combination in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
+						{
+							if (!m_EndpointCache[deviceControl][address].ContainsKey(combination))
+								continue;
+
+							m_EndpointCache[deviceControl][address][combination].Remove(child);
+						}
 					}
 				}
 			}

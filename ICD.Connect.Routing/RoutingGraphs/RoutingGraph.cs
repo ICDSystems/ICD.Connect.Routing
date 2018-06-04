@@ -73,16 +73,34 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the connections collection.
+		/// </summary>
 		public override IConnectionsCollection Connections { get { return m_Connections; } }
 
+		/// <summary>
+		/// Gets the static routes collection.
+		/// </summary>
 		public override IOriginatorCollection<StaticRoute> StaticRoutes { get { return m_StaticRoutes; } }
 
+		/// <summary>
+		/// Gets the connection usages collection.
+		/// </summary>
 		public override IConnectionUsageCollection ConnectionUsages { get { return m_ConnectionUsages; } }
 
+		/// <summary>
+		/// Gets the sources collection.
+		/// </summary>
 		public override ISourceCollection Sources { get { return m_Sources; } }
 
+		/// <summary>
+		/// Gets the destinations collection.
+		/// </summary>
 		public override IDestinationCollection Destinations { get { return m_Destinations; } }
 
+		/// <summary>
+		/// Gets the destination groups collection.
+		/// </summary>
 		public override IOriginatorCollection<IDestinationGroup> DestinationGroups { get { return m_DestinationGroups; } }
 
 		#endregion
@@ -197,24 +215,24 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		/// <param name="destination"></param>
 		/// <param name="input"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
 		/// <param name="inputActive"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The source</returns>
 		public override EndpointInfo? GetActiveSourceEndpoint(IRouteDestinationControl destination, int input,
-		                                                      eConnectionType type, bool signalDetected, bool inputActive)
+		                                                      eConnectionType flag, bool signalDetected, bool inputActive)
 		{
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			if (EnumUtils.HasMultipleFlags(type))
+			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentNullException("type", "type must have a single flag");
 
-			if (signalDetected && !destination.GetSignalDetectedState(input, type))
+			if (signalDetected && !destination.GetSignalDetectedState(input, flag))
 				return null;
 
-			if (inputActive && !destination.GetInputActiveState(input, type))
+			if (inputActive && !destination.GetInputActiveState(input, flag))
 				return null;
 
 			Connection inputConnection = m_Connections.GetInputConnection(destination, input);
@@ -222,7 +240,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return null;
 
 			// Narrow the type by what the connection supports
-			if (!inputConnection.ConnectionType.HasFlag(type))
+			if (!inputConnection.ConnectionType.HasFlag(flag))
 				return null;
 
 			IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
@@ -233,9 +251,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (sourceAsMidpoint == null)
 				return sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
 
-			ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, type);
+			ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, flag);
 			return sourceConnector.HasValue
-				       ? GetActiveSourceEndpoint(sourceAsMidpoint, sourceConnector.Value.Address, type, signalDetected, inputActive)
+				       ? GetActiveSourceEndpoint(sourceAsMidpoint, sourceConnector.Value.Address, flag, signalDetected, inputActive)
 				       : sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
 		}
 
@@ -402,8 +420,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
-			return FindPathsMulti(sourceEndpoint, destination.GetEndpoints(), flag, roomId).Select(kvp => kvp.Value)
-			                                                                               .FirstOrDefault(p => p != null);
+			return destination.GetEndpoints()
+			                  .Select(d => FindPath(sourceEndpoint, d, flag, roomId))
+			                  .FirstOrDefault(p => p != null);
 		}
 
 		/// <summary>
@@ -508,8 +527,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
 			// Ensure the source has a valid output connection
-			Connection outputConnection = m_Connections.GetOutputConnection(source);
-			if (outputConnection == null || !outputConnection.ConnectionType.HasFlag(flag))
+			Connection outputConnection = m_Connections.GetOutputConnection(source, destination, flag);
+			if (outputConnection == null)
 				return null;
 
 			// Ensure the destination has a valid input connection
@@ -519,7 +538,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			IEnumerable<Connection> path =
 				RecursionUtils.BreadthFirstSearchPath(outputConnection, inputConnection,
-													  c => GetConnectionChildren(source, c, flag, roomId));
+				                                      c => GetConnectionChildren(source, destination, c,
+				                                                                 flag, roomId));
 
 			return path == null ? null : new ConnectionPath(path, flag);
 		}
@@ -572,12 +592,13 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
+			IcdHashSet<EndpointInfo> destinationsSet = destinations.ToIcdHashSet();
 			IcdHashSet<Connection> destinationConnections = new IcdHashSet<Connection>();
 			Dictionary<Connection, EndpointInfo> connectionToDestinations = new Dictionary<Connection, EndpointInfo>();
 
 			Connection sourceConnection = m_Connections.GetOutputConnection(source);
 
-			foreach (EndpointInfo destination in destinations.Distinct())
+			foreach (EndpointInfo destination in destinationsSet)
 			{
 				// Ensure the source has a valid output connection.
 				if (sourceConnection == null || !sourceConnection.ConnectionType.HasFlag(flag))
@@ -601,7 +622,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			Dictionary<Connection, IEnumerable<Connection>> paths =
 				RecursionUtils.BreadthFirstSearchManyDestinations(sourceConnection,
 				                                                  destinationConnections,
-				                                                  c => GetConnectionChildren(source, c, flag, roomId));
+																  c => GetConnectionChildren(source, destinationsSet, c, flag, roomId));
 
 			foreach (KeyValuePair<Connection, IEnumerable<Connection>> kvp in paths)
 			{
@@ -635,32 +656,63 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			EndpointInfo[] destinationEndpoints = destination.GetEndpoints().ToArray();
 
 			return source.GetEndpoints()
-			             .SelectMany(s => FindPathsMulti(s, destinationEndpoints, flag, roomId))
-			             .Where(kvp => kvp.Value != null)
-			             .Select(kvp => kvp.Value);
+			             .SelectMany(s => destinationEndpoints.SelectMany(d => FindPaths(s, d, flag, roomId)));
 		}
 
 		/// <summary>
 		/// Gets the potential output connections for the given input connection.
 		/// </summary>
 		/// <param name="source"></param>
+		/// <param name="finalDestinations"></param>
 		/// <param name="inputConnection"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		private IEnumerable<Connection> GetConnectionChildren(EndpointInfo source, Connection inputConnection,
-		                                                      eConnectionType type, int roomId)
+		private IEnumerable<Connection> GetConnectionChildren(EndpointInfo source, IEnumerable<EndpointInfo> finalDestinations,
+		                                                      Connection inputConnection, eConnectionType flag, int roomId)
 		{
 			if (inputConnection == null)
 				throw new ArgumentNullException("inputConnection");
 
-			if (EnumUtils.HasMultipleFlags(type))
+			if (finalDestinations == null)
+				throw new ArgumentNullException("finalDestinations");
+
+			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "type");
 
 			return
-				m_Connections.GetOutputConnections(inputConnection.Destination.Device,
-				                                   inputConnection.Destination.Control,
-				                                   type)
+				m_Connections.GetOutputConnections(inputConnection.Destination.GetDeviceControlInfo(),
+				                                   finalDestinations,
+				                                   flag)
+				             .Where(c =>
+				                    // TODO - Needs to support combine spaces
+				                    //ConnectionUsages.CanRouteConnection(c, source, roomId, type) &&
+				                    c.IsAvailableToSourceDevice(source.Device) &&
+				                    c.IsAvailableToRoom(roomId));
+		}
+
+		/// <summary>
+		/// Gets the potential output connections for the given input connection.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="finalDestination"></param>
+		/// <param name="inputConnection"></param>
+		/// <param name="flag"></param>
+		/// <param name="roomId"></param>
+		/// <returns></returns>
+		private IEnumerable<Connection> GetConnectionChildren(EndpointInfo source, EndpointInfo finalDestination, Connection inputConnection,
+		                                                      eConnectionType flag, int roomId)
+		{
+			if (inputConnection == null)
+				throw new ArgumentNullException("inputConnection");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("ConnectionType has multiple flags", "type");
+
+			return
+				m_Connections.GetOutputConnections(inputConnection.Destination.GetDeviceControlInfo(),
+				                                   finalDestination,
+				                                   flag)
 				             .Where(c =>
 									// TODO - Needs to support combine spaces
 									//ConnectionUsages.CanRouteConnection(c, source, roomId, type) &&
@@ -961,7 +1013,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				if (path == null)
 				{
-					Logger.AddEntry(eSeverity.Error, "No path found for route {0}", operation);
+					Log(eSeverity.Error, "No path found for route {0}", operation);
 					continue;
 				}
 
@@ -1012,7 +1064,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				if (path == null)
 				{
-					Logger.AddEntry(eSeverity.Error, "No path found for route {0}", operation);
+					Log(eSeverity.Error, "No path found for route {0}", operation);
 					continue;
 				}
 
@@ -1898,7 +1950,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				}
 				catch (Exception e)
 				{
-					Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate {1} with id {2} - {3}", this, typeof(T).Name,
+					Log(eSeverity.Error, "Failed to instantiate {0} with id {1} - {2}", typeof(T).Name,
 					                settings.Id, e.Message);
 					continue;
 				}
