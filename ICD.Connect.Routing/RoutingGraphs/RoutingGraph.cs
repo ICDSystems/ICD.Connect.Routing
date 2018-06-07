@@ -227,7 +227,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentNullException("destination");
 
 			if (EnumUtils.HasMultipleFlags(flag))
-				throw new ArgumentNullException("type", "type must have a single flag");
+				throw new ArgumentException("Connection type must be a single flag", "flag");
 
 			if (signalDetected && !destination.GetSignalDetectedState(input, flag))
 				return null;
@@ -707,7 +707,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentNullException("inputConnection");
 
 			if (EnumUtils.HasMultipleFlags(flag))
-				throw new ArgumentException("ConnectionType has multiple flags", "type");
+				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
 			return
 				m_Connections.GetOutputConnections(inputConnection.Destination.GetDeviceControlInfo(),
@@ -1963,12 +1963,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.ConnectionSettings.SetRange(
-			                                     Connections.Where(c => c.Serialize)
+			settings.ConnectionSettings.SetRange(Connections.Where(c => c.Serialize)
 			                                                .Select(r => r.CopySettings())
 			                                                .Cast<ISettings>());
-			settings.StaticRouteSettings.SetRange(
-			                                      StaticRoutes.Where(c => c.Serialize)
+			settings.StaticRouteSettings.SetRange(StaticRoutes.Where(c => c.Serialize)
 			                                                  .Select(r => r.CopySettings())
 			                                                  .Cast<ISettings>());
 			settings.SourceSettings.SetRange(Sources.Where(c => c.Serialize).Select(r => r.CopySettings()));
