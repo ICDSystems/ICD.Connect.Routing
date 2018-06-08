@@ -1,4 +1,11 @@
-﻿#if SIMPLSHARP
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ICD.Common.Properties;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Extensions;
+using ICD.Connect.Routing.Connections;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
@@ -13,13 +20,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 	public sealed class DmTx200C2GAdapter :
 		AbstractDmTx200BaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G, DmTx200C2GAdapterSettings>
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public DmTx200C2GAdapter()
-		{
-			Controls.Add(new DmTx200C2GSourceControl(this, 0));
-		}
 
 		public override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G InstantiateTransmitter(byte ipid,
 		                                                                                                      CrestronControlSystem
@@ -38,6 +38,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G(input);
 		}
+
+
 	}
 #else
     public sealed class DmTx200C2GAdapter : AbstractDmTx200BaseAdapter<DmTx200C2GAdapterSettings>

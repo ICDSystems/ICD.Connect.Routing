@@ -1,9 +1,9 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Routing.Devices;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 #endif
-using ICD.Connect.Devices;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters
 {
@@ -11,7 +11,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 	public delegate void TransmitterChangeCallback(IEndpointTransmitterBaseAdapter sender, EndpointTransmitterBase transmitter);
 #endif
 
-	public interface IEndpointTransmitterBaseAdapter : IDevice
+	public interface IEndpointTransmitterBaseAdapter : IRouteSourceDevice
 	{
 #if SIMPLSHARP
 		/// <summary>

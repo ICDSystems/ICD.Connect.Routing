@@ -19,6 +19,11 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 	{
 #if SIMPLSHARP
 
+		protected AbstractDmRmcScalerCAdapter()
+		{
+			Controls.Add(new DmRmcScalerCBaseRouteControl<IDmRmcScalerCAdapter, TScaler>(this, 0));
+		} 
+
 		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>

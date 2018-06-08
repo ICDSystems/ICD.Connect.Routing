@@ -3,9 +3,11 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Devices;
+using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Routing.CrestronPro.Utils;
+using ICD.Connect.Routing.Devices;
+using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -23,7 +25,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 	/// <typeparam name="TTransmitter"></typeparam>
 	/// <typeparam name="TSettings"></typeparam>
 #if SIMPLSHARP
-	public abstract class AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings> : AbstractDevice<TSettings>,
+	public abstract class AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings> : AbstractRouteSourceDevice<TSettings>,
 	                                                                                        IEndpointTransmitterBaseAdapter<TTransmitter>
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.EndpointTransmitterBase
 #else
@@ -62,7 +64,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 					handler(this, m_Transmitter);
 			}
 		}
-
+		
 		/// <summary>
 		/// Gets the wrapped transmitter instance.
 		/// </summary>
@@ -272,7 +274,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 		#endregion
 
-		#region Private Methods
+		#region Protected / Private Methods
 
 		/// <summary>
 		/// Gets the current online status of the device.
@@ -296,7 +298,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// Subscribes to the transmitter events.
 		/// </summary>
 		/// <param name="transmitter"></param>
-		private void Subscribe(TTransmitter transmitter)
+		protected virtual void Subscribe(TTransmitter transmitter)
 		{
 			if (transmitter == null)
 				return;
@@ -308,7 +310,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// Unsubscribes from the transmitter events.
 		/// </summary>
 		/// <param name="transmitter"></param>
-		private void Unsubscribe(TTransmitter transmitter)
+		protected virtual void Unsubscribe(TTransmitter transmitter)
 		{
 			if (transmitter == null)
 				return;

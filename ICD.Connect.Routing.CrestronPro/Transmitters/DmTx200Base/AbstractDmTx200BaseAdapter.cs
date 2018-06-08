@@ -1,4 +1,17 @@
-﻿namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro.DM.Endpoints;
+using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
+using ICD.Common.Properties;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Extensions;
+using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Controls;
+
+namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 {
 	/// <summary>
 	/// Base class for DmTx200 device adapters.
@@ -15,6 +28,60 @@
 		where TSettings : IDmTx200BaseAdapterSettings, new()
 	{
 #if SIMPLSHARP
+		private const int OUTPUT_HDMI = 1;
+
+		private bool m_ActiveTransmissionState;
+
+		#region Properties
+		/// <summary>
+		/// Returns true if an HDMI input source is detected.
+		/// </summary>
+		[PublicAPI]
+		public bool HdmiDetected
+		{
+			get
+			{
+				return Transmitter != null && Transmitter.HdmiInput.SyncDetectedFeedback.BoolValue;
+			}
+		}
+
+		/// <summary>
+		/// Returns true if a VGA input source is detected.
+		/// </summary>
+		[PublicAPI]
+		public bool VgaDetected
+		{
+			get
+			{
+				return Transmitter != null && Transmitter.VgaInput.SyncDetectedFeedback.BoolValue;
+			}
+		}
+
+		/// <summary>
+		/// Returns true when the device is actively transmitting video.
+		/// </summary>
+		[PublicAPI]
+		public bool ActiveTransmissionState
+		{
+			get { return m_ActiveTransmissionState; }
+			private set
+			{
+				if (value == m_ActiveTransmissionState)
+					return;
+
+				m_ActiveTransmissionState = value;
+
+				RaiseOnActiveTransmissionStateChanged(OUTPUT_HDMI, eConnectionType.Audio | eConnectionType.Video, m_ActiveTransmissionState);
+			}
+		}
+
+		#endregion
+
+		protected AbstractDmTx200BaseAdapter()
+		{
+			Controls.Add(new RouteSourceControl(this, 0));
+		}
+
 		/// <summary>
 		/// Called when the wrapped transmitter is assigned.
 		/// </summary>
@@ -26,19 +93,123 @@
 
 			transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
 		}
+
+		#region Methods
+
+		public override IEnumerable<ConnectorInfo> GetOutputs()
+		{
+			yield return new ConnectorInfo(1, (eConnectionType.Audio | eConnectionType.Video));
+		}
+
+		public override bool GetActiveTransmissionState(int output, eConnectionType type)
+		{
+			if (EnumUtils.HasMultipleFlags(type))
+			{
+				return EnumUtils.GetFlagsExceptNone(type)
+				                .Select(f => GetActiveTransmissionState(output, f))
+				                .Unanimous(false);
+			}
+
+			if (output != 1)
+			{
+				string message = string.Format("{0} has no {1} output at address {2}", this, type, output);
+				throw new IndexOutOfRangeException(message);
+			}
+
+			switch (type)
+			{
+				case eConnectionType.Audio:
+				case eConnectionType.Video:
+					return ActiveTransmissionState;
+
+				default:
+					throw new ArgumentOutOfRangeException("type");
+			}
+		}
+
+		/// <summary>
+		/// Subscribes to the transmitter events.
+		/// </summary>
+		/// <param name="transmitter"></param>
+		protected override void Subscribe(TTransmitter transmitter)
+		{
+			base.Subscribe(transmitter);
+
+			if (transmitter == null)
+				return;
+
+			transmitter.HdmiInput.InputStreamChange += HdmiInputOnInputStreamChange;
+			transmitter.VgaInput.InputStreamChange += VgaInputOnInputStreamChange;
+			transmitter.BaseEvent += TransmitterOnBaseEvent;
+		}
+
+		/// <summary>
+		/// Unsubscribes from the transmitter events.
+		/// </summary>
+		/// <param name="transmitter"></param>
+		protected override void Unsubscribe(TTransmitter transmitter)
+		{
+			base.Unsubscribe(transmitter);
+
+			if (transmitter == null)
+				return;
+
+			transmitter.HdmiInput.InputStreamChange -= HdmiInputOnInputStreamChange;
+			transmitter.VgaInput.InputStreamChange -= VgaInputOnInputStreamChange;
+			transmitter.BaseEvent -= TransmitterOnBaseEvent;
+		}
+
+		/// <summary>
+		/// Called when the VGA input stream changes.
+		/// </summary>
+		/// <param name="inputStream"></param>
+		/// <param name="args"></param>
+		private void VgaInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
+		{
+			UpdateActiveTransmissionState();
+		}
+
+		/// <summary>
+		/// Called when the HDMI input stream changes.
+		/// </summary>
+		/// <param name="inputStream"></param>
+		/// <param name="args"></param>
+		private void HdmiInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
+		{
+			UpdateActiveTransmissionState();
+		}
+
+		private void UpdateActiveTransmissionState()
+		{
+			ActiveTransmissionState = HdmiDetected || VgaDetected;
+		}
+
+		/// <summary>
+		/// Called when the the transmitter raises an event.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="args"></param>
+		private void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
+		{
+			if (args.EventId == EndpointTransmitterBase.AudioSourceFeedbackEventId ||
+				args.EventId == EndpointTransmitterBase.VideoSourceFeedbackEventId)
+				UpdateActiveTransmissionState();
+
+			if (args.EventId != DMOutputEventIds.ContentLanModeEventId)
+				return;
+
+			TTransmitter transmitter = device as TTransmitter;
+			if (transmitter == null)
+				return;
+
+			// Ensure the device stays in auto routing mode
+			transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
+			// Disable Free-Run
+			transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
+		}
+
+		#endregion
+
 #endif
-	}
-
-	public abstract class AbstractDmTx200BaseAdapterSettings : AbstractEndpointTransmitterBaseAdapterSettings,
-	                                                           IDmTx200BaseAdapterSettings
-	{
-	}
-
-	public interface IDmTx200BaseAdapter : IEndpointTransmitterBaseAdapter
-	{
-	}
-
-	public interface IDmTx200BaseAdapterSettings : IEndpointTransmitterBaseAdapterSettings
-	{
 	}
 }

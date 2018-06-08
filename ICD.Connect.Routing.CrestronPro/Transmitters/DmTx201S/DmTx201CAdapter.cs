@@ -14,13 +14,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 	public sealed class DmTx201CAdapter :
 		AbstractDmTx201SAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C, DmTx201CAdapterSettings>
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public DmTx201CAdapter()
-		{
-			Controls.Add(new DmTx201CSourceControl(this, 0));
-		}
 
 		public override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid,
 		                                                                                                    CrestronControlSystem
