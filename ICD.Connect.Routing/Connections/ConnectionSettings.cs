@@ -38,9 +38,6 @@ namespace ICD.Connect.Routing.Connections
 		private readonly IcdHashSet<int> m_RoomRestrictions;
 		private readonly SafeCriticalSection m_RoomRestrictionsSection;
 
-		private int m_SourceAddress = 1;
-		private int m_DestinationAddress = 1;
-
 		#region Properties
 
 		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
@@ -48,14 +45,14 @@ namespace ICD.Connect.Routing.Connections
 
 		public int SourceControlId { get; set; }
 
-		public int SourceAddress { get { return m_SourceAddress; } set { m_SourceAddress = value; } }
+		public int SourceAddress { get; set; }
 
 		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int DestinationDeviceId { get; set; }
 
 		public int DestinationControlId { get; set; }
 
-		public int DestinationAddress { get { return m_DestinationAddress; } set { m_DestinationAddress = value; } }
+		public int DestinationAddress { get; set; }
 
 		public eConnectionType ConnectionType { get; set; }
 
@@ -66,6 +63,9 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		public ConnectionSettings()
 		{
+			DestinationAddress = 1;
+			SourceAddress = 1;
+
 			m_RoomRestrictions = new IcdHashSet<int>();
 			m_RoomRestrictionsSection = new SafeCriticalSection();
 
