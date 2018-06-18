@@ -3,25 +3,23 @@
 using Crestron.SimplSharpPro;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
+namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100CBase
 {
-	/// <summary>
-	/// DmRmcScalerCAdapter wraps a DmRmcScalerC to provide a routing device.
-	/// </summary>
 #if SIMPLSHARP
-	public abstract class AbstractDmRmcScalerCAdapter<TScaler, TSettings> : AbstractEndpointReceiverBaseAdapter<TScaler, TSettings>,
-	                                                                        IDmRmcScalerCAdapter
-		where TScaler : Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC
+	public abstract class AbstractDmRmc100CBaseAdapter<TReceiver, TSettings> :
+		AbstractEndpointReceiverBaseAdapter<TReceiver, TSettings>, IDmRmc100CBaseAdapter
+		where TReceiver : Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100C
 #else
-    public abstract class AbstractDmRmcScalerCAdapter<TSettings> : AbstractEndpointReceiverBaseAdapter<TSettings>
+	public abstract class AbstractDmRmc100CBaseAdapter<TSettings> :
+		AbstractEndpointReceiverBaseAdapter<TSettings>, IDmRmc100CBaseAdapter
 #endif
-		where TSettings : IDmRmcScalerCAdapterSettings, new()
+		where TSettings : IDmRmc100CBaseAdapterSettings, new()
 	{
-#if SIMPLSHARP
+		#if SIMPLSHARP
 
-		protected AbstractDmRmcScalerCAdapter()
+		protected AbstractDmRmc100CBaseAdapter()
 		{
-			Controls.Add(new DmRmcScalerCBaseRouteControl<IDmRmcScalerCAdapter, TScaler>(this, 0));
+			Controls.Add(new DmRmc100CBaseRouteControl<IDmRmc100CBaseAdapter, TReceiver>(this, 0));
 		} 
 
 		/// <summary>

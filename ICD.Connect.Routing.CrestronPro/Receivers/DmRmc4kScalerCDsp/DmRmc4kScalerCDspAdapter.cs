@@ -13,7 +13,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 #if SIMPLSHARP
 // ReSharper disable once InconsistentNaming
 	public sealed class DmRmc4kScalerCDspAdapter :
-		AbstractDmRmcScalerCAdapter
+		AbstractDmRmcScalerCBaseAdapter
 			<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp, DmRmc4kScalerCDspAdapterSettings>
 	{
 		/// <summary>

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
+#endif
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
@@ -32,7 +34,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 
 		private bool m_ActiveTransmissionState;
 
-		#region Properties
+#region Properties
 		/// <summary>
 		/// Returns true if an HDMI input source is detected.
 		/// </summary>
@@ -75,7 +77,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			}
 		}
 
-		#endregion
+#endregion
 
 		protected AbstractDmTx200BaseAdapter()
 		{
@@ -94,7 +96,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
 		}
 
-		#region Methods
+#region Methods
 
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
@@ -208,7 +210,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
 		}
 
-		#endregion
+#endregion
 
 #endif
 	}
