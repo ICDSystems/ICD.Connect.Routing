@@ -17,11 +17,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100CBase
 	{
 		#if SIMPLSHARP
 
-		protected AbstractDmRmc100CBaseAdapter()
-		{
-			Controls.Add(new DmRmc100CBaseRouteControl<IDmRmc100CBaseAdapter, TReceiver>(this, 0));
-		} 
-
 		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>

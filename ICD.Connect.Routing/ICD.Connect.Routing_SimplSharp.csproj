@@ -73,11 +73,14 @@
     <Compile Include="Controls\RouteMidpointControlConsole.cs" />
     <Compile Include="Controls\RouteSwitcherControlConsole.cs" />
     <Compile Include="Controls\RouteSourceControl.cs" />
+    <Compile Include="Devices\AbstractRouteDestinationDevice.cs" />
+    <Compile Include="Devices\AbstractRouteMidpointDevice.cs" />
     <Compile Include="Devices\AbstractRouteSourceDevice.cs" />
     <Compile Include="Devices\GenericSpeakerDestinationControl.cs" />
     <Compile Include="Devices\GenericSpeakerDevice.cs" />
     <Compile Include="Devices\GenericSpeakerDeviceSettings.cs" />
     <Compile Include="Devices\IRouteDestinationDevice.cs" />
+    <Compile Include="Devices\IRouteMidpointDevice.cs" />
     <Compile Include="Devices\IRouteSourceDevice.cs" />
     <Compile Include="Endpoints\AbstractSourceDestinationBaseCollection.cs" />
     <Compile Include="Endpoints\Destinations\IDestinationCollection.cs" />

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
@@ -11,24 +10,47 @@ namespace ICD.Connect.Routing.Devices
 	public abstract class AbstractRouteSourceDevice<TSettings> : AbstractDevice<TSettings>, IRouteSourceDevice
 		where TSettings : IDeviceSettings, new()
 	{
-		public event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
+		public abstract event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
 		protected AbstractRouteSourceDevice()
 		{
 			Controls.Add(new RouteSourceControl(this, 0));
 		}
 
-		#region Methods
-
-		public abstract IEnumerable<ConnectorInfo> GetOutputs();
+		/// <summary>
+		/// Returns true if the device is actively transmitting on the given output.
+		/// This is NOT the same as sending video, since some devices may send an
+		/// idle signal by default.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
 		public abstract bool GetActiveTransmissionState(int output, eConnectionType type);
 
-		protected void RaiseOnActiveTransmissionStateChanged(int output, eConnectionType type, bool state)
-		{
-			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, type, state));
-		}
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public abstract ConnectorInfo GetOutput(int output);
 
-		#endregion
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public abstract bool ContainsOutput(int output);
 
+		/// <summary>
+		/// Returns the outputs.
+		/// </summary>
+		/// <returns></returns>
+		public abstract IEnumerable<ConnectorInfo> GetOutputs();
 	}
 }

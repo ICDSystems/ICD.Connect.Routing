@@ -201,7 +201,6 @@
     <Compile Include="Receivers\DmRmc4kz100C\DmRmc4kz100CAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc100CBase\AbstractDmRmc100CBaseAdapter.cs" />
     <Compile Include="Receivers\DmRmc100CBase\AbstractDmRmc100CBaseAdapterSettings.cs" />
-    <Compile Include="Receivers\DmRmc100CBase\DmRmc100CBaseRouteControl.cs" />
     <Compile Include="Receivers\DmRmc100CBase\IDmRmc100CBaseAdapter.cs" />
     <Compile Include="Receivers\DmRmc100CBase\IDmRmc100CBaseAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc100C\DmRmc100CAdapter.cs" />
@@ -212,7 +211,6 @@
     <Compile Include="Receivers\DmRmc4kScalerC\DmRmc4kScalerCAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\AbstractDmRmcScalerCBaseAdapter.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\AbstractDmRmcScalerCBaseAdapterSettings.cs" />
-    <Compile Include="Receivers\DmRmcScalerCBase\DmRmcScalerCBaseRouteControl.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapter.cs" />
     <Compile Include="Receivers\IEndpointReceiverBaseAdapter.cs" />
