@@ -1,9 +1,9 @@
 ﻿using System;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.Devices;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Routing.CrestronPro.Cards;
+using ICD.Connect.Routing.Devices;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -22,13 +22,13 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 	/// EndpointReceiverBaseAdapter wraps a EndpointReceiverBase to provide a routing device.
 	/// </summary>
 #if SIMPLSHARP
-	public abstract class AbstractEndpointReceiverBaseAdapter<TReceiver, TSettings> : AbstractDevice<TSettings>,
+	public abstract class AbstractEndpointReceiverBaseAdapter<TReceiver, TSettings> : AbstractRouteMidpointDevice<TSettings>,
 	                                                                                  IPortParent,
 	                                                                                  IEndpointReceiverBaseAdapter
 		                                                                                  <TReceiver>
 		where TReceiver : EndpointReceiverBase
 #else
-    public abstract class AbstractEndpointReceiverBaseAdapter<TSettings> : AbstractDevice<TSettings>
+    public abstract class AbstractEndpointReceiverBaseAdapter<TSettings> : AbstractRouteMidpointDevice<TSettings>
 #endif
 		where TSettings : IEndpointReceiverBaseAdapterSettings, new()
 	{
