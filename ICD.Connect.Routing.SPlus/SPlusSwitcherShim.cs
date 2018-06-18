@@ -4,7 +4,6 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.SPlusShims;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Settings.SPlusShims.GlobalEvents;
 
 namespace ICD.Connect.Routing.SPlus
 {
@@ -19,7 +18,6 @@ namespace ICD.Connect.Routing.SPlus
 	public delegate ushort SPlusSwitcherShimRoute(ushort input, ushort output);
 
 	public delegate ushort SPlusSwitcherShimClearOutput(ushort output);
-
 
 	[PublicAPI("S+")]
 	public sealed class SPlusSwitcherShim : AbstractSPlusDeviceShim<SPlusSwitcher>

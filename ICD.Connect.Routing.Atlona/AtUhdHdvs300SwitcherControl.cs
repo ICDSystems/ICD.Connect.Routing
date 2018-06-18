@@ -141,10 +141,10 @@ namespace ICD.Connect.Routing.Atlona
 			int output = info.LocalOutput;
 
 			if (input < 1 || input > 5)
-				throw new ArgumentOutOfRangeException("input");
+				throw new ArgumentOutOfRangeException("info", "Input must be between 1 and 5");
 
 			if (output != 1)
-				throw new ArgumentOutOfRangeException("output");
+				throw new ArgumentOutOfRangeException("info", "Output must be 1");
 
 			if (EnumUtils.HasMultipleFlags(type))
 			{

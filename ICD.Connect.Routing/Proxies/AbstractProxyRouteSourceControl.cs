@@ -49,6 +49,28 @@ namespace ICD.Connect.Routing.Proxies
 		}
 
 		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public ConnectorInfo GetOutput(int output)
+		{
+			// TODO
+			throw new ArgumentOutOfRangeException("output");
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public bool ContainsOutput(int output)
+		{
+			// TODO
+			return false;
+		}
+
+		/// <summary>
 		/// Returns the outputs.
 		/// </summary>
 		/// <returns></returns>
