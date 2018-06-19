@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [7.0.1] - 2018-06-19
+### Changed
+ - Fixed null ref in 6XN switcher instantiation
+
 ## [7.0.0] - 2018-06-04
 ### Added
  - Adding new input and old input properties to route change event args
