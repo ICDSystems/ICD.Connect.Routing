@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ICD.Common.Properties;
-using ICD.Common.Utils;
-using ICD.Common.Utils.Extensions;
-using ICD.Connect.Routing.Connections;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif

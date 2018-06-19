@@ -83,8 +83,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			Controls.Add(new RouteSourceControl(this, 0));
 		}
 
-		#region Methods
-
 		/// <summary>
 		/// Release resources.
 		/// </summary>
@@ -101,6 +99,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			SetTransmitter(null, null);
 #endif
 		}
+
+		#region Methods
 
 #if SIMPLSHARP
 		/// <summary>
@@ -241,8 +241,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			}
 			catch (Exception e)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate internal {1} - {2}",
-				                this, typeof(TTransmitter).Name, e.Message);
+				Log(eSeverity.Error, "Failed to instantiate internal {0} - {1}", typeof(TTransmitter).Name, e.Message);
 			}
 
 			SetTransmitter(transmitter, settings.DmSwitch);
@@ -271,10 +270,27 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			return DmEndpointFactoryUtils.InstantiateTransmitter(settings, factory, this);
 		}
 
+		/// <summary>
+		/// Instantiates the transmitter with the given IPID against the control system.
+		/// </summary>
+		/// <param name="ipid"></param>
+		/// <param name="controlSystem"></param>
+		/// <returns></returns>
 		public abstract TTransmitter InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem);
 
+		/// <summary>
+		/// Instantiates the transmitter against the given DM Input and configures it with the given IPID.
+		/// </summary>
+		/// <param name="ipid"></param>
+		/// <param name="input"></param>
+		/// <returns></returns>
 		public abstract TTransmitter InstantiateTransmitter(byte ipid, DMInput input);
 
+		/// <summary>
+		/// Instantiates the transmitter against the given DM Input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
 		public abstract TTransmitter InstantiateTransmitter(DMInput input);
 #endif
 
