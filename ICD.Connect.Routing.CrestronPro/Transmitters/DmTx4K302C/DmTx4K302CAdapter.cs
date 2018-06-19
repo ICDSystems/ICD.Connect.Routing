@@ -1,4 +1,8 @@
-﻿using System;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -8,13 +12,6 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
-#if SIMPLSHARP
-using Crestron.SimplSharpPro;
-using Crestron.SimplSharpPro.DM;
-using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
-
-#else
-using System;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C

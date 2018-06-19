@@ -1,13 +1,8 @@
 ﻿using System;
-using ICD.Common.Properties;
-using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
-using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Routing.Devices;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Settings.Core;
@@ -15,8 +10,12 @@ using ICD.Connect.Settings.Core;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
-#else
-using System;
+using ICD.Common.Properties;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Nodes;
+using ICD.Connect.Routing.CrestronPro.Utils;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters
@@ -24,31 +23,31 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 	/// <summary>
 	/// Base class for EndpointTransmitterBase device adapters.
 	/// </summary>
-	/// <typeparam name="TTransmitter"></typeparam>
 	/// <typeparam name="TSettings"></typeparam>
 #if SIMPLSHARP
+	/// <typeparam name="TTransmitter"></typeparam>
 	public abstract class AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings> : AbstractRouteSourceDevice<TSettings>,
 	                                                                                        IEndpointTransmitterBaseAdapter<TTransmitter>
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.EndpointTransmitterBase
 #else
-    public abstract class AbstractEndpointTransmitterBaseAdapter<TSettings> : AbstractRouteSourceDevice<TSettings>, IEndpointTransmitterBaseAdapter
+	public abstract class AbstractEndpointTransmitterBaseAdapter<TSettings> : AbstractRouteSourceDevice<TSettings>, IEndpointTransmitterBaseAdapter
 #endif
 		where TSettings : IEndpointTransmitterBaseAdapterSettings, new()
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
+		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
 #if SIMPLSHARP
 		/// <summary>
 		/// Raised when the wrapped transmitter changes.
 		/// </summary>
 		public event TransmitterChangeCallback OnTransmitterChanged;
 
-		/// <summary>
-		/// Raised when the device starts/stops actively transmitting on an output.
-		/// </summary>
-		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
-
 		private TTransmitter m_Transmitter;
-#endif
 		private int? m_ParentId;
+#endif
 
 		#region Properties
 
@@ -161,6 +160,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 		#region Private Methods 
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Called when the wrapped transmitter is assigned.
 		/// </summary>
@@ -218,6 +218,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 				Log(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
 			}
 		}
+#endif
 
 		#endregion
 
@@ -239,7 +240,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			settings.DmInputAddress = input == null ? (int?)null : (int)input.Number;
 #else
             settings.Ipid = null;
-            settings.DmSwitch = m_ParentId;
             settings.DmInputAddress = null;
 #endif
 		}
@@ -384,6 +384,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		{
 			UpdateCachedOnlineStatus();
 		}
+#endif
 
 		/// <summary>
 		/// Raises the OnActiveTransmissionStateChanged event.
@@ -395,7 +396,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		{
 			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, type, transmitting));
 		}
-#endif
 
 		#endregion
 

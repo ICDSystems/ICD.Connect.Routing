@@ -1,7 +1,4 @@
 ﻿using System;
-using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.Devices.Extensions;
-using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Routing.Devices;
@@ -15,6 +12,9 @@ using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
+using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Devices.Extensions;
+using ICD.Connect.Misc.CrestronPro;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers
@@ -245,7 +245,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 			settings.DmOutputAddress = input == null ? (int?)null : (int)input.Number;
 #else
             settings.Ipid = 0;
-            settings.DmSwitch = m_ParentId;
             settings.DmOutputAddress = null;
 #endif
 		}

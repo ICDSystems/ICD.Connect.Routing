@@ -18,18 +18,17 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 	/// <summary>
 	/// Base class for DmTx200 device adapters.
 	/// </summary>
-	/// <typeparam name="TTransmitter"></typeparam>
 	/// <typeparam name="TSettings"></typeparam>
 #if SIMPLSHARP
+	/// <typeparam name="TTransmitter"></typeparam>
 	public abstract class AbstractDmTx200BaseAdapter<TTransmitter, TSettings> :
 		AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings>, IDmTx200BaseAdapter
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base
 #else
-    public abstract class AbstractDmTx200BaseAdapter<TSettings> : AbstractEndpointTransmitterBaseAdapter<TSettings>, IDmTx200BaseAdapter
+	public abstract class AbstractDmTx200BaseAdapter<TSettings> : AbstractEndpointTransmitterBaseAdapter<TSettings>, IDmTx200BaseAdapter
 #endif
 		where TSettings : IDmTx200BaseAdapterSettings, new()
 	{
-#if SIMPLSHARP
 		private const int OUTPUT_HDMI = 1;
 
 		private bool m_ActiveTransmissionState;
@@ -43,7 +42,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		{
 			get
 			{
+#if SIMPLSHARP
 				return Transmitter != null && Transmitter.HdmiInput.SyncDetectedFeedback.BoolValue;
+#else
+				return false;
+#endif
 			}
 		}
 
@@ -55,7 +58,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		{
 			get
 			{
+#if SIMPLSHARP
 				return Transmitter != null && Transmitter.VgaInput.SyncDetectedFeedback.BoolValue;
+#else
+				return false;
+#endif
 			}
 		}
 
@@ -84,6 +91,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			Controls.Add(new RouteSourceControl(this, 0));
 		}
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Called when the wrapped transmitter is assigned.
 		/// </summary>
@@ -95,6 +103,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 
 			transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
 		}
+#endif
 
 #region Methods
 
@@ -129,6 +138,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			}
 		}
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Subscribes to the transmitter events.
 		/// </summary>
@@ -209,9 +219,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			// Disable Free-Run
 			transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
 		}
+#endif
 
 #endregion
-
-#endif
 	}
 }
