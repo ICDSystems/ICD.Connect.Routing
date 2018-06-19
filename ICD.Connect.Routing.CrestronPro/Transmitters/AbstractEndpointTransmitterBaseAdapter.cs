@@ -168,7 +168,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			eDeviceRegistrationUnRegistrationResponse result = transmitter.Register();
 			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to register {1} - {2}", this, transmitter.GetType().Name, result);
+				Log(eSeverity.Error, "Unable to register {0} - {1}", transmitter.GetType().Name, result);
 				return;
 			}
 
@@ -179,8 +179,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
 			if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to register parent {1} - {2}", this, parent.GetType().Name,
-				                parentResult);
+				Log(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
 			}
 		}
 #endif
