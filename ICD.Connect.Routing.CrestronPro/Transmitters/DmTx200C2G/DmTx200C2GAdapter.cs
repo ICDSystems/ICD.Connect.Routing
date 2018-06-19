@@ -20,7 +20,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 	public sealed class DmTx200C2GAdapter :
 		AbstractDmTx200BaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G, DmTx200C2GAdapterSettings>
 	{
-
 		public override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G InstantiateTransmitter(byte ipid,
 		                                                                                                      CrestronControlSystem
 			                                                                                                      controlSystem)
@@ -38,8 +37,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200C2G
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200C2G(input);
 		}
-
-
 	}
 #else
     public sealed class DmTx200C2GAdapter : AbstractDmTx200BaseAdapter<DmTx200C2GAdapterSettings>
