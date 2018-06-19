@@ -3,6 +3,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Routing.Devices;
@@ -73,6 +74,14 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 #endif
 
 		#endregion
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractEndpointTransmitterBaseAdapter()
+		{
+			Controls.Add(new RouteSourceControl(this, 0));
+		}
 
 		#region Methods
 

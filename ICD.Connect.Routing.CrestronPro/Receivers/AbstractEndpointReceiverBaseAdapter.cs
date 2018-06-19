@@ -2,6 +2,7 @@
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Misc.CrestronPro;
+using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Routing.Devices;
 using ICD.Connect.Settings.Core;
@@ -68,6 +69,14 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 #endif
 
 		#endregion
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractEndpointReceiverBaseAdapter()
+		{
+			Controls.Add(new RouteMidpointControl(this, 0));
+		}
 
 		#region Methods
 
