@@ -1,4 +1,11 @@
-﻿#if SIMPLSHARP
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Extensions;
+using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.EventArguments;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
@@ -10,20 +17,20 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 	/// DmRmcScalerCAdapter wraps a DmRmcScalerC to provide a routing device.
 	/// </summary>
 #if SIMPLSHARP
-// ReSharper disable once InconsistentNaming
+	// ReSharper disable once InconsistentNaming
 	public sealed class DmRmc4kScalerCAdapter :
 		AbstractDmRmcScalerCBaseAdapter
 			<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC, DmRmc4kScalerCAdapterSettings>
 	{
 		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateReceiver(byte ipid,
-		                                                                                                 CrestronControlSystem
-			                                                                                                 controlSystem)
+																										 CrestronControlSystem
+																											 controlSystem)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC(ipid, controlSystem);
 		}
 
 		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateReceiver(byte ipid,
-		                                                                                                 DMOutput output)
+																										 DMOutput output)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC(ipid, output);
 		}
@@ -33,6 +40,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC(output);
 		}
 	}
+
+
 #else
     public sealed class DmRmc4kScalerCAdapter : AbstractDmRmcScalerCAdapter<DmRmc4kScalerCAdapterSettings>
     {

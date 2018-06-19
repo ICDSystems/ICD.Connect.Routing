@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
@@ -29,14 +30,24 @@ namespace ICD.Connect.Routing.Devices
 		/// </summary>
 		/// <param name="output"></param>
 		/// <returns></returns>
-		public abstract ConnectorInfo GetOutput(int output);
+		public ConnectorInfo GetOutput(int output)
+		{
+			if (ContainsOutput(output))
+				return GetOutputs().First(c => c.Address == output);
+
+			string message = string.Format("{0} has no output at address {1}", this, output);
+			throw new IndexOutOfRangeException(message);
+		}
 
 		/// <summary>
 		/// Returns true if the source contains an output at the given address.
 		/// </summary>
 		/// <param name="output"></param>
 		/// <returns></returns>
-		public abstract bool ContainsOutput(int output);
+		public bool ContainsOutput(int output)
+		{
+			return GetOutputs().Any(o => o.Address == output);
+		}
 
 		/// <summary>
 		/// Returns the outputs.
