@@ -1,12 +1,15 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Routing.Devices;
+using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -37,6 +40,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// Raised when the wrapped transmitter changes.
 		/// </summary>
 		public event TransmitterChangeCallback OnTransmitterChanged;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
+		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 		private TTransmitter m_Transmitter;
 #endif
@@ -124,6 +132,34 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 			UpdateCachedOnlineStatus();
 		}
+#endif
+
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int output)
+		{
+			if (output != 1)
+				throw new ArgumentOutOfRangeException("output");
+
+			return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return output == 1;
+		}
+
+		#endregion
+
+		#region Private Methods 
 
 		/// <summary>
 		/// Called when the wrapped transmitter is assigned.
@@ -182,7 +218,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 				Log(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
 			}
 		}
-#endif
 
 		#endregion
 
@@ -348,6 +383,17 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		private void TransmitterOnlineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
 		{
 			UpdateCachedOnlineStatus();
+		}
+
+		/// <summary>
+		/// Raises the OnActiveTransmissionStateChanged event.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <param name="transmitting"></param>
+		protected void RaiseOnActiveTransmissionStateChanged(int output, eConnectionType type, bool transmitting)
+		{
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, type, transmitting));
 		}
 #endif
 
