@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Devices
 {
-	public interface IRouteSourceDevice : IDevice
+	public interface IRouteSourceDevice : IRouteDevice
 	{
 		/// <summary>
 		/// Raised when the device starts/stops actively transmitting on an output.

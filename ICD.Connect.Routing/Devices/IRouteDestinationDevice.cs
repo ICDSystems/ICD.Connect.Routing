@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Devices
 {
-	public interface IRouteDestinationDevice : IDevice
+	public interface IRouteDestinationDevice : IRouteDevice
 	{
 		/// <summary>
 		/// Raised when an input source status changes.

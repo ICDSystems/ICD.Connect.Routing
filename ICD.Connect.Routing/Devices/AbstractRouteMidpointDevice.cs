@@ -15,6 +15,16 @@ namespace ICD.Connect.Routing.Devices
 		public abstract event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 		/// <summary>
+		/// Returns true if the device is actively transmitting on the given output.
+		/// This is NOT the same as sending video, since some devices may send an
+		/// idle signal by default.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public abstract bool GetActiveTransmissionState(int output, eConnectionType type);
+
+		/// <summary>
 		/// Gets the output at the given address.
 		/// </summary>
 		/// <param name="output"></param>

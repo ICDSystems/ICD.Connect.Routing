@@ -6,7 +6,7 @@ using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Devices
 {
-	public abstract class AbstractRouteDestinationDevice<TSettings> : AbstractDevice<TSettings>, IRouteDestinationDevice
+	public abstract class AbstractRouteDestinationDevice<TSettings> : AbstractRouteDevice<TSettings>, IRouteDestinationDevice
 		where TSettings : IDeviceSettings, new()
 	{
 		/// <summary>
