@@ -3,12 +3,9 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Devices;
-using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Routing.Devices;
-using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;

@@ -140,7 +140,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 			eDeviceRegistrationUnRegistrationResponse result = scaler.Register();
 			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to register {1} - {2}", this, scaler.GetType().Name, result);
+				Log(eSeverity.Error, "Unable to register {0} - {1}", scaler.GetType().Name, result);
 				return;
 			}
 
@@ -151,10 +151,15 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 			eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
 			if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to register parent {1} - {2}", this, parent.GetType().Name,
-				                parentResult);
+				Log(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
 			}
 		}
+
+#endif
+
+		#endregion
+
+		#region IO
 
 		/// <summary>
 		/// Gets the port at the given addres.
@@ -210,7 +215,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 			string message = string.Format("{0} has no {1}", this, typeof(DigitalInput).Name);
 			throw new NotSupportedException(message);
 		}
-#endif
 
 		#endregion
 
@@ -269,8 +273,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 			}
 			catch (Exception e)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate internal {1} - {2}",
-				                this, typeof(TReceiver).Name, e.Message);
+				Log(eSeverity.Error, "Failed to instantiate internal {0} - {1}", typeof(TReceiver).Name, e.Message);
 			}
 
 			SetScaler(scaler, settings.DmSwitch);
@@ -327,7 +330,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 
 		#endregion
 
-		#region Private Methods
+		#region Scaler Callbacks
 
 #if SIMPLSHARP
 		/// <summary>
