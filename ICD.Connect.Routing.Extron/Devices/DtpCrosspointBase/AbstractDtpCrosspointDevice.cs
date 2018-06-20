@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Crestron.SimplSharp;
 using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
@@ -13,11 +9,12 @@ using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
+using ICD.Connect.Protocol.Utils;
 using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Routing.Extron
+namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 {
-	public abstract class AbstractDtpCrosspointDevice<TSettings> : AbstractDevice<TSettings>
+	public abstract class AbstractDtpCrosspointDevice<TSettings> : AbstractDevice<TSettings>, IDtpCrosspointDevice
 		where TSettings: AbstractDtpCrosspointSettings, new()
 	{
 		/// <summary>
@@ -47,7 +44,11 @@ namespace ICD.Connect.Routing.Extron
 
 		private bool m_Initialized;
 
+		private ushort m_StartingComPort = 2000;
+
 		#region Properties
+
+		public string Address { get; private set; }
 
 		/// <summary>
 		/// Gets/sets the password for logging into the device.
@@ -83,13 +84,13 @@ namespace ICD.Connect.Routing.Extron
 
 		public AbstractDtpCrosspointDevice()
 		{
+			m_SerialBuffer = new DtpCrosspointSerialBuffer();
+			Subscribe(m_SerialBuffer);
+
 			m_ConnectionStateManager = new ConnectionStateManager(this) { ConfigurePort = ConfigurePort };
 			m_ConnectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
 			m_ConnectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
 			m_ConnectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived;
-
-			m_SerialBuffer = new DtpCrosspointSerialBuffer();
-			Subscribe(m_SerialBuffer);
 
 			m_KeepAliveTimer = SafeTimer.Stopped(KeepAliveCallback);
 			m_KeepAliveTimer.Reset(KEEPALIVE_INTERVAL, KEEPALIVE_INTERVAL);
@@ -166,10 +167,116 @@ namespace ICD.Connect.Routing.Extron
 			m_ConnectionStateManager.Send(command + '\r');
 		}
 
+		public HostInfo? GetInputComPortHostInfo(int input)
+		{
+			int? portOffset = GetInputPortOffset(input);
+
+			if (portOffset == null)
+				return null;
+
+			return new HostInfo(Address, (ushort)(m_StartingComPort + portOffset));
+		}
+
+		public HostInfo? GetOutputComPortHostInfo(int output)
+		{
+			int? portOffset = GetOutputPortOffset(output);
+
+			if (portOffset == null)
+				return null;
+
+			return new HostInfo(Address, (ushort)(m_StartingComPort + portOffset));
+		}
+
+		public void SetInputComPortSpec(int input, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+			eComStopBits stopBits)
+		{
+			int? portOffset = GetInputPortOffset(input);
+			if (portOffset == null)
+				return;
+
+			SetComPortSpec(portOffset.Value, baudRate, dataBits, parityType, stopBits);
+		}
+
+		public void SetOutputComPortSpec(int output, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+			eComStopBits stopBits)
+		{
+			int? portOffset = GetOutputPortOffset(output);
+			if (portOffset == null)
+				return;
+
+			SetComPortSpec(portOffset.Value, baudRate, dataBits, parityType, stopBits);
+		}
+
+		private void SetComPortSpec(int portOffset, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+			eComStopBits stopBits)
+		{
+			SendCommand(string.Format("W{0}*{1},{2},{3},{4}CP",
+				portOffset + 1,
+				ComSpecUtils.BaudRateToRate(baudRate),
+				GetParityChar(parityType),
+				(ushort)dataBits,
+				(ushort)stopBits ));
+		}
+
+		private char GetParityChar(eComParityType parityType)
+		{
+			switch (parityType)
+			{
+				case eComParityType.ComspecParityEven:
+					return 'e';
+				case eComParityType.ComspecParityOdd:
+					return 'o';
+				case eComParityType.ComspecParityZeroStick:
+					return 's';
+				case eComParityType.ComspecParityNone:
+				default:
+					return 'n';
+			}
+		}
+
+		/// <summary>
+		/// Get the ComPort offset based on switcher input
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		private int? GetInputPortOffset(int input)
+		{
+			var switcherControl = Controls.GetControl(0) as IDtpCrosspointSwitcherControl;
+			if (switcherControl == null)
+				return null;
+
+			int portOffset = input - switcherControl.NumberOfInputs + 2;
+			if (portOffset <= 0)
+				return null;
+			return portOffset;
+		}
+
+		/// <summary>
+		/// Get the ComPort offset based on switcher output
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		private int? GetOutputPortOffset(int output)
+		{
+			var switcherControl = Controls.GetControl(0) as IDtpCrosspointSwitcherControl;
+			if (switcherControl == null)
+				return null;
+
+			int portOffset = output - switcherControl.NumberOfOutputs + 4;
+			if (portOffset <= 0)
+				return null;
+			return portOffset;
+		}
+
 		private void Initialize()
 		{
 			SetVerboseMode(eExtronVerbosity.All);
-			Initialized = true;
+			GetStartingComPort();
+		}
+
+		private void GetStartingComPort()
+		{
+			SendCommand("WMD");
 		}
 
 		private void KeepAliveCallback()
@@ -180,7 +287,7 @@ namespace ICD.Connect.Routing.Extron
 
 		private void SetVerboseMode(eExtronVerbosity all)
 		{
-			SendCommand("{0}CV", (ushort)all);
+			SendCommand("W{0}CV", (ushort)all);
 		}
 
 		#endregion
@@ -214,6 +321,12 @@ namespace ICD.Connect.Routing.Extron
 		private void BufferOnOnCompletedSerial(object sender, StringEventArgs args)
 		{
 			OnResponseReceived.Raise(this, new StringEventArgs(args.Data));
+
+			if (args.Data.StartsWith("Pmd"))
+			{
+				m_StartingComPort = ushort.Parse(args.Data.Substring(3));
+			}
+				
 		}
 
 		#endregion
@@ -229,7 +342,7 @@ namespace ICD.Connect.Routing.Extron
 		{
 			m_SerialBuffer.Clear();
 
-			OnConnectedStateChanged(this, new BoolEventArgs(e.Data));
+			OnConnectedStateChanged.Raise(this, new BoolEventArgs(e.Data));
 		}
 
 		private void PortOnSerialDataReceived(object sender, StringEventArgs e)
@@ -245,6 +358,8 @@ namespace ICD.Connect.Routing.Extron
 		{
 			base.ApplySettingsFinal(settings, factory);
 
+			Password = settings.Password;
+
 			ISerialPort port = null;
 
 			if (settings.Port != null)
@@ -253,6 +368,16 @@ namespace ICD.Connect.Routing.Extron
 				if (port == null)
 					Log(eSeverity.Error, "No serial port with id {0}", settings.Port);
 			}
+
+			m_ConnectionStateManager.SetPort(port);
+		}
+
+		protected override void CopySettingsFinal(TSettings settings)
+		{
+			base.CopySettingsFinal(settings);
+
+			settings.Password = Password;
+			settings.Port = m_ConnectionStateManager.PortNumber;
 		}
 
 		#endregion

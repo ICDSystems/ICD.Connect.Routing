@@ -3,12 +3,11 @@ using ICD.Connect.Devices;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
-namespace ICD.Connect.Routing.Extron
+namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 {
-	public class AbstractDtpCrosspointSettings : AbstractDeviceSettings
+	public abstract class AbstractDtpCrosspointSettings : AbstractDeviceSettings, IDtpCrosspointSettings
 	{
 		private const string ELEMENT_PORT = "Port";
-		private const string ELEMENT_USERNAME = "Username";
 		private const string ELEMENT_PASSWORD = "Password";
 
 		/// <summary>

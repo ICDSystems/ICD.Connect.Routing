@@ -87,7 +87,7 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		public AtUhdHdvs300Device()
 		{
-			m_ConnectionStateManager = new ConnectionStateManager(this){ConfigurePort = ConfigurePort};
+			m_ConnectionStateManager = new ConnectionStateManager(this){ ConfigurePort = ConfigurePort };
 			m_ConnectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
 			m_ConnectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
 			m_ConnectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived;

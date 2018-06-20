@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Crestron.SimplSharp;
+﻿using ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase;
 
-namespace ICD.Connect.Routing.Extron
+namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspoint84
 {
 	public sealed class DtpCrosspoint84SwitcherControl : AbstractDtpCrosspointSwitcherControl<DtpCrosspoint84, DtpCrosspoint84Settings>
 	{
@@ -12,12 +8,12 @@ namespace ICD.Connect.Routing.Extron
 		{
 		}
 
-		protected override int NumberOfInputs
+		public override int NumberOfInputs
 		{
 			get { return 8; }
 		}
 
-		protected override int NumberOfOutputs
+		public override int NumberOfOutputs
 		{
 			get { return 4; }
 		}

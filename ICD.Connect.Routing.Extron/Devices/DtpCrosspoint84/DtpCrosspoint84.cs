@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Crestron.SimplSharp;
+﻿using ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase;
 
-namespace ICD.Connect.Routing.Extron
+namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspoint84
 {
 	public sealed class DtpCrosspoint84 : AbstractDtpCrosspointDevice<DtpCrosspoint84Settings>
 	{

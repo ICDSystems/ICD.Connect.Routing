@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Crestron.SimplSharp;
-using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
@@ -12,9 +10,9 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.Extron
+namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 {
-	public abstract class AbstractDtpCrosspointSwitcherControl<TDevice, TSettings> : AbstractRouteSwitcherControl<TDevice>
+	public abstract class AbstractDtpCrosspointSwitcherControl<TDevice, TSettings> : AbstractRouteSwitcherControl<TDevice>, IDtpCrosspointSwitcherControl
 		where TDevice : AbstractDtpCrosspointDevice<TSettings>
 		where TSettings : AbstractDtpCrosspointSettings, new()
 	{
@@ -46,8 +44,8 @@ namespace ICD.Connect.Routing.Extron
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
-		protected abstract int NumberOfInputs { get; }
-		protected abstract int NumberOfOutputs { get; }
+		public abstract int NumberOfInputs { get; }
+		public abstract int NumberOfOutputs { get; }
 
 		private readonly SwitcherCache m_Cache;
 
@@ -149,7 +147,7 @@ namespace ICD.Connect.Routing.Extron
 
 		private void ParentOnOnInitializedChanged(object sender, BoolEventArgs args)
 		{
-			throw new NotImplementedException();
+			InitializeCache();
 		}
 
 		private void ParentOnOnResponseReceived(object sender, StringEventArgs args)
@@ -171,7 +169,7 @@ namespace ICD.Connect.Routing.Extron
 				for (int i = 0; i < NumberOfInputs; i++)
 				{
 					bool detected = sourceDetectionMatch.Groups[1].Captures[i].Value != "0";
-					m_Cache.SetSourceDetectedState(i, eConnectionType.Audio | eConnectionType.Video, detected);
+					m_Cache.SetSourceDetectedState(i + 1, eConnectionType.Audio | eConnectionType.Video, detected);
 				}
 				return;
 			}
