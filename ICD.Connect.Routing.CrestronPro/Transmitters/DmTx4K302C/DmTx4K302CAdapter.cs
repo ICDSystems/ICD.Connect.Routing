@@ -1,4 +1,11 @@
-﻿#if SIMPLSHARP
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ICD.Common.Properties;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Extensions;
+using ICD.Connect.Routing.Connections;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
@@ -22,7 +29,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
     public sealed class DmTx4K302CAdapter : AbstractEndpointTransmitterBaseAdapter<DmTx4K302CAdapterSettings>
 #endif
 	{
-#if SIMPLSHARP
 		private const int HDMI_INPUT_1 = 1;
 		private const int HDMI_INPUT_2 = 2;
 		private const int HDMI_OUTPUT = 1;
@@ -39,8 +45,12 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		{
 			get
 			{
+#if SIMPLSHARP
 				return Transmitter.HdmiInputs[HDMI_INPUT_1].SyncDetectedFeedback.BoolValue ||
 					   Transmitter.HdmiInputs[HDMI_INPUT_2].SyncDetectedFeedback.BoolValue;
+#else
+				return false;
+#endif
 			}
 		}
 
@@ -48,7 +58,17 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// Returns true if a VGA input source is detected.
 		/// </summary>
 		[PublicAPI]
-		public bool VgaDetected { get { return Transmitter.VgaInput.SyncDetectedFeedback.BoolValue; } }
+		public bool VgaDetected
+		{
+			get
+			{
+#if SIMPLSHARP
+				return Transmitter.VgaInput.SyncDetectedFeedback.BoolValue;
+#else
+				return false;
+#endif
+			}
+		}
 
 		/// <summary>
 		/// Returns true when the device is actively transmitting video.
@@ -82,6 +102,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 
 		#region Methods
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Subscribes to the transmitter events.
 		/// </summary>
@@ -153,6 +174,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 			// Disable Free-Run
 			Transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
 		}
+#endif
 
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
@@ -190,6 +212,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 
 		#region Settings
 
+#if SIMPLSHARP
 		public override DmTx4k302C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
 		{
 			return new DmTx4k302C(ipid, controlSystem);
@@ -204,9 +227,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		{
 			return new DmTx4k302C(input);
 		}
-
+#endif
 
 		#endregion
-#endif
 	}
 }

@@ -40,8 +40,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		public event ReceiverChangeCallback OnReceiverChanged;
 
 		private TReceiver m_Receiver;
-#endif
+
 		private int? m_ParentId;
+#endif
 
 		#region Properties
 
@@ -170,6 +171,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 
 		#region IO
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
@@ -224,6 +226,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 			string message = string.Format("{0} has no {1}", this, typeof(DigitalInput).Name);
 			throw new NotSupportedException(message);
 		}
+#endif
 
 		#endregion
 
