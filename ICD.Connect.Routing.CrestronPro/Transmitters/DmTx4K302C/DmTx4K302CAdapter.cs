@@ -92,14 +92,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 
 		#endregion
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public DmTx4K302CAdapter()
-		{
-			Controls.Add(new RouteSourceControl(this, 0));
-		}
-
 		#region Methods
 
 #if SIMPLSHARP

@@ -86,11 +86,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 
 #endregion
 
-		protected AbstractDmTx200BaseAdapter()
-		{
-			Controls.Add(new RouteSourceControl(this, 0));
-		}
-
 #if SIMPLSHARP
 		/// <summary>
 		/// Called when the wrapped transmitter is assigned.
