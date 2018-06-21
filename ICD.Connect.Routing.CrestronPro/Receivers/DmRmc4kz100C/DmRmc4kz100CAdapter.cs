@@ -1,5 +1,7 @@
-﻿using Crestron.SimplSharpPro;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+#endif
 using ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100CBase;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kz100C

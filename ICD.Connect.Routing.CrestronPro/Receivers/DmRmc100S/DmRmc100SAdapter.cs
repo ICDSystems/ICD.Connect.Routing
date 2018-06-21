@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+#endif
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
@@ -14,7 +16,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100S
 	public sealed class DmRmc100SAdapter :
 		AbstractEndpointReceiverBaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S, DmRmc100SAdapterSettings>
 #else
-	public sealed class DmRmc100SAdapter : AbstractDmRmc100SBaseAdapter<DmRmc100SAdapterSettings>
+	public sealed class DmRmc100SAdapter : AbstractEndpointReceiverBaseAdapter<DmRmc100SAdapterSettings>
 #endif
 	{
 #if SIMPLSHARP
@@ -34,11 +36,24 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100S
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S(output);
 		}
+#endif
 
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
@@ -70,6 +85,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100S
 
 			return base.GetIrOutputPort(address);
 		}
+#endif
 
 		/// <summary>
 		/// Returns true if a signal is detected at the given input.
@@ -79,9 +95,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100S
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
-			if (Receiver == null)
-				throw new InvalidOperationException("Reciever device cannot be null");
-
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
@@ -216,6 +229,4 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100S
 			}
 		}
 	}
-
-#endif
 }
