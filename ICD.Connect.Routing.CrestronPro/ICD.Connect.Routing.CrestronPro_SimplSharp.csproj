@@ -195,6 +195,14 @@
     <Compile Include="KrangPlugin.cs" />
     <Compile Include="Receivers\AbstractEndpointReceiverBaseAdapter.cs" />
     <Compile Include="Receivers\AbstractEndpointReceiverBaseAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc100F\DmRmc100FAdapter.cs" />
+    <Compile Include="Receivers\DmRmc100F\DmRmc100FAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc100S\DmRmc100SAdapter.cs" />
+    <Compile Include="Receivers\DmRmc100S\DmRmc100SAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc150S\DmRmc150SAdapter.cs" />
+    <Compile Include="Receivers\DmRmc150S\DmRmc150SAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc200C\DmRmc200CAdapter.cs" />
+    <Compile Include="Receivers\DmRmc200C\DmRmc200CAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc4k100C\DmRmc4k100CAdapter.cs" />
     <Compile Include="Receivers\DmRmc4k100C\DmRmc4k100CAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc4kz100C\DmRmc4kz100CAdapter.cs" />
