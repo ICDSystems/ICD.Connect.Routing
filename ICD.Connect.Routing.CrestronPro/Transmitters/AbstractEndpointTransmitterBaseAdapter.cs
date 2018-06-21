@@ -12,7 +12,6 @@ using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
-using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.CrestronPro.Utils;
