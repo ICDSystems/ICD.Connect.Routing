@@ -887,25 +887,35 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			// If we care about signal detection state, don't follow this path if the source isn't detected by the destination.
 			IRouteDestinationControl destination = this.GetDestinationControl(outputConnection);
-			if (signalDetected)
+			if (destination == null)
 			{
-				if (destination == null || !destination.GetSignalDetectedState(outputConnection.Destination.Address, type))
-				{
-					if (visited.Count > 0)
-						yield return visited.ToArray(visited.Count);
-					yield break;
-				}
+				if (visited.Count > 0)
+					yield return visited.ToArray(visited.Count);
+				yield break;
+			}
+
+			// Ensure the destination input even supports the given type.
+			ConnectorInfo input = destination.GetInput(outputConnection.Destination.Address);
+			if (input.ConnectionType != type)
+			{
+				if (visited.Count > 0)
+					yield return visited.ToArray(visited.Count);
+				yield break;
+			}
+
+			if (signalDetected && !destination.GetSignalDetectedState(outputConnection.Destination.Address, type))
+			{
+				if (visited.Count > 0)
+					yield return visited.ToArray(visited.Count);
+				yield break;
 			}
 
 			// If we care about input active state, don't follow this path if the input isn't active on the destination.
-			if (inputActive)
+			if (inputActive && !destination.GetInputActiveState(outputConnection.Destination.Address, type))
 			{
-				if (destination == null || !destination.GetInputActiveState(outputConnection.Destination.Address, type))
-				{
-					if (visited.Count > 0)
-						yield return visited.ToArray(visited.Count);
-					yield break;
-				}
+				if (visited.Count > 0)
+					yield return visited.ToArray(visited.Count);
+				yield break;
 			}
 
 			visited.Add(outputConnection);
