@@ -896,7 +896,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			// Ensure the destination input even supports the given type.
 			ConnectorInfo input = destination.GetInput(outputConnection.Destination.Address);
-			if (input.ConnectionType != type)
+			if (!input.ConnectionType.HasFlag(type))
 			{
 				if (visited.Count > 0)
 					yield return visited.ToArray(visited.Count);
