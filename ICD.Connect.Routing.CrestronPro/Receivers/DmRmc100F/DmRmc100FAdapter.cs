@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+#endif
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100CBase;
 using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100F
@@ -15,7 +16,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100F
 	public sealed class DmRmc100FAdapter :
 		AbstractEndpointReceiverBaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100F, DmRmc100FAdapterSettings>
 #else
-	public sealed class DmRmc100FAdapter : AbstractDmRmc100FBaseAdapter<DmRmc100FAdapterSettings>
+	public sealed class DmRmc100FAdapter : AbstractEndpointReceiverBaseAdapter<DmRmc100FAdapterSettings>
 #endif
 	{
 #if SIMPLSHARP
@@ -33,13 +34,26 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100F
 
 		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100F InstantiateReceiver(DMOutput output)
 		{
-			throw new NotImplementedException(string.Format("DmRmc100F does not support DMOutput only instantiation."));
+			throw new NotSupportedException(string.Format("DmRmc100F does not support DMOutput only instantiation."));
 		}
+#endif
 
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
@@ -71,6 +85,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100F
 
 			return base.GetIrOutputPort(address);
 		}
+#endif
 
 		/// <summary>
 		/// Returns true if a signal is detected at the given input.
@@ -80,9 +95,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100F
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
-			if (Receiver == null)
-				throw new InvalidOperationException("Reciever device cannot be null");
-
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
@@ -107,7 +119,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100F
 		}
 
 		/// <summary>
-		/// Returns the true if the input is actively being used by the source device.
+		/// Returns the true if the input is actively being used by the destination device.
 		/// For example, a display might true if the input is currently on screen,
 		/// while a switcher may return true if the input is currently routed.
 		/// </summary>
@@ -217,6 +229,4 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100F
 			}
 		}
 	}
-
-#endif
 }

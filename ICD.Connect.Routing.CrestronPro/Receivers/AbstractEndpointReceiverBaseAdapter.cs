@@ -288,8 +288,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 			}
 
 			SetScaler(scaler, settings.DmSwitch);
-#else
-            throw new NotImplementedException();
 #endif
 		}
 
