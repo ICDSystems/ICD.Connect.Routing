@@ -879,36 +879,67 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			// If there is no output connection from this source then we are done.
 			Connection outputConnection = m_Connections.GetOutputConnection(source);
 			if (outputConnection == null || !outputConnection.ConnectionType.HasFlag(type))
-				return visited.ToArray(visited.Count).Yield();
+			{
+				if (visited.Count > 0)
+					yield return visited.ToArray(visited.Count);
+				yield break;
+			}
 
 			// If we care about signal detection state, don't follow this path if the source isn't detected by the destination.
 			IRouteDestinationControl destination = this.GetDestinationControl(outputConnection);
-			if (destination == null)
-				return visited.ToArray(visited.Count).Yield();
-
-			// Ensure the destination input even supports the given type.
-			ConnectorInfo input = destination.GetInput(outputConnection.Destination.Address);
-			if (input.ConnectionType != type)
-				return visited.ToArray(visited.Count).Yield();
-
-			if (signalDetected && !destination.GetSignalDetectedState(outputConnection.Destination.Address, type))
-				return visited.ToArray(visited.Count).Yield();
+			if (signalDetected)
+			{
+				if (destination == null || !destination.GetSignalDetectedState(outputConnection.Destination.Address, type))
+				{
+					if (visited.Count > 0)
+						yield return visited.ToArray(visited.Count);
+					yield break;
+				}
+			}
 
 			// If we care about input active state, don't follow this path if the input isn't active on the destination.
-			if (inputActive && !destination.GetInputActiveState(outputConnection.Destination.Address, type))
-				return visited.ToArray(visited.Count).Yield();
+			if (inputActive)
+			{
+				if (destination == null || !destination.GetInputActiveState(outputConnection.Destination.Address, type))
+				{
+					if (visited.Count > 0)
+						yield return visited.ToArray(visited.Count);
+					yield break;
+				}
+			}
 
 			visited.Add(outputConnection);
 
 			// Get the output addresses from the destination if it is a midpoint device.
 			IRouteMidpointControl midpoint = destination as IRouteMidpointControl;
 			if (midpoint == null)
-				return visited.ToArray(visited.Count).Yield();
+			{
+				if (visited.Count > 0)
+					yield return visited.ToArray(visited.Count);
+				yield break;
+			}
 
-			return midpoint.GetOutputs(outputConnection.Destination.Address, type)
-			               .Select(c => midpoint.GetOutputEndpointInfo(c.Address))
-			               .SelectMany(s => FindActivePathsSingleFlag(s, type, signalDetected, inputActive,
-			                                                          new List<Connection>(visited)));
+			int[] outputs = midpoint.GetOutputs(outputConnection.Destination.Address, type)
+			                        .Select(c => c.Address)
+			                        .ToArray();
+
+			if (outputs.Length == 0)
+			{
+				if (visited.Count > 0)
+					yield return visited.ToArray(visited.Count);
+				yield break;
+			}
+
+			// Recurse for each output.
+			foreach (int outputAddress in outputs)
+			{
+				EndpointInfo newSource = midpoint.GetOutputEndpointInfo(outputAddress);
+
+				IEnumerable<Connection[]> paths = FindActivePathsSingleFlag(newSource, type, signalDetected, inputActive,
+				                                                            new List<Connection>(visited));
+				foreach (Connection[] path in paths)
+					yield return path;
+			}
 		}
 
 		/// <summary>
