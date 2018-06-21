@@ -1558,8 +1558,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (sourceControl == null)
 				throw new ArgumentNullException("sourceControl");
 
-			Connection connection = m_Connections.GetOutputConnections(sourceControl.Parent.Id, sourceControl.Id, type)
-			                                     .FirstOrDefault(c => c.Source.Address == address);
+			Connection connection = m_Connections.GetOutputConnection(sourceControl, address);
 			if (connection == null)
 				return null;
 
