@@ -180,7 +180,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		public virtual ComPort GetComPort(int address)
 		{
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(ComPort).Name, address);
-			throw new IndexOutOfRangeException(message);
+			throw new ArgumentOutOfRangeException("address", message);
 		}
 
 		/// <summary>
@@ -191,7 +191,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		public virtual IROutputPort GetIrOutputPort(int address)
 		{
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(IROutputPort).Name, address);
-			throw new IndexOutOfRangeException(message);
+			throw new ArgumentOutOfRangeException("address", message);
 		}
 
 		/// <summary>
@@ -202,7 +202,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		public virtual Relay GetRelayPort(int address)
 		{
 			string message = string.Format("{0} has no {1}", this, typeof(Relay).Name);
-			throw new NotSupportedException(message);
+			throw new ArgumentOutOfRangeException("address", message);
 		}
 
 		/// <summary>
@@ -213,7 +213,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		public virtual Versiport GetIoPort(int address)
 		{
 			string message = string.Format("{0} has no {1}", this, typeof(Versiport).Name);
-			throw new NotSupportedException(message);
+			throw new ArgumentOutOfRangeException("address", message);
 		}
 
 		/// <summary>
@@ -224,7 +224,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		public DigitalInput GetDigitalInputPort(int address)
 		{
 			string message = string.Format("{0} has no {1}", this, typeof(DigitalInput).Name);
-			throw new NotSupportedException(message);
+			throw new ArgumentOutOfRangeException("address", message);
 		}
 #endif
 
