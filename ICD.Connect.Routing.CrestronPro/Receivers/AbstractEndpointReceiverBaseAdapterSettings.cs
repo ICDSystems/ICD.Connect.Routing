@@ -3,12 +3,9 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
-namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
+namespace ICD.Connect.Routing.CrestronPro.Receivers
 {
-	/// <summary>
-	/// Settings for the DmRmcScalerCAdapter.
-	/// </summary>
-	public abstract class AbstractDmRmcScalerCAdapterSettings : AbstractDeviceSettings, IDmRmcScalerCAdapterSettings
+	public abstract class AbstractEndpointReceiverBaseAdapterSettings : AbstractDeviceSettings, IEndpointReceiverBaseAdapterSettings
 	{
 		private const string IPID_ELEMENT = "IPID";
 		private const string DM_SWITCH_ELEMENT = "DmSwitch";

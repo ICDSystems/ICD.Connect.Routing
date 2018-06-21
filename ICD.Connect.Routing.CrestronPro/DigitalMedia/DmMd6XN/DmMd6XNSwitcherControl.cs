@@ -234,7 +234,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd6XN
 					return true;
 
 				case eConnectionType.Usb:
-					return switcherInput.USBRoutedToFeedback.EndpointOnlineFeedback;
+					return switcherInput.USBRoutedToFeedback != null && switcherInput.USBRoutedToFeedback.EndpointOnlineFeedback;
 
 				default:
 					return false;
