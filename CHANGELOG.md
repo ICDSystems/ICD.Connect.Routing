@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
  - Added receiver endpoint variants (100C, 100F, 100S, etc)
+ - Adding DmTx4K202CAdapter
 
 ## [7.0.1] - 2018-06-19
 ### Changed
