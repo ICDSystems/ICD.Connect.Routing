@@ -243,6 +243,10 @@
     <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CAdapter.cs" />
     <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CAdapterSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\AbstractDmTx4kX02CBaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\AbstractDmTx4kX02CBaseAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\IDmTx4kX02CBaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\IDmTx4kX02CBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\IEndpointTransmitterBaseAdapter.cs" />
     <Compile Include="Transmitters\IEndpointTransmitterBaseAdapterSettings.cs" />
     <Compile Include="Utils\DmEndpointFactoryUtils.cs" />
