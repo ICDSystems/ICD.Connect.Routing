@@ -64,8 +64,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc150S
 			if (Receiver == null)
 				throw new InvalidOperationException("No scaler instantiated");
 
-			if (address == 1)
-				return Receiver.ComPorts[1];
+			if (address >= 1 && address <= Receiver.NumberOfComPorts)
+				return Receiver.ComPorts[(uint)address];
 
 			return base.GetComPort(address);
 		}
@@ -80,8 +80,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc150S
 			if (Receiver == null)
 				throw new InvalidOperationException("No scaler instantiated");
 
-			if (address == 1)
-				return Receiver.IROutputPorts[1];
+			if (address >= 1 && address <= Receiver.NumberOfIROutputPorts)
+				return Receiver.IROutputPorts[(uint)address];
 
 			return base.GetIrOutputPort(address);
 		}

@@ -7,7 +7,6 @@ using ICD.Connect.Settings.Core;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Receivers;
-using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
@@ -24,7 +23,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 	/// </summary>
 #if SIMPLSHARP
 	public abstract class AbstractEndpointReceiverBaseAdapter<TReceiver, TSettings> : AbstractRouteMidpointDevice<TSettings>,
-	                                                                                  IPortParent,
 	                                                                                  IEndpointReceiverBaseAdapter
 		                                                                                  <TReceiver>
 		where TReceiver : EndpointReceiverBase
