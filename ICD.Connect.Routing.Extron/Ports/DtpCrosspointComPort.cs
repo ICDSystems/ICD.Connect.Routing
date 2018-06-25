@@ -1,28 +1,35 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
 using ICD.Common.Utils.EventArguments;
+using ICD.Connect.API.Commands;
 using ICD.Connect.Protocol.Network.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
-using ICD.Connect.Routing.Extron.Devices.Dtp;
+using ICD.Connect.Routing.Extron.Devices.Endpoints;
+using ICD.Connect.Routing.Extron.Devices.Switchers;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Extron.Ports
 {
 	public class DtpCrosspointComPort : AbstractComPort<DtpCrosspointComPortSettings>
 	{
-		private IDtpHdmiDevice m_Parent;
 		private readonly AsyncTcpClient m_Client;
+
+		private IDtpHdmiDevice m_Parent;
+		private eExtronPortInsertionMode m_Mode;
+	    private HostInfo m_HostInfo;
 
 		public DtpCrosspointComPort()
 		{
 			m_Client = new AsyncTcpClient();
+            m_Client.OnSerialDataReceived += ClientOnSerialDataReceived;
 		}
 
-		protected override void DisposeFinal(bool disposing)
+        protected override void DisposeFinal(bool disposing)
 		{
 			base.DisposeFinal(disposing);
 
+            m_Client.OnSerialDataReceived -= null;
 			m_Client.Dispose();
 		}
 
@@ -32,7 +39,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 			eComStopBits numberOfStopBits, eComProtocolType protocolType, eComHardwareHandshakeType hardwareHandShake,
 			eComSoftwareHandshakeType softwareHandshake, bool reportCtsChanges)
 		{
-			m_Parent.SetComPortSpec(baudRate, numberOfDataBits, parityType, numberOfStopBits);
+			m_Parent.InitializeComPort(m_Mode, baudRate, numberOfDataBits, parityType, numberOfStopBits);
 		}
 
 		protected override bool SendFinal(string data)
@@ -41,7 +48,22 @@ namespace ICD.Connect.Routing.Extron.Ports
 			return m_Client.Send(data);
 		}
 
-		#endregion
+	    public override void Connect()
+	    {
+	        HostInfo? info = m_Parent.GetComPortHostInfo();
+	        if (info == null)
+	            throw new InvalidOperationException("Could not get host info to connect to DTP ComPort");
+
+	        m_Client.Connect(info.Value);
+            UpdateIsConnectedState();
+	    }
+
+	    protected override bool GetIsConnectedState()
+	    {
+	        return m_Client != null && m_Client.IsConnected;
+	    }
+
+	    #endregion
 
 		#region Settings
 
@@ -49,8 +71,10 @@ namespace ICD.Connect.Routing.Extron.Ports
 		{
 			base.ApplySettingsFinal(settings, factory);
 			
+            m_Mode = settings.Mode ?? eExtronPortInsertionMode.Ethernet;
 			m_Parent = factory.GetOriginatorById<IDtpHdmiDevice>(settings.Parent);
-			Subscribe(m_Parent);
+            if (m_Parent != null)
+			    Subscribe(m_Parent);
 		}
 
 		protected override void CopySettingsFinal(DtpCrosspointComPortSettings settings)
@@ -58,14 +82,17 @@ namespace ICD.Connect.Routing.Extron.Ports
 			base.CopySettingsFinal(settings);
 
 			settings.Parent = m_Parent.Id;
+			settings.Mode = m_Mode;
 		}
 
 		protected override void ClearSettingsFinal()
 		{
-			base.ClearSettingsFinal();
+		    if (m_Parent != null)
+		        Unsubscribe(m_Parent);
+		    m_Parent = null;
+			m_Mode = eExtronPortInsertionMode.CaptiveScrew;
 
-			Unsubscribe(m_Parent);
-			m_Parent = null;
+			base.ClearSettingsFinal();
 		}
 
 		#endregion
@@ -74,24 +101,47 @@ namespace ICD.Connect.Routing.Extron.Ports
 
 		private void Subscribe(IDtpHdmiDevice parent)
 		{
-			parent.OnInitializedChanged += ParentOnOnInitializedChanged;
+			parent.OnPortInitialized += ParentOnPortInitialized;
 		}
 
 		private void Unsubscribe(IDtpHdmiDevice parent)
 		{
-			parent.OnInitializedChanged -= ParentOnOnInitializedChanged;
+			parent.OnPortInitialized -= ParentOnPortInitialized;
 		}
 
-		private void ParentOnOnInitializedChanged(object sender, BoolEventArgs boolEventArgs)
+		private void ParentOnPortInitialized(object sender, BoolEventArgs boolEventArgs)
 		{
-			m_Client.Disconnect();
-			HostInfo? info = m_Parent.GetComPortHostInfo();
-			if (info == null)
-				throw new InvalidDataException("Could not get host info to connect to DTP ComPort");
-
-			m_Client.Connect(info.Value);
+		    Connect();
 		}
 
-		#endregion
-	}
+        #endregion
+
+        #region Client Callbacks
+
+        private void ClientOnSerialDataReceived(object sender, StringEventArgs e)
+        {
+            PrintRx(e.Data);
+            Receive(e.Data);
+        }
+
+        #endregion
+
+        #region Console
+
+        public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+        {
+            foreach(var command in base.GetConsoleCommands())
+                yield return command;
+
+            yield return new GenericConsoleCommand<eComBaudRates, eComDataBits, eComParityType, eComStopBits>(
+                "SetComPortSpec", "Sets the ComPort spec", 
+                (a,b,c,d) => SetComPortSpec(a, b, c, d, 
+                    eComProtocolType.ComspecProtocolRS232,
+                    eComHardwareHandshakeType.ComspecHardwareHandshakeNone,
+                    eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
+                    false));
+        }
+
+        #endregion
+    }
 }

@@ -2,34 +2,56 @@
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices;
+using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
-using ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase;
-using ICD.Connect.Routing.Mock.Midpoint;
+using ICD.Connect.Routing.Extron.Devices.Switchers;
 using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Routing.Extron.Devices.Dtp
+namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 {
 	public abstract class AbstractDtpHdmiDevice<TSettings> : AbstractDevice<TSettings>, IDtpHdmiDevice
 		where TSettings: IDtpHdmiDeviceSettings, new()
 	{
-		public event EventHandler<BoolEventArgs> OnInitializedChanged;
+		public event EventHandler<BoolEventArgs> OnPortInitialized;
+
+		#region Properties
 
 		public IDtpCrosspointDevice Parent { get; private set; }
 
+		private bool m_PortInitialized;
+
+		public bool PortInitialized
+		{
+			get { return m_PortInitialized; }
+			protected set
+			{
+				if (value == m_PortInitialized)
+					return;
+
+				m_PortInitialized = value;
+
+				OnPortInitialized.Raise(this, new BoolEventArgs(m_PortInitialized));
+			}
+		}
+
+		#endregion
+
 		public AbstractDtpHdmiDevice()
 		{
-			Controls.Add(new MockRouteMidpointControl(this, 0));
+			Controls.Add(new DtpHdmiMidpointControl<AbstractDtpHdmiDevice<TSettings>>(this, 0));
 		}
 
 		#region Methods
 
 		public abstract HostInfo? GetComPortHostInfo();
 
-		public abstract void SetComPortSpec(eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits);
+		public abstract void InitializeComPort(eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits);
 
 		protected override bool GetIsOnlineStatus()
 		{
+		    if (Parent == null)
+		        return false;
 			return Parent.IsOnline;
 		}
 
@@ -49,10 +71,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Dtp
 			base.ApplySettingsFinal(settings, factory);
 
 			if (settings.DtpSwitch != null)
-			{
 				Parent = factory.GetOriginatorById<IDtpCrosspointDevice>(settings.DtpSwitch.Value);
+            if(Parent != null)
 				Subscribe(Parent);
-			}
 		}
 
 		protected override void ClearSettingsFinal()
@@ -68,20 +89,27 @@ namespace ICD.Connect.Routing.Extron.Devices.Dtp
 
 		#region Parent Callbacks
 
-		private void Subscribe(IDtpCrosspointDevice parent)
+		protected virtual void Subscribe(IDtpCrosspointDevice parent)
 		{
 			parent.OnInitializedChanged += ParentOnOnInitializedChanged;
+            parent.OnIsOnlineStateChanged += ParentOnOnIsOnlineStateChanged;
 		}
 
-		private void Unsubscribe(IDtpCrosspointDevice parent)
+	    protected virtual void Unsubscribe(IDtpCrosspointDevice parent)
 		{
 			parent.OnInitializedChanged -= ParentOnOnInitializedChanged;
+		    parent.OnIsOnlineStateChanged -= ParentOnOnIsOnlineStateChanged;
 		}
 
 		private void ParentOnOnInitializedChanged(object sender, BoolEventArgs args)
 		{
-			OnInitializedChanged.Raise(this, args);
+			OnPortInitialized.Raise(this, args);
 		}
+        
+	    private void ParentOnOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs e)
+	    {
+	        UpdateCachedOnlineStatus();
+	    }
 
 		#endregion
 	}

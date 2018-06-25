@@ -1,4 +1,4 @@
-namespace ICD.Connect.Routing.Extron.Devices.Dtp.Tx
+namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Tx
 {
 	public interface IDtpHdmiTxDeviceSettings : IDtpHdmiDeviceSettings
 	{

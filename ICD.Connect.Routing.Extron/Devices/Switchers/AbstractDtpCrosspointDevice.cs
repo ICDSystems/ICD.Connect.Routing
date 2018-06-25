@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
@@ -10,13 +11,15 @@ using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Protocol.Utils;
+using ICD.Connect.Routing.Extron.SerialBuffers;
 using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
+namespace ICD.Connect.Routing.Extron.Devices.Switchers
 {
 	public abstract class AbstractDtpCrosspointDevice<TSettings> : AbstractDevice<TSettings>, IDtpCrosspointDevice
 		where TSettings: AbstractDtpCrosspointSettings, new()
 	{
+        private const string PORT_INITIALIZED_REGEX = @"Lrpt(I|O)(\d{1,2})\*((?:0|1){1,2})";
 		/// <summary>
 		/// The device likes to drop connection if there's no activity for 5 mins,
 		/// so lets occasionally send something to keep connection from dropping.
@@ -32,6 +35,16 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 		/// Raised when the class initializes.
 		/// </summary>
 		public event EventHandler<BoolEventArgs> OnInitializedChanged;
+
+        /// <summary>
+        /// Raised when an input serial port is initialized.
+        /// </summary>
+		public event EventHandler<IntEventArgs> OnInputPortInitialized;
+
+        /// <summary>
+        /// Raised when an output serial port is initialized.
+        /// </summary>
+		public event EventHandler<IntEventArgs> OnOutputPortInitialized;
 
 		/// <summary>
 		/// Raised when the device sends a response.
@@ -169,7 +182,7 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 
 		public HostInfo? GetInputComPortHostInfo(int input)
 		{
-			int? portOffset = GetInputPortOffset(input);
+			int? portOffset = GetPortOffsetFromInput(input);
 
 			if (portOffset == null)
 				return null;
@@ -179,7 +192,7 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 
 		public HostInfo? GetOutputComPortHostInfo(int output)
 		{
-			int? portOffset = GetOutputPortOffset(output);
+			int? portOffset = GetPortOffsetFromOutput(output);
 
 			if (portOffset == null)
 				return null;
@@ -187,23 +200,24 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 			return new HostInfo(Address, (ushort)(m_StartingComPort + portOffset));
 		}
 
-		public void SetInputComPortSpec(int input, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+		public void InitializeTxComPort(int input, eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
 			eComStopBits stopBits)
 		{
-			int? portOffset = GetInputPortOffset(input);
+			int? portOffset = GetPortOffsetFromInput(input);
 			if (portOffset == null)
 				return;
 
+			SendCommand(string.Format("WI{0}*{1}LRPT", input, (ushort)mode));
 			SetComPortSpec(portOffset.Value, baudRate, dataBits, parityType, stopBits);
 		}
 
-		public void SetOutputComPortSpec(int output, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+		public void InitializeRxComPort(int output, eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
 			eComStopBits stopBits)
 		{
-			int? portOffset = GetOutputPortOffset(output);
+			int? portOffset = GetPortOffsetFromOutput(output);
 			if (portOffset == null)
 				return;
-
+			SendCommand(string.Format("WO{0}*{1}LRPT", output, (ushort)mode));
 			SetComPortSpec(portOffset.Value, baudRate, dataBits, parityType, stopBits);
 		}
 
@@ -235,11 +249,12 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 		}
 
 		/// <summary>
-		/// Get the ComPort offset based on switcher input
+		/// Get the ComPort offset based on switcher input.
+		/// Port offsets are 1 and 2 for the last two inputs respectively.
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		private int? GetInputPortOffset(int input)
+		private int? GetPortOffsetFromInput(int input)
 		{
 			var switcherControl = Controls.GetControl(0) as IDtpCrosspointSwitcherControl;
 			if (switcherControl == null)
@@ -251,12 +266,25 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 			return portOffset;
 		}
 
+		private int? GetInputFromPortOffset(int offset)
+		{
+			var switcherControl = Controls.GetControl(0) as IDtpCrosspointSwitcherControl;
+			if (switcherControl == null)
+				return null;
+
+			if (offset <= 0 || offset > 2)
+				return null;
+
+			return switcherControl.NumberOfInputs + offset - 2;
+		}
+
 		/// <summary>
-		/// Get the ComPort offset based on switcher output
+		/// Get the ComPort offset based on switcher output.
+		/// Port offsets are 3 and 4 for the last two outputs respectively.
 		/// </summary>
 		/// <param name="output"></param>
 		/// <returns></returns>
-		private int? GetOutputPortOffset(int output)
+		private int? GetPortOffsetFromOutput(int output)
 		{
 			var switcherControl = Controls.GetControl(0) as IDtpCrosspointSwitcherControl;
 			if (switcherControl == null)
@@ -266,6 +294,18 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 			if (portOffset <= 0)
 				return null;
 			return portOffset;
+		}
+
+		private int? GetOutputFromPortOffset(int offset)
+		{
+			var switcherControl = Controls.GetControl(0) as IDtpCrosspointSwitcherControl;
+			if (switcherControl == null)
+				return null;
+
+			if (offset <= 2 || offset > 4)
+				return null;
+
+			return switcherControl.NumberOfOutputs + offset - 4;
 		}
 
 		private void Initialize()
@@ -326,8 +366,30 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 			{
 				m_StartingComPort = ushort.Parse(args.Data.Substring(3));
 			}
-				
-		}
+
+			if (args.Data.StartsWith("Vrb"))
+			{
+				var verbosity = (eExtronVerbosity)ushort.Parse(args.Data.Substring(3));
+				if (verbosity == eExtronVerbosity.All)
+					Initialized = true;
+				else
+				{
+					Initialized = false;
+					SetVerboseMode(eExtronVerbosity.All);
+				}
+			}
+
+            Match match = Regex.Match(args.Data, PORT_INITIALIZED_REGEX);
+            if (match.Success)
+            {
+                int address = int.Parse(match.Groups[2].Value);
+                //eExtronPortInsertionMode mode = (eExtronPortInsertionMode)int.Parse(match.Groups[3].Value);
+                if (match.Groups[1].Value == "I")
+                    OnInputPortInitialized.Raise(this, new IntEventArgs(address));
+                if (match.Groups[1].Value == "O")
+                    OnOutputPortInitialized.Raise(this, new IntEventArgs(address));
+            }
+        }
 
 		#endregion
 
@@ -359,6 +421,7 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 			base.ApplySettingsFinal(settings, factory);
 
 			Password = settings.Password;
+		    Address = settings.Address;
 
 			ISerialPort port = null;
 
@@ -383,6 +446,9 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 		#endregion
 	}
 
+	/// <summary>
+	/// For initializing the verbose mode of the switcher
+	/// </summary>
 	[Flags]
 	internal enum eExtronVerbosity
 	{
@@ -405,5 +471,21 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 		/// Verbose mode and tagged responses for queries
 		/// </summary>
 		All = VerboseMode | TaggedResponses
+	}
+
+	/// <summary>
+	/// For initializing the DTP serial insertion
+	/// </summary>
+	public enum eExtronPortInsertionMode
+	{
+		/// <summary>
+		/// RS-232 passthrough of the serial port
+		/// </summary>
+		CaptiveScrew = 0,
+		
+		/// <summary>
+		/// TCP port insertion of serial data
+		/// </summary>
+		Ethernet
 	}
 }

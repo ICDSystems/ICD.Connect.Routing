@@ -10,7 +10,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
+namespace ICD.Connect.Routing.Extron.Devices.Switchers
 {
 	public abstract class AbstractDtpCrosspointSwitcherControl<TDevice, TSettings> : AbstractRouteSwitcherControl<TDevice>, IDtpCrosspointSwitcherControl
 		where TDevice : AbstractDtpCrosspointDevice<TSettings>
@@ -211,13 +211,39 @@ namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
 
 		private void Subscribe(SwitcherCache cache)
 		{
-			cache.OnSourceDetectionStateChange += CacheOnOnSourceDetectionStateChange;
+			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+            cache.OnRouteChange += CacheOnRouteChange;
+            cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
+            cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
 		}
 
-		private void CacheOnOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
+        private void Unsubscribe(SwitcherCache cache)
+        {
+            cache.OnSourceDetectionStateChange -= CacheOnSourceDetectionStateChange;
+            cache.OnRouteChange -= CacheOnRouteChange;
+            cache.OnActiveInputsChanged -= CacheOnActiveInputsChanged;
+            cache.OnActiveTransmissionStateChanged -= CacheOnActiveTransmissionStateChanged;
+        }
+
+        private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
+        {
+            OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
+        }
+
+        private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
-			OnSourceDetectionStateChange.Raise(this, args);
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
 		}
+
+        private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
+        {
+            OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
+        }
+
+        private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
+        {
+            OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
+        }
 
 		#endregion
 

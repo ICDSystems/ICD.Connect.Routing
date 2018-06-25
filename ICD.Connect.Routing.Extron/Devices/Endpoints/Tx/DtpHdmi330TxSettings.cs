@@ -1,7 +1,7 @@
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes;
 
-namespace ICD.Connect.Routing.Extron.Devices.Dtp.Tx
+namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Tx
 {
 	[KrangSettings("DtpHdmi330Tx", typeof(DtpHdmi330Tx))]
 	public class DtpHdmi330TxSettings : AbstractDtpHdmiDeviceSettings, IDtpHdmiTxDeviceSettings

@@ -6,7 +6,7 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Protocol.SerialBuffers;
 
-namespace ICD.Connect.Routing.Extron
+namespace ICD.Connect.Routing.Extron.SerialBuffers
 {
 	public sealed class DtpCrosspointSerialBuffer : ISerialBuffer
 	{

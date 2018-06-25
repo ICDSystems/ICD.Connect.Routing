@@ -1,6 +1,4 @@
-﻿using ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase;
-
-namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspoint84
+﻿namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint84
 {
 	public sealed class DtpCrosspoint84SwitcherControl : AbstractDtpCrosspointSwitcherControl<DtpCrosspoint84, DtpCrosspoint84Settings>
 	{

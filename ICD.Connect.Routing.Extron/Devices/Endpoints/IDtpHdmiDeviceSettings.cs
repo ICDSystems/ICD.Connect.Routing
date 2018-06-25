@@ -1,8 +1,8 @@
 using ICD.Connect.Devices;
-using ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase;
+using ICD.Connect.Routing.Extron.Devices.Switchers;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
-namespace ICD.Connect.Routing.Extron.Devices.Dtp
+namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 {
 	public interface IDtpHdmiDeviceSettings : IDeviceSettings
 	{

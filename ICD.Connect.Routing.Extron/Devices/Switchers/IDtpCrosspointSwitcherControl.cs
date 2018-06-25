@@ -1,6 +1,6 @@
 using ICD.Connect.Routing.Controls;
 
-namespace ICD.Connect.Routing.Extron.Devices.DtpCrosspointBase
+namespace ICD.Connect.Routing.Extron.Devices.Switchers
 {
 	public interface IDtpCrosspointSwitcherControl : IRouteSwitcherControl
 	{

@@ -60,24 +60,27 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Devices\DtpCrosspoint84\DtpCrosspoint84.cs" />
-    <Compile Include="Devices\DtpCrosspoint84\DtpCrosspoint84Settings.cs" />
-    <Compile Include="Devices\DtpCrosspoint84\DtpCrosspoint84SwitcherControl.cs" />
-    <Compile Include="Devices\DtpCrosspointBase\AbstractDtpCrosspointDevice.cs" />
-    <Compile Include="Devices\DtpCrosspointBase\AbstractDtpCrosspointSettings.cs" />
-    <Compile Include="Devices\DtpCrosspointBase\AbstractDtpCrosspointSwitcherControl.cs" />
-    <Compile Include="Devices\Dtp\AbstractDtpHdmiDevice.cs" />
-    <Compile Include="Devices\DtpCrosspointBase\IDtpCrosspointDevice.cs" />
-    <Compile Include="Devices\Dtp\IDtpHdmiDevice.cs" />
-    <Compile Include="Devices\Dtp\IDtpHdmiDeviceSettings.cs" />
-    <Compile Include="Devices\Dtp\Rx\IDtpHdmiRxDeviceSettings.cs" />
-    <Compile Include="Devices\Dtp\AbstractDtpHdmiDeviceSettings.cs" />
-    <Compile Include="Devices\Dtp\Rx\DtpHdmi330Rx.cs" />
-    <Compile Include="Devices\Dtp\Rx\DtpHdmi330RxSettings.cs" />
-    <Compile Include="Devices\Dtp\Tx\DtpHdmi330Tx.cs" />
-    <Compile Include="Devices\Dtp\Tx\DtpHdmi330TxSettings.cs" />
-    <Compile Include="Devices\Dtp\Tx\IDtpHdmiTxDeviceSettings.cs" />
-    <Compile Include="DtpCrosspointSerialBuffer.cs" />
+    <Compile Include="Devices\Switchers\DtpCrosspoint84\DtpCrosspoint84.cs" />
+    <Compile Include="Devices\Switchers\DtpCrosspoint84\DtpCrosspoint84Settings.cs" />
+    <Compile Include="Devices\Switchers\DtpCrosspoint84\DtpCrosspoint84SwitcherControl.cs" />
+    <Compile Include="Devices\Switchers\AbstractDtpCrosspointDevice.cs" />
+    <Compile Include="Devices\Switchers\AbstractDtpCrosspointSettings.cs" />
+    <Compile Include="Devices\Switchers\AbstractDtpCrosspointSwitcherControl.cs" />
+    <Compile Include="Devices\Switchers\IDtpCrosspointSettings.cs" />
+    <Compile Include="Devices\Switchers\IDtpCrosspointSwitcherControl.cs" />
+    <Compile Include="Devices\Endpoints\AbstractDtpHdmiDevice.cs" />
+    <Compile Include="Devices\Switchers\IDtpCrosspointDevice.cs" />
+    <Compile Include="Devices\Endpoints\DtpHdmiMidpointControl.cs" />
+    <Compile Include="Devices\Endpoints\IDtpHdmiDevice.cs" />
+    <Compile Include="Devices\Endpoints\IDtpHdmiDeviceSettings.cs" />
+    <Compile Include="Devices\Endpoints\Rx\IDtpHdmiRxDeviceSettings.cs" />
+    <Compile Include="Devices\Endpoints\AbstractDtpHdmiDeviceSettings.cs" />
+    <Compile Include="Devices\Endpoints\Rx\DtpHdmi330Rx.cs" />
+    <Compile Include="Devices\Endpoints\Rx\DtpHdmi330RxSettings.cs" />
+    <Compile Include="Devices\Endpoints\Tx\DtpHdmi330Tx.cs" />
+    <Compile Include="Devices\Endpoints\Tx\DtpHdmi330TxSettings.cs" />
+    <Compile Include="Devices\Endpoints\Tx\IDtpHdmiTxDeviceSettings.cs" />
+    <Compile Include="SerialBuffers\DtpCrosspointSerialBuffer.cs" />
     <Compile Include="KrangPlugin.cs" />
     <Compile Include="Ports\DtpCrosspointComPort.cs" />
     <Compile Include="Ports\DtpCrosspointComPortSettings.cs" />
@@ -96,6 +99,10 @@
     <ProjectReference Include="..\..\ICD.Connect.Devices\ICD.Connect.Devices\ICD.Connect.Devices_SimplSharp.csproj">
       <Project>{FD46A717-5836-4B73-ADD0-2706639DA8ED}</Project>
       <Name>ICD.Connect.Devices_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Protocol\ICD.Connect.Protocol.Network\ICD.Connect.Protocol.Network_SimplSharp.csproj">
+      <Project>{5ED52F05-EA6C-4FC5-8AA0-9B9727F6AECD}</Project>
+      <Name>ICD.Connect.Protocol.Network_SimplSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ICD.Connect.Protocol\ICD.Connect.Protocol\ICD.Connect.Protocol_SimplSharp.csproj">
       <Project>{2E4E01B8-D4EA-4FB1-9FCE-0A0DC8D83C8A}</Project>
