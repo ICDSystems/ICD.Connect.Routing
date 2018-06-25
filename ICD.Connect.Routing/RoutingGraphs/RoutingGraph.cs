@@ -1869,7 +1869,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			// Re-enforce static routes
 			m_StaticRoutes.ReApplyStaticRoutesForSwitcher(switcher);
 
-			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args.Output, args.Type));
+			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args.NewInput, args.Output, args.Type));
 		}
 
 		#endregion
