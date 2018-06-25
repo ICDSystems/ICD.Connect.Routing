@@ -80,6 +80,7 @@
     <Compile Include="Devices\Endpoints\Tx\DtpHdmi330Tx.cs" />
     <Compile Include="Devices\Endpoints\Tx\DtpHdmi330TxSettings.cs" />
     <Compile Include="Devices\Endpoints\Tx\IDtpHdmiTxDeviceSettings.cs" />
+    <None Include="ObfuscationSettings.cs" />
     <Compile Include="SerialBuffers\DtpCrosspointSerialBuffer.cs" />
     <Compile Include="KrangPlugin.cs" />
     <Compile Include="Ports\DtpCrosspointComPort.cs" />
@@ -123,6 +124,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>rem  S# preparation will execute after these operations</PostBuildEvent>
+    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 5.2 --configuration-file="$(ProjectDir)ObfuscationSettings.cs"
+rem S# Pro preparation will execute after these operations</PostBuildEvent>
   </PropertyGroup>
 </Project>
