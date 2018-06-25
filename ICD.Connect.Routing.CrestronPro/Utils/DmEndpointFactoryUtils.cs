@@ -1,6 +1,5 @@
 ﻿using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Routing.CrestronPro.Receivers;
-using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
 using ICD.Connect.Routing.CrestronPro.Transmitters;
 using System;
 #if SIMPLSHARP

@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Misc.CrestronPro.Devices;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Receivers;
@@ -11,7 +12,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 	public delegate void ReceiverChangeCallback(IEndpointReceiverBaseAdapter sender, EndpointReceiverBase midpoint);
 #endif
 
-	public interface IEndpointReceiverBaseAdapter : IDevice
+	public interface IEndpointReceiverBaseAdapter : IDevice, IPortParent
 	{
 #if SIMPLSHARP
 		/// <summary>

@@ -9,6 +9,7 @@ namespace ICD.Connect.Routing.EventArguments
 	public sealed class SwitcherRouteChangeEventArgs : EventArgs
 	{
 		private readonly IRouteSwitcherControl m_Control;
+		private readonly int? m_Input;
 		private readonly int m_Output;
 		private readonly eConnectionType m_Type;
 
@@ -17,6 +18,11 @@ namespace ICD.Connect.Routing.EventArguments
 		/// </summary>
 		[PublicAPI]
 		public IRouteSwitcherControl Control { get { return m_Control; } }
+
+		/// <summary>
+		/// The input address.
+		/// </summary>
+		public int? Input { get { return m_Input; } }
 
 		/// <summary>
 		/// The output address.
@@ -34,12 +40,14 @@ namespace ICD.Connect.Routing.EventArguments
 		/// Constructor.
 		/// </summary>
 		/// <param name="control"></param>
+		/// <param name="input"></param>
 		/// <param name="output"></param>
 		/// <param name="type"></param>
-		public SwitcherRouteChangeEventArgs(IRouteSwitcherControl control, int output, eConnectionType type)
+		public SwitcherRouteChangeEventArgs(IRouteSwitcherControl control, int? input, int output, eConnectionType type)
 		{
 			m_Control = control;
 			m_Type = type;
+			m_Input = input;
 			m_Output = output;
 		}
 
@@ -48,7 +56,7 @@ namespace ICD.Connect.Routing.EventArguments
 		/// </summary>
 		/// <param name="args"></param>
 		public SwitcherRouteChangeEventArgs(SwitcherRouteChangeEventArgs args)
-			: this(args.Control, args.Output, args.Type)
+			: this(args.Control, args.Input, args.Output, args.Type)
 		{
 		}
 
@@ -61,6 +69,7 @@ namespace ICD.Connect.Routing.EventArguments
 			ReprBuilder builder = new ReprBuilder(this);
 
 			builder.AppendProperty("Control", m_Control);
+			builder.AppendProperty("Input", m_Input);
 			builder.AppendProperty("Output", m_Output);
 			builder.AppendProperty("Type", m_Type);
 
