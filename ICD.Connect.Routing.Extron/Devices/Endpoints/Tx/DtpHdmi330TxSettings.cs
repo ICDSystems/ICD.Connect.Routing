@@ -14,7 +14,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Tx
 		{
 			base.WriteElements(writer);
 
-			writer.WriteElementString(DTP_INPUT_ELEMENT, DtpInput.ToString());
+			writer.WriteElementString(DTP_INPUT_ELEMENT, IcdXmlConvert.ToString(DtpInput));
 		}
 
 		public override void ParseXml(string xml)

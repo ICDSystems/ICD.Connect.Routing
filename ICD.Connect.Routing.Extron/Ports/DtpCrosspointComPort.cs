@@ -50,17 +50,24 @@ namespace ICD.Connect.Routing.Extron.Ports
 
 	    public override void Connect()
 	    {
-	        HostInfo? info = m_Parent.GetComPortHostInfo();
-	        if (info == null)
-	            throw new InvalidOperationException("Could not get host info to connect to DTP ComPort");
+		    if (m_Mode == eExtronPortInsertionMode.Ethernet)
+		    {
+			    HostInfo? info = m_Parent.GetComPortHostInfo();
+			    if (info == null)
+				    throw new InvalidOperationException("Could not get host info to connect to DTP ComPort");
 
-	        m_Client.Connect(info.Value);
-            UpdateIsConnectedState();
+			    m_Client.Connect(info.Value);
+		    }
+
+			UpdateIsConnectedState();
 	    }
 
 	    protected override bool GetIsConnectedState()
 	    {
-	        return m_Client != null && m_Client.IsConnected;
+		    if (m_Mode == eExtronPortInsertionMode.Ethernet)
+			    return m_Client != null && m_Client.IsConnected;
+
+			return true;
 	    }
 
 	    #endregion

@@ -23,7 +23,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 			base.WriteElements(writer);
 
 			writer.WriteElementString(PARENT_ELEMENT, Parent.ToString());
-			writer.WriteElementString(MODE_ELEMENT, Mode.ToString());
+			writer.WriteElementString(MODE_ELEMENT, IcdXmlConvert.ToString(Mode));
 		}
 
 		public override void ParseXml(string xml)
