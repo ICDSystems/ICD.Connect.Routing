@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Common.Utils;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints;
 
@@ -36,6 +37,17 @@ namespace ICD.Connect.Routing.EventArguments
 		public EndpointStateEventArgs(EndpointStateEventArgs args)
 			: this(args.Endpoint, args.Type, args.State)
 		{
+		}
+
+		public override string ToString()
+		{
+			ReprBuilder builder = new ReprBuilder(this);
+
+			builder.AppendProperty("Endpoint", Endpoint);
+			builder.AppendProperty("Type", Type);
+			builder.AppendProperty("State", State);
+
+			return builder.ToString();
 		}
 	}
 }
