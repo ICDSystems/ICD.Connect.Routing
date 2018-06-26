@@ -118,7 +118,8 @@ namespace ICD.Connect.Routing.Extron.Ports
 
 		private void ParentOnPortInitialized(object sender, BoolEventArgs boolEventArgs)
 		{
-		    Connect();
+			if(!IsConnected)
+				Connect();
 		}
 
         #endregion
