@@ -29,6 +29,27 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Gets the child with the given endpoint info.
 		/// </summary>
 		/// <param name="endpoint"></param>
+		/// <returns></returns>
+		public IEnumerable<T> GetChildren(EndpointInfo endpoint)
+		{
+			m_EndpointCacheSection.Enter();
+
+			try
+			{
+				return EnumUtils.GetValuesExceptNone<eConnectionType>()
+				                .SelectMany(f => GetChildren(endpoint, f))
+				                .Distinct();
+			}
+			finally
+			{
+				m_EndpointCacheSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Gets the child with the given endpoint info.
+		/// </summary>
+		/// <param name="endpoint"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public IEnumerable<T> GetChildren(EndpointInfo endpoint, eConnectionType type)
