@@ -36,7 +36,7 @@ namespace ICD.Connect.Routing.Devices
 				return GetOutputs().First(c => c.Address == output);
 
 			string message = string.Format("{0} has no output at address {1}", this, output);
-			throw new IndexOutOfRangeException(message);
+			throw new ArgumentOutOfRangeException("output", message);
 		}
 
 		/// <summary>
