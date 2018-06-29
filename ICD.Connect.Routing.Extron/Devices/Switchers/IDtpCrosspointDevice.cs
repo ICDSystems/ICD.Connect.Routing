@@ -11,14 +11,14 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		event EventHandler<BoolEventArgs> OnInitializedChanged;
 		event EventHandler<IntEventArgs> OnInputPortInitialized;
 		event EventHandler<IntEventArgs> OnOutputPortInitialized;
+		
+		ISerialPort GetInputSerialInsertionPort(int input);
+		ISerialPort GetOutputSerialInsertionPort(int output);
 
-		HostInfo? GetInputComPortHostInfo(int input);
-		HostInfo? GetOutputComPortHostInfo(int output);
-
-	    void InitializeTxComPort(int input, eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+	    void SetTxComPortSpec(int input, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
 	                             eComStopBits stopBits);
 
-		void InitializeRxComPort(int output, eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+		void SetRxComPortSpec(int output, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
 	                              eComStopBits stopBits);
 	}
 }

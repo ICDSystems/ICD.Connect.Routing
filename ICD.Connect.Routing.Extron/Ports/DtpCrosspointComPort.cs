@@ -13,25 +13,28 @@ namespace ICD.Connect.Routing.Extron.Ports
 {
 	public class DtpCrosspointComPort : AbstractComPort<DtpCrosspointComPortSettings>
 	{
-		private readonly AsyncTcpClient m_Client;
-
+		private ISerialPort m_Port;
 		private IDtpHdmiDevice m_Parent;
-		private eExtronPortInsertionMode m_Mode;
-	    private HostInfo m_HostInfo;
 
-		public DtpCrosspointComPort()
+		#region Properties
+
+		public ISerialPort WrappedPort
 		{
-			m_Client = new AsyncTcpClient();
-            m_Client.OnSerialDataReceived += ClientOnSerialDataReceived;
+			get { return m_Port; }
+			private set
+			{
+				if (m_Port == value)
+					return;
+
+				if (m_Port != null)
+					Unsubscribe(m_Port);
+				
+				m_Port = value;
+				Subscribe(m_Port);
+			}
 		}
 
-        protected override void DisposeFinal(bool disposing)
-		{
-			base.DisposeFinal(disposing);
-
-            m_Client.OnSerialDataReceived -= null;
-			m_Client.Dispose();
-		}
+		#endregion
 
 		#region Methods
 
@@ -39,35 +42,39 @@ namespace ICD.Connect.Routing.Extron.Ports
 			eComStopBits numberOfStopBits, eComProtocolType protocolType, eComHardwareHandshakeType hardwareHandShake,
 			eComSoftwareHandshakeType softwareHandshake, bool reportCtsChanges)
 		{
-			m_Parent.InitializeComPort(m_Mode, baudRate, numberOfDataBits, parityType, numberOfStopBits);
+			m_Parent.InitializeComPort(baudRate, numberOfDataBits, parityType, numberOfStopBits);
+			
+			var comPort = m_Port as IComPort;
+			if(comPort != null)
+				comPort.SetComPortSpec(
+					baudRate, numberOfDataBits, 
+					parityType, numberOfStopBits, 
+					protocolType, hardwareHandShake, 
+					softwareHandshake, reportCtsChanges);
 		}
 
 		protected override bool SendFinal(string data)
 		{
 			PrintTx(data);
-			return m_Client.Send(data);
+			return m_Port.Send(data);
 		}
 
 	    public override void Connect()
 	    {
-		    if (m_Mode == eExtronPortInsertionMode.Ethernet)
-		    {
-			    HostInfo? info = m_Parent.GetComPortHostInfo();
-			    if (info == null)
-				    throw new InvalidOperationException("Could not get host info to connect to DTP ComPort");
+			if (m_Port == null)
+				m_Port = m_Parent.GetSerialInsertionPort();
 
-			    m_Client.Connect(info.Value);
-		    }
+		    if (m_Port == null)
+			    throw new InvalidOperationException("Could not get serial insertion port for this DTP ComPort");
+
+			m_Port.Connect();
 
 			UpdateIsConnectedState();
 	    }
 
 	    protected override bool GetIsConnectedState()
 	    {
-		    if (m_Mode == eExtronPortInsertionMode.Ethernet)
-			    return m_Client != null && m_Client.IsConnected;
-
-			return true;
+			return m_Port != null && m_Port.IsConnected;
 	    }
 
 	    #endregion
@@ -78,7 +85,6 @@ namespace ICD.Connect.Routing.Extron.Ports
 		{
 			base.ApplySettingsFinal(settings, factory);
 			
-            m_Mode = settings.Mode ?? eExtronPortInsertionMode.Ethernet;
 			m_Parent = factory.GetOriginatorById<IDtpHdmiDevice>(settings.Parent);
             if (m_Parent != null)
 			    Subscribe(m_Parent);
@@ -89,15 +95,13 @@ namespace ICD.Connect.Routing.Extron.Ports
 			base.CopySettingsFinal(settings);
 
 			settings.Parent = m_Parent.Id;
-			settings.Mode = m_Mode;
 		}
 
 		protected override void ClearSettingsFinal()
 		{
 		    if (m_Parent != null)
 		        Unsubscribe(m_Parent);
-		    m_Parent = null;
-			m_Mode = eExtronPortInsertionMode.CaptiveScrew;
+		    m_Parent = null; 
 
 			base.ClearSettingsFinal();
 		}
@@ -124,13 +128,30 @@ namespace ICD.Connect.Routing.Extron.Ports
 
         #endregion
 
-        #region Client Callbacks
+        #region Port Callbacks
 
-        private void ClientOnSerialDataReceived(object sender, StringEventArgs e)
+		private void Subscribe(ISerialPort port)
+		{
+			port.OnSerialDataReceived += PortOnSerialDataReceived;
+			port.OnConnectedStateChanged += PortOnConnectedStateChanged;
+		}
+
+		private void Unsubscribe(ISerialPort port)
+		{
+			port.OnSerialDataReceived -= PortOnSerialDataReceived;
+			port.OnConnectedStateChanged -= PortOnConnectedStateChanged;
+		}
+
+        private void PortOnSerialDataReceived(object sender, StringEventArgs e)
         {
             PrintRx(e.Data);
             Receive(e.Data);
         }
+
+		private void PortOnConnectedStateChanged(object sender, BoolEventArgs e)
+		{
+			UpdateIsConnectedState();
+		}
 
         #endregion
 

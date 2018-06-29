@@ -44,9 +44,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 
 		#region Methods
 
-		public abstract HostInfo? GetComPortHostInfo();
+		public abstract ISerialPort GetSerialInsertionPort();
 
-		public abstract void InitializeComPort(eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits);
+		public abstract void InitializeComPort(eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits);
 
 		protected override bool GetIsOnlineStatus()
 		{

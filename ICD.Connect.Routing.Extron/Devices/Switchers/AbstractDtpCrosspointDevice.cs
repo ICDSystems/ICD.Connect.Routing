@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
@@ -8,6 +11,7 @@ using ICD.Common.Utils.Timers;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
+using ICD.Connect.Protocol.Network.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Protocol.Utils;
@@ -58,6 +62,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		private bool m_Initialized;
 
 		private ushort m_StartingComPort = 2000;
+		private readonly Dictionary<int, IComPort> m_DtpInputPorts;
+		private readonly SafeCriticalSection m_DtpInputPortsSection;
+		private readonly Dictionary<int, IComPort> m_DtpOutputPorts;
+		private readonly SafeCriticalSection m_DtpOutputPortsSection;
 
 		#region Properties
 
@@ -93,6 +101,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			}
 		}
 
+		protected abstract int NumberOfDtpInputPorts { get; }
+
+		protected abstract int NumberOfDtpOutputPorts { get; }
+
 		#endregion
 
 		public AbstractDtpCrosspointDevice()
@@ -101,9 +113,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			Subscribe(m_SerialBuffer);
 
 			m_ConnectionStateManager = new ConnectionStateManager(this) { ConfigurePort = ConfigurePort };
-			m_ConnectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
-			m_ConnectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
-			m_ConnectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived;
+			Subscribe(m_ConnectionStateManager);
 
 			m_KeepAliveTimer = SafeTimer.Stopped(KeepAliveCallback);
 			m_KeepAliveTimer.Reset(KEEPALIVE_INTERVAL, KEEPALIVE_INTERVAL);
@@ -118,9 +128,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			OnInitializedChanged = null;
 			OnResponseReceived = null;
 
-			m_ConnectionStateManager.OnConnectedStateChanged -= PortOnConnectionStatusChanged;
-			m_ConnectionStateManager.OnIsOnlineStateChanged -= PortOnIsOnlineStateChanged;
-			m_ConnectionStateManager.OnSerialDataReceived -= PortOnSerialDataReceived;
+			Unsubscribe(m_ConnectionStateManager);
 			m_ConnectionStateManager.Dispose();
 
 			m_KeepAliveTimer.Dispose();
@@ -180,46 +188,61 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			m_ConnectionStateManager.Send(command + '\r');
 		}
 
-		public HostInfo? GetInputComPortHostInfo(int input)
+		public ISerialPort GetInputSerialInsertionPort(int input)
 		{
+			m_DtpInputPortsSection.Enter();
+			try
+			{
+				if (m_DtpInputPorts.ContainsKey(input) && m_DtpInputPorts[input] != null)
+					return m_DtpInputPorts[input];
+			}
+			finally
+			{
+				m_DtpInputPortsSection.Leave();
+			}
+
 			int? portOffset = GetPortOffsetFromInput(input);
-
-			if (portOffset == null)
-				return null;
-
-			return new HostInfo(Address, (ushort)(m_StartingComPort + portOffset));
+			return GetTcpClientForPortOffset(portOffset);
 		}
 
-		public HostInfo? GetOutputComPortHostInfo(int output)
+		public ISerialPort GetOutputSerialInsertionPort(int output)
 		{
+			m_DtpOutputPortsSection.Enter();
+			try
+			{
+				if (m_DtpOutputPorts.ContainsKey(output) && m_DtpOutputPorts[output] != null)
+					return m_DtpInputPorts[output];
+			}
+			finally
+			{
+				m_DtpInputPortsSection.Leave();
+			}
 			int? portOffset = GetPortOffsetFromOutput(output);
-
-			if (portOffset == null)
-				return null;
-
-			return new HostInfo(Address, (ushort)(m_StartingComPort + portOffset));
+			return GetTcpClientForPortOffset(portOffset);
 		}
 
-		public void InitializeTxComPort(int input, eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+		public void SetTxComPortSpec(int input, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
 			eComStopBits stopBits)
 		{
 			int? portOffset = GetPortOffsetFromInput(input);
 			if (portOffset == null)
 				return;
 
-			SendCommand(string.Format("WI{0}*{1}LRPT", input, (ushort)mode));
 			SetComPortSpec(portOffset.Value, baudRate, dataBits, parityType, stopBits);
 		}
 
-		public void InitializeRxComPort(int output, eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+		public void SetRxComPortSpec(int output, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
 			eComStopBits stopBits)
 		{
 			int? portOffset = GetPortOffsetFromOutput(output);
 			if (portOffset == null)
 				return;
-			SendCommand(string.Format("WO{0}*{1}LRPT", output, (ushort)mode));
 			SetComPortSpec(portOffset.Value, baudRate, dataBits, parityType, stopBits);
 		}
+
+		#endregion
+
+		#region Private Methods
 
 		private void SetComPortSpec(int portOffset, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
 			eComStopBits stopBits)
@@ -256,26 +279,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// <returns></returns>
 		private int? GetPortOffsetFromInput(int input)
 		{
-			var switcherControl = Controls.GetControl(0) as IDtpCrosspointSwitcherControl;
-			if (switcherControl == null)
-				return null;
-
-			int portOffset = input - switcherControl.NumberOfInputs + 2;
+			int portOffset = input - GetNumberOfInputs() + NumberOfDtpInputPorts;
 			if (portOffset <= 0)
 				return null;
 			return portOffset;
-		}
-
-		private int? GetInputFromPortOffset(int offset)
-		{
-			var switcherControl = Controls.GetControl(0) as IDtpCrosspointSwitcherControl;
-			if (switcherControl == null)
-				return null;
-
-			if (offset <= 0 || offset > 2)
-				return null;
-
-			return switcherControl.NumberOfInputs + offset - 2;
 		}
 
 		/// <summary>
@@ -286,32 +293,64 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// <returns></returns>
 		private int? GetPortOffsetFromOutput(int output)
 		{
-			var switcherControl = Controls.GetControl(0) as IDtpCrosspointSwitcherControl;
-			if (switcherControl == null)
-				return null;
+			
 
-			int portOffset = output - switcherControl.NumberOfOutputs + 4;
-			if (portOffset <= 0)
+			int portOffset = output - GetNumberOfOutputs() + (NumberOfDtpInputPorts + NumberOfDtpOutputPorts);
+			if (portOffset <= NumberOfDtpInputPorts)
 				return null;
 			return portOffset;
 		}
 
-		private int? GetOutputFromPortOffset(int offset)
+		private int GetNumberOfInputs()
 		{
-			var switcherControl = Controls.GetControl(0) as IDtpCrosspointSwitcherControl;
-			if (switcherControl == null)
+			var switcherControl = Controls.GetControl<IDtpCrosspointSwitcherControl>();
+			return switcherControl.NumberOfInputs;
+		}
+
+		private int GetNumberOfOutputs()
+		{
+			var switcherControl = Controls.GetControl<IDtpCrosspointSwitcherControl>();
+			return switcherControl.NumberOfOutputs;
+		}
+
+		private ISerialPort GetTcpClientForPortOffset(int? portOffset)
+		{
+			if (portOffset == null)
 				return null;
 
-			if (offset <= 2 || offset > 4)
-				return null;
-
-			return switcherControl.NumberOfOutputs + offset - 4;
+			return new AsyncTcpClient
+			{
+				Address = Address,
+				Port = (ushort) (m_StartingComPort + portOffset)
+			};
 		}
 
 		private void Initialize()
 		{
 			SetVerboseMode(eExtronVerbosity.All);
 			GetStartingComPort();
+
+			var inputs = GetNumberOfInputs();
+			var startingDtpInput = inputs - NumberOfDtpInputPorts + 1;
+			m_DtpInputPortsSection.Execute(() =>
+			{
+				foreach (var input in Enumerable.Range(startingDtpInput, NumberOfDtpInputPorts))
+				{
+					var comPortMode = m_DtpInputPorts.ContainsKey(input) && m_DtpInputPorts[input] != null;
+					SendCommand(string.Format("WI{0}*{1}LRPT", input, comPortMode ? "0" : "1"));
+				}
+			});
+
+			var outputs = GetNumberOfOutputs();
+			var startingDtpOutput = outputs - NumberOfDtpOutputPorts + 1;
+			m_DtpOutputPortsSection.Execute(() =>
+			{
+				foreach (var output in Enumerable.Range(startingDtpOutput, NumberOfDtpOutputPorts))
+				{
+					var comPortMode = m_DtpOutputPorts.ContainsKey(output) && m_DtpOutputPorts[output] != null;
+					SendCommand(string.Format("WO{0}*{1}LRPT", output, comPortMode ? "0" : "1"));
+				}
+			});
 		}
 
 		private void GetStartingComPort()
@@ -325,9 +364,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 				SetVerboseMode(eExtronVerbosity.All);
 		}
 
-		private void SetVerboseMode(eExtronVerbosity all)
+		private void SetVerboseMode(eExtronVerbosity verbosity)
 		{
-			SendCommand("W{0}CV", (ushort)all);
+			SendCommand("W{0}CV", (ushort)verbosity);
 		}
 
 		#endregion
@@ -395,6 +434,20 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		#region Port Callbacks
 
+		private void Subscribe(ConnectionStateManager connectionStateManager)
+		{
+			connectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
+			connectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
+			connectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived;;
+		}
+
+		private void Unsubscribe(ConnectionStateManager connectionStateManager)
+		{
+			connectionStateManager.OnConnectedStateChanged -= PortOnConnectionStatusChanged;
+			connectionStateManager.OnIsOnlineStateChanged -= PortOnIsOnlineStateChanged;
+			connectionStateManager.OnSerialDataReceived -= PortOnSerialDataReceived;
+		}
+
 		private void PortOnIsOnlineStateChanged(object sender, BoolEventArgs e)
 		{
 			UpdateCachedOnlineStatus();
@@ -433,6 +486,52 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			}
 
 			m_ConnectionStateManager.SetPort(port);
+
+			m_DtpInputPortsSection.Execute(() =>
+			{
+				m_DtpInputPorts.Clear();
+				foreach (var pair in settings.DtpInputPorts)
+				{
+					if (GetPortOffsetFromInput(pair.Key) == null)
+					{
+						Log(eSeverity.Error, "{0} is not a valid DTP Input address", pair.Key);
+						continue;
+					}
+
+					try
+					{
+						IComPort comport = factory.GetOriginatorById<IComPort>(pair.Value);
+						m_DtpInputPorts.Add(pair.Key, comport);
+					}
+					catch (Exception ex)
+					{
+						Log(eSeverity.Error, "Error getting DTP Input wrapped port - {0}", ex.Message);
+					}
+				}
+			});
+
+			m_DtpOutputPortsSection.Execute(() =>
+			{
+				m_DtpOutputPorts.Clear();
+				foreach (var pair in settings.DtpOutputPorts)
+				{
+					if (GetPortOffsetFromOutput(pair.Key) == null)
+					{
+						Log(eSeverity.Error, "{0} is not a valid DTP Output address", pair.Key);
+						continue;
+					}
+
+					try
+					{
+						IComPort comport = factory.GetOriginatorById<IComPort>(pair.Value);
+						m_DtpOutputPorts.Add(pair.Key, comport);
+					}
+					catch (Exception ex)
+					{
+						Log(eSeverity.Error, "Error getting DTP Output wrapped port - {0}", ex.Message);
+					}
+				}
+			});
 		}
 
 		protected override void CopySettingsFinal(TSettings settings)
@@ -440,52 +539,28 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			base.CopySettingsFinal(settings);
 
 			settings.Password = Password;
+			settings.Address = Address;
 			settings.Port = m_ConnectionStateManager.PortNumber;
+
+			m_DtpInputPortsSection.Execute(() =>
+				settings.DtpInputPorts = m_DtpInputPorts
+					.Select(pair => new KeyValuePair<int, int>(pair.Key, pair.Value.Id)));
+			m_DtpOutputPortsSection.Execute(() =>
+				settings.DtpOutputPorts = m_DtpOutputPorts
+					.Select(pair => new KeyValuePair<int, int>(pair.Key, pair.Value.Id)));
+		}
+
+		protected override void ClearSettingsFinal()
+		{
+			base.ClearSettingsFinal();
+
+			Address = null;
+			Password = null;
+			m_ConnectionStateManager.SetPort(null);
+			m_DtpInputPortsSection.Execute(() => m_DtpInputPorts.Clear());
+			m_DtpOutputPortsSection.Execute(() => m_DtpOutputPorts.Clear());
 		}
 
 		#endregion
-	}
-
-	/// <summary>
-	/// For initializing the verbose mode of the switcher
-	/// </summary>
-	[Flags]
-	internal enum eExtronVerbosity
-	{
-		/// <summary>
-		/// Default for Telnet connection
-		/// </summary>
-		None = 0,
-
-		/// <summary>
-		/// Default for RS-232 or USB connection
-		/// </summary>
-		VerboseMode = 1,
-
-		/// <summary>
-		/// If tagged responses is enabled, all read commands return the constant string and the value as the set command does.
-		/// </summary>
-		TaggedResponses = 2,
-
-		/// <summary>
-		/// Verbose mode and tagged responses for queries
-		/// </summary>
-		All = VerboseMode | TaggedResponses
-	}
-
-	/// <summary>
-	/// For initializing the DTP serial insertion
-	/// </summary>
-	public enum eExtronPortInsertionMode
-	{
-		/// <summary>
-		/// RS-232 passthrough of the serial port
-		/// </summary>
-		CaptiveScrew = 0,
-		
-		/// <summary>
-		/// TCP port insertion of serial data
-		/// </summary>
-		Ethernet
 	}
 }
