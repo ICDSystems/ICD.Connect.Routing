@@ -2,9 +2,9 @@
 {
 	public sealed class DtpCrosspoint84 : AbstractDtpCrosspointDevice<DtpCrosspoint84Settings>
 	{
-		protected override int DtpInputPorts { get { return 2; } }
+		protected override int NumberOfDtpInputPorts { get { return 2; } }
 
-		protected override int DtpOutputPorts { get { return 2; } }
+		protected override int NumberOfDtpOutputPorts { get { return 2; } }
 
 		public DtpCrosspoint84()
 		{

@@ -25,7 +25,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Tx
 			if (m_DtpInput == null)
 				return;
 
-			Parent.InitializeTxComPort(m_DtpInput.Value, baudRate, dataBits, parityType, stopBits);
+			Parent.SetTxComPortSpec(m_DtpInput.Value, baudRate, dataBits, parityType, stopBits);
 		}
 
 		#endregion
