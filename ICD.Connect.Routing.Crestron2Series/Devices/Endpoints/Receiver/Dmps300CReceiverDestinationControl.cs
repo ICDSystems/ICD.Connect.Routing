@@ -93,7 +93,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Receiver
 			if (input != 1)
 			{
 				string message = string.Format("{0} has no {1} input at address {2}", this, type, input);
-				throw new IndexOutOfRangeException(message);
+				throw new ArgumentOutOfRangeException("input", message);
 			}
 
 			switch (type)
