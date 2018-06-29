@@ -385,6 +385,30 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
+		/// Returns true if the source is detected by the next node in the graph at the given output.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override bool SourceDetected(EndpointInfo sourceEndpoint, eConnectionType type)
+		{
+			IRouteSourceControl sourceControl = GetSourceControl(sourceEndpoint.Device, sourceEndpoint.Control);
+			return sourceControl != null && SourceDetected(sourceControl, sourceEndpoint.Address, type);
+		}
+
+		/// <summary>
+		/// Returns true if the given destination endpoint is active for all of the given connection types.
+		/// </summary>
+		/// <param name="endpoint"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override bool InputActive(EndpointInfo endpoint, eConnectionType type)
+		{
+			IRouteDestinationControl destinationControl = GetDestinationControl(endpoint.Device, endpoint.Control);
+			return destinationControl.GetInputActiveState(endpoint.Address, type);
+		}
+
+		/// <summary>
 		/// Finds the best available path from the source to the destination.
 		/// </summary>
 		/// <param name="source"></param>

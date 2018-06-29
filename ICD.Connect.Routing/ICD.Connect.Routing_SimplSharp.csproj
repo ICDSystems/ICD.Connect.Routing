@@ -170,6 +170,7 @@
     <Compile Include="RouteOperation.cs" />
     <Compile Include="RoutingGraphs\RoutingGraph.cs" />
     <Compile Include="RoutingGraphs\RoutingGraphConsole.cs" />
+    <Compile Include="RoutingGraphs\RoutingGraphCache.cs" />
     <Compile Include="RoutingGraphs\RoutingGraphSettings.cs" />
     <Compile Include="RoutingGraphs\StaticRoutesCollection.cs" />
     <Compile Include="StaticRoutes\IStaticRoutesCollection.cs" />
