@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
@@ -978,7 +980,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="destinationAddress"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-		/// <returns>False if route could not be established</returns>
 		public override void Route(IRouteSourceControl sourceControl, int sourceAddress,
 		                           IRouteDestinationControl destinationControl,
 		                           int destinationAddress, eConnectionType type, int roomId)
@@ -1002,7 +1003,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="destination"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-		/// <returns>False if route could not be established</returns>
 		public override void Route(ISource source, IDestination destination, eConnectionType type, int roomId)
 		{
 			if (source == null)
@@ -1132,11 +1132,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (path == null)
 				throw new ArgumentNullException("path");
 
+			IcdHashSet<EndpointInfo> endpoints = new IcdHashSet<EndpointInfo>();
+
 			// Configure the switchers
 			foreach (Connection[] pair in path.GetAdjacentPairs())
 			{
 				Connection connection = pair[0];
 				Connection nextConnection = pair[1];
+
+				endpoints.Add(connection.Source);
+				endpoints.Add(connection.Destination);
 
 				RouteOperation switchOperation = new RouteOperation(op)
 				{
@@ -1864,12 +1869,72 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			// Update connection ownership
-			ConnectionUsages.UpdateConnectionsUsage(switcher, args.Output, args.Type);
+			//ConnectionUsages.UpdateConnectionsUsage(switcher, args.Output, args.Type);
+
+			IcdHashSet<EndpointInfo> oldSources = new IcdHashSet<EndpointInfo>();
+			IcdHashSet<EndpointInfo> newSources = new IcdHashSet<EndpointInfo>();
+
+			if (args.OldInput.HasValue)
+			{
+				IEnumerable<EndpointInfo> sources =
+					GetSourceEndpointsRecursive(switcher.GetInputEndpointInfo(args.OldInput.Value), args.Type)
+					.Where(e => switcher.Parent.Id != e.Device);
+				oldSources.AddRange(sources);
+			}
+
+			if (args.NewInput.HasValue)
+			{
+				IEnumerable<EndpointInfo> sources =
+					GetSourceEndpointsRecursive(switcher.GetInputEndpointInfo(args.NewInput.Value), args.Type)
+					.Where(e => switcher.Parent.Id != e.Device);
+				newSources.AddRange(sources);
+			}
+
+			IcdHashSet<EndpointInfo> destinations =
+				GetDestinationEndpointsRecursive(switcher.GetOutputEndpointInfo(args.Output), args.Type)
+				.Where(e => switcher.Parent.Id != e.Device )
+					.ToIcdHashSet();
+
+			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args.NewInput, args.Output, oldSources, newSources, destinations, args.Type));
 
 			// Re-enforce static routes
 			m_StaticRoutes.ReApplyStaticRoutesForSwitcher(switcher);
+		}
 
-			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args.NewInput, args.Output, args.Type));
+		private IEnumerable<EndpointInfo> GetDestinationEndpointsRecursive(EndpointInfo outputEndpointInfo, eConnectionType type)
+		{
+			return FindActivePathsSingleFlag(outputEndpointInfo, type, false, false)
+				.SelectMany(p => p)
+				.Select(c => c.Destination)
+				.Distinct();
+		}
+
+		private IEnumerable<EndpointInfo> GetSourceEndpointsRecursive(EndpointInfo inputEndpointInfo, eConnectionType flag)
+		{
+			Connection inputConnection = m_Connections.GetInputConnection(inputEndpointInfo);
+			if (inputConnection == null)
+				yield break;
+
+			// Narrow the type by what the connection supports
+			if (!inputConnection.ConnectionType.HasFlag(flag))
+				yield break;
+
+			yield return inputConnection.Source;
+
+			IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
+			if (sourceControl == null)
+				yield break;
+
+			IRouteMidpointControl sourceAsMidpoint = sourceControl as IRouteMidpointControl;
+			if (sourceAsMidpoint == null)
+				yield break;
+
+			ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, flag);
+			if (sourceConnector == null)
+				yield break;
+
+			foreach (EndpointInfo endpoint in GetSourceEndpointsRecursive(sourceAsMidpoint.GetInputEndpointInfo(sourceConnector.Value.Address), flag))
+				yield return endpoint;
 		}
 
 		#endregion
