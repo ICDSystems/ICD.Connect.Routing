@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [7.1.0] - 2018-07-02
 ### Added
  - Added receiver endpoint variants (100C, 100F, 100S, etc)
  - Adding DmTx4K202CAdapter
