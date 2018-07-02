@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Adding DmTx4K202CAdapter
  - Added Extron devices (DTP Crosspoint 84, DTP HDMI 330 TX, DTP HDMI 330 RX)
  - Added method to ISourceDestinationBaseCollection for looking up sources/destinations by endpoint
+ - Added HdMdxxxCE switcher adapters
 
 ## [7.0.1] - 2018-06-19
 ### Changed
