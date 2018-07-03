@@ -50,8 +50,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			if (Receiver == null)
 				throw new InvalidOperationException("No scaler instantiated");
 
-			if (address == 1)
-				return Receiver.ComPorts[1];
+			if (address >= 1 && address <= Receiver.NumberOfComPorts)
+				return Receiver.ComPorts[(uint)address];
 
 			return base.GetComPort(address);
 		}
@@ -66,8 +66,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			if (Receiver == null)
 				throw new InvalidOperationException("No scaler instantiated");
 
-			if (address == 1)
-				return Receiver.IROutputPorts[1];
+			if (address >= 1 && address <= Receiver.NumberOfIROutputPorts)
+				return Receiver.IROutputPorts[(uint)address];
 
 			return base.GetIrOutputPort(address);
 		}
@@ -95,7 +95,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			if (!ContainsInput(input))
 			{
 				string message = string.Format("{0} has no {1} input at address {2}", this, type, input);
-				throw new IndexOutOfRangeException(message);
+				throw new ArgumentOutOfRangeException("input", message);
 			}
 
 			switch (type)
@@ -152,7 +152,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			if (!ContainsOutput(output))
 			{
 				string message = string.Format("{0} has no {1} output at address {2}", this, type, output);
-				throw new IndexOutOfRangeException(message);
+				throw new ArgumentOutOfRangeException("output", message);
 			}
 
 			switch (type)

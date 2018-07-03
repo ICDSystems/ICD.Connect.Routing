@@ -46,7 +46,7 @@ namespace ICD.Connect.Routing.Devices
 				return GetInputs().First(c => c.Address == input);
 
 			string message = string.Format("{0} has no input at address {1}", this, input);
-			throw new IndexOutOfRangeException(message);
+			throw new ArgumentOutOfRangeException("input", message);
 		}
 
 		/// <summary>

@@ -5,9 +5,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [7.2.0] - 2018-07-02
+### Added
+ - Added MockRouteSplitter device and control
+
+## [7.1.0] - 2018-07-02
 ### Added
  - Added receiver endpoint variants (100C, 100F, 100S, etc)
+ - Adding DmTx4K202CAdapter
  - Added Extron devices (DTP Crosspoint 84, DTP HDMI 330 TX, DTP HDMI 330 RX)
+ - Added method to ISourceDestinationBaseCollection for looking up sources/destinations by endpoint
+ - Added HdMdxxxCE switcher adapters
 
 ## [7.0.1] - 2018-06-19
 ### Changed

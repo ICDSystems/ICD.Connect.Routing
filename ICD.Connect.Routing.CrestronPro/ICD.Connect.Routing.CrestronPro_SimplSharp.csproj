@@ -156,6 +156,10 @@
     <Compile Include="DigitalMedia\DmMd6XN\IDmMd6XNAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd8X14kC\DmMd8X14kCAdapter.cs" />
     <Compile Include="DigitalMedia\DmMd8X14kC\DmMd8X14kCAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd300Ce\HdMd300CeAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd300Ce\HdMd300CeAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd400Ce\HdMd400CeAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd400Ce\HdMd400CeAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd8X14k\HdMd8X14kAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd8X14k\HdMd8X14kAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd8X1\HdMd8X1Adapter.cs" />
@@ -189,6 +193,11 @@
     <Compile Include="DigitalMedia\HdMdNXM\IHdMdNXMAdapter.cs" />
     <Compile Include="DigitalMedia\BladeSwitch\ICrestronBladeSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\BladeSwitch\ICrestronBladeSwitchAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMdxxxCe\AbstractHdMdxxxCeAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMdxxxCe\AbstractHdMdxxxCeAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMdxxxCe\HdMdxxxCeSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\HdMdxxxCe\IHdMdxxxCeAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMdxxxCe\IHdMdxxxCeAdapterSettings.cs" />
     <Compile Include="DigitalMedia\ICrestronSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\ICrestronSwitchAdapterSettings.cs" />
     <Compile Include="IDmParent.cs" />
@@ -225,6 +234,8 @@
     <Compile Include="Receivers\IEndpointReceiverBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4K202C\DmTx4K202CAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4K202C\DmTx4K202CAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapter.cs" />
     <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapterSettings.cs" />
@@ -243,6 +254,10 @@
     <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CAdapter.cs" />
     <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CAdapterSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\AbstractDmTx4kX02CBaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\AbstractDmTx4kX02CBaseAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\IDmTx4kX02CBaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\IDmTx4kX02CBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\IEndpointTransmitterBaseAdapter.cs" />
     <Compile Include="Transmitters\IEndpointTransmitterBaseAdapterSettings.cs" />
     <Compile Include="Utils\DmEndpointFactoryUtils.cs" />

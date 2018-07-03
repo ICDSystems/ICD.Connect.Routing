@@ -133,7 +133,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				throw new NotSupportedException("Control System has no IrPorts");
 
 			if (address < 0 || !ControlSystem.IROutputPorts.Contains((uint)address))
-				throw new IndexOutOfRangeException(string.Format("{0} has no IrPort at address {1}", this, address));
+				throw new ArgumentOutOfRangeException("address", string.Format("{0} has no IrPort at address {1}", this, address));
 
 			return ControlSystem.IROutputPorts[(uint)address];
 		}
@@ -149,7 +149,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				throw new NotSupportedException("Control System has no RelayPorts");
 
 			if (address < 0 || !ControlSystem.RelayPorts.Contains((uint)address))
-				throw new IndexOutOfRangeException(string.Format("{0} has no RelayPort at address {1}", this, address));
+				throw new ArgumentOutOfRangeException("address", string.Format("{0} has no RelayPort at address {1}", this, address));
 
 			return ControlSystem.RelayPorts[(uint)address];
 		}
@@ -165,7 +165,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				throw new NotSupportedException("Control System has no IoPorts");
 
 			if (address < 0 || !ControlSystem.VersiPorts.Contains((uint)address))
-				throw new IndexOutOfRangeException(string.Format("{0} has no IoPort at address {1}", this, address));
+				throw new ArgumentOutOfRangeException("address", string.Format("{0} has no IoPort at address {1}", this, address));
 
 			return ControlSystem.VersiPorts[(uint)address];
 		}
@@ -181,7 +181,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				throw new NotSupportedException("Control System has no DigitalInputPorts");
 
 			if (address < 0 || !ControlSystem.DigitalInputPorts.Contains((uint)address))
-				throw new IndexOutOfRangeException(string.Format("{0} has no DigitalInput at address {1}", this, address));
+				throw new ArgumentOutOfRangeException("address", string.Format("{0} has no DigitalInput at address {1}", this, address));
 
 			return ControlSystem.DigitalInputPorts[(uint)address];
 		}
@@ -197,7 +197,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				throw new NotSupportedException("Control System has no ComPorts");
 
 			if (address < 0 || !ControlSystem.ComPorts.Contains((uint)address))
-				throw new IndexOutOfRangeException(string.Format("{0} has no ComPort at address {1}", this, address));
+				throw new ArgumentOutOfRangeException("address", string.Format("{0} has no ComPort at address {1}", this, address));
 
 			return ControlSystem.ComPorts[(uint)address];
 		}
@@ -213,7 +213,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				throw new NotSupportedException("Control System has no DmInputs");
 
 			if (address < 0 || !ControlSystem.SwitcherInputs.Contains((uint)address))
-				throw new IndexOutOfRangeException(string.Format("{0} has no input at address {1}", this, address));
+				throw new ArgumentOutOfRangeException("address", string.Format("{0} has no input at address {1}", this, address));
 
 			return ControlSystem.SwitcherInputs[(uint)address] as DMInput;
 		}
@@ -229,7 +229,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				throw new NotSupportedException("Control System has no DmOutputs");
 
 			if (address < 0 || !ControlSystem.SwitcherOutputs.Contains((uint)address))
-				throw new IndexOutOfRangeException(string.Format("{0} has no output at address {1}", this, address));
+				throw new ArgumentOutOfRangeException("address", string.Format("{0} has no output at address {1}", this, address));
 
 			return ControlSystem.SwitcherOutputs[(uint)address] as DMOutput;
 		}
