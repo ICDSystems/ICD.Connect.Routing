@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
@@ -43,6 +42,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private readonly SafeCriticalSection m_PendingRoutesSection;
 		private readonly Dictionary<Guid, int> m_PendingRoutes;
+
+		private RoutingCache m_Cache; 
 
 		#region Events
 
@@ -104,6 +105,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// Gets the destination groups collection.
 		/// </summary>
 		public override IOriginatorCollection<IDestinationGroup> DestinationGroups { get { return m_DestinationGroups; } }
+
+		/// <summary>
+		/// Gets the Routing Cache.
+		/// </summary>
+		public override RoutingCache RoutingCache { get { return m_Cache; } }
 
 		#endregion
 
@@ -2007,6 +2013,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			SubscribeSources();
 
 			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
+			
+			m_Cache = new RoutingCache(this);
 		}
 
 		private IEnumerable<StaticRoute> GetStaticRoutes(RoutingGraphSettings settings, IDeviceFactory factory)

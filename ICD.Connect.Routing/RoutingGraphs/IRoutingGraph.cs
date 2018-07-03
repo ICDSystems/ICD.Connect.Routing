@@ -77,6 +77,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		IOriginatorCollection<IDestinationGroup> DestinationGroups { get; }
 
+		/// <summary>
+		/// Gets the Routing Cache.
+		/// </summary>
+		RoutingCache RoutingCache { get; }
+
 		#endregion
 
 		#region Recursion

@@ -77,6 +77,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract IOriginatorCollection<IDestinationGroup> DestinationGroups { get; }
 
 		/// <summary>
+		/// Gets the Routing Cache.
+		/// </summary>
+		public abstract RoutingCache RoutingCache { get; }
+
+		/// <summary>
 		/// Gets the help information for the node.
 		/// </summary>
 		public override string ConsoleHelp { get { return "Maps the routing of device outputs to inputs."; } }
