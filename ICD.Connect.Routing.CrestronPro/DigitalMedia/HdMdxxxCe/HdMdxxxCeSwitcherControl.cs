@@ -110,6 +110,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdxxxCe
 			int input = info.LocalInput;
 			int output = info.LocalOutput;
 
+			// Aux audio follows output 1
+			if (output == 2)
+				output = 1;
+
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
@@ -156,6 +160,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdxxxCe
 				                .Unanimous(false);
 			}
 
+			// Aux audio follows output 1
+			if (output == 2)
+				output = 1;
+
 			DMOutput switcherOutput = m_Switcher.Outputs[(uint)output];
 
 			switch (type)
@@ -181,10 +189,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdxxxCe
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			int outputs = m_Switcher == null ? 0 : m_Switcher.NumberOfOutputs;
+			yield return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
 
-			return Enumerable.Range(1, outputs)
-			                 .Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
+			// Aux audio out
+			yield return new ConnectorInfo(2, eConnectionType.Audio);
 		}
 
 		/// <summary>
@@ -275,6 +283,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdxxxCe
 		{
 			if (m_Switcher == null)
 				yield break;
+
+			// Aux audio follows output 1
+			if (output == 2)
+				output = 1;
 
 			DMOutput switcherOutput = m_Switcher.Outputs[(uint)output];
 
@@ -452,6 +464,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdxxxCe
 			                                            .FirstOrDefault();
 
 			m_Cache.SetInputForOutput(output, input, type);
+
+			// Audio output follows the "real" output
+			m_Cache.SetInputForOutput(2, input, eConnectionType.Audio);
 		}
 
 		#endregion
