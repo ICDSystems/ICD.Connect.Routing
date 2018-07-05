@@ -323,73 +323,76 @@ namespace ICD.Connect.Routing
 
 		private void UpdateSourceEndpointTransmissionState(EndpointInfo endpoint, eConnectionType type, bool state)
 		{
-			eConnectionType flags = m_SourceEndpointTransmitting[endpoint];
+			eConnectionType oldFlags = m_SourceEndpointTransmitting.GetDefault(endpoint);
+			eConnectionType newFlags = oldFlags;
 
 			if (state)
-				flags |= type;
+				newFlags |= type;
 			else
-				flags &= ~type;
+				newFlags &= ~type;
 
-			if (flags == m_SourceEndpointTransmitting[endpoint])
+			if (newFlags == oldFlags)
 				return;
 
-			m_SourceEndpointTransmitting[endpoint] = flags;
-			OnEndpointTransmissionStateChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
+			m_SourceEndpointTransmitting[endpoint] = newFlags;
 
-			foreach (var source in m_EndpointToSources[endpoint])
-			{
+			foreach (ISource source in m_EndpointToSources[endpoint])
 				UpdateSourceTransmissionState(source);
-			}
+
+			OnEndpointTransmissionStateChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
 		}
 
 		private void UpdateSourceTransmissionState(ISource source)
 		{
-			eConnectionType flags = m_SourceToEndpoints[source]
+			eConnectionType flags = m_SourceToEndpoints.GetDefault(source)
 				.Aggregate(eConnectionType.None,
-				           (current, endpoint) => current | m_SourceEndpointTransmitting[endpoint]);
+				           (current, endpoint) => current | m_SourceEndpointTransmitting.GetDefault(endpoint));
 
-			eConnectionType oldFlags = m_SourceTransmitting[source];
+			eConnectionType oldFlags = m_SourceTransmitting.GetDefault(source);
 			
 			if (flags == oldFlags)
 				return;
 
 			m_SourceTransmitting[source] = flags;
 
-			foreach (var flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
 			{
-				if(oldFlags.HasFlag(flag) && !flags.HasFlag(flag))
+				if (oldFlags.HasFlag(flag) && !flags.HasFlag(flag))
 					OnSourceTransmissionStateChanged.Raise(this, new SourceStateChangedEventArgs(source, flag, false));
-				else if(!oldFlags.HasFlag(flag) && flags.HasFlag(flag))
+
+				else if (!oldFlags.HasFlag(flag) && flags.HasFlag(flag))
 					OnSourceTransmissionStateChanged.Raise(this, new SourceStateChangedEventArgs(source, flag, true));
 			}
 		}
 
 		private void UpdateSourceEndpointDetectionState(EndpointInfo endpoint, eConnectionType type, bool state)
 		{
-			eConnectionType flags = m_SourceEndpointDetected[endpoint];
+			eConnectionType oldFlags = m_SourceEndpointDetected.GetDefault(endpoint);
+			eConnectionType newFlags = oldFlags;
 
 			if (state)
-				flags |= type;
+				newFlags |= type;
 			else
-				flags &= ~type;
+				newFlags &= ~type;
 
-			if (flags == m_SourceEndpointDetected[endpoint])
+			if (newFlags == oldFlags)
 				return;
 
-			m_SourceEndpointDetected[endpoint] = flags;
-			OnEndpointDetectionStateChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
+			m_SourceEndpointDetected[endpoint] = newFlags;
 
-			foreach (var source in m_EndpointToSources[endpoint])
+			foreach (ISource source in m_EndpointToSources[endpoint])
 				UpdateSourceDetectionState(source);
+
+			OnEndpointDetectionStateChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
 		}
 
 		private void UpdateSourceDetectionState(ISource source)
 		{
-			eConnectionType flags = m_SourceToEndpoints[source]
+			eConnectionType flags = m_SourceToEndpoints.GetDefault(source)
 				.Aggregate(eConnectionType.None,
-						   (current, endpoint) => current | m_SourceEndpointDetected[endpoint]);
+						   (current, endpoint) => current | m_SourceEndpointDetected.GetDefault(endpoint));
 
-			eConnectionType oldFlags = m_SourceDetected[source];
+			eConnectionType oldFlags = m_SourceDetected.GetDefault(source);
 
 			if (flags == oldFlags)
 				return;
@@ -407,17 +410,18 @@ namespace ICD.Connect.Routing
 
 		private void UpdateDestinationEndpointInputActiveState(EndpointInfo endpoint, eConnectionType type, bool state)
 		{
-			eConnectionType flags = m_DestinationEndpointActive[endpoint];
+			eConnectionType oldFlags = m_DestinationEndpointActive.GetDefault(endpoint);
+			eConnectionType newFlags = oldFlags;
 
 			if (state)
-				flags |= type;
+				newFlags |= type;
 			else
-				flags &= ~type;
+				newFlags &= ~type;
 
-			if (flags == m_DestinationEndpointActive[endpoint])
+			if (newFlags == oldFlags)
 				return;
 
-			m_DestinationEndpointActive[endpoint] = flags;
+			m_DestinationEndpointActive[endpoint] = newFlags;
 
 			OnDestinationEndpointActiveChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
 		}
