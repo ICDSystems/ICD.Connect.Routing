@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
@@ -11,12 +13,14 @@ namespace ICD.Connect.Routing.EventArguments
 	public sealed class SwitcherRouteChangeEventArgs : EventArgs
 	{
 		private readonly IRouteSwitcherControl m_Control;
-		private readonly int? m_Input;
+		private readonly int? m_OldInput;
+		private readonly int? m_NewInput;
 		private readonly int m_Output;
 		private readonly eConnectionType m_Type;
-		private readonly IEnumerable<EndpointInfo> m_OldSourceEndpoints;
-		private readonly IEnumerable<EndpointInfo> m_NewSourceEndpoints;
-		private readonly IEnumerable<EndpointInfo> m_DestinationEndpoints;
+
+		private readonly IcdHashSet<EndpointInfo> m_OldSourceEndpoints;
+		private readonly IcdHashSet<EndpointInfo> m_NewSourceEndpoints;
+		private readonly IcdHashSet<EndpointInfo> m_DestinationEndpoints;
 
 		/// <summary>
 		/// The switcher control.
@@ -25,9 +29,14 @@ namespace ICD.Connect.Routing.EventArguments
 		public IRouteSwitcherControl Control { get { return m_Control; } }
 
 		/// <summary>
-		/// The input address.
+		/// The old input address.
 		/// </summary>
-		public int? Input { get { return m_Input; } }
+		public int? OldInput { get { return m_OldInput; } }
+
+		/// <summary>
+		/// The new input address.
+		/// </summary>
+		public int? NewInput { get { return m_NewInput; } }
 
 		/// <summary>
 		/// The output address.
@@ -63,27 +72,31 @@ namespace ICD.Connect.Routing.EventArguments
 		/// Constructor.
 		/// </summary>
 		/// <param name="control"></param>
-		/// <param name="input"></param>
+		/// <param name="oldInput"></param>
+		/// <param name="newInput"></param>
 		/// <param name="output"></param>
-		/// <param name="oldRoute"></param>
-		/// <param name="destination"></param>
 		/// <param name="type"></param>
-		/// <param name="newRoute"></param>
-		public SwitcherRouteChangeEventArgs(IRouteSwitcherControl control, 
-											int? input, 
-											int output,
-											IEnumerable<EndpointInfo> oldRoute, 
-											IEnumerable<EndpointInfo> newRoute, 
-											IEnumerable<EndpointInfo>destination,
-											eConnectionType type)
+		/// <param name="oldSourceEndpoints"></param>
+		/// <param name="destinationEndpoints"></param>
+		/// <param name="newSourceEndpoints"></param>
+		public SwitcherRouteChangeEventArgs(IRouteSwitcherControl control,
+		                                    int? oldInput,
+		                                    int? newInput,
+		                                    int output,
+		                                    eConnectionType type,
+		                                    IEnumerable<EndpointInfo> oldSourceEndpoints,
+		                                    IEnumerable<EndpointInfo> newSourceEndpoints,
+		                                    IEnumerable<EndpointInfo> destinationEndpoints)
 		{
 			m_Control = control;
-			m_Type = type;
-			m_Input = input;
-			m_OldSourceEndpoints = oldRoute;
-			m_NewSourceEndpoints = newRoute;
-			m_DestinationEndpoints = destination;
+			m_OldInput = oldInput;
+			m_NewInput = newInput;
 			m_Output = output;
+			m_Type = type;
+
+			m_OldSourceEndpoints = oldSourceEndpoints.ToIcdHashSet();
+			m_NewSourceEndpoints = newSourceEndpoints.ToIcdHashSet();
+			m_DestinationEndpoints = destinationEndpoints.ToIcdHashSet();
 		}
 
 		/// <summary>
@@ -91,7 +104,25 @@ namespace ICD.Connect.Routing.EventArguments
 		/// </summary>
 		/// <param name="args"></param>
 		public SwitcherRouteChangeEventArgs(SwitcherRouteChangeEventArgs args)
-			: this(args.Control, args.Input, args.Output, args.OldSourceEndpoints, args.NewSourceEndpoints, args.DestinationEndpoints, args.Type)
+			: this(args.Control, args.OldInput, args.NewInput, args.Output, args.Type, args.OldSourceEndpoints,
+			       args.NewSourceEndpoints, args.DestinationEndpoints)
+		{
+		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="control"></param>
+		/// <param name="args"></param>
+		/// <param name="oldSourceEndpoints"></param>
+		/// <param name="newSourceEndpoints"></param>
+		/// <param name="destinationEndpoints"></param>
+		public SwitcherRouteChangeEventArgs(IRouteSwitcherControl control, RouteChangeEventArgs args,
+		                                    IEnumerable<EndpointInfo> oldSourceEndpoints,
+		                                    IEnumerable<EndpointInfo> newSourceEndpoints,
+		                                    IEnumerable<EndpointInfo> destinationEndpoints)
+			: this(control, args.OldInput, args.NewInput, args.Output, args.Type, oldSourceEndpoints, newSourceEndpoints,
+			       destinationEndpoints)
 		{
 		}
 
@@ -104,9 +135,9 @@ namespace ICD.Connect.Routing.EventArguments
 			ReprBuilder builder = new ReprBuilder(this);
 
 			builder.AppendProperty("Control", m_Control);
-			builder.AppendProperty("Input", m_Input);
+			builder.AppendProperty("OldInput", m_OldInput);
+			builder.AppendProperty("NewInput", m_NewInput);
 			builder.AppendProperty("Output", m_Output);
-			builder.AppendProperty("Endpoints", m_OldSourceEndpoints);
 			builder.AppendProperty("Type", m_Type);
 
 			return builder.ToString();

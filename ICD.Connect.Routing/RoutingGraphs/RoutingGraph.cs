@@ -1928,7 +1928,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				.Where(e => switcher.Parent.Id != e.Device )
 					.ToIcdHashSet();
 
-			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args.NewInput, args.Output, oldSources, newSources, destinations, args.Type));
+			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args, oldSources, newSources, destinationsSet));
 
 			// Re-enforce static routes
 			m_StaticRoutes.ReApplyStaticRoutesForSwitcher(switcher);
@@ -2057,8 +2057,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				}
 				catch (Exception e)
 				{
-					Log(eSeverity.Error, "Failed to instantiate {0} with id {1} - {2}", typeof(T).Name,
-					                settings.Id, e.Message);
+					Log(eSeverity.Error, "Failed to instantiate {0} with id {1} - {2}", typeof(T).Name, settings.Id, e.Message);
 					continue;
 				}
 
