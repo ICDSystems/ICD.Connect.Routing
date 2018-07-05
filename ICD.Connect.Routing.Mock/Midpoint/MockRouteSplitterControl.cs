@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
@@ -14,13 +15,11 @@ using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Mock.Midpoint
 {
-	public sealed class MockRouteMidpointControl : AbstractRouteMidpointControl<IDeviceBase>
+	/// <summary>
+	/// MockRouteSplitterControl routes a single input to all outputs.
+	/// </summary>
+	public sealed class MockRouteSplitterControl : AbstractRouteMidpointControl<IDeviceBase>
 	{
-		/// <summary>
-		/// Raised when the device starts/stops actively transmitting on an output.
-		/// </summary>
-		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
-
 		/// <summary>
 		/// Raised when an input source status changes.
 		/// </summary>
@@ -31,6 +30,11 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
+		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
 		private readonly SwitcherCache m_Cache;
 
 		/// <summary>
@@ -38,14 +42,12 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteMidpointControl(IDeviceBase parent, int id)
+		public MockRouteSplitterControl(IDeviceBase parent, int id)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
 			Subscribe(m_Cache);
 		}
-
-		#region Methods
 
 		/// <summary>
 		/// Override to release resources.
@@ -53,14 +55,16 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
-			OnActiveInputsChanged = null;
 			OnSourceDetectionStateChange = null;
 			OnActiveInputsChanged = null;
+			OnActiveTransmissionStateChanged = null;
 
 			base.DisposeFinal(disposing);
 
 			Unsubscribe(m_Cache);
 		}
+
+		#region Methods
 
 		/// <summary>
 		/// Returns the outputs.
@@ -84,7 +88,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
 		{
-			return m_Cache.GetOutputsForInput(input, type);
+			return GetOutputs();
 		}
 
 		/// <summary>
@@ -96,7 +100,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
 		public override ConnectorInfo? GetInput(int output, eConnectionType type)
 		{
-			return m_Cache.GetInputConnectorInfoForOutput(output, type);
+			return GetInputs().First();
 		}
 
 		/// <summary>
@@ -105,12 +109,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			return
-				ServiceProvider.GetService<IRoutingGraph>()
-				               .Connections
-				               .GetChildren()
-				               .Where(c => c.Destination.Device == Parent.Id && c.Destination.Control == Id)
-				               .Select(c => new ConnectorInfo(c.Destination.Address, c.ConnectionType));
+			yield return new ConnectorInfo(1, EnumUtils.GetFlagsAllValue<eConnectionType>());
 		}
 
 		/// <summary>
@@ -134,11 +133,6 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		public void SetSignalDetectedState(int input, eConnectionType type, bool state)
 		{
 			m_Cache.SetSourceDetectedState(input, type, state);
-		}
-
-		public void SetInputForOutput(int output, int? input, eConnectionType type)
-		{
-			m_Cache.SetInputForOutput(output, input, type);
 		}
 
 		#endregion
@@ -195,10 +189,6 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 				"SetSignalDetectedState",
 				"<input> <connectionType> <true/false>",
 				(a, b, c) => SetSignalDetectedState(a, b, c));
-			yield return new GenericConsoleCommand<int, int, eConnectionType>(
-				"SetInputForOutput",
-				"<input><output><Audio, Video, USB, None>",
-				(a, b, c) => SetInputForOutput(b, a, c));
 		}
 
 		/// <summary>

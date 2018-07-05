@@ -95,7 +95,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			if (!ContainsInput(input))
 			{
 				string message = string.Format("{0} has no {1} input at address {2}", this, type, input);
-				throw new IndexOutOfRangeException(message);
+				throw new ArgumentOutOfRangeException("input", message);
 			}
 
 			switch (type)
@@ -152,7 +152,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 			if (!ContainsOutput(output))
 			{
 				string message = string.Format("{0} has no {1} output at address {2}", this, type, output);
-				throw new IndexOutOfRangeException(message);
+				throw new ArgumentOutOfRangeException("output", message);
 			}
 
 			switch (type)
