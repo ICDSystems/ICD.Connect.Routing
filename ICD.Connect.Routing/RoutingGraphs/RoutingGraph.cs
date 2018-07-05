@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
@@ -43,7 +42,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private readonly SafeCriticalSection m_PendingRoutesSection;
 		private readonly Dictionary<Guid, int> m_PendingRoutes;
 
-		private RoutingCache m_Cache; 
+		private readonly RoutingCache m_Cache; 
 
 		#region Events
 
@@ -133,6 +132,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			m_PendingRoutes = new Dictionary<Guid, int>();
 			m_PendingRoutesSection = new SafeCriticalSection();
+
+			m_Cache = new RoutingCache(this);
 		}
 
 		/// <summary>
@@ -164,6 +165,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			SubscribeSources();
 
 			m_StaticRoutes.UpdateStaticRoutes();
+
+			m_Cache.RebuildCache();
 		}
 
 		#endregion
@@ -2013,8 +2016,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			SubscribeSources();
 
 			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
-			
-			m_Cache = new RoutingCache(this);
 		}
 
 		private IEnumerable<StaticRoute> GetStaticRoutes(RoutingGraphSettings settings, IDeviceFactory factory)

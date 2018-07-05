@@ -62,13 +62,25 @@ namespace ICD.Connect.Routing
 			m_DestinationToSourceCache = new Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>>();
 			m_SourceToDestinationCache = new Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>>();
 
-			InitializeCache();
+			RebuildCache();
 		}
+
+		/// <summary>
+		/// Release resources.
+		/// </summary>
+		public void Dispose()
+		{
+			Unsubscribe(m_RoutingGraph);
+
+			ClearCache();
+		}
+
+		#region Public Methods
 
 		/// <summary>
 		/// Clears and rebuilds the cache initial states.
 		/// </summary>
-		private void InitializeCache()
+		public void RebuildCache()
 		{
 			IcdHashSet<ISource> sources = m_RoutingGraph.Sources.ToIcdHashSet();
 			IcdHashSet<EndpointInfo> sourceEndpoints =
@@ -91,7 +103,7 @@ namespace ICD.Connect.Routing
 		/// <summary>
 		/// Clears all of the cached states.
 		/// </summary>
-		private void ClearCache()
+		public void ClearCache()
 		{
 			m_SourceToEndpoints.Clear();
 			m_EndpointToSources.Clear();
@@ -104,18 +116,6 @@ namespace ICD.Connect.Routing
 			m_DestinationToSourceCache.Clear();
 			m_SourceToDestinationCache.Clear();
 		}
-
-		/// <summary>
-		/// Release resources.
-		/// </summary>
-		public void Dispose()
-		{
-			Unsubscribe(m_RoutingGraph);
-
-			ClearCache();
-		}
-
-		#region Public Methods
 
 		public bool GetSourceDetected(ISource source, eConnectionType type)
 		{
