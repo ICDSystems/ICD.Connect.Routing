@@ -7,7 +7,6 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
-using ICD.Connect.Routing.Endpoints.Destinations;
 using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.RoutingGraphs;
@@ -43,10 +42,14 @@ namespace ICD.Connect.Routing
 
 		#endregion
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="routingGraph"></param>
 		public RoutingCache(IRoutingGraph routingGraph)
 		{
 			m_RoutingGraph = routingGraph;
-			SubscribeToRoutingGraphEvents();
+			Subscribe(m_RoutingGraph);
 
 			m_SourceToEndpoints = new Dictionary<ISource, IcdHashSet<EndpointInfo>>();
 			m_EndpointToSources = new Dictionary<EndpointInfo, IcdHashSet<ISource>>();
@@ -62,6 +65,9 @@ namespace ICD.Connect.Routing
 			InitializeCache();
 		}
 
+		/// <summary>
+		/// Clears and rebuilds the cache initial states.
+		/// </summary>
 		private void InitializeCache()
 		{
 			IcdHashSet<ISource> sources = m_RoutingGraph.Sources.ToIcdHashSet();
@@ -69,22 +75,24 @@ namespace ICD.Connect.Routing
 				sources.SelectMany(s => s.GetEndpoints()).ToIcdHashSet();
 
 			foreach (EndpointInfo endpoint in sourceEndpoints)
-				m_EndpointToSources.Add(endpoint, sources.Where(s => s.Contains(endpoint)).ToIcdHashSet());
+			{
+				EndpointInfo endpoint1 = endpoint;
+				m_EndpointToSources.Add(endpoint, sources.Where(s => s.Contains(endpoint1)).ToIcdHashSet());
+			}
 
 			foreach (ISource source in sources)
 				m_SourceToEndpoints.Add(source, source.GetEndpoints().ToIcdHashSet());
 
 			// Initializes m_SourceToEndpoints and m_EndpointToSources
 			foreach (var endpoint in m_RoutingGraph.Sources.SelectMany(s => s.GetEndpoints()).Distinct())
-			{
 				UpdateSourceEndpoint(endpoint);
-			}
 		}
 
-		public void Dispose()
+		/// <summary>
+		/// Clears all of the cached states.
+		/// </summary>
+		private void ClearCache()
 		{
-			UnsubscribeFromRoutingGraphEvents();
-
 			m_SourceToEndpoints.Clear();
 			m_EndpointToSources.Clear();
 
@@ -95,6 +103,16 @@ namespace ICD.Connect.Routing
 
 			m_DestinationToSourceCache.Clear();
 			m_SourceToDestinationCache.Clear();
+		}
+
+		/// <summary>
+		/// Release resources.
+		/// </summary>
+		public void Dispose()
+		{
+			Unsubscribe(m_RoutingGraph);
+
+			ClearCache();
 		}
 
 		#region Public Methods
@@ -329,11 +347,26 @@ namespace ICD.Connect.Routing
 
 		#region Routing Graph Callbacks
 
-		private void SubscribeToRoutingGraphEvents()
+		/// <summary>
+		/// Subscribe to the routing graph events.
+		/// </summary>
+		/// <param name="routingGraph"></param>
+		private void Subscribe(IRoutingGraph routingGraph)
 		{
-			m_RoutingGraph.OnSourceTransmissionStateChanged += RoutingGraphOnSourceTransmissionStateChanged;
-			m_RoutingGraph.OnSourceDetectionStateChanged += RoutingGraphOnSourceDetectionStateChanged;
-			m_RoutingGraph.OnRouteChanged += RoutingGraphOnRouteChanged;
+			routingGraph.OnSourceTransmissionStateChanged += RoutingGraphOnSourceTransmissionStateChanged;
+			routingGraph.OnSourceDetectionStateChanged += RoutingGraphOnSourceDetectionStateChanged;
+			routingGraph.OnRouteChanged += RoutingGraphOnRouteChanged;
+		}
+
+		/// <summary>
+		/// Unsubscribe from the routing graph.
+		/// </summary>
+		/// <param name="routingGraph"></param>
+		private void Unsubscribe(IRoutingGraph routingGraph)
+		{
+			routingGraph.OnSourceTransmissionStateChanged -= RoutingGraphOnSourceTransmissionStateChanged;
+			routingGraph.OnSourceDetectionStateChanged -= RoutingGraphOnSourceDetectionStateChanged;
+			routingGraph.OnRouteChanged -= RoutingGraphOnRouteChanged;
 		}
 
 		private void RoutingGraphOnRouteChanged(object sender, SwitcherRouteChangeEventArgs args)
@@ -341,6 +374,7 @@ namespace ICD.Connect.Routing
 			var oldSourceEndpoints = args.OldSourceEndpoints.ToIcdHashSet();
 			var newSourceEndpoints = args.NewSourceEndpoints.ToIcdHashSet();
 			var destinationEndpoints = args.DestinationEndpoints.ToIcdHashSet();
+
 			foreach (var flag in EnumUtils.GetFlagsExceptNone(args.Type))
 			{
 				RemoveOldValuesFromSourceCache(oldSourceEndpoints, destinationEndpoints, flag);
@@ -361,14 +395,6 @@ namespace ICD.Connect.Routing
 						                                  m_DestinationToSourceCache[destination][flag]));
 				}
 			}
-
-			
-		}
-
-		private void UnsubscribeFromRoutingGraphEvents()
-		{
-			m_RoutingGraph.OnSourceTransmissionStateChanged -= RoutingGraphOnSourceTransmissionStateChanged;
-			m_RoutingGraph.OnSourceDetectionStateChanged -= RoutingGraphOnSourceDetectionStateChanged;
 		}
 
 		private void RoutingGraphOnSourceTransmissionStateChanged(object sender, EndpointStateEventArgs args)
@@ -393,7 +419,9 @@ namespace ICD.Connect.Routing
 	public sealed class SourceStateChangedEventArgs : EventArgs
 	{
 		public ISource Source { get; private set; }
+
 		public eConnectionType Type { get; private set; }
+
 		public bool State { get; private set; }
 
 		public SourceStateChangedEventArgs(ISource source, eConnectionType type, bool state)
@@ -414,7 +442,9 @@ namespace ICD.Connect.Routing
 	public sealed class EndpointStateChangedEventArgs : EventArgs
 	{
 		public EndpointInfo Endpoint { get; private set; }
+
 		public eConnectionType Type { get; private set; }
+
 		public bool State { get; private set; }
 
 		public EndpointStateChangedEventArgs(EndpointInfo endpoint, eConnectionType type, bool state)
@@ -435,7 +465,9 @@ namespace ICD.Connect.Routing
 	public sealed class RouteToDestinationChangedEventArgs : EventArgs
 	{
 		public EndpointInfo Destination { get; private set; }
+
 		public eConnectionType ConnectionType { get; private set; }
+
 		public IEnumerable<EndpointInfo> Endpoints { get; private set; }
 
 		public RouteToDestinationChangedEventArgs(EndpointInfo destination, eConnectionType type,
