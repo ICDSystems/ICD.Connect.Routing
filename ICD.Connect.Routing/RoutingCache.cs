@@ -307,7 +307,7 @@ namespace ICD.Connect.Routing
 
 			m_DestinationToSourceCache.Add(destinationEndpoint, new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>());
 
-			foreach (var flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
 				m_DestinationToSourceCache[destinationEndpoint].Add(flag, new IcdHashSet<EndpointInfo>());
 		}
 
@@ -318,7 +318,7 @@ namespace ICD.Connect.Routing
 
 			m_SourceToDestinationCache.Add(sourceEndpoint, new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>());
 
-			foreach (var flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
 				m_SourceToDestinationCache[sourceEndpoint].Add(flag, new IcdHashSet<EndpointInfo>());
 		}
 
@@ -406,7 +406,7 @@ namespace ICD.Connect.Routing
 
 			m_SourceDetected[source] = flags;
 
-			foreach (var flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
 			{
 				if (oldFlags.HasFlag(flag) && !flags.HasFlag(flag))
 					OnSourceDetectionStateChanged.Raise(this, new SourceStateChangedEventArgs(source, flag, false));
@@ -440,9 +440,9 @@ namespace ICD.Connect.Routing
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type has multiple flags", "type");
 
-			foreach (var destination in destinations.Where(destination => m_DestinationToSourceCache.ContainsKey(destination)))
+			foreach (EndpointInfo destination in destinations.Where(destination => m_DestinationToSourceCache.ContainsKey(destination)))
 			{
-				foreach (var endpointToRemove in oldSourceEndpoints)
+				foreach (EndpointInfo endpointToRemove in oldSourceEndpoints)
 					m_DestinationToSourceCache[destination][type].Remove(endpointToRemove);
 			}
 		}
@@ -454,12 +454,12 @@ namespace ICD.Connect.Routing
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type has multiple flags", "type");
 
-			foreach (var destination in destinations)
+			foreach (EndpointInfo destination in destinations)
 			{
 				if (!m_DestinationToSourceCache.ContainsKey(destination))
 					AddDestinationToDestinationToSourceCache(destination);
 
-				foreach (var endpointToAdd in newSourceEndpoints)
+				foreach (EndpointInfo endpointToAdd in newSourceEndpoints)
 					m_DestinationToSourceCache[destination][type].Add(endpointToAdd);
 			}
 		}
@@ -471,9 +471,9 @@ namespace ICD.Connect.Routing
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type has multiple flags", "type");
 
-			foreach (var source in oldSourceEndpoints.Where(source => m_SourceToDestinationCache.ContainsKey(source)))
+			foreach (EndpointInfo source in oldSourceEndpoints.Where(source => m_SourceToDestinationCache.ContainsKey(source)))
 			{
-				foreach (var endpointToRemove in destinations)
+				foreach (EndpointInfo endpointToRemove in destinations)
 					m_SourceToDestinationCache[source][type].Remove(endpointToRemove);
 			}
 		}
@@ -485,12 +485,12 @@ namespace ICD.Connect.Routing
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type has multiple flags", "type");
 
-			foreach (var source in newSourceEndpoints)
+			foreach (EndpointInfo source in newSourceEndpoints)
 			{
 				if(!m_SourceToDestinationCache.ContainsKey(source))
 					AddSourceToSourceToDestinationCache(source);
 
-				foreach (var endpointToAdd in destinations)
+				foreach (EndpointInfo endpointToAdd in destinations)
 					m_SourceToDestinationCache[source][type].Add(endpointToAdd);
 			}
 		}
@@ -525,11 +525,11 @@ namespace ICD.Connect.Routing
 
 		private void RoutingGraphOnRouteChanged(object sender, SwitcherRouteChangeEventArgs args)
 		{
-			var oldSourceEndpoints = args.OldSourceEndpoints.ToIcdHashSet();
-			var newSourceEndpoints = args.NewSourceEndpoints.ToIcdHashSet();
-			var destinationEndpoints = args.DestinationEndpoints.ToIcdHashSet();
+			IcdHashSet<EndpointInfo> oldSourceEndpoints = args.OldSourceEndpoints.ToIcdHashSet();
+			IcdHashSet<EndpointInfo> newSourceEndpoints = args.NewSourceEndpoints.ToIcdHashSet();
+			IcdHashSet<EndpointInfo> destinationEndpoints = args.DestinationEndpoints.ToIcdHashSet();
 
-			foreach (var flag in EnumUtils.GetFlagsExceptNone(args.Type))
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(args.Type))
 			{
 				RemoveOldValuesFromSourceCache(oldSourceEndpoints, destinationEndpoints, flag);
 				AddNewValuesToSourceCache(newSourceEndpoints, destinationEndpoints, flag);
@@ -543,7 +543,7 @@ namespace ICD.Connect.Routing
 				IcdHashSet<IDestination> newRouteDestinations = new IcdHashSet<IDestination>();
 				IcdHashSet<ISource> newRouteSources = new IcdHashSet<ISource>();
 
-				foreach (var destinationEndpoint in destinationEndpoints)
+				foreach (EndpointInfo destinationEndpoint in destinationEndpoints)
 				{
 					if(m_EndpointToDestinations.ContainsKey(destinationEndpoint))
 						newRouteDestinations.AddRange(m_EndpointToDestinations[destinationEndpoint]);
@@ -555,7 +555,7 @@ namespace ICD.Connect.Routing
 						                                          m_DestinationToSourceCache[destinationEndpoint][flag]));
 				}
 
-				foreach (var sourceEndpoint in newSourceEndpoints.Where(sourceEndpoint => m_EndpointToSources.ContainsKey(sourceEndpoint)))
+				foreach (EndpointInfo sourceEndpoint in newSourceEndpoints.Where(sourceEndpoint => m_EndpointToSources.ContainsKey(sourceEndpoint)))
 					newRouteSources.AddRange(m_EndpointToSources[sourceEndpoint]);
 
 				OnSourceDestinationRouteChanged.Raise(this, new SourceDestinationRouteChangedEventArgs(newRouteSources, newRouteDestinations, flag));
