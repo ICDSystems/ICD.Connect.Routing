@@ -1928,7 +1928,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				.Where(e => switcher.Parent.Id != e.Device )
 					.ToIcdHashSet();
 
-			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args, oldSources, newSources, destinationsSet));
+			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args, oldSources, newSources, destinations));
 
 			// Re-enforce static routes
 			m_StaticRoutes.ReApplyStaticRoutesForSwitcher(switcher);
