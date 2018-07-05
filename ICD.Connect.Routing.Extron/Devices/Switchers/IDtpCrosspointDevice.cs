@@ -11,6 +11,11 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		event EventHandler<BoolEventArgs> OnInitializedChanged;
 		event EventHandler<IntEventArgs> OnInputPortInitialized;
 		event EventHandler<IntEventArgs> OnOutputPortInitialized;
+
+		/// <summary>
+		/// Raised when the device sends a response.
+		/// </summary>
+		event EventHandler<StringEventArgs> OnResponseReceived;
 		
 		ISerialPort GetInputSerialInsertionPort(int input);
 		ISerialPort GetOutputSerialInsertionPort(int output);
@@ -20,5 +25,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		void SetRxComPortSpec(int output, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
 	                              eComStopBits stopBits);
+
+		void SendCommand(string command, params object[] args);
 	}
 }

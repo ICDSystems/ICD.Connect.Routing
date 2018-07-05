@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.API.Commands;
+using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Network.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
@@ -15,26 +16,29 @@ namespace ICD.Connect.Routing.Extron.Ports
 	{
 		private ISerialPort m_Port;
 		private IDtpHdmiDevice m_Parent;
+		private bool m_Initialized;
+
+		private readonly ConnectionStateManager m_ConnectionStateManager;
 
 		#region Properties
 
-		public ISerialPort WrappedPort
-		{
-			get { return m_Port; }
-			private set
-			{
-				if (m_Port == value)
-					return;
+		#endregion
 
-				if (m_Port != null)
-					Unsubscribe(m_Port);
-				
-				m_Port = value;
-				Subscribe(m_Port);
-			}
+		public DtpCrosspointComPort()
+		{
+			m_ConnectionStateManager = new ConnectionStateManager(this);
+			Subscribe(m_ConnectionStateManager);
 		}
 
-		#endregion
+		protected override void DisposeFinal(bool disposing)
+		{
+			base.DisposeFinal(disposing);
+
+			Unsubscribe(m_ConnectionStateManager);
+			m_ConnectionStateManager.Dispose();
+
+			m_Port.Dispose();
+		}
 
 		#region Methods
 
@@ -45,7 +49,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 			m_Parent.InitializeComPort(baudRate, numberOfDataBits, parityType, numberOfStopBits);
 			
 			var comPort = m_Port as IComPort;
-			if(comPort != null)
+			if (comPort != null)
 				comPort.SetComPortSpec(
 					baudRate, numberOfDataBits, 
 					parityType, numberOfStopBits, 
@@ -56,25 +60,25 @@ namespace ICD.Connect.Routing.Extron.Ports
 		protected override bool SendFinal(string data)
 		{
 			PrintTx(data);
-			return m_Port.Send(data);
+			return m_ConnectionStateManager.Send(data);
 		}
 
 	    public override void Connect()
 	    {
-			if (m_Port == null)
-				m_Port = m_Parent.GetSerialInsertionPort();
+		    if (m_ConnectionStateManager.PortNumber == null)
+		    {
+			    m_Port = m_Parent.GetSerialInsertionPort();
+			    m_ConnectionStateManager.SetPort(m_Port);
+		    }
 
-		    if (m_Port == null)
-			    throw new InvalidOperationException("Could not get serial insertion port for this DTP ComPort");
-
-			m_Port.Connect();
+			m_ConnectionStateManager.Connect();
 
 			UpdateIsConnectedState();
 	    }
 
 	    protected override bool GetIsConnectedState()
 	    {
-			return m_Port != null && m_Port.IsConnected;
+		    return m_ConnectionStateManager.IsConnected;
 	    }
 
 	    #endregion
@@ -122,7 +126,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 
 		private void ParentOnPortInitialized(object sender, BoolEventArgs boolEventArgs)
 		{
-			if(!IsConnected)
+			if (!IsConnected)
 				Connect();
 		}
 
@@ -130,27 +134,20 @@ namespace ICD.Connect.Routing.Extron.Ports
 
         #region Port Callbacks
 
-		private void Subscribe(ISerialPort port)
+		private void Subscribe(ConnectionStateManager connectionStateManager)
 		{
-			port.OnSerialDataReceived += PortOnSerialDataReceived;
-			port.OnConnectedStateChanged += PortOnConnectedStateChanged;
+			connectionStateManager.OnSerialDataReceived += ConnectionStateManagerOnSerialDataReceived;
 		}
 
-		private void Unsubscribe(ISerialPort port)
+		private void Unsubscribe(ConnectionStateManager connectionStateManager)
 		{
-			port.OnSerialDataReceived -= PortOnSerialDataReceived;
-			port.OnConnectedStateChanged -= PortOnConnectedStateChanged;
+			connectionStateManager.OnSerialDataReceived -= ConnectionStateManagerOnSerialDataReceived;
 		}
 
-        private void PortOnSerialDataReceived(object sender, StringEventArgs e)
-        {
-            PrintRx(e.Data);
-            Receive(e.Data);
-        }
-
-		private void PortOnConnectedStateChanged(object sender, BoolEventArgs e)
+		private void ConnectionStateManagerOnSerialDataReceived(object sender, StringEventArgs e)
 		{
-			UpdateIsConnectedState();
+			PrintRx(e.Data);
+			Receive(e.Data);
 		}
 
         #endregion

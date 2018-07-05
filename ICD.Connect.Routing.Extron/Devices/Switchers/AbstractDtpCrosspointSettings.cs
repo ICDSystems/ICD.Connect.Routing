@@ -50,7 +50,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 				{
 					if (m_DtpInputPorts.ContainsKey(item.Key))
 					{
-						Logger.AddEntry(eSeverity.Error, "{0} unable to add volume point id for duplicate input {1}", GetType().Name,
+						Logger.AddEntry(eSeverity.Error, "{0} unable to add port id for duplicate input {1}", GetType().Name,
 							item.Key);
 						continue;
 					}
@@ -85,7 +85,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 				{
 					if (m_DtpOutputPorts.ContainsKey(item.Key))
 					{
-						Logger.AddEntry(eSeverity.Error, "{0} unable to add volume point id for duplicate input {1}", GetType().Name,
+						Logger.AddEntry(eSeverity.Error, "{0} unable to add port id for duplicate output {1}", GetType().Name,
 							item.Key);
 						continue;
 					}
@@ -100,7 +100,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 						continue;
 					}
 
-					m_DtpInputPorts.Add(item.Key, item.Value);
+					m_DtpOutputPorts.Add(item.Key, item.Value);
 				}
 			}
 		}
