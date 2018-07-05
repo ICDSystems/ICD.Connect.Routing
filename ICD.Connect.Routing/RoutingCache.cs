@@ -126,6 +126,8 @@ namespace ICD.Connect.Routing
 			m_DestinationEndpointActive.Clear();
 		}
 
+		#region Source State
+
 		/// <summary>
 		/// Returns true if the source is detected for the given connection type.
 		/// </summary>
@@ -153,6 +155,10 @@ namespace ICD.Connect.Routing
 
 			return m_SourceTransmitting.ContainsKey(source) && m_SourceTransmitting[source].HasFlags(flag);
 		}
+
+		#endregion
+
+		#region Destination Sources
 
 		/// <summary>
 		/// Returns all of the sources actively routed to the given destitation endpoint for the given connection type.
@@ -217,6 +223,8 @@ namespace ICD.Connect.Routing
 							  .Distinct()
 							  .Where(s => !signalDetected || m_SourceEndpointDetected.GetDefault(s).HasFlag(flag));
 		}
+
+		#endregion
 
 		#endregion
 
