@@ -336,8 +336,11 @@ namespace ICD.Connect.Routing
 
 			m_SourceEndpointTransmitting[endpoint] = newFlags;
 
-			foreach (ISource source in m_EndpointToSources[endpoint])
-				UpdateSourceTransmissionState(source);
+			if (m_EndpointToSources.ContainsKey(endpoint))
+			{
+				foreach (ISource source in m_EndpointToSources[endpoint])
+					UpdateSourceTransmissionState(source);
+			}
 
 			OnEndpointTransmissionStateChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
 		}
@@ -380,8 +383,11 @@ namespace ICD.Connect.Routing
 
 			m_SourceEndpointDetected[endpoint] = newFlags;
 
-			foreach (ISource source in m_EndpointToSources[endpoint])
-				UpdateSourceDetectionState(source);
+			if (m_EndpointToSources.ContainsKey(endpoint))
+			{
+				foreach (ISource source in m_EndpointToSources[endpoint])
+					UpdateSourceDetectionState(source);
+			}
 
 			OnEndpointDetectionStateChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
 		}
