@@ -96,7 +96,7 @@ namespace ICD.Connect.Routing
 				m_SourceToEndpoints.Add(source, source.GetEndpoints().ToIcdHashSet());
 
 			// Initializes m_SourceToEndpoints and m_EndpointToSources
-			foreach (var endpoint in m_RoutingGraph.Sources.SelectMany(s => s.GetEndpoints()).Distinct())
+			foreach (EndpointInfo endpoint in sourceEndpoints)
 				UpdateSourceEndpoint(endpoint);
 		}
 
