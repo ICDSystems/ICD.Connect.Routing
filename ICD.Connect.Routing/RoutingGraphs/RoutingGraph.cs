@@ -1924,7 +1924,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			}
 
 			IcdHashSet<EndpointInfo> destinations =
-				GetDestinationEndpointsRecursive(switcher.GetOutputEndpointInfo(args.Output), args.Type)
+				GetDestinationEndpoints(switcher.GetOutputEndpointInfo(args.Output), args.Type)
 				.Where(e => switcher.Parent.Id != e.Device )
 					.ToIcdHashSet();
 
@@ -1934,12 +1934,46 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_StaticRoutes.ReApplyStaticRoutesForSwitcher(switcher);
 		}
 
-		private IEnumerable<EndpointInfo> GetDestinationEndpointsRecursive(EndpointInfo outputEndpointInfo, eConnectionType type)
+		private IEnumerable<EndpointInfo> GetDestinationEndpoints(EndpointInfo outputEndpointInfo, eConnectionType type)
 		{
-			return FindActivePathsSingleFlag(outputEndpointInfo, type, false, false)
-				.SelectMany(p => p)
-				.Select(c => c.Destination)
-				.Distinct();
+			if (EnumUtils.HasMultipleFlags(type))
+				throw new ArgumentException("Connection type must be a single flag", "type");
+
+			IcdHashSet<EndpointInfo> destinations = new IcdHashSet<EndpointInfo>();
+
+			Queue<EndpointInfo> process = new Queue<EndpointInfo>();
+			process.Enqueue(outputEndpointInfo);
+
+			while (process.Count > 0)
+			{
+				EndpointInfo current = process.Dequeue();
+
+				// Grab the immediate destination for this source and add it to the hashset
+				Connection connection = m_Connections.GetOutputConnection(current);
+				if(connection == null || connection.ConnectionType.HasFlag(type))
+					continue;
+
+				destinations.Add(connection.Destination);
+
+				// If destination represents a midpoint device, find the outputs on that device and
+				// push onto the end of the queue
+				IRouteControl destinationControl = GetControl<IRouteControl>(connection.Destination.Device,
+				                                                             connection.Destination.Control);
+
+				if (!(destinationControl is IRouteMidpointControl))
+					continue;
+
+				IRouteMidpointControl midpointControl = destinationControl as IRouteMidpointControl;
+
+				process.EnqueueRange(midpointControl.GetOutputs(connection.Source.Address, type)
+													.Where(c => c.ConnectionType.HasFlag(type))
+				                                    .Select(c =>
+				                                            new EndpointInfo(connection.Destination.Device,
+				                                                             connection.Destination.Control, 
+																			 c.Address)));
+			}
+
+			return destinations;
 		}
 
 		private IEnumerable<EndpointInfo> GetSourceEndpointsRecursive(EndpointInfo inputEndpointInfo, eConnectionType flag)
