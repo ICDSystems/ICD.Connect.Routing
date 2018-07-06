@@ -1,4 +1,4 @@
-﻿namespace ICD.Connect.Routing.Extron.Controls
+﻿namespace ICD.Connect.Routing.Extron.Controls.Volume
 {
 	public enum eExtronVolumeObject
 	{

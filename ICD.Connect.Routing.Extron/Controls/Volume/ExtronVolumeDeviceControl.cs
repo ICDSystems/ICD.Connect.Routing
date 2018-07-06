@@ -17,6 +17,7 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		private const string MUTE_FEEDBACK_REGEX = @"Ds(\d{5})\*(-?\d+)";
 		
 		private readonly eExtronVolumeObject m_VolumeObject;
+		private readonly eExtronVolumeType m_VolumeType;
 
 		private float m_VolumeRaw;
 		private bool m_IsMuted;
@@ -26,6 +27,7 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		public ExtronVolumeDeviceControl(IDtpCrosspointDevice parent, int id, eExtronVolumeObject volumeObject) : base(parent, id)
 		{
 			m_VolumeObject = volumeObject;
+			m_VolumeType = ExtronVolumeUtils.GetVolumeTypeForObject(volumeObject);
 			Subscribe(parent);
 		}
 
@@ -38,42 +40,12 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 
 		protected override float VolumeRawMinAbsolute
 		{
-			get
-			{
-				if (m_VolumeObject >= eExtronVolumeObject.Mic1InputGain &&
-				    m_VolumeObject <= eExtronVolumeObject.Mic4InputGain)
-					return -18;
-
-				if (m_VolumeObject >= eExtronVolumeObject.VirtualReturnAGain &&
-				    m_VolumeObject <= eExtronVolumeObject.VirtualReturnHGain)
-					return -18;
-
-				if (m_VolumeObject >= eExtronVolumeObject.Output1AnalogVolume &&
-				    m_VolumeObject <= eExtronVolumeObject.Output4AnalogVolume)
-					return -100;
-
-				return 0;
-			}
+			get { return ExtronVolumeUtils.GetMinVolume(m_VolumeType); }
 		}
 
 		protected override float VolumeRawMaxAbsolute
 		{
-			get
-			{
-				if (m_VolumeObject >= eExtronVolumeObject.Mic1InputGain &&
-				    m_VolumeObject <= eExtronVolumeObject.Mic4InputGain)
-					return 80;
-
-				if (m_VolumeObject >= eExtronVolumeObject.VirtualReturnAGain &&
-				    m_VolumeObject <= eExtronVolumeObject.VirtualReturnHGain)
-					return 24;
-
-				if (m_VolumeObject >= eExtronVolumeObject.Output1AnalogVolume &&
-				    m_VolumeObject <= eExtronVolumeObject.Output4AnalogVolume)
-					return 0;
-
-				return 0;
-			}
+			get { return ExtronVolumeUtils.GetMaxVolume(m_VolumeType); }
 		}
 
 		public bool VolumeIsMuted { 
@@ -149,9 +121,7 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 			{
 				int objectId = int.Parse(match.Groups[1].Value);
 				if (objectId == (int) m_VolumeObject)
-				{
 					VolumeIsMuted = match.Groups[2].Value == "1";
-				}
 			}
 		}
 
