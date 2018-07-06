@@ -291,22 +291,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			DisposeLoadedControls();
 
 			// Load and add the new controls
-			foreach (IDeviceControl control in GetControlsFromXml(xml))
+			foreach (IDeviceControl control in ExtronXmlUtils.GetControlsFromXml(xml, this))
 			{
 				Controls.Add(control);
 				m_LoadedControls.Add(control);
-			}
-		}
-
-		public IEnumerable<IDeviceControl> GetControlsFromXml(string xml)
-		{
-			foreach (string controlElement in XmlUtils.GetChildElementsAsString(xml))
-			{
-				int id = XmlUtils.GetAttributeAsInt(controlElement, "id");
-				eExtronVolumeObject volumeObject =
-					XmlUtils.ReadChildElementContentAsEnum<eExtronVolumeObject>(controlElement, "VolumeObject", true);
-				
-				yield return new ExtronVolumeDeviceControl(this, id, volumeObject);
 			}
 		}
 

@@ -14,15 +14,19 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 	{
 		private const string GROUP_FEEDBACK_REGEX = @"GrpmD(\d{1,2})\*(-?\d+)";
 
+		/// <summary>
+		/// Raised when the mute status is changed.
+		/// </summary>
 		public event EventHandler<BoolEventArgs> OnMuteStateChanged;
+
 		private readonly eExtronVolumeType m_VolumeType;
-		private readonly int m_VolumeGroupId;
+		private readonly int? m_VolumeGroupId;
 		private readonly int? m_MuteGroupId;
 		
 		private float m_VolumeRaw;
 		private bool m_IsMuted;
 
-		public ExtronGroupVolumeDeviceControl(IDtpCrosspointDevice parent, int id, eExtronVolumeType volumeType, int volumeGroupId, int? muteGroupId)
+		public ExtronGroupVolumeDeviceControl(IDtpCrosspointDevice parent, int id, eExtronVolumeType volumeType, int? volumeGroupId, int? muteGroupId)
 			: base(parent, id)
 		{
 			m_VolumeType = volumeType;
@@ -32,16 +36,6 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		}
 
 		#region Properties
-
-		public int VolumeGroupId
-		{
-			get { return m_VolumeGroupId; }
-		}
-
-		public int? MuteGroupId
-		{
-			get { return m_MuteGroupId; }
-		}
 
 		public override float VolumeRaw
 		{
@@ -79,8 +73,8 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		public override void SetVolumeRaw(float volume)
 		{
 			int volumeParam = (int) (volume * 10);
-
-			Parent.SendCommand("WD{0}*{1}GRPM", VolumeGroupId, volumeParam);
+			if(m_VolumeGroupId != null)
+				Parent.SendCommand("WD{0}*{1}GRPM", m_VolumeGroupId, volumeParam);
 		}
 
 		public void VolumeMuteToggle()
@@ -90,7 +84,8 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 
 		public void SetVolumeMute(bool mute)
 		{
-			Parent.SendCommand("WD{0}*{1}GRPM", MuteGroupId, mute ? 1 : 0);
+			if (m_MuteGroupId != null)
+				Parent.SendCommand("WD{0}*{1}GRPM", m_MuteGroupId, mute ? 1 : 0);
 		}
 
 		#endregion
@@ -115,19 +110,22 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 			if (match.Success)
 			{
 				int groupId = int.Parse(match.Groups[1].Value);
-				if (groupId == VolumeGroupId)
+				if (groupId == m_VolumeGroupId)
 				{
 					m_VolumeRaw = int.Parse(match.Groups[2].Value) / 10f;
 					VolumeFeedback(m_VolumeRaw);
 				}
-				else if (groupId == MuteGroupId)
+				else if (groupId == m_MuteGroupId)
 					VolumeIsMuted = int.Parse(match.Groups[2].Value) == 1;
 			}
 		}
 
 		private void ParentOnInitializedChanged(object sender, BoolEventArgs e)
 		{
-			Parent.SendCommand("WD{0}GRPM", VolumeGroupId);
+			if (m_VolumeGroupId != null)
+				Parent.SendCommand("WD{0}GRPM", m_VolumeGroupId);
+			if (m_MuteGroupId != null)
+				Parent.SendCommand("WD{0}GRPM", m_MuteGroupId);
 		}
 
 		#endregion
