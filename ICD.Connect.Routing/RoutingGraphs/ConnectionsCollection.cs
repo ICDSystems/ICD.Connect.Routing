@@ -55,7 +55,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Gets the connection for the given endpoint.
 		/// </summary>
-		/// <param name="destination"></param>
+		/// <param name="destination">The destination endpoint for the target connection.</param>
 		/// <returns></returns>
 		[CanBeNull]
 		public Connection GetInputConnection(EndpointInfo destination)
@@ -153,7 +153,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Gets the connection for the given endpoint.
 		/// </summary>
-		/// <param name="source"></param>
+		/// <param name="source">The source endpoint for the target connection</param>
 		/// <returns></returns>
 		[CanBeNull]
 		public Connection GetOutputConnection(EndpointInfo source)
