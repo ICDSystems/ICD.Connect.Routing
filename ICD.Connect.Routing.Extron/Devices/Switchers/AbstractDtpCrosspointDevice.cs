@@ -21,6 +21,7 @@ using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Protocol.Utils;
 using ICD.Connect.Routing.Extron.Controls;
+using ICD.Connect.Routing.Extron.Controls.Volume;
 using ICD.Connect.Routing.Extron.SerialBuffers;
 using ICD.Connect.Settings.Core;
 
@@ -30,8 +31,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		where TSettings: AbstractDtpCrosspointSettings, new()
 	{
 
-		private const string DSP_OBJECT_ELEMENT = "VolumeObject";
         private const string PORT_INITIALIZED_REGEX = @"Lrpt(I|O)(\d{1,2})\*((?:0|1){1,2})";
+
 		/// <summary>
 		/// The device likes to drop connection if there's no activity for 5 mins,
 		/// so lets occasionally send something to keep connection from dropping.
@@ -302,9 +303,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			foreach (string controlElement in XmlUtils.GetChildElementsAsString(xml))
 			{
 				int id = XmlUtils.GetAttributeAsInt(controlElement, "id");
-				eExtronDspObject dspObject =
-					XmlUtils.ReadChildElementContentAsEnum<eExtronDspObject>(controlElement, DSP_OBJECT_ELEMENT, true);
-				yield return new ExtronVolumeDeviceControl(this, id, dspObject);
+				eExtronVolumeObject volumeObject =
+					XmlUtils.ReadChildElementContentAsEnum<eExtronVolumeObject>(controlElement, "VolumeObject", true);
+				
+				yield return new ExtronVolumeDeviceControl(this, id, volumeObject);
 			}
 		}
 
@@ -561,6 +563,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 			m_ConnectionStateManager.SetPort(port);
 
+			if (!string.IsNullOrEmpty(settings.Config))
+				LoadControls(settings.Config);
 
 			m_DtpInputPortsSection.Enter();
 			try 

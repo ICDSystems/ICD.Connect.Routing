@@ -1,6 +1,6 @@
 ﻿namespace ICD.Connect.Routing.Extron.Controls
 {
-	public enum eExtronDspObject
+	public enum eExtronVolumeObject
 	{
 		Mic1InputGain = 40000,
 		Mic2InputGain = 40001,

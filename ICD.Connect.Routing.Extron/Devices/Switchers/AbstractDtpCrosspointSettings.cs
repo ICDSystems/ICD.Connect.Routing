@@ -15,7 +15,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 	{
 		private const string ELEMENT_PORT = "Port";
 		private const string ELEMENT_PASSWORD = "Password";
-	    private const string ADDRESS_ELEMENT = "Address";
+	    private const string ELEMENT_ADDRESS = "Address";
+		private const string ELEMENT_CONFIG = "Config";
 
 		private const string ELEMENT_DTP_INPUT_PORT = "DtpInputPort";
 		private const string ELEMENT_DTP_INPUT_PORTS = ELEMENT_DTP_INPUT_PORT + "s";
@@ -34,6 +35,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		[IpAddressSettingsProperty]
         public string Address { get; set; }
+
+		public string Config { get; set; }
 
 		private Dictionary<int, int> m_DtpInputPorts = new Dictionary<int, int>();
 		public IEnumerable<KeyValuePair<int, int>> DtpInputPorts
@@ -115,7 +118,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 			writer.WriteElementString(ELEMENT_PORT, IcdXmlConvert.ToString(Port));
 			writer.WriteElementString(ELEMENT_PASSWORD, Password);
-            writer.WriteElementString(ADDRESS_ELEMENT, Address);
+            writer.WriteElementString(ELEMENT_ADDRESS, Address);
+			writer.WriteElementString(ELEMENT_CONFIG, Config);
 
 			XmlUtils.WriteDictToXml(writer, DtpInputPorts, ELEMENT_DTP_INPUT_PORTS, ELEMENT_DTP_INPUT_PORT,
 				(w, i) => w.WriteElementString(ELEMENT_INPUT, IcdXmlConvert.ToString(i)),
@@ -135,7 +139,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 			Port = XmlUtils.TryReadChildElementContentAsInt(xml, ELEMENT_PORT);
 			Password = XmlUtils.TryReadChildElementContentAsString(xml, ELEMENT_PASSWORD);
-		    Address = XmlUtils.TryReadChildElementContentAsString(xml, ADDRESS_ELEMENT);
+			Address = XmlUtils.TryReadChildElementContentAsString(xml, ELEMENT_ADDRESS);
+			Config = XmlUtils.TryReadChildElementContentAsString(xml, ELEMENT_CONFIG);
 
 			DtpInputPorts = XmlUtils.ReadDictFromXml(xml, ELEMENT_DTP_INPUT_PORTS, ELEMENT_DTP_INPUT_PORT, ELEMENT_INPUT, ELEMENT_PORT,
 					key => XmlUtils.TryReadElementContentAsInt(key) ?? 0,
