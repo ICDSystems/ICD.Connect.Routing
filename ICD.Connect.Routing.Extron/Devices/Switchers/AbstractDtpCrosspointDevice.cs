@@ -11,7 +11,6 @@ using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Timers;
-using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Protocol;
@@ -20,8 +19,6 @@ using ICD.Connect.Protocol.Network.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Protocol.Utils;
-using ICD.Connect.Routing.Extron.Controls;
-using ICD.Connect.Routing.Extron.Controls.Volume;
 using ICD.Connect.Routing.Extron.SerialBuffers;
 using ICD.Connect.Settings.Core;
 

@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+#if SIMPLSHARP
+using Crestron.SimplSharp.Reflection;
+#else
 using System.Reflection;
-using System.Text;
+#endif
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 
@@ -69,6 +72,9 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		private static void CacheVolumeTypeAttributes(eExtronVolumeType volumeType)
 		{
 			var fieldInfo = typeof(eExtronVolumeType)
+#if SIMPLSHARP
+				.GetCType()
+#endif
 				.GetField(volumeType.ToString());
 
 			var volumeRangeAttribute = fieldInfo.GetCustomAttribute<ExtronVolumeRangeAttribute>();

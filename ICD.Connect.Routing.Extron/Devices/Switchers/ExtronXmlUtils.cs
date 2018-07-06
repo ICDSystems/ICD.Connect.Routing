@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Extron.Controls.Volume;
@@ -26,7 +24,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 						break;
 					default:
 						string message = string.Format("{0} is not a valid Extron control type", type);
-						throw new InvalidDataException(message);
+						throw new FormatException(message);
 				}
 				
 			}

@@ -48,8 +48,8 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 	[AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
 	internal class ExtronObjectIdRangeAttribute : Attribute
 	{
-		public int RangeMin { get; }
-		public int RangeMax { get; }
+		public int RangeMin { get; private set; }
+		public int RangeMax { get; private set; }
 
 		public ExtronObjectIdRangeAttribute(int rangeMin, int rangeMax)
 		{
@@ -64,8 +64,8 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 	[AttributeUsage(AttributeTargets.Field)]
 	internal class ExtronVolumeRangeAttribute : Attribute
 	{
-		public float VolumeMin { get; }
-		public float VolumeMax { get; }
+		public float VolumeMin { get; private set; }
+		public float VolumeMax { get; private set; }
 
 		public ExtronVolumeRangeAttribute(float volumeMin, float volumeMax)
 		{
