@@ -147,6 +147,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 			Unsubscribe(m_SerialBuffer);
 
+			DisposeLoadedControls();
+
 			base.DisposeFinal(disposing);
 		}
 

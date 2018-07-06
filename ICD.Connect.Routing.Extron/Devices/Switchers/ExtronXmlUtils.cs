@@ -19,10 +19,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 				switch(type)
 				{
 					case "Volume":
-						yield return GetVolumeControl(xml, parent);
+						yield return GetVolumeControl(controlElement, parent);
 						break;
 					case "GroupVolume":
-						yield return GetGroupVolumeControl(xml, parent);
+						yield return GetGroupVolumeControl(controlElement, parent);
 						break;
 					default:
 						string message = string.Format("{0} is not a valid Extron control type", type);
@@ -32,7 +32,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			}
 		}
 
-		public static IDeviceControl GetVolumeControl(string xml, IDtpCrosspointDevice parent)
+		private static IDeviceControl GetVolumeControl(string xml, IDtpCrosspointDevice parent)
 		{
 			int id = XmlUtils.GetAttributeAsInt(xml, "id");
 			eExtronVolumeObject volumeObject =
@@ -41,7 +41,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			return new ExtronVolumeDeviceControl(parent, id, volumeObject);
 		}
 
-		public static ExtronGroupVolumeDeviceControl GetGroupVolumeControl(string xml, IDtpCrosspointDevice parent)
+		private static ExtronGroupVolumeDeviceControl GetGroupVolumeControl(string xml, IDtpCrosspointDevice parent)
 		{
 			int id = XmlUtils.GetAttributeAsInt(xml, "id");
 			eExtronVolumeType volumeType =
