@@ -281,20 +281,69 @@ namespace ICD.Connect.Routing
 		/// </summary>
 		private void InitializeRoutes()
 		{
-			foreach (var connection in m_RoutingGraph.Connections)
+			InitializeDirectConnectionRoutes();
+			InitializeExtendedRoutes();
+		}
+
+		private void InitializeDirectConnectionRoutes()
+		{
+			foreach (Connection connection in m_RoutingGraph.Connections)
 			{
 				if (m_DestinationToSourceCache[connection.Destination] == null)
 					m_DestinationToSourceCache[connection.Destination] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
 
 				m_DestinationToSourceCache[connection.Destination][connection.ConnectionType].Add(connection.Source);
-			
-				if(m_SourceToDestinationCache[connection.Source] == null)
+
+				if (m_SourceToDestinationCache[connection.Source] == null)
 					m_SourceToDestinationCache[connection.Source] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
 
 				m_SourceToDestinationCache[connection.Source][connection.ConnectionType].Add(connection.Destination);
 			}
+		}
 
-			
+		private void InitializeExtendedRoutes()
+		{
+			foreach(EndpointInfo destinationEndpoint in m_RoutingGraph.Destinations.SelectMany(d => d.GetEndpoints()).Distinct())
+			{               
+				foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone<eConnectionType>())
+				{
+					IcdHashSet<EndpointInfo> activeRouteSourceEndpoints = new IcdHashSet<EndpointInfo>();
+					IcdHashSet<EndpointInfo> activeRouteDestinationEndpoints = new IcdHashSet<EndpointInfo>();
+					Queue<EndpointInfo> process = new Queue<EndpointInfo>();
+					process.Enqueue(destinationEndpoint);
+
+					while (process.Count > 0)
+					{
+						EndpointInfo currentDestinationEndpoint = process.Dequeue();
+
+						if(!m_RoutingGraph.InputActive(currentDestinationEndpoint, type))
+							continue;
+
+						Connection connection = m_RoutingGraph.Connections.GetInputConnection(currentDestinationEndpoint);
+
+						if(connection == null)
+							continue;
+
+						EndpointInfo currentSourceEndpoint = connection.Source;
+						activeRouteSourceEndpoints.Add(currentSourceEndpoint);
+						activeRouteDestinationEndpoints.Add(currentDestinationEndpoint);
+
+						IRouteControl control = m_RoutingGraph.GetControl<IRouteControl>(currentSourceEndpoint);
+
+						IRouteMidpointControl midControl = control as IRouteMidpointControl;
+						if(midControl == null)
+							continue;
+
+						foreach (var activeInput in midControl.GetInputs(currentSourceEndpoint.Address, type))
+						{
+							process.Enqueue(new EndpointInfo(currentSourceEndpoint.Device, currentSourceEndpoint.Control, activeInput.Address));
+						}
+					}
+
+					m_DestinationToSourceCache[destinationEndpoint][type].AddRange(activeRouteDestinationEndpoints);
+					m_SourceToDestinationCache[activeRouteDestinationEndpoints.Last()][type].AddRange(activeRouteSourceEndpoints);
+				}
+			}
 		}
 
 		private void UpdateSourceEndpoint(EndpointInfo endpoint)
