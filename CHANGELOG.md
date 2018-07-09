@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
  - HdMdxxxCE switchers support routing audio to the aux audio output
+ - Enabling Audio-Breakaway in 6XN Crestron switchers
 
 ## [7.2.0] - 2018-07-02
 ### Added
