@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.Utils.Xml;
+using ICD.Connect.Audio.Controls;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Extron.Controls.Volume;
 
@@ -12,42 +13,49 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		{
 			foreach (string controlElement in XmlUtils.GetChildElementsAsString(xml))
 			{
+				int id = XmlUtils.GetAttributeAsInt(xml, "id");
 				string type = XmlUtils.GetAttributeAsString(controlElement, "type");
+				string name = XmlUtils.TryReadChildElementContentAsString(controlElement, "Name");
 
+				AbstractVolumeRawLevelDeviceControl<IDtpCrosspointDevice> control = null;
 				switch(type)
 				{
 					case "Volume":
-						yield return GetVolumeControl(controlElement, parent);
+						control = GetVolumeControl(controlElement, id, name, parent);
 						break;
 					case "GroupVolume":
-						yield return GetGroupVolumeControl(controlElement, parent);
+						control = GetGroupVolumeControl(controlElement, id, name, parent);
 						break;
 					default:
 						string message = string.Format("{0} is not a valid Extron control type", type);
 						throw new FormatException(message);
 				}
-				
+
+				if (control == null)
+					continue;
+
+				control.VolumeRawMin = XmlUtils.TryReadChildElementContentAsFloat(controlElement, "VolumeMin");
+				control.VolumeRawMax = XmlUtils.TryReadChildElementContentAsFloat(controlElement, "VolumeMax");
+
+				yield return control;
 			}
 		}
 
-		private static IDeviceControl GetVolumeControl(string xml, IDtpCrosspointDevice parent)
+		private static ExtronVolumeDeviceControl GetVolumeControl(string xml, int id, string name, IDtpCrosspointDevice parent)
 		{
-			int id = XmlUtils.GetAttributeAsInt(xml, "id");
 			eExtronVolumeObject volumeObject =
 				XmlUtils.ReadChildElementContentAsEnum<eExtronVolumeObject>(xml, "VolumeObject", true);
 			
-			return new ExtronVolumeDeviceControl(parent, id, volumeObject);
+			return new ExtronVolumeDeviceControl(parent, id, name, volumeObject);
 		}
 
-		private static ExtronGroupVolumeDeviceControl GetGroupVolumeControl(string xml, IDtpCrosspointDevice parent)
+		private static ExtronGroupVolumeDeviceControl GetGroupVolumeControl(string xml, int id, string name, IDtpCrosspointDevice parent)
 		{
-			int id = XmlUtils.GetAttributeAsInt(xml, "id");
-			eExtronVolumeType volumeType =
-				XmlUtils.ReadChildElementContentAsEnum<eExtronVolumeType>(xml, "VolumeType", true);
-			int volumeGroupId = XmlUtils.TryReadChildElementContentAsInt(xml, "VolumeGroupId") ?? 1;
+			eExtronVolumeType volumeType = XmlUtils.ReadChildElementContentAsEnum<eExtronVolumeType>(xml, "VolumeType", true);
+			int? volumeGroupId = XmlUtils.TryReadChildElementContentAsInt(xml, "VolumeGroupId");
 			int? muteGroupId = XmlUtils.TryReadChildElementContentAsInt(xml, "MuteGroupId");
 			
-			return new ExtronGroupVolumeDeviceControl(parent, id, volumeType, volumeGroupId, muteGroupId);
+			return new ExtronGroupVolumeDeviceControl(parent, id, name, volumeType, volumeGroupId, muteGroupId);
 		}
 	}
 }

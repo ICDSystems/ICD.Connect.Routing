@@ -7,57 +7,27 @@ using ICD.Connect.Routing.Extron.Devices.Switchers;
 
 namespace ICD.Connect.Routing.Extron.Controls.Volume
 {
-	public class ExtronVolumeDeviceControl : AbstractVolumeRawLevelDeviceControl<IDtpCrosspointDevice>, IVolumeMuteFeedbackDeviceControl
+	public class ExtronVolumeDeviceControl : AbstractExtronVolumeDeviceControl, IVolumeMuteFeedbackDeviceControl
 	{
 		private const string VOLUME_FEEDBACK_REGEX = @"Ds(?:G|H)(\d{5})\*(-?\d+)";
 		private const string MUTE_FEEDBACK_REGEX = @"Ds(\d{5})\*(-?\d+)";
 		
 		private readonly eExtronVolumeObject m_VolumeObject;
-		private readonly eExtronVolumeType m_VolumeType;
 
-		private float m_VolumeRaw;
-		private bool m_IsMuted;
-
-		public event EventHandler<BoolEventArgs> OnMuteStateChanged;
-
-		public ExtronVolumeDeviceControl(IDtpCrosspointDevice parent, int id, eExtronVolumeObject volumeObject) : base(parent, id)
+		public ExtronVolumeDeviceControl(IDtpCrosspointDevice parent, int id, string name, eExtronVolumeObject volumeObject)
+			: base(parent, id, name, ExtronVolumeUtils.GetVolumeTypeForObject(volumeObject))
 		{
 			m_VolumeObject = volumeObject;
-			m_VolumeType = ExtronVolumeUtils.GetVolumeTypeForObject(volumeObject);
 			Subscribe(parent);
 		}
 
-		#region Properties
-
-		public override float VolumeRaw
+		protected override void DisposeFinal(bool disposing)
 		{
-			get { return m_VolumeRaw; }
+			base.DisposeFinal(disposing);
+
+			if (Parent != null)
+				Unsubscribe(Parent);
 		}
-
-		protected override float VolumeRawMinAbsolute
-		{
-			get { return ExtronVolumeUtils.GetMinVolume(m_VolumeType); }
-		}
-
-		protected override float VolumeRawMaxAbsolute
-		{
-			get { return ExtronVolumeUtils.GetMaxVolume(m_VolumeType); }
-		}
-
-		public bool VolumeIsMuted { 
-			get { return m_IsMuted; }
-			set
-			{
-				if (value == m_IsMuted)
-					return;
-				
-				m_IsMuted = value; 
-
-				OnMuteStateChanged.Raise(this, new BoolEventArgs(m_IsMuted));
-			}
-		}
-
-		#endregion
 
 		#region Methods
 
@@ -73,14 +43,16 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 				Parent.SendCommand("WG{0}*{1}AU", objectId + 1, volumeParam);
 		}
 
-		public void VolumeMuteToggle()
-		{
-			SetVolumeMute(!VolumeIsMuted);
-		}
-
-		public void SetVolumeMute(bool mute)
+		public override void SetVolumeMute(bool mute)
 		{
 			Parent.SendCommand("WM{0}*{1}AU", (int) m_VolumeObject, mute ? 1 : 0);
+		}
+
+		protected override void Initialize()
+		{
+			int volumeObjectId = (int) m_VolumeObject;
+			Parent.SendCommand("WG{0}AU", volumeObjectId);
+			Parent.SendCommand("WM{0}AU", volumeObjectId);
 		}
 
 		#endregion
@@ -90,13 +62,11 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		private void Subscribe(IDtpCrosspointDevice parent)
 		{
 			parent.OnResponseReceived += ParentOnResponseReceived;
-			parent.OnInitializedChanged += ParentOnInitializedChanged;
 		}
 
 		private void Unsubscribe(IDtpCrosspointDevice parent)
 		{
 			parent.OnResponseReceived -= ParentOnResponseReceived;
-			parent.OnInitializedChanged -= ParentOnInitializedChanged;
 		}
 
 		private void ParentOnResponseReceived(object sender, StringEventArgs args)
@@ -106,10 +76,8 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 			{
 				int objectId = int.Parse(match.Groups[1].Value);
 				if (objectId == (int) m_VolumeObject)
-				{
-					m_VolumeRaw = int.Parse(match.Groups[2].Value) / 10f;
-					VolumeFeedback(m_VolumeRaw);
-				}
+					SetVolumeRawProperty(int.Parse(match.Groups[2].Value) / 10f);
+				return;
 			}
 
 			match = Regex.Match(args.Data, MUTE_FEEDBACK_REGEX);
@@ -119,13 +87,6 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 				if (objectId == (int) m_VolumeObject)
 					VolumeIsMuted = match.Groups[2].Value == "1";
 			}
-		}
-
-		private void ParentOnInitializedChanged(object sender, BoolEventArgs e)
-		{
-			int volumeObjectId = (int) m_VolumeObject;
-			Parent.SendCommand("WG{0}AU", volumeObjectId);
-			Parent.SendCommand("WM{0}AU", volumeObjectId);
 		}
 
 		#endregion
