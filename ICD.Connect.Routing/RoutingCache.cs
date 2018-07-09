@@ -103,6 +103,7 @@ namespace ICD.Connect.Routing
 
 			InitializeSourceCaches();
 			InitializeDestinationCaches();
+			InitializeRoutes();
 		}
 
 		/// <summary>
@@ -273,6 +274,27 @@ namespace ICD.Connect.Routing
 
 			foreach (EndpointInfo endpoint in destinationEndpoints)
 				UpdateDestinationEndpoint(endpoint);
+		}
+
+		/// <summary>
+		/// Initializes the route caches.
+		/// </summary>
+		private void InitializeRoutes()
+		{
+			foreach (var connection in m_RoutingGraph.Connections)
+			{
+				if (m_DestinationToSourceCache[connection.Destination] == null)
+					m_DestinationToSourceCache[connection.Destination] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+
+				m_DestinationToSourceCache[connection.Destination][connection.ConnectionType].Add(connection.Source);
+			
+				if(m_SourceToDestinationCache[connection.Source] == null)
+					m_SourceToDestinationCache[connection.Source] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+
+				m_SourceToDestinationCache[connection.Source][connection.ConnectionType].Add(connection.Destination);
+			}
+
+			
 		}
 
 		private void UpdateSourceEndpoint(EndpointInfo endpoint)
@@ -606,6 +628,12 @@ namespace ICD.Connect.Routing
 
 			UpdateDestinationEndpointInputActiveState(args.Endpoint, args.Type, args.State);
 		}
+
+		#endregion
+
+		#region Debug Stuff
+
+
 
 		#endregion
 	}
