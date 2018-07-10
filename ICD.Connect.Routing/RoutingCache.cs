@@ -374,6 +374,9 @@ namespace ICD.Connect.Routing
 				IRouteDestinationControl finalDestinationControl = 
 					m_RoutingGraph.GetDestinationControl(destinationEndpoint.Device, destinationEndpoint.Control);
 
+				if (!finalDestinationControl.ContainsInput(destinationEndpoint.Address))
+					continue;
+
 				ConnectorInfo connector = finalDestinationControl.GetInput(destinationEndpoint.Address);
 				
 				foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(connector.ConnectionType))
@@ -424,6 +427,9 @@ namespace ICD.Connect.Routing
 		{
 			IRouteSourceControl control = m_RoutingGraph.GetSourceControl(endpoint);
 
+			if (!control.ContainsOutput(endpoint.Address))
+				return;
+
 			ConnectorInfo connector = control.GetOutput(endpoint.Address);
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(connector.ConnectionType))
@@ -439,6 +445,9 @@ namespace ICD.Connect.Routing
 		private void UpdateDestinationEndpoint(EndpointInfo endpoint)
 		{
 			IRouteDestinationControl control = m_RoutingGraph.GetDestinationControl(endpoint);
+
+			if (!control.ContainsInput(endpoint.Address))
+				return;
 
 			ConnectorInfo connector = control.GetInput(endpoint.Address);
 
