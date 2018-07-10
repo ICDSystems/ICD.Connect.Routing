@@ -689,7 +689,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			EndpointInfo[] destinationEndpoints = destination.GetEndpoints().ToArray();
 
 			return source.GetEndpoints()
-			             .SelectMany(s => destinationEndpoints.SelectMany(d => FindPaths(s, d, flag, roomId)));
+			             .SelectMany(s => destinationEndpoints.SelectMany(d => FindPaths(s, d, flag, roomId)))
+						 .Where(p => p != null);
 		}
 
 		/// <summary>
