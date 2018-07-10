@@ -21,5 +21,24 @@
 			Controls.Add(new DmMd6XNSwitcherControl(this));
 #endif
 		}
+
+#if SIMPLSHARP
+
+		/// <summary>
+		/// Override to control how the assigned switcher behaves.
+		/// </summary>
+		/// <param name="switcher"></param>
+		protected override void ConfigureSwitcher(TSwitcher switcher)
+		{
+			base.ConfigureSwitcher(switcher);
+
+			if (switcher == null)
+				return;
+
+			switcher.EnableAudioBreakaway.BoolValue = true;
+			switcher.AudioEnter.BoolValue = true;
+		}
+
+#endif
 	}
 }

@@ -197,7 +197,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 				(a, b, c) => SetSignalDetectedState(a, b, c));
 			yield return new GenericConsoleCommand<int, int, eConnectionType>(
 				"SetInputForOutput",
-				"<input><output><Audio, Video, USB, None>",
+				"<input> <output> <Audio, Video, USB, None>",
 				(a, b, c) => SetInputForOutput(b, a, c));
 		}
 
