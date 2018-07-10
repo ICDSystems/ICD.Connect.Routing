@@ -223,6 +223,56 @@ namespace ICD.Connect.Routing
 							  .Where(s => !signalDetected || m_SourceEndpointDetected.GetDefault(s).HasFlag(flag));
 		}
 
+		/// <summary>
+		/// Returns all of the destination endpoints actively routed from the given source endpoint for the given connection type.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> GetDestinationEndpointsForSource(EndpointInfo sourceEndpoint,
+																		  eConnectionType flag)
+		{
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("type cannot have multiple flags", "flag");
+
+			if (!m_SourceToDestinationCache.ContainsKey(sourceEndpoint))
+				return Enumerable.Empty<EndpointInfo>();
+
+			return m_SourceToDestinationCache[sourceEndpoint][flag];
+		}
+
+		/// <summary>
+		/// Gets all of the destination endpoints currently routed from the given source for the given flag.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="flag"></param>
+		/// <param name="signalDetected">When true only return where the source is detected.</param>
+		/// <param name="inputActive">When true only return for active inputs.</param>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> GetDestinationEndpointsForSource(ISource source, eConnectionType flag,
+																		  bool signalDetected, bool inputActive)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("type cannot have multiple flags", "flag");
+
+			return source.GetEndpoints()
+							  .Where(s => !inputActive || m_SourceEndpointTransmitting.GetDefault(s).HasFlag(flag))
+							  .SelectMany(s => GetDestinationEndpointsForSource(s, flag))
+							  .Distinct()
+							  .Where(s => !signalDetected || m_SourceEndpointDetected.GetDefault(s).HasFlag(flag));
+		}
+
+		public IEnumerable<IDestination> GetDestinationsForSource(ISource source, eConnectionType flag, bool signalDetected,
+		                                                         bool inputActive)
+		{
+			return
+				GetDestinationEndpointsForSource(source, flag, signalDetected, inputActive)
+					.SelectMany(e => m_EndpointToDestinations[e]);
+		}
+
 		#endregion
 
 		#endregion
