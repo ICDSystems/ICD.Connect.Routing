@@ -46,11 +46,10 @@ namespace ICD.Connect.Routing
 		private readonly Dictionary<ISource, eConnectionType> m_SourceDetected;
 		private readonly Dictionary<EndpointInfo, eConnectionType> m_SourceEndpointTransmitting;
 		private readonly Dictionary<EndpointInfo, eConnectionType> m_SourceEndpointDetected;
+		private readonly Dictionary<EndpointInfo, eConnectionType> m_DestinationEndpointActive;
 
 		private readonly Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> m_DestinationToSourceCache;
 		private readonly Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> m_SourceToDestinationCache;
-
-		private readonly Dictionary<EndpointInfo, eConnectionType> m_DestinationEndpointActive;
 
 		#endregion
 
@@ -73,11 +72,10 @@ namespace ICD.Connect.Routing
 			m_SourceDetected = new Dictionary<ISource, eConnectionType>();
 			m_SourceEndpointTransmitting = new Dictionary<EndpointInfo, eConnectionType>();
 			m_SourceEndpointDetected = new Dictionary<EndpointInfo, eConnectionType>();
+			m_DestinationEndpointActive = new Dictionary<EndpointInfo, eConnectionType>();
 
 			m_DestinationToSourceCache = new Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>>();
 			m_SourceToDestinationCache = new Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>>();
-
-			m_DestinationEndpointActive = new Dictionary<EndpointInfo, eConnectionType>();
 
 			RebuildCache();
 		}
@@ -121,11 +119,10 @@ namespace ICD.Connect.Routing
 			m_SourceDetected.Clear();
 			m_SourceEndpointTransmitting.Clear();
 			m_SourceEndpointDetected.Clear();
+			m_DestinationEndpointActive.Clear();
 
 			m_DestinationToSourceCache.Clear();
 			m_SourceToDestinationCache.Clear();
-
-			m_DestinationEndpointActive.Clear();
 		}
 
 		#region Source State
