@@ -85,6 +85,13 @@ namespace ICD.Connect.Routing
 		/// </summary>
 		public void Dispose()
 		{
+			OnSourceTransmissionStateChanged = null;
+			OnSourceDetectionStateChanged = null;
+			OnEndpointTransmissionStateChanged = null;
+			OnEndpointDetectionStateChanged = null;
+			OnEndpointRouteChanged = null;
+			OnSourceDestinationRouteChanged = null;
+
 			Unsubscribe(m_RoutingGraph);
 
 			ClearCache();
