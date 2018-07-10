@@ -292,6 +292,11 @@ namespace ICD.Connect.Routing
 			{
 				EndpointInfo endpoint1 = endpoint;
 				m_EndpointToSources.Add(endpoint, sources.Where(s => s.Contains(endpoint1)).ToIcdHashSet());
+				m_SourceToDestinationCache.Add(endpoint, new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>());
+				foreach (var flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
+				{
+					m_SourceToDestinationCache[endpoint].Add(flag, new IcdHashSet<EndpointInfo>());
+				}
 			}
 
 			foreach (ISource source in sources)
@@ -314,6 +319,11 @@ namespace ICD.Connect.Routing
 			{
 				EndpointInfo endpoint1 = endpoint;
 				m_EndpointToDestinations.Add(endpoint, destinations.Where(d => d.Contains(endpoint1)).ToIcdHashSet());
+				m_DestinationToSourceCache.Add(endpoint, new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>());
+				foreach (var flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
+				{
+					m_DestinationToSourceCache[endpoint].Add(flag, new IcdHashSet<EndpointInfo>());
+				}
 			}
 
 			foreach (IDestination destination in destinations)
@@ -336,15 +346,24 @@ namespace ICD.Connect.Routing
 		{
 			foreach (Connection connection in m_RoutingGraph.Connections)
 			{
-				if (m_DestinationToSourceCache[connection.Destination] == null)
-					m_DestinationToSourceCache[connection.Destination] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+				foreach (var flag in EnumUtils.GetFlagsExceptNone(connection.ConnectionType))
+				{
+					if (!m_DestinationToSourceCache.ContainsKey(connection.Destination))
+						m_DestinationToSourceCache[connection.Destination] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
 
-				m_DestinationToSourceCache[connection.Destination][connection.ConnectionType].Add(connection.Source);
+					if(!m_DestinationToSourceCache[connection.Destination].ContainsKey(flag))
+						m_DestinationToSourceCache[connection.Destination].Add(flag, new IcdHashSet<EndpointInfo>());
 
-				if (m_SourceToDestinationCache[connection.Source] == null)
-					m_SourceToDestinationCache[connection.Source] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+					m_DestinationToSourceCache[connection.Destination][flag].Add(connection.Source);
 
-				m_SourceToDestinationCache[connection.Source][connection.ConnectionType].Add(connection.Destination);
+					if (!m_SourceToDestinationCache.ContainsKey(connection.Source))
+						m_SourceToDestinationCache[connection.Source] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+
+					if(!m_SourceToDestinationCache[connection.Source].ContainsKey(flag))
+						m_SourceToDestinationCache[connection.Source].Add(flag, new IcdHashSet<EndpointInfo>());
+
+					m_SourceToDestinationCache[connection.Source][flag].Add(connection.Destination);
+				}
 			}
 		}
 
@@ -392,8 +411,11 @@ namespace ICD.Connect.Routing
 						}
 					}
 
-					m_DestinationToSourceCache[destinationEndpoint][type].AddRange(activeRouteDestinationEndpoints);
-					m_SourceToDestinationCache[activeRouteDestinationEndpoints.Last()][type].AddRange(activeRouteSourceEndpoints);
+					if (!activeRouteSourceEndpoints.Any() || !activeRouteDestinationEndpoints.Any())
+						return;
+
+					m_DestinationToSourceCache[destinationEndpoint][type].AddRange(activeRouteSourceEndpoints);
+					m_SourceToDestinationCache[activeRouteSourceEndpoints.Last()][type].AddRange(activeRouteDestinationEndpoints);
 				}
 			}
 		}
