@@ -695,6 +695,12 @@ namespace ICD.Connect.Routing
 
 		public bool State { get; private set; }
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="type"></param>
+		/// <param name="state"></param>
 		public SourceStateChangedEventArgs(ISource source, eConnectionType type, bool state)
 		{
 			Source = source;
@@ -702,11 +708,13 @@ namespace ICD.Connect.Routing
 			State = state;
 		}
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="args"></param>
 		public SourceStateChangedEventArgs(SourceStateChangedEventArgs args)
+			: this(args.Source, args.Type, args.State)
 		{
-			Source = args.Source;
-			Type = args.Type;
-			State = args.State;
 		}
 	}
 
@@ -718,6 +726,12 @@ namespace ICD.Connect.Routing
 
 		public bool State { get; private set; }
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="endpoint"></param>
+		/// <param name="type"></param>
+		/// <param name="state"></param>
 		public EndpointStateChangedEventArgs(EndpointInfo endpoint, eConnectionType type, bool state)
 		{
 			Endpoint = endpoint;
@@ -725,11 +739,13 @@ namespace ICD.Connect.Routing
 			State = state;
 		}
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="args"></param>
 		public EndpointStateChangedEventArgs(EndpointStateChangedEventArgs args)
+			: this(args.Endpoint, args.Type, args.State)
 		{
-			Endpoint = args.Endpoint;
-			Type = args.Type;
-			State = args.State;
 		}
 	}
 
@@ -741,6 +757,12 @@ namespace ICD.Connect.Routing
 
 		public IEnumerable<EndpointInfo> Endpoints { get; private set; }
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="endpoints"></param>
 		public EndpointRouteChangedEventArgs(EndpointInfo destination, eConnectionType type,
 												  IEnumerable<EndpointInfo> endpoints)
 		{
@@ -749,11 +771,13 @@ namespace ICD.Connect.Routing
 			Endpoints = endpoints;
 		}
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="args"></param>
 		public EndpointRouteChangedEventArgs(EndpointRouteChangedEventArgs args)
+			: this(args.Destination, args.ConnectionType, args.Endpoints)
 		{
-			Destination = args.Destination;
-			ConnectionType = args.ConnectionType;
-			Endpoints = args.Endpoints;
 		}
 	}
 
@@ -765,24 +789,28 @@ namespace ICD.Connect.Routing
  
 		public eConnectionType Type { get; private set; }
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="sources"></param>
+		/// <param name="destinations"></param>
+		/// <param name="type"></param>
 		public SourceDestinationRouteChangedEventArgs(IEnumerable<ISource> sources, 
 													  IEnumerable<IDestination> destinations,
 		                                              eConnectionType type)
 		{
 			Sources = sources;
 			Destinations = destinations;
-
-			if(EnumUtils.HasMultipleFlags(type))
-				throw new ArgumentException("Connection Type Cannot Have Multiple Flags", "type");
-
 			Type = type;
 		}
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="args"></param>
 		public SourceDestinationRouteChangedEventArgs(SourceDestinationRouteChangedEventArgs args)
+			: this(args.Sources, args.Destinations, args.Type)
 		{
-			Sources = args.Sources;
-			Destinations = args.Destinations;
-			Type = args.Type;
 		}
 	}
 }
