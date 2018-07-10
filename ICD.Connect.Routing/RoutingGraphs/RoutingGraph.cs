@@ -686,11 +686,15 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
-			EndpointInfo[] destinationEndpoints = destination.GetEndpoints().ToArray();
+			EndpointInfo[] destinationEndpoints =
+				destination.GetEndpoints()
+				           .Where(e => Connections.GetInputConnection(e) != null)
+				           .ToArray();
 
 			return source.GetEndpoints()
+			             .Where(e => Connections.GetOutputConnection(e) != null)
 			             .SelectMany(s => destinationEndpoints.SelectMany(d => FindPaths(s, d, flag, roomId)))
-						 .Where(p => p != null);
+			             .Where(p => p != null);
 		}
 
 		/// <summary>
