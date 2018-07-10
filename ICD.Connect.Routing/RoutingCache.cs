@@ -351,8 +351,13 @@ namespace ICD.Connect.Routing
 		private void InitializeExtendedRoutes()
 		{
 			foreach(EndpointInfo destinationEndpoint in m_RoutingGraph.Destinations.SelectMany(d => d.GetEndpoints()).Distinct())
-			{               
-				foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone<eConnectionType>())
+			{
+				IRouteDestinationControl finalDestinationControl = 
+					m_RoutingGraph.GetDestinationControl(destinationEndpoint.Device, destinationEndpoint.Control);
+
+				ConnectorInfo connector = finalDestinationControl.GetInput(destinationEndpoint.Address);
+				
+				foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(connector.ConnectionType))
 				{
 					IcdHashSet<EndpointInfo> activeRouteSourceEndpoints = new IcdHashSet<EndpointInfo>();
 					IcdHashSet<EndpointInfo> activeRouteDestinationEndpoints = new IcdHashSet<EndpointInfo>();
@@ -397,7 +402,9 @@ namespace ICD.Connect.Routing
 		{
 			IRouteSourceControl control = m_RoutingGraph.GetSourceControl(endpoint);
 
-			foreach (eConnectionType flag in EnumUtils.GetValuesExceptNone<eConnectionType>())
+			ConnectorInfo connector = control.GetOutput(endpoint.Address);
+
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(connector.ConnectionType))
 			{
 				bool transmission = control.GetActiveTransmissionState(endpoint.Address, flag);
 				UpdateSourceEndpointTransmissionState(endpoint, flag, transmission);
@@ -411,7 +418,9 @@ namespace ICD.Connect.Routing
 		{
 			IRouteDestinationControl control = m_RoutingGraph.GetDestinationControl(endpoint);
 
-			foreach (eConnectionType flag in EnumUtils.GetValuesExceptNone<eConnectionType>())
+			ConnectorInfo connector = control.GetInput(endpoint.Address);
+
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(connector.ConnectionType))
 			{
 				bool active = control.GetInputActiveState(endpoint.Address, flag);
 				UpdateDestinationEndpointInputActiveState(endpoint, flag, active);
