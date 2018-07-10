@@ -386,7 +386,7 @@ namespace ICD.Connect.Routing
 						if(midControl == null)
 							continue;
 
-						foreach (var activeInput in midControl.GetInputs(currentSourceEndpoint.Address, type))
+						foreach (ConnectorInfo activeInput in midControl.GetInputs(currentSourceEndpoint.Address, type))
 						{
 							process.Enqueue(new EndpointInfo(currentSourceEndpoint.Device, currentSourceEndpoint.Control, activeInput.Address));
 						}
