@@ -200,10 +200,15 @@ namespace ICD.Connect.Routing
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("type cannot have multiple flags", "flag");
 
-			if (!m_DestinationToSourceCache.ContainsKey(destinationEndpoint))
+			Dictionary<eConnectionType, IcdHashSet<EndpointInfo>> cache;
+			if (!m_DestinationToSourceCache.TryGetValue(destinationEndpoint, out cache))
 				return Enumerable.Empty<EndpointInfo>();
 
-			return m_DestinationToSourceCache[destinationEndpoint][flag];
+			IcdHashSet<EndpointInfo> result;
+			if (!cache.TryGetValue(flag, out result))
+				return Enumerable.Empty<EndpointInfo>();
+
+			return result;
 		}
 
 		/// <summary>
