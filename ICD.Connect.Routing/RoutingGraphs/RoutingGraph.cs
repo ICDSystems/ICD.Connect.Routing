@@ -773,6 +773,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                          eConnectionType type, bool signalDetected,
 		                                                          bool inputActive)
 		{
+			// TODO - Foreach flag in type, loop back from destination endpoints
+
 			foreach (Connection[] path in FindActivePaths(source, type, signalDetected, inputActive))
 			{
 				// It's possible the path goes through our destination
@@ -798,6 +800,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                          eConnectionType type, bool signalDetected,
 		                                                          bool inputActive)
 		{
+			// TODO - Foreach flag in type, loop back from destination
+
 			foreach (Connection[] path in FindActivePaths(source, type, signalDetected, inputActive))
 			{
 				// It's possible the path goes through our destination
@@ -891,9 +895,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private IEnumerable<Connection[]> FindActivePathsSingleFlag(EndpointInfo source, eConnectionType type,
 		                                                            bool signalDetected, bool inputActive)
 		{
-			IEnumerable<Connection[]> paths = FindActivePathsSingleFlag(source, type, signalDetected, inputActive,
-			                                                            new List<Connection>());
-			return paths;
+			return FindActivePathsSingleFlag(source, type, signalDetected, inputActive, new List<Connection>());
 		}
 
 		/// <summary>
@@ -909,6 +911,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                            bool signalDetected, bool inputActive,
 		                                                            ICollection<Connection> visited)
 		{
+			// TODO - Optimize into a breadth first loop?
+
 			if (visited == null)
 				throw new ArgumentNullException("visited");
 
