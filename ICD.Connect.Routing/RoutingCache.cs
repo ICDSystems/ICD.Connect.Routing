@@ -89,6 +89,13 @@ namespace ICD.Connect.Routing
 		/// </summary>
 		public void Dispose()
 		{
+			OnSourceTransmissionStateChanged = null;
+			OnSourceDetectionStateChanged = null;
+			OnEndpointTransmissionStateChanged = null;
+			OnEndpointDetectionStateChanged = null;
+			OnEndpointRouteChanged = null;
+			OnSourceDestinationRouteChanged = null;
+
 			Unsubscribe(m_RoutingGraph);
 
 			ClearCache();
@@ -266,10 +273,15 @@ namespace ICD.Connect.Routing
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("type cannot have multiple flags", "flag");
 
-			if (!m_DestinationToSourceCache.ContainsKey(destinationEndpoint))
+			Dictionary<eConnectionType, IcdHashSet<EndpointInfo>> cache;
+			if (!m_DestinationToSourceCache.TryGetValue(destinationEndpoint, out cache))
 				return Enumerable.Empty<EndpointInfo>();
 
-			return m_DestinationToSourceCache[destinationEndpoint][flag];
+			IcdHashSet<EndpointInfo> result;
+			if (!cache.TryGetValue(flag, out result))
+				return Enumerable.Empty<EndpointInfo>();
+
+			return result;
 		}
 
 		/// <summary>
@@ -517,6 +529,9 @@ namespace ICD.Connect.Routing
 				IRouteDestinationControl finalDestinationControl = 
 					m_RoutingGraph.GetDestinationControl(destinationEndpoint.Device, destinationEndpoint.Control);
 
+				if (!finalDestinationControl.ContainsInput(destinationEndpoint.Address))
+					continue;
+
 				ConnectorInfo connector = finalDestinationControl.GetInput(destinationEndpoint.Address);
 				
 				foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(connector.ConnectionType))
@@ -567,6 +582,9 @@ namespace ICD.Connect.Routing
 		{
 			IRouteSourceControl control = m_RoutingGraph.GetSourceControl(endpoint);
 
+			if (!control.ContainsOutput(endpoint.Address))
+				return;
+
 			ConnectorInfo connector = control.GetOutput(endpoint.Address);
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(connector.ConnectionType))
@@ -582,6 +600,9 @@ namespace ICD.Connect.Routing
 		private void UpdateDestinationEndpoint(EndpointInfo endpoint)
 		{
 			IRouteDestinationControl control = m_RoutingGraph.GetDestinationControl(endpoint);
+
+			if (!control.ContainsInput(endpoint.Address))
+				return;
 
 			ConnectorInfo connector = control.GetInput(endpoint.Address);
 

@@ -455,6 +455,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
 			return destination.GetEndpoints()
+			                  .Where(e => Connections.GetInputConnection(e) != null)
 			                  .Select(d => FindPath(sourceEndpoint, d, flag, roomId))
 			                  .FirstOrDefault(p => p != null);
 		}
@@ -476,8 +477,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
 			return source.GetEndpoints()
-						 .Select(e => FindPath(e, destinationEndpoint, flag, roomId))
-						 .FirstOrDefault(p => p != null);
+			             .Select(e => FindPath(e, destinationEndpoint, flag, roomId))
+			             .FirstOrDefault(p => p != null);
 		}
 
 		/// <summary>
@@ -687,11 +688,15 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
-			EndpointInfo[] destinationEndpoints = destination.GetEndpoints().ToArray();
+			EndpointInfo[] destinationEndpoints =
+				destination.GetEndpoints()
+				           .Where(e => Connections.GetInputConnection(e) != null)
+				           .ToArray();
 
 			return source.GetEndpoints()
-			             .SelectMany(s => destinationEndpoints.SelectMany(d => FindPaths(s, d, flag, roomId)))
-						 .Where(p => p != null);
+			             .Where(e => Connections.GetOutputConnection(e) != null)
+			             .SelectMany(s => destinationEndpoints.Select(d => FindPath(s, d, flag, roomId)))
+			             .Where(p => p != null);
 		}
 
 		/// <summary>
@@ -769,6 +774,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                          eConnectionType type, bool signalDetected,
 		                                                          bool inputActive)
 		{
+			// TODO - Foreach flag in type, loop back from destination endpoints
+
 			foreach (Connection[] path in FindActivePaths(source, type, signalDetected, inputActive))
 			{
 				// It's possible the path goes through our destination
@@ -794,6 +801,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                          eConnectionType type, bool signalDetected,
 		                                                          bool inputActive)
 		{
+			// TODO - Foreach flag in type, loop back from destination
+
 			foreach (Connection[] path in FindActivePaths(source, type, signalDetected, inputActive))
 			{
 				// It's possible the path goes through our destination
@@ -887,9 +896,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private IEnumerable<Connection[]> FindActivePathsSingleFlag(EndpointInfo source, eConnectionType type,
 		                                                            bool signalDetected, bool inputActive)
 		{
-			IEnumerable<Connection[]> paths = FindActivePathsSingleFlag(source, type, signalDetected, inputActive,
-			                                                            new List<Connection>());
-			return paths;
+			return FindActivePathsSingleFlag(source, type, signalDetected, inputActive, new List<Connection>());
 		}
 
 		/// <summary>
@@ -905,6 +912,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                            bool signalDetected, bool inputActive,
 		                                                            ICollection<Connection> visited)
 		{
+			// TODO - Optimize into a breadth first loop?
+
 			if (visited == null)
 				throw new ArgumentNullException("visited");
 
