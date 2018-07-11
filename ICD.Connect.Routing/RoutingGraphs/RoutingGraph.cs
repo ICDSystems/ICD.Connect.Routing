@@ -7,6 +7,7 @@ using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.ConnectionUsage;
@@ -1949,7 +1950,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				// Grab the immediate destination for this source and add it to the hashset
 				Connection connection = m_Connections.GetOutputConnection(current);
-				if(connection == null || connection.ConnectionType.HasFlag(type))
+				if(connection == null || !connection.ConnectionType.HasFlag(type))
 					continue;
 
 				destinations.Add(connection.Destination);
@@ -2114,6 +2115,29 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			settings.DestinationSettings.SetRange(Destinations.Where(c => c.Serialize).Select(r => r.CopySettings()));
 			settings.DestinationGroupSettings.SetRange(DestinationGroups.Where(c => c.Serialize).Select(r => r.CopySettings()));
 		}
+
+		#endregion
+		
+		#region Console
+
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			foreach (var node in GetBaseConsoleNodes())
+			{
+				yield return node;
+			}
+
+			yield return m_Cache;
+		}
+
+		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
+		{
+			return base.GetConsoleNodes();
+		} 
 
 		#endregion
 	}
