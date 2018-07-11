@@ -454,6 +454,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
 			return destination.GetEndpoints()
+			                  .Where(e => Connections.GetInputConnection(e) != null)
 			                  .Select(d => FindPath(sourceEndpoint, d, flag, roomId))
 			                  .FirstOrDefault(p => p != null);
 		}
@@ -475,8 +476,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
 			return source.GetEndpoints()
-						 .Select(e => FindPath(e, destinationEndpoint, flag, roomId))
-						 .FirstOrDefault(p => p != null);
+			             .Select(e => FindPath(e, destinationEndpoint, flag, roomId))
+			             .FirstOrDefault(p => p != null);
 		}
 
 		/// <summary>
@@ -693,7 +694,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			return source.GetEndpoints()
 			             .Where(e => Connections.GetOutputConnection(e) != null)
-			             .SelectMany(s => destinationEndpoints.SelectMany(d => FindPaths(s, d, flag, roomId)))
+			             .SelectMany(s => destinationEndpoints.Select(d => FindPath(s, d, flag, roomId)))
 			             .Where(p => p != null);
 		}
 
