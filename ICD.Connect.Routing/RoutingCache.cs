@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing
 		/// <summary>
 		/// Raised when a destination input becomes active/inactive.
 		/// </summary>
-		public event EventHandler<EndpointStateChangedEventArgs> OnDestinationEndpointActiveChanged; 
+		public event EventHandler<EndpointStateChangedEventArgs> OnDestinationEndpointActiveChanged;
 
 		#endregion
 
@@ -114,7 +114,7 @@ namespace ICD.Connect.Routing
 			InitializeDestinationCaches();
 			InitializeRoutes();
 
-			if(m_DebugEnabled)
+			if (m_DebugEnabled)
 				PrintAllCacheStates();
 		}
 
@@ -205,7 +205,7 @@ namespace ICD.Connect.Routing
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("type cannot have multiple flags", "flag");
 
-			if(!m_DestinationToEndpoints.ContainsKey(destination))
+			if (!m_DestinationToEndpoints.ContainsKey(destination))
 				throw new ArgumentException("unknown or uncached destination", "destination");
 
 			IcdHashSet<ISource> sources = new IcdHashSet<ISource>();
@@ -250,7 +250,7 @@ namespace ICD.Connect.Routing
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("type cannot have multiple flags", "flag");
 
-			if(!m_SourceToEndpoints.ContainsKey(source))
+			if (!m_SourceToEndpoints.ContainsKey(source))
 				throw new ArgumentException("unknown or uncached source", "source");
 
 			IcdHashSet<IDestination> destinations = new IcdHashSet<IDestination>();
@@ -261,14 +261,14 @@ namespace ICD.Connect.Routing
 			}
 
 			return destinations;
-		} 
+		}
 
 		/// <summary>
 		/// Returns all of the SOURCE ENDPOINTS routed to the given DESTINATION ENDPOINT for the given connection type.
 		/// </summary>
 		[PublicAPI]
 		public IEnumerable<EndpointInfo> GetSourceEndpointsForDestinationEndpoint(EndpointInfo destinationEndpoint,
-		                                                                  eConnectionType flag)
+																		  eConnectionType flag)
 		{
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("type cannot have multiple flags", "flag");
@@ -311,10 +311,10 @@ namespace ICD.Connect.Routing
 
 			if (!m_DestinationToEndpoints.ContainsKey(destination))
 				throw new ArgumentException("unknown or uncached destination", "destination");
-			
+
 			IcdHashSet<EndpointInfo> endpoints = new IcdHashSet<EndpointInfo>();
 
-			foreach(var destinationEndpoint in m_DestinationToEndpoints[destination])
+			foreach (var destinationEndpoint in m_DestinationToEndpoints[destination])
 			{
 				endpoints.AddRange(GetSourceEndpointsForDestinationEndpoint(destinationEndpoint, flag));
 			}
@@ -342,7 +342,7 @@ namespace ICD.Connect.Routing
 			}
 
 			return endpoints;
-		} 
+		}
 
 		/// <summary>
 		/// Gets all of the source endpoints currently routed to the given destination for the given flag.
@@ -354,7 +354,7 @@ namespace ICD.Connect.Routing
 		/// <returns></returns>
 		[PublicAPI]
 		public IEnumerable<EndpointInfo> GetSourceEndpointsForDestination(IDestination destination, eConnectionType flag,
-		                                                                  bool signalDetected, bool inputActive)
+																		  bool signalDetected, bool inputActive)
 		{
 			if (destination == null)
 				throw new ArgumentNullException("destination");
@@ -363,8 +363,8 @@ namespace ICD.Connect.Routing
 				throw new ArgumentException("type cannot have multiple flags", "flag");
 
 			return m_DestinationToEndpoints[destination]
-			                  .Where(d => !inputActive || m_DestinationEndpointActive.GetDefault(d).HasFlag(flag))
-			                  .SelectMany(d => GetSourceEndpointsForDestinationEndpoint(d, flag))
+							  .Where(d => !inputActive || m_DestinationEndpointActive.GetDefault(d).HasFlag(flag))
+							  .SelectMany(d => GetSourceEndpointsForDestinationEndpoint(d, flag))
 							  .Distinct()
 							  .Where(s => !signalDetected || m_SourceEndpointDetected.GetDefault(s).HasFlag(flag));
 		}
@@ -404,11 +404,15 @@ namespace ICD.Connect.Routing
 		/// <returns></returns>
 		[PublicAPI]
 		public IEnumerable<ISource> GetSourcesForDestination(IDestination destination, eConnectionType flag,
-		                                                     bool signalDetected, bool inputActive)
+															 bool signalDetected, bool inputActive)
 		{
-			return
-				GetSourceEndpointsForDestination(destination, flag, signalDetected, inputActive)
-					.SelectMany(e => m_EndpointToSources[e]);
+			IcdHashSet<ISource> sources = new IcdHashSet<ISource>();
+			IEnumerable<EndpointInfo> endpoints = GetSourceEndpointsForDestination(destination, flag, signalDetected, inputActive);
+
+			foreach(var endpoint in endpoints.Where(e=> m_EndpointToSources.ContainsKey(e)))
+				sources.AddRange(m_EndpointToSources[endpoint]);
+
+			return sources;
 		}
 
 		/// <summary>
@@ -420,12 +424,16 @@ namespace ICD.Connect.Routing
 		/// <param name="inputActive">When true only return for active inputs.</param>
 		/// <returns></returns>
 		[PublicAPI]
-		public IEnumerable<IDestination> GetDestinationsForSource(ISource source, eConnectionType flag, 
-																  bool signalDetected,bool inputActive)
+		public IEnumerable<IDestination> GetDestinationsForSource(ISource source, eConnectionType flag,
+																  bool signalDetected, bool inputActive)
 		{
-			return
-				GetDestinationEndpointsForSource(source, flag, signalDetected, inputActive)
-					.SelectMany(e => m_EndpointToDestinations[e]);
+			IcdHashSet<IDestination> destinations = new IcdHashSet<IDestination>();
+			IEnumerable<EndpointInfo> endpoints = GetDestinationEndpointsForSource(source, flag, signalDetected, inputActive);
+
+			foreach (var endpoint in endpoints.Where(e => m_EndpointToDestinations.ContainsKey(e)))
+				destinations.AddRange(m_EndpointToDestinations[endpoint]);
+
+			return destinations;
 		}
 
 		#endregion
@@ -506,7 +514,7 @@ namespace ICD.Connect.Routing
 					if (!m_DestinationToSourceCache.ContainsKey(connection.Destination))
 						m_DestinationToSourceCache[connection.Destination] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
 
-					if(!m_DestinationToSourceCache[connection.Destination].ContainsKey(flag))
+					if (!m_DestinationToSourceCache[connection.Destination].ContainsKey(flag))
 						m_DestinationToSourceCache[connection.Destination].Add(flag, new IcdHashSet<EndpointInfo>());
 
 					m_DestinationToSourceCache[connection.Destination][flag].Add(connection.Source);
@@ -514,7 +522,7 @@ namespace ICD.Connect.Routing
 					if (!m_SourceToDestinationCache.ContainsKey(connection.Source))
 						m_SourceToDestinationCache[connection.Source] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
 
-					if(!m_SourceToDestinationCache[connection.Source].ContainsKey(flag))
+					if (!m_SourceToDestinationCache[connection.Source].ContainsKey(flag))
 						m_SourceToDestinationCache[connection.Source].Add(flag, new IcdHashSet<EndpointInfo>());
 
 					m_SourceToDestinationCache[connection.Source][flag].Add(connection.Destination);
@@ -524,16 +532,16 @@ namespace ICD.Connect.Routing
 
 		private void InitializeExtendedRoutes()
 		{
-			foreach(EndpointInfo destinationEndpoint in m_RoutingGraph.Destinations.SelectMany(d => d.GetEndpoints()).Distinct())
+			foreach (EndpointInfo destinationEndpoint in m_RoutingGraph.Destinations.SelectMany(d => d.GetEndpoints()).Distinct())
 			{
-				IRouteDestinationControl finalDestinationControl = 
+				IRouteDestinationControl finalDestinationControl =
 					m_RoutingGraph.GetDestinationControl(destinationEndpoint.Device, destinationEndpoint.Control);
 
 				if (!finalDestinationControl.ContainsInput(destinationEndpoint.Address))
 					continue;
 
 				ConnectorInfo connector = finalDestinationControl.GetInput(destinationEndpoint.Address);
-				
+
 				foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(connector.ConnectionType))
 				{
 					IcdHashSet<EndpointInfo> activeRouteSourceEndpoints = new IcdHashSet<EndpointInfo>();
@@ -545,12 +553,12 @@ namespace ICD.Connect.Routing
 					{
 						EndpointInfo currentDestinationEndpoint = process.Dequeue();
 
-						if(!m_RoutingGraph.InputActive(currentDestinationEndpoint, type))
+						if (!m_RoutingGraph.InputActive(currentDestinationEndpoint, type))
 							continue;
 
 						Connection connection = m_RoutingGraph.Connections.GetInputConnection(currentDestinationEndpoint);
 
-						if(connection == null)
+						if (connection == null)
 							continue;
 
 						EndpointInfo currentSourceEndpoint = connection.Source;
@@ -560,7 +568,7 @@ namespace ICD.Connect.Routing
 						IRouteControl control = m_RoutingGraph.GetControl<IRouteControl>(currentSourceEndpoint);
 
 						IRouteMidpointControl midControl = control as IRouteMidpointControl;
-						if(midControl == null)
+						if (midControl == null)
 							continue;
 
 						foreach (ConnectorInfo activeInput in midControl.GetInputs(currentSourceEndpoint.Address, type))
@@ -656,7 +664,7 @@ namespace ICD.Connect.Routing
 					UpdateSourceTransmissionState(source);
 			}
 
-			if(m_DebugEnabled)
+			if (m_DebugEnabled)
 				PrintEndpointTransmitting();
 
 			OnEndpointTransmissionStateChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
@@ -666,10 +674,10 @@ namespace ICD.Connect.Routing
 		{
 			eConnectionType flags = m_SourceToEndpoints.GetDefault(source)
 				.Aggregate(eConnectionType.None,
-				           (current, endpoint) => current | m_SourceEndpointTransmitting.GetDefault(endpoint));
+						   (current, endpoint) => current | m_SourceEndpointTransmitting.GetDefault(endpoint));
 
 			eConnectionType oldFlags = m_SourceTransmitting.GetDefault(source);
-			
+
 			if (flags == oldFlags)
 				return;
 
@@ -684,7 +692,7 @@ namespace ICD.Connect.Routing
 					OnSourceTransmissionStateChanged.Raise(this, new SourceStateChangedEventArgs(source, flag, true));
 			}
 
-			if(m_DebugEnabled)
+			if (m_DebugEnabled)
 				PrintSourceTransmitting();
 		}
 
@@ -703,7 +711,7 @@ namespace ICD.Connect.Routing
 
 			m_SourceEndpointDetected[endpoint] = newFlags;
 
-			if(m_DebugEnabled)
+			if (m_DebugEnabled)
 				PrintEndpointDetectedMap();
 
 			if (m_EndpointToSources.ContainsKey(endpoint))
@@ -728,7 +736,7 @@ namespace ICD.Connect.Routing
 
 			m_SourceDetected[source] = flags;
 
-			if(m_DebugEnabled)
+			if (m_DebugEnabled)
 				PrintSourceDetectedMap();
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
@@ -755,7 +763,7 @@ namespace ICD.Connect.Routing
 
 			m_DestinationEndpointActive[endpoint] = newFlags;
 
-			if(m_DebugEnabled)
+			if (m_DebugEnabled)
 				PrintDestinationEndpointActiveMap();
 
 			OnDestinationEndpointActiveChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
@@ -889,7 +897,7 @@ namespace ICD.Connect.Routing
 				RemoveOldValuesFromDestinationCache(oldSourceEndpoints, destinationEndpoints, flag);
 				AddNewValuesToDestinationCache(newSourceEndpoints, destinationEndpoints, flag);
 
-				if(m_DebugEnabled)
+				if (m_DebugEnabled)
 					PrintRouteMaps();
 
 				IcdHashSet<IDestination> newRouteDestinations = new IcdHashSet<IDestination>();
@@ -899,12 +907,12 @@ namespace ICD.Connect.Routing
 				{
 					if (m_EndpointToDestinations.ContainsKey(destinationEndpoint))
 						newRouteDestinations.AddRange(m_EndpointToDestinations[destinationEndpoint]);
-					
+
 					OnEndpointRouteChanged.Raise(this,
-					                                          new EndpointRouteChangedEventArgs(
-						                                          destinationEndpoint,
-						                                          args.Type,
-						                                          m_DestinationToSourceCache[destinationEndpoint][flag]));
+															  new EndpointRouteChangedEventArgs(
+																  destinationEndpoint,
+																  args.Type,
+																  m_DestinationToSourceCache[destinationEndpoint][flag]));
 				}
 
 				foreach (EndpointInfo sourceEndpoint in newSourceEndpoints.Where(sourceEndpoint => m_EndpointToSources.ContainsKey(sourceEndpoint)))
@@ -1287,9 +1295,9 @@ namespace ICD.Connect.Routing
 		/// <returns></returns>
 		public IEnumerable<IConsoleCommand> GetConsoleCommands()
 		{
-			yield return new ConsoleCommand("PrintAllCaches", "Prints the contents of every cache", ()=> PrintAllCacheStates());
+			yield return new ConsoleCommand("PrintAllCaches", "Prints the contents of every cache", () => PrintAllCacheStates());
 			yield return new ConsoleCommand("Rebuild", "Clears and Rebuilds the caches", () => RebuildCache());
-			yield return new GenericConsoleCommand<bool>("Enable Debug", "Enables or disables cache printouts when they change", a=> m_DebugEnabled = a);
+			yield return new GenericConsoleCommand<bool>("Enable Debug", "Enables or disables cache printouts when they change", a => m_DebugEnabled = a);
 		}
 
 		#endregion
@@ -1394,7 +1402,7 @@ namespace ICD.Connect.Routing
 		public IEnumerable<ISource> Sources { get; private set; }
 
 		public IEnumerable<IDestination> Destinations { get; private set; }
- 
+
 		public eConnectionType Type { get; private set; }
 
 		/// <summary>
@@ -1403,9 +1411,9 @@ namespace ICD.Connect.Routing
 		/// <param name="sources"></param>
 		/// <param name="destinations"></param>
 		/// <param name="type"></param>
-		public SourceDestinationRouteChangedEventArgs(IEnumerable<ISource> sources, 
+		public SourceDestinationRouteChangedEventArgs(IEnumerable<ISource> sources,
 													  IEnumerable<IDestination> destinations,
-		                                              eConnectionType type)
+													  eConnectionType type)
 		{
 			Sources = sources;
 			Destinations = destinations;
