@@ -1230,7 +1230,7 @@ namespace ICD.Connect.Routing
 
 			TableBuilder builder = new TableBuilder("ConnectionType", "Route");
 
-			foreach (var mapping in m_DestinationToSourceCache)
+			foreach (var mapping in m_SourceToDestinationCache)
 			{
 				builder.AddHeader("Initial Source: ", mapping.Key.ToString());
 
