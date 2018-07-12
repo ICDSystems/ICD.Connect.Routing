@@ -182,7 +182,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
 			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherOutputs
-				                             ? Enumerable.Range(1, Parent.ControlSystem.NumberOfSwitcherOutputs)
+                                             ? (Parent.ControlSystem.SwitcherOutputs as ReadOnlyCollection<uint, ICardInputOutputType>).Select(kvp => (int)kvp.Key)
 				                             : Enumerable.Empty<int>();
 
 			return addresses.Select(i => GetOutput(i)).Where(c => c.ConnectionType != eConnectionType.None);
@@ -229,7 +229,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
 			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherInputs
-				                             ? Enumerable.Range(1, Parent.ControlSystem.NumberOfSwitcherInputs)
+                                             ? (Parent.ControlSystem.SwitcherInputs as ReadOnlyCollection<uint, ICardInputOutputType>).Select(kvp => (int)kvp.Key)
 				                             : Enumerable.Empty<int>();
 
 			return addresses.Select(i => GetInput(i)).Where(c => c.ConnectionType != eConnectionType.None);
@@ -272,7 +272,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			switch (type)
 			{
 				case eConnectionType.Video:
-					return switcherInput.VideoDetectedFeedback != null && switcherInput.VideoDetectedFeedback.BoolValue;
+					return switcherInput.VideoDetectedFeedback.Type == eSigType.Bool && switcherInput.VideoDetectedFeedback.BoolValue;
 
 				case eConnectionType.Audio:
 					// No way of detecting audio?
@@ -362,10 +362,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 			if (m_SubscribedControlSystem != null && m_SubscribedControlSystem.SystemControl != null)
 			{
-				if (m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported)
+                if (m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool)
 					m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.BoolValue = true;
 
-				if (m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported)
+                if (m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool)
 					m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.BoolValue = true;
 			}
 
@@ -579,11 +579,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				return;
 
 			addRow("Audio Breakaway",
-			       m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported
+                   m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool
 				       ? m_SubscribedControlSystem.SystemControl.EnableAudioBreakawayFeedback.BoolValue.ToString()
 				       : "Not Supported");
 			addRow("USB Breakaway",
-			       m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported
+                   m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool
 				       ? m_SubscribedControlSystem.SystemControl.EnableUSBBreakawayFeedback.BoolValue.ToString()
 				       : "Not Supported");
 		}
