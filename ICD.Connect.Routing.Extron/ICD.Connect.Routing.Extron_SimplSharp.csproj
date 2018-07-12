@@ -65,6 +65,7 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\Volume\AbstractExtronVolumeDeviceControl.cs" />
     <Compile Include="Devices\Switchers\DtpCrosspoint84\DtpCrosspoint84.cs" />
     <Compile Include="Devices\Switchers\DtpCrosspoint84\DtpCrosspoint84Settings.cs" />
     <Compile Include="Devices\Switchers\DtpCrosspoint84\DtpCrosspoint84SwitcherControl.cs" />
