@@ -44,9 +44,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 
 		#region Methods
 
-		public abstract HostInfo? GetComPortHostInfo();
+		public abstract ISerialPort GetSerialInsertionPort();
 
-		public abstract void InitializeComPort(eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits);
+		public abstract void InitializeComPort(eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits);
 
 		protected override bool GetIsOnlineStatus()
 		{
@@ -91,19 +91,12 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 
 		protected virtual void Subscribe(IDtpCrosspointDevice parent)
 		{
-			parent.OnInitializedChanged += ParentOnOnInitializedChanged;
             parent.OnIsOnlineStateChanged += ParentOnOnIsOnlineStateChanged;
 		}
 
 	    protected virtual void Unsubscribe(IDtpCrosspointDevice parent)
 		{
-			parent.OnInitializedChanged -= ParentOnOnInitializedChanged;
 		    parent.OnIsOnlineStateChanged -= ParentOnOnIsOnlineStateChanged;
-		}
-
-		private void ParentOnOnInitializedChanged(object sender, BoolEventArgs args)
-		{
-			OnPortInitialized.Raise(this, args);
 		}
         
 	    private void ParentOnOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs e)
