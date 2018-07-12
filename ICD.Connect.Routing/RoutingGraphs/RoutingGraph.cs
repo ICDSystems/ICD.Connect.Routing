@@ -1974,7 +1974,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				IRouteMidpointControl midpointControl = destinationControl as IRouteMidpointControl;
 
-				process.EnqueueRange(midpointControl.GetOutputs(connection.Source.Address, type)
+				process.EnqueueRange(midpointControl.GetOutputs(connection.Destination.Address, type)
 													.Where(c => c.ConnectionType.HasFlag(type))
 				                                    .Select(c =>
 				                                            new EndpointInfo(connection.Destination.Device,
