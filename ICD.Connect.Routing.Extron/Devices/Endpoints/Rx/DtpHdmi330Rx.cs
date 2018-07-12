@@ -12,20 +12,20 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Rx
 
 		#region Methods
 
-		public override HostInfo? GetComPortHostInfo()
+		public override ISerialPort GetSerialInsertionPort()
 		{
 			if (m_DtpOutput == null)
 				return null;
 
-			return Parent.GetOutputComPortHostInfo(m_DtpOutput.Value);
+			return Parent.GetOutputSerialInsertionPort(m_DtpOutput.Value);
 		}
 
-		public override void InitializeComPort(eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits)
+		public override void InitializeComPort(eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits)
 		{
 			if (m_DtpOutput == null)
 				return;
 
-			Parent.InitializeRxComPort(m_DtpOutput.Value, mode, baudRate, dataBits, parityType, stopBits);
+			Parent.SetRxComPortSpec(m_DtpOutput.Value, baudRate, dataBits, parityType, stopBits);
 		}
 
 		#endregion

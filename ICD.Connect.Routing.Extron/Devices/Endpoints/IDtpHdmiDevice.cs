@@ -9,10 +9,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 {
 	public interface IDtpHdmiDevice : IDevice
 	{
-		HostInfo? GetComPortHostInfo();
+		ISerialPort GetSerialInsertionPort();
 
 		event EventHandler<BoolEventArgs> OnPortInitialized;
 
-		void InitializeComPort(eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits);
+		void InitializeComPort(eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits);
 	}
 }
