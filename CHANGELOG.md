@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
  - HdMdxxxCE switchers support routing audio to the aux audio output
  - Enabling Audio-Breakaway in 6XN Crestron switchers
+ - Added Sig type bool checks
+ - Updated how GetOutputs and GetInputs reads SwitcherOutputs/SwitcherInputs
 
 ## [7.2.0] - 2018-07-02
 ### Added
