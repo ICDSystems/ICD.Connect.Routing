@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Enabling Audio-Breakaway in 6XN Crestron switchers
  - Added Sig type bool checks
  - Updated how GetOutputs and GetInputs reads SwitcherOutputs/SwitcherInputs
+ - Fixes for audio routing on DMPS 4K variants
 
 ## [7.2.0] - 2018-07-02
 ### Added
