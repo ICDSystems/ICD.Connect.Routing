@@ -454,8 +454,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
-			return destination.GetEndpoints()
-			                  .Where(e => Connections.GetInputConnection(e) != null)
+			return Connections.FilterEndpoints(destination, flag)
 			                  .Select(d => FindPath(sourceEndpoint, d, flag, roomId))
 			                  .FirstOrDefault(p => p != null);
 		}
@@ -476,9 +475,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
-			return source.GetEndpoints()
-			             .Select(e => FindPath(e, destinationEndpoint, flag, roomId))
-			             .FirstOrDefault(p => p != null);
+			return Connections.FilterEndpoints(source, flag)
+			                  .Select(e => FindPath(e, destinationEndpoint, flag, roomId))
+			                  .FirstOrDefault(p => p != null);
 		}
 
 		/// <summary>
@@ -602,9 +601,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			IcdHashSet<EndpointInfo> destinationEndpoints = destinations.SelectMany(d => d.GetEndpoints())
 			                                                            .ToIcdHashSet();
 
-			return source.GetEndpoints()
-			             .SelectMany(e => FindPathsMulti(e, destinationEndpoints, flag, roomId))
-			             .Distinct(kvp => kvp.Key);
+			return Connections.FilterEndpoints(source, flag)
+			                  .SelectMany(e => FindPathsMulti(e, destinationEndpoints, flag, roomId))
+			                  .Distinct(kvp => kvp.Key);
 		}
 
 		/// <summary>
@@ -688,15 +687,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
-			EndpointInfo[] destinationEndpoints =
-				destination.GetEndpoints()
-				           .Where(e => Connections.GetInputConnection(e) != null)
-				           .ToArray();
+			EndpointInfo[] destinationEndpoints = Connections.FilterEndpoints(destination, flag).ToArray();
 
-			return source.GetEndpoints()
-			             .Where(e => Connections.GetOutputConnection(e) != null)
-			             .SelectMany(s => destinationEndpoints.Select(d => FindPath(s, d, flag, roomId)))
-			             .Where(p => p != null);
+			return Connections.FilterEndpoints(source, flag)
+			                  .SelectMany(s => destinationEndpoints.Select(d => FindPath(s, d, flag, roomId)))
+			                  .Where(p => p != null);
 		}
 
 		/// <summary>
@@ -843,7 +838,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			return destination.GetEndpoints()
+			return Connections.FilterEndpointsAny(destination, type)
 			                  .SelectMany(e => FindActivePaths(source, e, type, signalDetected, inputActive));
 		}
 
@@ -864,8 +859,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (source == null)
 				throw new ArgumentNullException("source");
 
-			return source.GetEndpoints()
-			             .SelectMany(e => FindActivePaths(e, destination, type, signalDetected, inputActive));
+			return Connections.FilterEndpointsAny(source, type)
+			                  .SelectMany(e => FindActivePaths(e, destination, type, signalDetected, inputActive));
 		}
 
 		/// <summary>
@@ -878,8 +873,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <returns></returns>
 		public override IEnumerable<Connection[]> FindActivePaths(ISource source, eConnectionType type, bool signalDetected, bool inputActive)
 		{
-			return source.GetEndpoints()
-			             .SelectMany(e => FindActivePaths(e, type, signalDetected, inputActive));
+			return Connections.FilterEndpointsAny(source, type)
+			                  .SelectMany(e => FindActivePaths(e, type, signalDetected, inputActive));
 		}
 
 		/// <summary>

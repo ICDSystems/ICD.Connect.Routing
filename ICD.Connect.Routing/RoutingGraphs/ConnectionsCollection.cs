@@ -9,6 +9,8 @@ using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
+using ICD.Connect.Routing.Endpoints.Destinations;
+using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.RoutingGraphs
@@ -298,6 +300,152 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					return null;
 
 				return connectionTypeMap.GetDefault(flag, null);
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Gets filtered endpoints for the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> FilterEndpoints(IDestination destination, eConnectionType flag)
+		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("Connection type has multiple flags", "flag");
+
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+				DeviceControlInfo deviceControl = new DeviceControlInfo(destination.Device, destination.Control);
+
+				Dictionary<int, Connection> cache;
+				if (!m_InputConnectionLookup.TryGetValue(deviceControl, out cache))
+					return Enumerable.Empty<EndpointInfo>();
+
+				return destination.GetEndpoints()
+				                  .Where(e =>
+				                         {
+					                         Connection connection = cache.GetDefault(e.Address);
+					                         return connection != null && connection.ConnectionType.HasFlag(flag);
+				                         })
+				                  .ToArray();
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Gets filtered endpoints for the given source.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> FilterEndpoints(ISource source, eConnectionType flag)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("Connection type has multiple flags", "flag");
+
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+				DeviceControlInfo deviceControl = new DeviceControlInfo(source.Device, source.Control);
+
+				Dictionary<int, Connection> cache;
+				if (!m_OutputConnectionLookup.TryGetValue(deviceControl, out cache))
+					return Enumerable.Empty<EndpointInfo>();
+
+				return source.GetEndpoints()
+				             .Where(e =>
+				                    {
+					                    Connection connection = cache.GetDefault(e.Address);
+					                    return connection != null && connection.ConnectionType.HasFlag(flag);
+				                    })
+				             .ToArray();
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Gets filtered endpoints matching any of the given connection flags for the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> FilterEndpointsAny(IDestination destination, eConnectionType type)
+		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+				DeviceControlInfo deviceControl = new DeviceControlInfo(destination.Device, destination.Control);
+
+				Dictionary<int, Connection> cache;
+				if (!m_InputConnectionLookup.TryGetValue(deviceControl, out cache))
+					return Enumerable.Empty<EndpointInfo>();
+
+				return destination.GetEndpoints()
+				                  .Where(e =>
+				                         {
+					                         Connection connection = cache.GetDefault(e.Address);
+					                         return connection != null && EnumUtils.HasAnyFlags(connection.ConnectionType, type);
+				                         })
+				                  .ToArray();
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Gets filtered endpoints matching any of the given connection flags for the given source.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> FilterEndpointsAny(ISource source, eConnectionType type)
+		{
+			if (source == null)
+				throw new ArgumentNullException("destination");
+
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+				DeviceControlInfo deviceControl = new DeviceControlInfo(source.Device, source.Control);
+
+				Dictionary<int, Connection> cache;
+				if (!m_OutputConnectionLookup.TryGetValue(deviceControl, out cache))
+					return Enumerable.Empty<EndpointInfo>();
+
+				return source.GetEndpoints()
+				             .Where(e =>
+				                    {
+					                    Connection connection = cache.GetDefault(e.Address);
+					                    return connection != null && EnumUtils.HasAnyFlags(connection.ConnectionType, type);
+				                    })
+				             .ToArray();
 			}
 			finally
 			{
