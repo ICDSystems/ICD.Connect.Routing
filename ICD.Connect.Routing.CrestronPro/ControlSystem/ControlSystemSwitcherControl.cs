@@ -121,6 +121,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 						catch (Exception e)
 						{
 							Log(eSeverity.Error, "Failed to route audio input {0} to output {1} - {2}", input, output, e.Message);
+							return false;
 						}
 					}
 					
@@ -180,6 +181,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 						catch (Exception e)
 						{
 							Log(eSeverity.Error, "Failed to clear audio output {0} - {1}", output, e.Message);
+							return false;
 						}
 					}
 					
