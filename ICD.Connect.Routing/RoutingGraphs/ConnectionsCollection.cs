@@ -320,28 +320,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("Connection type has multiple flags", "flag");
 
-			m_ConnectionsSection.Enter();
-
-			try
-			{
-				DeviceControlInfo deviceControl = new DeviceControlInfo(destination.Device, destination.Control);
-
-				IcdOrderedDictionary<int, Connection> cache;
-				if (!m_InputConnectionLookup.TryGetValue(deviceControl, out cache))
-					return Enumerable.Empty<EndpointInfo>();
-
-				return destination.GetEndpoints()
-				                  .Where(e =>
-				                         {
-					                         Connection connection = cache.GetDefault(e.Address);
-					                         return connection != null && connection.ConnectionType.HasFlag(flag);
-				                         })
-				                  .ToArray();
-			}
-			finally
-			{
-				m_ConnectionsSection.Leave();
-			}
+			return GetInputConnections(destination.Device, destination.Control, flag)
+				.Select(c => c.Destination)
+				.Where(destination.Contains);
 		}
 
 		/// <summary>
@@ -358,28 +339,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("Connection type has multiple flags", "flag");
 
-			m_ConnectionsSection.Enter();
-
-			try
-			{
-				DeviceControlInfo deviceControl = new DeviceControlInfo(source.Device, source.Control);
-
-				IcdOrderedDictionary<int, Connection> cache;
-				if (!m_OutputConnectionLookup.TryGetValue(deviceControl, out cache))
-					return Enumerable.Empty<EndpointInfo>();
-
-				return source.GetEndpoints()
-				             .Where(e =>
-				                    {
-					                    Connection connection = cache.GetDefault(e.Address);
-					                    return connection != null && connection.ConnectionType.HasFlag(flag);
-				                    })
-				             .ToArray();
-			}
-			finally
-			{
-				m_ConnectionsSection.Leave();
-			}
+			return GetOutputConnections(source.Device, source.Control, flag)
+				.Select(c => c.Source)
+				.Where(source.Contains);
 		}
 
 		/// <summary>
@@ -393,28 +355,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			m_ConnectionsSection.Enter();
-
-			try
-			{
-				DeviceControlInfo deviceControl = new DeviceControlInfo(destination.Device, destination.Control);
-
-				IcdOrderedDictionary<int, Connection> cache;
-				if (!m_InputConnectionLookup.TryGetValue(deviceControl, out cache))
-					return Enumerable.Empty<EndpointInfo>();
-
-				return destination.GetEndpoints()
-				                  .Where(e =>
-				                         {
-					                         Connection connection = cache.GetDefault(e.Address);
-					                         return connection != null && EnumUtils.HasAnyFlags(connection.ConnectionType, type);
-				                         })
-				                  .ToArray();
-			}
-			finally
-			{
-				m_ConnectionsSection.Leave();
-			}
+			return GetInputConnectionsAny(destination.Device, destination.Control, type)
+				.Select(c => c.Destination)
+				.Where(destination.Contains);
 		}
 
 		/// <summary>
@@ -428,28 +371,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (source == null)
 				throw new ArgumentNullException("destination");
 
-			m_ConnectionsSection.Enter();
-
-			try
-			{
-				DeviceControlInfo deviceControl = new DeviceControlInfo(source.Device, source.Control);
-
-				IcdOrderedDictionary<int, Connection> cache;
-				if (!m_OutputConnectionLookup.TryGetValue(deviceControl, out cache))
-					return Enumerable.Empty<EndpointInfo>();
-
-				return source.GetEndpoints()
-				             .Where(e =>
-				                    {
-					                    Connection connection = cache.GetDefault(e.Address);
-					                    return connection != null && EnumUtils.HasAnyFlags(connection.ConnectionType, type);
-				                    })
-				             .ToArray();
-			}
-			finally
-			{
-				m_ConnectionsSection.Leave();
-			}
+			return GetOutputConnectionsAny(source.Device, source.Control, type)
+				.Select(c => c.Source)
+				.Where(source.Contains);
 		}
 
 		/// <summary>
