@@ -574,6 +574,20 @@ namespace ICD.Connect.Routing
 					if (!activeRouteSourceEndpoints.Any() || !activeRouteDestinationEndpoints.Any())
 						return;
 
+					if (!m_DestinationToSourceCache.ContainsKey(destinationEndpoint))
+						m_DestinationToSourceCache[destinationEndpoint] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+
+					if (!m_DestinationToSourceCache[destinationEndpoint].ContainsKey(type))
+						m_DestinationToSourceCache[destinationEndpoint].Add(type, new IcdHashSet<EndpointInfo>());
+
+					EndpointInfo sourceKey = activeRouteSourceEndpoints.Last();
+
+					if (!m_SourceToDestinationCache.ContainsKey(sourceKey))
+						m_SourceToDestinationCache[sourceKey] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+
+					if (!m_SourceToDestinationCache[sourceKey].ContainsKey(type))
+						m_SourceToDestinationCache[sourceKey].Add(type, new IcdHashSet<EndpointInfo>());
+
 					m_DestinationToSourceCache[destinationEndpoint][type].AddRange(activeRouteSourceEndpoints);
 					m_SourceToDestinationCache[activeRouteSourceEndpoints.Last()][type].AddRange(activeRouteDestinationEndpoints);
 				}
