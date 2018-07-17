@@ -21,17 +21,13 @@ namespace ICD.Connect.Routing
 	{
 		#region Events
 
-		public event EventHandler<SourceStateChangedEventArgs> OnSourceTransmissionStateChanged;
-		public event EventHandler<SourceStateChangedEventArgs> OnSourceDetectionStateChanged;
-		public event EventHandler<EndpointStateChangedEventArgs> OnEndpointTransmissionStateChanged;
-		public event EventHandler<EndpointStateChangedEventArgs> OnEndpointDetectionStateChanged;
+		public event EventHandler<CacheStateChangedEventArgs> OnTransmissionStateChanged;
+		public event EventHandler<CacheStateChangedEventArgs> OnDetectionStateChanged;
+		public event EventHandler<CacheStateChangedEventArgs> OnDestinationEndpointActiveChanged;
 		public event EventHandler<EndpointRouteChangedEventArgs> OnEndpointRouteChanged;
 		public event EventHandler<SourceDestinationRouteChangedEventArgs> OnSourceDestinationRouteChanged;
 
-		/// <summary>
-		/// Raised when a destination input becomes active/inactive.
-		/// </summary>
-		public event EventHandler<EndpointStateChangedEventArgs> OnDestinationEndpointActiveChanged;
+
 
 		#endregion
 
@@ -89,10 +85,8 @@ namespace ICD.Connect.Routing
 		/// </summary>
 		public void Dispose()
 		{
-			OnSourceTransmissionStateChanged = null;
-			OnSourceDetectionStateChanged = null;
-			OnEndpointTransmissionStateChanged = null;
-			OnEndpointDetectionStateChanged = null;
+			OnTransmissionStateChanged = null;
+			OnDetectionStateChanged = null;
 			OnEndpointRouteChanged = null;
 			OnSourceDestinationRouteChanged = null;
 
@@ -409,7 +403,7 @@ namespace ICD.Connect.Routing
 			IcdHashSet<ISource> sources = new IcdHashSet<ISource>();
 			IEnumerable<EndpointInfo> endpoints = GetSourceEndpointsForDestination(destination, flag, signalDetected, inputActive);
 
-			foreach(var endpoint in endpoints.Where(e=> m_EndpointToSources.ContainsKey(e)))
+			foreach (var endpoint in endpoints.Where(e => m_EndpointToSources.ContainsKey(e)))
 				sources.AddRange(m_EndpointToSources[endpoint]);
 
 			return sources;
@@ -580,6 +574,20 @@ namespace ICD.Connect.Routing
 					if (!activeRouteSourceEndpoints.Any() || !activeRouteDestinationEndpoints.Any())
 						return;
 
+					if (!m_DestinationToSourceCache.ContainsKey(destinationEndpoint))
+						m_DestinationToSourceCache[destinationEndpoint] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+
+					if (!m_DestinationToSourceCache[destinationEndpoint].ContainsKey(type))
+						m_DestinationToSourceCache[destinationEndpoint].Add(type, new IcdHashSet<EndpointInfo>());
+
+					EndpointInfo sourceKey = activeRouteSourceEndpoints.Last();
+
+					if (!m_SourceToDestinationCache.ContainsKey(sourceKey))
+						m_SourceToDestinationCache[sourceKey] = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+
+					if (!m_SourceToDestinationCache[sourceKey].ContainsKey(type))
+						m_SourceToDestinationCache[sourceKey].Add(type, new IcdHashSet<EndpointInfo>());
+
 					m_DestinationToSourceCache[destinationEndpoint][type].AddRange(activeRouteSourceEndpoints);
 					m_SourceToDestinationCache[activeRouteSourceEndpoints.Last()][type].AddRange(activeRouteDestinationEndpoints);
 				}
@@ -643,7 +651,7 @@ namespace ICD.Connect.Routing
 				m_SourceToDestinationCache[sourceEndpoint].Add(flag, new IcdHashSet<EndpointInfo>());
 		}
 
-		private void UpdateSourceEndpointTransmissionState(EndpointInfo endpoint, eConnectionType type, bool state)
+		private bool UpdateSourceEndpointTransmissionState(EndpointInfo endpoint, eConnectionType type, bool state)
 		{
 			eConnectionType oldFlags = m_SourceEndpointTransmitting.GetDefault(endpoint);
 			eConnectionType newFlags = oldFlags;
@@ -654,7 +662,7 @@ namespace ICD.Connect.Routing
 				newFlags &= ~type;
 
 			if (newFlags == oldFlags)
-				return;
+				return false;
 
 			m_SourceEndpointTransmitting[endpoint] = newFlags;
 
@@ -667,7 +675,7 @@ namespace ICD.Connect.Routing
 			if (m_DebugEnabled)
 				PrintEndpointTransmitting();
 
-			OnEndpointTransmissionStateChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
+			return true;
 		}
 
 		private void UpdateSourceTransmissionState(ISource source)
@@ -683,20 +691,11 @@ namespace ICD.Connect.Routing
 
 			m_SourceTransmitting[source] = flags;
 
-			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
-			{
-				if (oldFlags.HasFlag(flag) && !flags.HasFlag(flag))
-					OnSourceTransmissionStateChanged.Raise(this, new SourceStateChangedEventArgs(source, flag, false));
-
-				else if (!oldFlags.HasFlag(flag) && flags.HasFlag(flag))
-					OnSourceTransmissionStateChanged.Raise(this, new SourceStateChangedEventArgs(source, flag, true));
-			}
-
 			if (m_DebugEnabled)
 				PrintSourceTransmitting();
 		}
 
-		private void UpdateSourceEndpointDetectionState(EndpointInfo endpoint, eConnectionType type, bool state)
+		private bool UpdateSourceEndpointDetectionState(EndpointInfo endpoint, eConnectionType type, bool state)
 		{
 			eConnectionType oldFlags = m_SourceEndpointDetected.GetDefault(endpoint);
 			eConnectionType newFlags = oldFlags;
@@ -707,7 +706,7 @@ namespace ICD.Connect.Routing
 				newFlags &= ~type;
 
 			if (newFlags == oldFlags)
-				return;
+				return false;
 
 			m_SourceEndpointDetected[endpoint] = newFlags;
 
@@ -720,7 +719,7 @@ namespace ICD.Connect.Routing
 					UpdateSourceDetectionState(source);
 			}
 
-			OnEndpointDetectionStateChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
+			return true;
 		}
 
 		private void UpdateSourceDetectionState(ISource source)
@@ -738,17 +737,9 @@ namespace ICD.Connect.Routing
 
 			if (m_DebugEnabled)
 				PrintSourceDetectedMap();
-
-			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone<eConnectionType>())
-			{
-				if (oldFlags.HasFlag(flag) && !flags.HasFlag(flag))
-					OnSourceDetectionStateChanged.Raise(this, new SourceStateChangedEventArgs(source, flag, false));
-				else if (!oldFlags.HasFlag(flag) && flags.HasFlag(flag))
-					OnSourceDetectionStateChanged.Raise(this, new SourceStateChangedEventArgs(source, flag, true));
-			}
 		}
 
-		private void UpdateDestinationEndpointInputActiveState(EndpointInfo endpoint, eConnectionType type, bool state)
+		private bool UpdateDestinationEndpointInputActiveState(EndpointInfo endpoint, eConnectionType type, bool state)
 		{
 			eConnectionType oldFlags = m_DestinationEndpointActive.GetDefault(endpoint);
 			eConnectionType newFlags = oldFlags;
@@ -759,34 +750,43 @@ namespace ICD.Connect.Routing
 				newFlags &= ~type;
 
 			if (newFlags == oldFlags)
-				return;
+				return false;
 
 			m_DestinationEndpointActive[endpoint] = newFlags;
 
 			if (m_DebugEnabled)
 				PrintDestinationEndpointActiveMap();
 
-			OnDestinationEndpointActiveChanged.Raise(this, new EndpointStateChangedEventArgs(endpoint, type, state));
+			return true;
 		}
 
-		private void RemoveOldValuesFromDestinationCache(IcdHashSet<EndpointInfo> oldSourceEndpoints,
+		private bool RemoveOldValuesFromDestinationCache(IcdHashSet<EndpointInfo> oldSourceEndpoints,
 														 IEnumerable<EndpointInfo> destinations,
 														 eConnectionType type)
 		{
+			bool changed = false;
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type has multiple flags", "type");
 
-			foreach (EndpointInfo destination in destinations.Where(destination => m_DestinationToSourceCache.ContainsKey(destination)))
+			foreach (
+				EndpointInfo destination in destinations.Where(destination => m_DestinationToSourceCache.ContainsKey(destination)))
 			{
 				foreach (EndpointInfo endpointToRemove in oldSourceEndpoints)
+				{
 					m_DestinationToSourceCache[destination][type].Remove(endpointToRemove);
+					changed = true;
+				}
 			}
+
+			return changed;
 		}
 
-		private void AddNewValuesToDestinationCache(IcdHashSet<EndpointInfo> newSourceEndpoints,
+		private bool AddNewValuesToDestinationCache(IcdHashSet<EndpointInfo> newSourceEndpoints,
 													IEnumerable<EndpointInfo> destinations,
 													eConnectionType type)
 		{
+			bool changed = false;
+
 			if (newSourceEndpoints == null)
 				throw new ArgumentNullException("newSourceEndpoints");
 
@@ -802,14 +802,20 @@ namespace ICD.Connect.Routing
 					AddDestinationToDestinationToSourceCache(destination);
 
 				foreach (EndpointInfo endpointToAdd in newSourceEndpoints)
+				{
 					m_DestinationToSourceCache[destination][type].Add(endpointToAdd);
+					changed = true;
+				}
 			}
+
+			return changed;
 		}
 
-		private void RemoveOldValuesFromSourceCache(IEnumerable<EndpointInfo> oldSourceEndpoints,
+		private bool RemoveOldValuesFromSourceCache(IEnumerable<EndpointInfo> oldSourceEndpoints,
 													IcdHashSet<EndpointInfo> destinations,
 													eConnectionType type)
 		{
+			bool changed = false;
 			if (oldSourceEndpoints == null)
 				throw new ArgumentNullException("oldSourceEndpoints");
 
@@ -828,19 +834,26 @@ namespace ICD.Connect.Routing
 					continue;
 
 				foreach (EndpointInfo endpointToRemove in destinations)
+				{
 					m_SourceToDestinationCache[source][type].Remove(endpointToRemove);
+					changed = true;
+				}
 			}
+
+			return changed;
 		}
 
-		private void AddNewValuesToSourceCache(IEnumerable<EndpointInfo> newSourceEndpoints,
+		private bool AddNewValuesToSourceCache(IEnumerable<EndpointInfo> newSourceEndpoints,
 											   IcdHashSet<EndpointInfo> destinations,
 											   eConnectionType type)
 		{
+			bool changed = false;
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type has multiple flags", "type");
 
 			foreach (EndpointInfo source in newSourceEndpoints)
 			{
+
 				if (!m_SourceToDestinationCache.ContainsKey(source))
 					AddSourceToSourceToDestinationCache(source);
 
@@ -848,8 +861,13 @@ namespace ICD.Connect.Routing
 					m_SourceToDestinationCache[source][type] = new IcdHashSet<EndpointInfo>();
 
 				foreach (EndpointInfo endpointToAdd in destinations)
+				{
 					m_SourceToDestinationCache[source][type].Add(endpointToAdd);
+					changed = true;
+				}
 			}
+
+			return changed;
 		}
 
 		#endregion
@@ -882,6 +900,9 @@ namespace ICD.Connect.Routing
 
 		private void RoutingGraphOnRouteChanged(object sender, SwitcherRouteChangeEventArgs args)
 		{
+			Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> oldState =
+				m_DestinationToSourceCache.ToDictionary();
+
 			IcdHashSet<EndpointInfo> oldSourceEndpoints = args.OldSourceEndpoints.ToIcdHashSet();
 			IcdHashSet<EndpointInfo> newSourceEndpoints = args.NewSourceEndpoints.ToIcdHashSet();
 			IcdHashSet<EndpointInfo> destinationEndpoints = args.DestinationEndpoints.ToIcdHashSet();
@@ -903,20 +924,19 @@ namespace ICD.Connect.Routing
 				IcdHashSet<IDestination> newRouteDestinations = new IcdHashSet<IDestination>();
 				IcdHashSet<ISource> newRouteSources = new IcdHashSet<ISource>();
 
-				foreach (EndpointInfo destinationEndpoint in destinationEndpoints)
-				{
-					if (m_EndpointToDestinations.ContainsKey(destinationEndpoint))
-						newRouteDestinations.AddRange(m_EndpointToDestinations[destinationEndpoint]);
-
-					OnEndpointRouteChanged.Raise(this,
-															  new EndpointRouteChangedEventArgs(
-																  destinationEndpoint,
-																  args.Type,
-																  m_DestinationToSourceCache[destinationEndpoint][flag]));
-				}
+				foreach (EndpointInfo destinationEndpoint in destinationEndpoints.Where(destinationEndpoint => m_EndpointToDestinations.ContainsKey(destinationEndpoint)))
+					newRouteDestinations.AddRange(m_EndpointToDestinations[destinationEndpoint]);
 
 				foreach (EndpointInfo sourceEndpoint in newSourceEndpoints.Where(sourceEndpoint => m_EndpointToSources.ContainsKey(sourceEndpoint)))
 					newRouteSources.AddRange(m_EndpointToSources[sourceEndpoint]);
+
+				Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> newRoutes =
+					m_DestinationToSourceCache.Except(oldState).ToDictionary();
+
+				Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> removedRoutes =
+					oldState.Except(m_DestinationToSourceCache).ToDictionary();
+
+				OnEndpointRouteChanged.Raise(this, new EndpointRouteChangedEventArgs(newRoutes, removedRoutes));
 
 				OnSourceDestinationRouteChanged.Raise(this, new SourceDestinationRouteChangedEventArgs(newRouteSources, newRouteDestinations, flag));
 			}
@@ -924,26 +944,56 @@ namespace ICD.Connect.Routing
 
 		private void RoutingGraphOnSourceTransmissionStateChanged(object sender, EndpointStateEventArgs args)
 		{
+			bool endpointChanged = false;
 			if (!m_EndpointToSources.ContainsKey(args.Endpoint))
+			{
 				UpdateSourceEndpoint(args.Endpoint);
+				endpointChanged = true;
+			}
 
-			UpdateSourceEndpointTransmissionState(args.Endpoint, args.Type, args.State);
+			endpointChanged |= UpdateSourceEndpointTransmissionState(args.Endpoint, args.Type, args.State);
+
+			if (endpointChanged)
+				OnTransmissionStateChanged.Raise(this, new CacheStateChangedEventArgs(new[] { args.Endpoint },
+																					  m_EndpointToSources.GetDefault(args.Endpoint),
+																					  args.Type,
+																					  args.State));
 		}
 
 		private void RoutingGraphOnSourceDetectionStateChanged(object sender, EndpointStateEventArgs args)
 		{
+			bool endpointChanged = false;
 			if (!m_EndpointToSources.ContainsKey(args.Endpoint))
+			{
 				UpdateSourceEndpoint(args.Endpoint);
+				endpointChanged = true;
+			}
 
-			UpdateSourceEndpointDetectionState(args.Endpoint, args.Type, args.State);
+			endpointChanged |= UpdateSourceEndpointDetectionState(args.Endpoint, args.Type, args.State);
+
+			if (endpointChanged)
+				OnDetectionStateChanged.Raise(this, new CacheStateChangedEventArgs(new[] { args.Endpoint },
+																				   m_EndpointToSources.GetDefault(args.Endpoint),
+																				   args.Type,
+																				   args.State));
 		}
 
 		private void RoutingGraphOnDestinationInputActiveStateChanged(object sender, EndpointStateEventArgs args)
 		{
+			bool endpointChanged = false;
 			if (!m_EndpointToDestinations.ContainsKey(args.Endpoint))
+			{
 				UpdateDestinationEndpoint(args.Endpoint);
+				endpointChanged = true;
+			}
 
-			UpdateDestinationEndpointInputActiveState(args.Endpoint, args.Type, args.State);
+			endpointChanged |= UpdateDestinationEndpointInputActiveState(args.Endpoint, args.Type, args.State);
+
+			if (endpointChanged)
+				OnDestinationEndpointActiveChanged.Raise(this, new CacheStateChangedEventArgs(new[] { args.Endpoint },
+																							  m_EndpointToDestinations.GetDefault(args.Endpoint),
+																							  args.Type,
+																							  args.State));
 		}
 
 		#endregion
@@ -1303,9 +1353,13 @@ namespace ICD.Connect.Routing
 		#endregion
 	}
 
-	public sealed class SourceStateChangedEventArgs : EventArgs
+	public sealed class CacheStateChangedEventArgs : EventArgs
 	{
-		public ISource Source { get; private set; }
+		public IEnumerable<EndpointInfo> Endpoints { get; private set; }
+
+		public IEnumerable<ISource> Sources { get; private set; }
+
+		public IEnumerable<IDestination> Destinations { get; private set; }
 
 		public eConnectionType Type { get; private set; }
 
@@ -1314,12 +1368,15 @@ namespace ICD.Connect.Routing
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="source"></param>
+		/// <param name="endpoints"></param>
+		/// <param name="sources"></param>
 		/// <param name="type"></param>
 		/// <param name="state"></param>
-		public SourceStateChangedEventArgs(ISource source, eConnectionType type, bool state)
+		public CacheStateChangedEventArgs(IEnumerable<EndpointInfo> endpoints, IEnumerable<ISource> sources, eConnectionType type, bool state)
 		{
-			Source = source;
+			Endpoints = endpoints;
+			Sources = sources;
+			Destinations = Enumerable.Empty<IDestination>();
 			Type = type;
 			State = state;
 		}
@@ -1327,73 +1384,34 @@ namespace ICD.Connect.Routing
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="args"></param>
-		public SourceStateChangedEventArgs(SourceStateChangedEventArgs args)
-			: this(args.Source, args.Type, args.State)
-		{
-		}
-	}
-
-	public sealed class EndpointStateChangedEventArgs : EventArgs
-	{
-		public EndpointInfo Endpoint { get; private set; }
-
-		public eConnectionType Type { get; private set; }
-
-		public bool State { get; private set; }
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="endpoint"></param>
+		/// <param name="endpoints"></param>
+		/// <param name="destinations"></param>
 		/// <param name="type"></param>
 		/// <param name="state"></param>
-		public EndpointStateChangedEventArgs(EndpointInfo endpoint, eConnectionType type, bool state)
+		public CacheStateChangedEventArgs(IEnumerable<EndpointInfo> endpoints, IEnumerable<IDestination> destinations, eConnectionType type, bool state)
 		{
-			Endpoint = endpoint;
+			Endpoints = endpoints;
+			Sources = Enumerable.Empty<ISource>();
+			Destinations = destinations;
 			Type = type;
 			State = state;
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="args"></param>
-		public EndpointStateChangedEventArgs(EndpointStateChangedEventArgs args)
-			: this(args.Endpoint, args.Type, args.State)
-		{
 		}
 	}
 
 	public sealed class EndpointRouteChangedEventArgs : EventArgs
 	{
-		public EndpointInfo Destination { get; private set; }
+		public Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> NewRoutes { get; private set; }
 
-		public eConnectionType ConnectionType { get; private set; }
-
-		public IEnumerable<EndpointInfo> Endpoints { get; private set; }
+		public Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> RemovedRoutes { get; private set; }
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="endpoints"></param>
-		public EndpointRouteChangedEventArgs(EndpointInfo destination, eConnectionType type,
-												  IEnumerable<EndpointInfo> endpoints)
+		public EndpointRouteChangedEventArgs(Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> newRoutes,
+			Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> removedRoutes)
 		{
-			Destination = destination;
-			ConnectionType = type;
-			Endpoints = endpoints;
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="args"></param>
-		public EndpointRouteChangedEventArgs(EndpointRouteChangedEventArgs args)
-			: this(args.Destination, args.ConnectionType, args.Endpoints)
-		{
+			NewRoutes = newRoutes;
+			RemovedRoutes = removedRoutes;
 		}
 	}
 
