@@ -103,7 +103,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 				case eConnectionType.Audio:
 					return true;
 				case eConnectionType.Video:
-					return Receiver.DmInput.SyncDetectedFeedback.BoolValue;
+					return true;
 				default:
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
