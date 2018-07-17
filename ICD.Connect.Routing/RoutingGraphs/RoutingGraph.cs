@@ -157,7 +157,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="eventArgs"></param>
 		private void ConnectionsOnConnectionsChanged(object sender, EventArgs eventArgs)
 		{
-			ConnectionUsages.RemoveInvalid();
+			//ConnectionUsages.RemoveInvalid();
 
 			SubscribeSwitchers();
 			SubscribeDestinations();
@@ -1552,15 +1552,15 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			type = EnumUtils.GetFlagsIntersection(a.ConnectionType, b.ConnectionType, type);
 
-			ConnectionUsageInfo currentUsage = ConnectionUsages.GetConnectionUsageInfo(b);
+			//ConnectionUsageInfo currentUsage = ConnectionUsages.GetConnectionUsageInfo(b);
 			// TODO - Needs to support combine spaces
 			//if (!currentUsage.CanRoute(roomId, type))
 			//	return false;
 
 			// Remove from usages
-			ConnectionUsageInfo previousUsage = ConnectionUsages.GetConnectionUsageInfo(a);
-			previousUsage.RemoveRoom(roomId, type);
-			currentUsage.RemoveRoom(roomId, type);
+			//ConnectionUsageInfo previousUsage = ConnectionUsages.GetConnectionUsageInfo(a);
+			//previousUsage.RemoveRoom(roomId, type);
+			//currentUsage.RemoveRoom(roomId, type);
 
 			IRouteSwitcherControl switcher = this.GetSourceControl(b) as IRouteSwitcherControl;
 			if (switcher == null)
