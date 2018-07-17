@@ -209,7 +209,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 					return ServiceProvider
 						.GetService<ICore>()
 						.Originators
-						.GetChild<IComPort>(m_DtpInputPorts[input]);
+						.GetChild<ISerialPort>(m_DtpInputPorts[input]);
 			}
 			catch (Exception ex)
 			{
@@ -233,7 +233,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 					return ServiceProvider
 						.GetService<ICore>()
 						.Originators
-						.GetChild<IComPort>(m_DtpOutputPorts[output]);
+						.GetChild<ISerialPort>(m_DtpOutputPorts[output]);
 			}
 			catch (Exception ex)
 			{
