@@ -25,7 +25,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE;</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SIMPLSHARP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <FileAlignment>512</FileAlignment>
@@ -44,6 +44,7 @@
     <NoStdLib>true</NoStdLib>
     <NoConfig>true</NoConfig>
     <GenerateSerializationAssemblies>off</GenerateSerializationAssemblies>
+    <DefineConstants>SIMPLSHARP</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -55,17 +56,23 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>C:\ProgramData\Crestron\SDK\SimplSharpHelperInterface.dll</HintPath>
     </Reference>
+    <Reference Include="SimplSharpReflectionInterface, Version=1.0.5583.25238, Culture=neutral, PublicKeyToken=1099c178b3b54c3b, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ProgramData\Crestron\SDK\SimplSharpReflectionInterface.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Controls\Volume\AbstractExtronVolumeDeviceControl.cs" />
     <Compile Include="Devices\Switchers\DtpCrosspoint84\DtpCrosspoint84.cs" />
     <Compile Include="Devices\Switchers\DtpCrosspoint84\DtpCrosspoint84Settings.cs" />
     <Compile Include="Devices\Switchers\DtpCrosspoint84\DtpCrosspoint84SwitcherControl.cs" />
     <Compile Include="Devices\Switchers\AbstractDtpCrosspointDevice.cs" />
     <Compile Include="Devices\Switchers\AbstractDtpCrosspointSettings.cs" />
     <Compile Include="Devices\Switchers\AbstractDtpCrosspointSwitcherControl.cs" />
+    <Compile Include="Devices\Switchers\ExtronXmlUtils.cs" />
     <Compile Include="Devices\Switchers\IDtpCrosspointSettings.cs" />
     <Compile Include="Devices\Switchers\IDtpCrosspointSwitcherControl.cs" />
     <Compile Include="Devices\Endpoints\AbstractDtpHdmiDevice.cs" />
@@ -80,7 +87,13 @@
     <Compile Include="Devices\Endpoints\Tx\DtpHdmi330Tx.cs" />
     <Compile Include="Devices\Endpoints\Tx\DtpHdmi330TxSettings.cs" />
     <Compile Include="Devices\Endpoints\Tx\IDtpHdmiTxDeviceSettings.cs" />
+    <Compile Include="Controls\Volume\eExtronVolumeObject.cs" />
+    <Compile Include="Controls\Volume\eExtronVolumeType.cs" />
+    <Compile Include="Controls\Volume\ExtronVolumeUtils.cs" />
+    <Compile Include="Controls\Volume\ExtronVolumeDeviceControl.cs" />
+    <Compile Include="Controls\Volume\ExtronGroupVolumeDeviceControl.cs" />
     <None Include="ObfuscationSettings.cs" />
+    <Compile Include="eExtronVerbosity.cs" />
     <Compile Include="SerialBuffers\DtpCrosspointSerialBuffer.cs" />
     <Compile Include="KrangPlugin.cs" />
     <Compile Include="Ports\DtpCrosspointComPort.cs" />
@@ -96,6 +109,10 @@
     <ProjectReference Include="..\..\ICD.Connect.API\ICD.Connect.API\ICD.Connect.API_SimplSharp.csproj">
       <Project>{727F5820-5A61-440D-8899-E454FE8238D7}</Project>
       <Name>ICD.Connect.API_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Audio\ICD.Connect.Audio\ICD.Connect.Audio_SimplSharp.csproj">
+      <Project>{8ED25D96-E9A5-4E9A-A890-B4EF3AB62041}</Project>
+      <Name>ICD.Connect.Audio_SimplSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ICD.Connect.Devices\ICD.Connect.Devices\ICD.Connect.Devices_SimplSharp.csproj">
       <Project>{FD46A717-5836-4B73-ADD0-2706639DA8ED}</Project>

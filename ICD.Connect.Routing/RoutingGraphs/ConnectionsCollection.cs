@@ -9,6 +9,8 @@ using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
+using ICD.Connect.Routing.Endpoints.Destinations;
+using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.RoutingGraphs
@@ -20,19 +22,19 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Maps Device -> Control -> Address -> outgoing connections.
 		/// </summary>
-		private readonly Dictionary<DeviceControlInfo, Dictionary<int, Connection>> m_OutputConnectionLookup;
+		private readonly IcdOrderedDictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> m_OutputConnectionLookup;
 
 		/// <summary>
 		/// Maps Device -> Control -> Address -> incoming connections.
 		/// </summary>
-		private readonly Dictionary<DeviceControlInfo, Dictionary<int, Connection>> m_InputConnectionLookup;
+		private readonly IcdOrderedDictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> m_InputConnectionLookup;
 
 		/// <summary>
 		/// Maps Source -> Final Destination -> Type -> Connection.
 		/// </summary>
-		private readonly Dictionary<EndpointInfo,
-			Dictionary<EndpointInfo,
-				Dictionary<eConnectionType, Connection>>> m_FilteredConnectionLookup;
+		private readonly IcdOrderedDictionary<EndpointInfo,
+			IcdOrderedDictionary<EndpointInfo,
+				IcdOrderedDictionary<eConnectionType, Connection>>> m_FilteredConnectionLookup;
 
 		/// <summary>
 		/// Constructor.
@@ -40,12 +42,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="routingGraph"></param>
 		public ConnectionsCollection(RoutingGraph routingGraph)
 		{
-			m_OutputConnectionLookup = new Dictionary<DeviceControlInfo, Dictionary<int, Connection>>();
-			m_InputConnectionLookup = new Dictionary<DeviceControlInfo, Dictionary<int, Connection>>();
+			m_OutputConnectionLookup = new IcdOrderedDictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>>();
+			m_InputConnectionLookup = new IcdOrderedDictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>>();
 			m_FilteredConnectionLookup =
-				new Dictionary<EndpointInfo,
-					Dictionary<EndpointInfo,
-						Dictionary<eConnectionType, Connection>>>();
+				new IcdOrderedDictionary
+					<EndpointInfo, IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, Connection>>>();
 
 			m_ConnectionsSection = new SafeCriticalSection();
 		}
@@ -55,7 +56,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Gets the connection for the given endpoint.
 		/// </summary>
-		/// <param name="destination"></param>
+		/// <param name="destination">The destination endpoint for the target connection.</param>
 		/// <returns></returns>
 		[CanBeNull]
 		public Connection GetInputConnection(EndpointInfo destination)
@@ -66,7 +67,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				Dictionary<int, Connection> map;
+				IcdOrderedDictionary<int, Connection> map;
 				return m_InputConnectionLookup.TryGetValue(key, out map)
 					       ? map.GetDefault(destination.Address, null)
 					       : null;
@@ -108,7 +109,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				Dictionary<int, Connection> map;
+				IcdOrderedDictionary<int, Connection> map;
 				return m_InputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values
 					            .Where(c => EnumUtils.HasFlags(c.ConnectionType, type))
@@ -137,7 +138,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				Dictionary<int, Connection> map;
+				IcdOrderedDictionary<int, Connection> map;
 				return m_InputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values
 					            .Where(c => EnumUtils.HasAnyFlags(c.ConnectionType, type))
@@ -153,7 +154,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Gets the connection for the given endpoint.
 		/// </summary>
-		/// <param name="source"></param>
+		/// <param name="source">The source endpoint for the target connection</param>
 		/// <returns></returns>
 		[CanBeNull]
 		public Connection GetOutputConnection(EndpointInfo source)
@@ -164,7 +165,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				Dictionary<int, Connection> map;
+				IcdOrderedDictionary<int, Connection> map;
 				return m_OutputConnectionLookup.TryGetValue(key, out map)
 					       ? map.GetDefault(source.Address, null)
 					       : null;
@@ -204,7 +205,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				Dictionary<int, Connection> map;
+				IcdOrderedDictionary<int, Connection> map;
 				return m_OutputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values.ToArray(map.Count)
 					       : Enumerable.Empty<Connection>();
@@ -230,7 +231,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				Dictionary<int, Connection> map;
+				IcdOrderedDictionary<int, Connection> map;
 				return m_OutputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values
 					            .Where(c => c.ConnectionType.HasFlag(flag))
@@ -258,7 +259,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				Dictionary<int, Connection> map;
+				IcdOrderedDictionary<int, Connection> map;
 				return m_OutputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values
 					            .Where(c => EnumUtils.HasAnyFlags(c.ConnectionType, type))
@@ -289,11 +290,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				Dictionary<EndpointInfo, Dictionary<eConnectionType, Connection>> destinationMap;
+				IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, Connection>> destinationMap;
 				if (!m_FilteredConnectionLookup.TryGetValue(source, out destinationMap))
 					return null;
 
-				Dictionary<eConnectionType, Connection> connectionTypeMap;
+				IcdOrderedDictionary<eConnectionType, Connection> connectionTypeMap;
 				if (!destinationMap.TryGetValue(finalDestination, out connectionTypeMap))
 					return null;
 
@@ -303,6 +304,76 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			{
 				m_ConnectionsSection.Leave();
 			}
+		}
+
+		/// <summary>
+		/// Gets filtered endpoints for the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> FilterEndpoints(IDestination destination, eConnectionType flag)
+		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("Connection type has multiple flags", "flag");
+
+			return GetInputConnections(destination.Device, destination.Control, flag)
+				.Select(c => c.Destination)
+				.Where(destination.Contains);
+		}
+
+		/// <summary>
+		/// Gets filtered endpoints for the given source.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> FilterEndpoints(ISource source, eConnectionType flag)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("Connection type has multiple flags", "flag");
+
+			return GetOutputConnections(source.Device, source.Control, flag)
+				.Select(c => c.Source)
+				.Where(source.Contains);
+		}
+
+		/// <summary>
+		/// Gets filtered endpoints matching any of the given connection flags for the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> FilterEndpointsAny(IDestination destination, eConnectionType type)
+		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			return GetInputConnectionsAny(destination.Device, destination.Control, type)
+				.Select(c => c.Destination)
+				.Where(destination.Contains);
+		}
+
+		/// <summary>
+		/// Gets filtered endpoints matching any of the given connection flags for the given source.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> FilterEndpointsAny(ISource source, eConnectionType type)
+		{
+			if (source == null)
+				throw new ArgumentNullException("destination");
+
+			return GetOutputConnectionsAny(source.Device, source.Control, type)
+				.Select(c => c.Source)
+				.Where(source.Contains);
 		}
 
 		/// <summary>
@@ -415,11 +486,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				Dictionary<EndpointInfo, Dictionary<eConnectionType, Connection>> destinationMap;
+				IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, Connection>> destinationMap;
 				if (!m_FilteredConnectionLookup.TryGetValue(output.Source, out destinationMap))
 					return false;
 
-				Dictionary<eConnectionType, Connection> typeMap;
+				IcdOrderedDictionary<eConnectionType, Connection> typeMap;
 				if (!destinationMap.TryGetValue(input.Destination, out typeMap))
 					return false;
 
@@ -605,9 +676,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 					// Add device controls to the maps
 					if (!m_OutputConnectionLookup.ContainsKey(sourceInfo))
-						m_OutputConnectionLookup.Add(sourceInfo, new Dictionary<int, Connection>());
+						m_OutputConnectionLookup.Add(sourceInfo, new IcdOrderedDictionary<int, Connection>());
 					if (!m_InputConnectionLookup.ContainsKey(destinationInfo))
-						m_InputConnectionLookup.Add(destinationInfo, new Dictionary<int, Connection>());
+						m_InputConnectionLookup.Add(destinationInfo, new IcdOrderedDictionary<int, Connection>());
 
 					// Add connections to the maps
 					m_OutputConnectionLookup[sourceInfo][child.Source.Address] = child;
@@ -634,10 +705,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			{
 				foreach (Connection child in children)
 				{
-					foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_OutputConnectionLookup)
+					foreach (KeyValuePair<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> kvp in m_OutputConnectionLookup)
 						kvp.Value.RemoveAllValues(child);
 
-					foreach (KeyValuePair<DeviceControlInfo, Dictionary<int, Connection>> kvp in m_InputConnectionLookup)
+					foreach (KeyValuePair<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> kvp in m_InputConnectionLookup)
 						kvp.Value.RemoveAllValues(child);
 				}
 
@@ -685,10 +756,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 								continue;
 
 							if (!m_FilteredConnectionLookup.ContainsKey(source))
-								m_FilteredConnectionLookup.Add(source, new Dictionary<EndpointInfo, Dictionary<eConnectionType, Connection>>());
+								m_FilteredConnectionLookup.Add(source, new IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, Connection>>());
 
 							if (!m_FilteredConnectionLookup[source].ContainsKey(destination))
-								m_FilteredConnectionLookup[source].Add(destination, new Dictionary<eConnectionType, Connection>());
+								m_FilteredConnectionLookup[source].Add(destination, new IcdOrderedDictionary<eConnectionType, Connection>());
 
 							m_FilteredConnectionLookup[source][destination].Add(flag, outputConnection);
 						}

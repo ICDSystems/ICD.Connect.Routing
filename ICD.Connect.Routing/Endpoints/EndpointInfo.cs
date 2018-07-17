@@ -1,4 +1,5 @@
-﻿using ICD.Common.Utils;
+﻿using System;
+using ICD.Common.Utils;
 using ICD.Connect.Devices.Controls;
 using Newtonsoft.Json;
 
@@ -7,7 +8,7 @@ namespace ICD.Connect.Routing.Endpoints
 	/// <summary>
 	/// Simple struct defining the connection address on a routing control.
 	/// </summary>
-	public struct EndpointInfo
+	public struct EndpointInfo : IComparable
 	{
 		private readonly int m_DeviceId;
 		private readonly int m_ControlId;
@@ -132,6 +133,26 @@ namespace ICD.Connect.Routing.Endpoints
 				return hash;
 			}
 		}
+
+		public int CompareTo(object obj)
+		{
+			EndpointInfo other = (EndpointInfo)obj;
+
+			int result = Device.CompareTo(other.Device);
+			if (result != 0)
+				return result;
+
+			result = Control.CompareTo(other.Control);
+			if (result != 0)
+				return result;
+
+			result = Address.CompareTo(other.Address);
+			if (result != 0)
+				return result;
+
+			return 0;
+		}
+
 
 		#endregion
 	}

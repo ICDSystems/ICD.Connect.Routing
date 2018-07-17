@@ -12,13 +12,20 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		event EventHandler<IntEventArgs> OnInputPortInitialized;
 		event EventHandler<IntEventArgs> OnOutputPortInitialized;
 
-		HostInfo? GetInputComPortHostInfo(int input);
-		HostInfo? GetOutputComPortHostInfo(int output);
+		/// <summary>
+		/// Raised when the device sends a response.
+		/// </summary>
+		event EventHandler<StringEventArgs> OnResponseReceived;
+		
+		ISerialPort GetInputSerialInsertionPort(int input);
+		ISerialPort GetOutputSerialInsertionPort(int output);
 
-	    void InitializeTxComPort(int input, eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+	    void SetTxComPortSpec(int input, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
 	                             eComStopBits stopBits);
 
-		void InitializeRxComPort(int output, eExtronPortInsertionMode mode, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+		void SetRxComPortSpec(int output, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
 	                              eComStopBits stopBits);
+
+		void SendCommand(string command, params object[] args);
 	}
 }

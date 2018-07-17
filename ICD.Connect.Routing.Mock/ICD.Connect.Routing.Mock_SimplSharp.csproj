@@ -76,6 +76,9 @@
     <Compile Include="Midpoint\MockMidpointDevice.cs" />
     <Compile Include="Midpoint\MockMidpointDeviceSettings.cs" />
     <Compile Include="Midpoint\MockRouteMidpointControl.cs" />
+    <Compile Include="Midpoint\MockRouteSplitterControl.cs" />
+    <Compile Include="Midpoint\MockSplitterDevice.cs" />
+    <Compile Include="Midpoint\MockSplitterDeviceSettings.cs" />
     <Compile Include="Source\MockRouteSourceControl.cs" />
     <Compile Include="Source\MockSourceDevice.cs" />
     <Compile Include="Source\MockSourceDeviceSettings.cs" />

@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Common.Utils.Services.Logging;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -106,7 +107,24 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			switch (type)
 			{
 				case eConnectionType.Audio:
-					switcherOutput.AudioOut = switcherInput;
+					try
+					{
+						switcherOutput.AudioOut = switcherInput;
+					}
+					catch (NotSupportedException)
+					{
+						try
+						{
+							// DMPS 4K
+							switcherOutput.AudioOutSource = GetAudioSourceForInput(input);
+						}
+						catch (Exception e)
+						{
+							Log(eSeverity.Error, "Failed to route audio input {0} to output {1} - {2}", input, output, e.Message);
+							return false;
+						}
+					}
+					
 					break;
 
 				case eConnectionType.Video:
@@ -149,7 +167,24 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 					break;
 
 				case eConnectionType.Audio:
-					switcherOutput.AudioOut = null;
+					try
+					{
+						switcherOutput.AudioOut = null;
+					}
+					catch (NotSupportedException)
+					{
+						try
+						{
+							// DMPS 4K
+							switcherOutput.AudioOutSource = GetAudioSourceForInput(null);
+						}
+						catch (Exception e)
+						{
+							Log(eSeverity.Error, "Failed to clear audio output {0} - {1}", output, e.Message);
+							return false;
+						}
+					}
+					
 					break;
 
 				case eConnectionType.Usb:
@@ -182,7 +217,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
 			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherOutputs
-				                             ? Enumerable.Range(1, Parent.ControlSystem.NumberOfSwitcherOutputs)
+                                             ? (Parent.ControlSystem.SwitcherOutputs as ReadOnlyCollection<uint, ICardInputOutputType>).Select(kvp => (int)kvp.Key)
 				                             : Enumerable.Empty<int>();
 
 			return addresses.Select(i => GetOutput(i)).Where(c => c.ConnectionType != eConnectionType.None);
@@ -229,7 +264,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
 			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherInputs
-				                             ? Enumerable.Range(1, Parent.ControlSystem.NumberOfSwitcherInputs)
+                                             ? (Parent.ControlSystem.SwitcherInputs as ReadOnlyCollection<uint, ICardInputOutputType>).Select(kvp => (int)kvp.Key)
 				                             : Enumerable.Empty<int>();
 
 			return addresses.Select(i => GetInput(i)).Where(c => c.ConnectionType != eConnectionType.None);
@@ -272,7 +307,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			switch (type)
 			{
 				case eConnectionType.Video:
-					return switcherInput.VideoDetectedFeedback != null && switcherInput.VideoDetectedFeedback.BoolValue;
+					return switcherInput.VideoDetectedFeedback.Type == eSigType.Bool && switcherInput.VideoDetectedFeedback.BoolValue;
 
 				case eConnectionType.Audio:
 					// No way of detecting audio?
@@ -303,7 +338,17 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				switch (flag)
 				{
 					case eConnectionType.Audio:
-						input = switcherOutput.GetSafeAudioOutFeedback();
+						try
+						{
+							// DMPS3 4K
+							int? inputAddress = GetInputForAudioSource(switcherOutput.AudioOutSourceFeedback);
+							input = inputAddress == null ? null : Parent.GetDmInput((int)inputAddress);
+						}
+						catch (NotSupportedException)
+						{
+							// DMPS3
+							input = switcherOutput.GetSafeAudioOutFeedback();
+						}
 						break;
 					case eConnectionType.Video:
 						input = switcherOutput.GetSafeVideoOutFeedback();
@@ -319,6 +364,88 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 					continue;
 
 				yield return new ConnectorInfo((int)input.Number, flag);
+			}
+		}
+
+		/// <summary>
+		/// Gets the input for the given AudioOutSource value.
+		/// 
+		/// TODO - This does not support analog inputs
+		/// </summary>
+		/// <param name="audioOutSource"></param>
+		/// <returns></returns>
+		private int? GetInputForAudioSource(eDmps34KAudioOutSource audioOutSource)
+		{
+			switch (audioOutSource)
+			{
+				case eDmps34KAudioOutSource.NoRoute:
+					return null;
+
+				case eDmps34KAudioOutSource.Analog1:
+				case eDmps34KAudioOutSource.Analog2:
+				case eDmps34KAudioOutSource.Analog3:
+				case eDmps34KAudioOutSource.Analog4:
+				case eDmps34KAudioOutSource.Analog5:
+					return null;
+
+				case eDmps34KAudioOutSource.Hdmi1:
+					return 1;
+				case eDmps34KAudioOutSource.Hdmi2:
+					return 2;
+				case eDmps34KAudioOutSource.Hdmi3:
+					return 3;
+				case eDmps34KAudioOutSource.Hdmi4:
+					return 4;
+				case eDmps34KAudioOutSource.Hdmi5:
+					return 5;
+				case eDmps34KAudioOutSource.Hdmi6:
+					return 6;
+				case eDmps34KAudioOutSource.Dm7:
+					return 7;
+				case eDmps34KAudioOutSource.Dm8:
+					return 8;
+
+				case eDmps34KAudioOutSource.AirMedia8:
+				case eDmps34KAudioOutSource.AirMedia9:
+					return null;
+
+				default:
+					throw new ArgumentOutOfRangeException("audioOutSource");
+			}
+		}
+
+		/// <summary>
+		/// Gets the AudioOutSource value for the given input.
+		/// 
+		/// TODO - This does not support analog inputs
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		private eDmps34KAudioOutSource GetAudioSourceForInput(int? input)
+		{
+			switch (input)
+			{
+				case null:
+					return eDmps34KAudioOutSource.NoRoute;
+				case 1:
+					return eDmps34KAudioOutSource.Hdmi1;
+				case 2:
+					return eDmps34KAudioOutSource.Hdmi2;
+				case 3:
+					return eDmps34KAudioOutSource.Hdmi3;
+				case 4:
+					return eDmps34KAudioOutSource.Hdmi4;
+				case 5:
+					return eDmps34KAudioOutSource.Hdmi5;
+				case 6:
+					return eDmps34KAudioOutSource.Hdmi6;
+				case 7:
+					return eDmps34KAudioOutSource.Dm7;
+				case 8:
+					return eDmps34KAudioOutSource.Dm8;
+
+				default:
+					throw new ArgumentOutOfRangeException("input");
 			}
 		}
 
@@ -362,10 +489,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 			if (m_SubscribedControlSystem != null && m_SubscribedControlSystem.SystemControl != null)
 			{
-				if (m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported)
+                if (m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool)
 					m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.BoolValue = true;
 
-				if (m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported)
+                if (m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool)
 					m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.BoolValue = true;
 			}
 
@@ -579,11 +706,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				return;
 
 			addRow("Audio Breakaway",
-			       m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported
+                   m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool
 				       ? m_SubscribedControlSystem.SystemControl.EnableAudioBreakawayFeedback.BoolValue.ToString()
 				       : "Not Supported");
 			addRow("USB Breakaway",
-			       m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported
+                   m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool
 				       ? m_SubscribedControlSystem.SystemControl.EnableUSBBreakawayFeedback.BoolValue.ToString()
 				       : "Not Supported");
 		}

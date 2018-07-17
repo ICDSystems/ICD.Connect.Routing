@@ -16,8 +16,19 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 {
 	public sealed class MockRouteMidpointControl : AbstractRouteMidpointControl<IDeviceBase>
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		private readonly SwitcherCache m_Cache;
@@ -186,7 +197,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 				(a, b, c) => SetSignalDetectedState(a, b, c));
 			yield return new GenericConsoleCommand<int, int, eConnectionType>(
 				"SetInputForOutput",
-				"<input><output><Audio, Video, USB, None>",
+				"<input> <output> <Audio, Video, USB, None>",
 				(a, b, c) => SetInputForOutput(b, a, c));
 		}
 
