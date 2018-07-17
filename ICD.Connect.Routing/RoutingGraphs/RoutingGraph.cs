@@ -1566,9 +1566,20 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (switcher == null)
 				return true;
 
+			int input = b.Destination.Address;
 			int output = b.Source.Address;
 
-			switcher.ClearOutput(output, type);
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+			{
+				ConnectorInfo? connector = switcher.GetInput(output, flag);
+
+				// Don't unroute if there is no path here
+				if (!connector.HasValue || connector.Value.Address != input)
+					continue;
+
+				switcher.ClearOutput(output, flag);
+			}
+
 			return true;
 		}
 
