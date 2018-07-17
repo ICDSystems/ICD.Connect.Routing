@@ -8,7 +8,7 @@
 
 		public DtpCrosspoint84()
 		{
-			Controls.Add(new DtpCrosspoint84SwitcherControl(this, 0));
+			Controls.Add(new DtpCrosspointSwitcherControl(this, 0, 8, 4));
 		}
 	}
 }
