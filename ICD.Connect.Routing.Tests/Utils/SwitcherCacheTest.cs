@@ -72,9 +72,15 @@ namespace ICD.Connect.Routing.Tests.Utils
 		}
 
 		[Test]
-		public void GetInputsForOutputTest()
+		public void GetInputConnectorInfoForOutputTest()
 		{
 			Assert.Inconclusive();
 		}
+		[Test]
+		public void GetOutputsForInputTest()
+		{
+			Assert.Inconclusive();
+		}
+
 	}
 }
