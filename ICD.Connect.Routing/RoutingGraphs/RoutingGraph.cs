@@ -1181,16 +1181,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (path == null)
 				throw new ArgumentNullException("path");
 
-			IcdHashSet<EndpointInfo> endpoints = new IcdHashSet<EndpointInfo>();
-
 			// Configure the switchers
 			foreach (Connection[] pair in path.GetAdjacentPairs())
 			{
 				Connection connection = pair[0];
 				Connection nextConnection = pair[1];
-
-				endpoints.Add(connection.Source);
-				endpoints.Add(connection.Destination);
 
 				RouteOperation switchOperation = new RouteOperation(op)
 				{
