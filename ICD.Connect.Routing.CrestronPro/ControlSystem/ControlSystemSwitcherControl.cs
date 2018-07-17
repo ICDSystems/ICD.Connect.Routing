@@ -338,7 +338,17 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				switch (flag)
 				{
 					case eConnectionType.Audio:
-						input = switcherOutput.GetSafeAudioOutFeedback();
+						try
+						{
+							// DMPS3 4K
+							int? inputAddress = GetInputForAudioSource(switcherOutput.AudioOutSourceFeedback);
+							input = inputAddress == null ? null : Parent.GetDmInput((int)inputAddress);
+						}
+						catch (NotSupportedException)
+						{
+							// DMPS3
+							input = switcherOutput.GetSafeAudioOutFeedback();
+						}
 						break;
 					case eConnectionType.Video:
 						input = switcherOutput.GetSafeVideoOutFeedback();
@@ -354,6 +364,53 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 					continue;
 
 				yield return new ConnectorInfo((int)input.Number, flag);
+			}
+		}
+
+		/// <summary>
+		/// Gets the input for the given AudioOutSource value.
+		/// 
+		/// TODO - This does not support analog inputs
+		/// </summary>
+		/// <param name="audioOutSource"></param>
+		/// <returns></returns>
+		private int? GetInputForAudioSource(eDmps34KAudioOutSource audioOutSource)
+		{
+			switch (audioOutSource)
+			{
+				case eDmps34KAudioOutSource.NoRoute:
+					return null;
+
+				case eDmps34KAudioOutSource.Analog1:
+				case eDmps34KAudioOutSource.Analog2:
+				case eDmps34KAudioOutSource.Analog3:
+				case eDmps34KAudioOutSource.Analog4:
+				case eDmps34KAudioOutSource.Analog5:
+					return null;
+
+				case eDmps34KAudioOutSource.Hdmi1:
+					return 1;
+				case eDmps34KAudioOutSource.Hdmi2:
+					return 2;
+				case eDmps34KAudioOutSource.Hdmi3:
+					return 3;
+				case eDmps34KAudioOutSource.Hdmi4:
+					return 4;
+				case eDmps34KAudioOutSource.Hdmi5:
+					return 5;
+				case eDmps34KAudioOutSource.Hdmi6:
+					return 6;
+				case eDmps34KAudioOutSource.Dm7:
+					return 7;
+				case eDmps34KAudioOutSource.Dm8:
+					return 8;
+
+				case eDmps34KAudioOutSource.AirMedia8:
+				case eDmps34KAudioOutSource.AirMedia9:
+					return null;
+
+				default:
+					throw new ArgumentOutOfRangeException("audioOutSource");
 			}
 		}
 
