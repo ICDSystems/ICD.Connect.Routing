@@ -3,8 +3,8 @@ using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Rx
 {
-    [KrangSettings("DtpHdmi330Rx", typeof(DtpHdmi330Rx))]
-	public class DtpHdmi330RxSettings : AbstractDtpHdmiDeviceSettings, IDtpHdmiRxDeviceSettings
+    [KrangSettings("DtpHdmiRx", typeof(DtpHdmiRx))]
+	public class DtpHdmiRxSettings : AbstractDtpHdmiDeviceSettings, IDtpHdmiRxDeviceSettings
 	{
 		private const string DTP_OUTPUT_ELEMENT = "DtpOutput";
 

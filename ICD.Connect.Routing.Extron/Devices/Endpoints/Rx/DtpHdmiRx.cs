@@ -6,7 +6,7 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Rx
 {
-	public sealed class DtpHdmi330Rx : AbstractDtpHdmiDevice<DtpHdmi330RxSettings>
+	public sealed class DtpHdmiRx : AbstractDtpHdmiDevice<DtpHdmiRxSettings>
 	{
 		private int? m_DtpOutput;
 
@@ -56,14 +56,14 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Rx
 
 		#region Settings
 
-		protected override void ApplySettingsFinal(DtpHdmi330RxSettings settings, IDeviceFactory factory)
+		protected override void ApplySettingsFinal(DtpHdmiRxSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
 
 			m_DtpOutput = settings.DtpOutput;
 		}
 
-		protected override void CopySettingsFinal(DtpHdmi330RxSettings settings)
+		protected override void CopySettingsFinal(DtpHdmiRxSettings settings)
 		{
 			base.CopySettingsFinal(settings);
 
