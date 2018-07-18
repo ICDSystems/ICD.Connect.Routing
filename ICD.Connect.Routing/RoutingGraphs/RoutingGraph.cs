@@ -1507,7 +1507,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			destination.GetEndpoints().ForEach(e => UnrouteDestination(e, type, roomId));
+			foreach (EndpointInfo endpoint in Connections.FilterEndpointsAny(destination, type))
+				UnrouteDestination(endpoint, type, roomId);
 		}
 
 		/// <summary>
