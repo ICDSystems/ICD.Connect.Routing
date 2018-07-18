@@ -21,15 +21,15 @@ namespace ICD.Connect.Routing.Utils
 		public event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		// Keeps track of source detection
-		private readonly Dictionary<int, Dictionary<eConnectionType, bool>> m_SourceDetectionStates;
+		private readonly Dictionary<int, eConnectionType> m_SourceDetectionStates;
 		private readonly SafeCriticalSection m_SourceDetectionStatesSection;
 
 		// Keeps track of active transmission
-		private readonly Dictionary<int, Dictionary<eConnectionType, bool>> m_ActiveTransmissionStates;
+		private readonly Dictionary<int, eConnectionType> m_ActiveTransmissionStates;
 		private readonly SafeCriticalSection m_ActiveTransmissionStatesSection;
 
 		// Keeps track of output->input mapping
-		private readonly Dictionary<int, Dictionary<eConnectionType, int?>> m_OutputInputMap;
+		private readonly Dictionary<int, Dictionary<eConnectionType, int>> m_OutputInputMap;
 		private readonly SafeCriticalSection m_OutputInputMapSection;
 
 		// Keeps track of input->output mapping
@@ -41,13 +41,13 @@ namespace ICD.Connect.Routing.Utils
 		/// </summary>
 		public SwitcherCache()
 		{
-			m_SourceDetectionStates = new Dictionary<int, Dictionary<eConnectionType, bool>>();
+			m_SourceDetectionStates = new Dictionary<int, eConnectionType>();
 			m_SourceDetectionStatesSection = new SafeCriticalSection();
 
-			m_ActiveTransmissionStates = new Dictionary<int, Dictionary<eConnectionType, bool>>();
+			m_ActiveTransmissionStates = new Dictionary<int, eConnectionType>();
 			m_ActiveTransmissionStatesSection = new SafeCriticalSection();
 
-			m_OutputInputMap = new Dictionary<int, Dictionary<eConnectionType, int?>>();
+			m_OutputInputMap = new Dictionary<int, Dictionary<eConnectionType, int>>();
 			m_OutputInputMapSection = new SafeCriticalSection();
 
 			m_InputOutputMap = new Dictionary<int, Dictionary<eConnectionType, IcdHashSet<int>>>();
@@ -70,20 +70,19 @@ namespace ICD.Connect.Routing.Utils
 		/// Gets the cached source detection state for the given input.
 		/// </summary>
 		/// <param name="input"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		public bool GetSourceDetectedState(int input, eConnectionType type)
+		public bool GetSourceDetectedState(int input, eConnectionType flag)
 		{
-			if (!EnumUtils.HasSingleFlag(type))
-				throw new ArgumentException("Type has multiple flags", "type");
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("Type has multiple flags", "flag");
 
 			m_SourceDetectionStatesSection.Enter();
 
 			try
 			{
-				return m_SourceDetectionStates.ContainsKey(input)
-				       && m_SourceDetectionStates[input].GetDefault(type, false);
+				return m_SourceDetectionStates.GetDefault(input).HasFlag(flag);
 			}
 			finally
 			{
@@ -100,38 +99,24 @@ namespace ICD.Connect.Routing.Utils
 		[PublicAPI]
 		public bool SetSourceDetectedState(int input, eConnectionType type, bool state)
 		{
-			eConnectionType changed = eConnectionType.None;
+			eConnectionType changed;
 
 			m_SourceDetectionStatesSection.Enter();
 
 			try
 			{
-				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
-				{
-					if (!m_SourceDetectionStates.ContainsKey(input))
-					{
-						// No change
-						if (!state)
-							continue;
+				eConnectionType current = m_SourceDetectionStates.GetDefault(input);
+				changed = type & ~current;
 
-						m_SourceDetectionStates[input] = new Dictionary<eConnectionType, bool>();
-					}
+				if (changed == eConnectionType.None)
+					return false;
 
-					// No change
-					if (m_SourceDetectionStates[input].GetDefault(flag, false) == state)
-						continue;
-
-					m_SourceDetectionStates[input][flag] = state;
-					changed |= flag;
-				}
+				m_SourceDetectionStates[input] = current | type;
 			}
 			finally
 			{
 				m_SourceDetectionStatesSection.Leave();
 			}
-
-			if (changed == eConnectionType.None)
-				return false;
 
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, changed, state));
 			return true;
@@ -142,7 +127,7 @@ namespace ICD.Connect.Routing.Utils
 		{
 			bool change = false;
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
-			     change |= SetInputForOutputSingle(output, input, flag);
+				change |= SetInputForOutputSingle(output, input, flag);
 
 			return change;
 		}
@@ -163,12 +148,12 @@ namespace ICD.Connect.Routing.Utils
 
 			try
 			{
-				Dictionary<eConnectionType, int?> dict;
+				Dictionary<eConnectionType, int> dict;
 				if (!m_OutputInputMap.TryGetValue(output, out dict))
 					return null;
 
-				int? address;
-				return dict.TryGetValue(type, out address) ? address : null;
+				int address;
+				return dict.TryGetValue(type, out address) ? address : (int?)null;
 			}
 			finally
 			{
@@ -193,39 +178,6 @@ namespace ICD.Connect.Routing.Utils
 				return null;
 
 			return new ConnectorInfo((int)input, type);
-		}
-
-		/// <summary>
-		/// Gets the cached inputs for the given output.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public IEnumerable<ConnectorInfo> GetInputsForOutput(int output, eConnectionType type)
-		{
-			m_OutputInputMapSection.Enter();
-
-			try
-			{
-				Dictionary<eConnectionType, int?> dict;
-				if (!m_OutputInputMap.TryGetValue(output, out dict))
-					return Enumerable.Empty<ConnectorInfo>();
-
-				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(f =>
-				                        {
-					                        int? input = GetInputForOutput(output, f);
-					                        return input == null
-						                               ? (ConnectorInfo?)null
-						                               : new ConnectorInfo((int)input, f);
-				                        })
-				                .ExceptNulls()
-				                .ToArray();
-			}
-			finally
-			{
-				m_OutputInputMapSection.Leave();
-			}
 		}
 
 		/// <summary>
@@ -294,11 +246,11 @@ namespace ICD.Connect.Routing.Utils
 		/// </summary>
 		/// <param name="output"></param>
 		/// <param name="input"></param>
-		/// <param name="type"></param>
-		private bool SetInputForOutputSingle(int output, int? input, eConnectionType type)
+		/// <param name="flag"></param>
+		private bool SetInputForOutputSingle(int output, int? input, eConnectionType flag)
 		{
-			if (!EnumUtils.HasSingleFlag(type))
-				throw new ArgumentException("Type must have single flag", "type");
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("Type must have single flag", "flag");
 
 			int? oldInput;
 
@@ -306,32 +258,34 @@ namespace ICD.Connect.Routing.Utils
 
 			try
 			{
-				if (!m_OutputInputMap.ContainsKey(output))
+				Dictionary<eConnectionType, int> cache;
+				if (!m_OutputInputMap.TryGetValue(output, out cache))
 				{
-					// No change
-					if (!input.HasValue)
-						return false;
-
-					m_OutputInputMap[output] = new Dictionary<eConnectionType, int?>();
+					cache = new Dictionary<eConnectionType, int>();
+					m_OutputInputMap.Add(output, cache);
 				}
 
-				oldInput = m_OutputInputMap[output].GetDefault(type, null);
+				int cachedInput;
+				oldInput = cache.TryGetValue(flag, out cachedInput) ? cachedInput : (int?)null;
 
 				// No change
 				if (oldInput == input)
 					return false;
 
-				m_OutputInputMap[output][type] = input;
+				if (input == null)
+					cache.Remove(flag);
+				else
+					cache[flag] = (int)input;
 			}
 			finally
 			{
 				m_OutputInputMapSection.Leave();
 			}
 
-			UpdateInputOutputMapSingle(oldInput, input, output, type);
-			SetActiveTransmissionStateSingle(output, type, input.HasValue);
+			UpdateInputOutputMapSingle(oldInput, input, output, flag);
+			SetActiveTransmissionStateSingle(output, flag, input.HasValue);
 
-			OnRouteChange.Raise(this, new RouteChangeEventArgs(oldInput, input, output, type));
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(oldInput, input, output, flag));
 			return true;
 		}
 
@@ -341,10 +295,10 @@ namespace ICD.Connect.Routing.Utils
 		/// <param name="oldInput"></param>
 		/// <param name="newInput"></param>
 		/// <param name="output"></param>
-		/// <param name="type"></param>
-		private void UpdateInputOutputMapSingle(int? oldInput, int? newInput, int output, eConnectionType type)
+		/// <param name="flag"></param>
+		private void UpdateInputOutputMapSingle(int? oldInput, int? newInput, int output, eConnectionType flag)
 		{
-			if (!EnumUtils.HasSingleFlag(type))
+			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("Type must have single flag", "type");
 
 			// No change
@@ -360,25 +314,41 @@ namespace ICD.Connect.Routing.Utils
 				// Remove the output from the old input
 				if (oldInput.HasValue)
 				{
-					if (!m_InputOutputMap.ContainsKey(oldInput.Value))
-						m_InputOutputMap[oldInput.Value] = new Dictionary<eConnectionType, IcdHashSet<int>>();
+					Dictionary<eConnectionType, IcdHashSet<int>> cache;
+					if (!m_InputOutputMap.TryGetValue(oldInput.Value, out cache))
+					{
+						cache = new Dictionary<eConnectionType, IcdHashSet<int>>();
+						m_InputOutputMap.Add(oldInput.Value, cache);
+					}
 
-					if (!m_InputOutputMap[oldInput.Value].ContainsKey(type))
-						m_InputOutputMap[oldInput.Value][type] = new IcdHashSet<int>();
+					IcdHashSet<int> innerCache;
+					if (!cache.TryGetValue(flag, out innerCache))
+					{
+						innerCache = new IcdHashSet<int>();
+						cache.Add(flag, innerCache);
+					}
 
-					change |= m_InputOutputMap[oldInput.Value][type].Remove(output);
+					change |= innerCache.Remove(output);
 				}
 
 				// Add the output to the new input
 				if (newInput.HasValue)
 				{
-					if (!m_InputOutputMap.ContainsKey(newInput.Value))
-						m_InputOutputMap[newInput.Value] = new Dictionary<eConnectionType, IcdHashSet<int>>();
+					Dictionary<eConnectionType, IcdHashSet<int>> cache;
+					if (!m_InputOutputMap.TryGetValue(newInput.Value, out cache))
+					{
+						cache = new Dictionary<eConnectionType, IcdHashSet<int>>();
+						m_InputOutputMap.Add(newInput.Value, cache);
+					}
 
-					if (!m_InputOutputMap[newInput.Value].ContainsKey(type))
-						m_InputOutputMap[newInput.Value][type] = new IcdHashSet<int>();
+					IcdHashSet<int> innerCache;
+					if (!cache.TryGetValue(flag, out innerCache))
+					{
+						innerCache = new IcdHashSet<int>();
+						cache.Add(flag, innerCache);
+					}
 
-					change |= m_InputOutputMap[newInput.Value][type].Add(output);
+					change |= innerCache.Add(output);
 				}
 
 				// No change.
@@ -391,48 +361,39 @@ namespace ICD.Connect.Routing.Utils
 			}
 
 			if (oldInput.HasValue)
-				OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(oldInput.Value, type, false));
+				OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(oldInput.Value, flag, false));
 
 			if (newInput.HasValue)
-				OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(newInput.Value, type, true));
+				OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(newInput.Value, flag, true));
 		}
 
 		/// <summary>
 		/// Sets the active transmission state for the given output and type.
 		/// </summary>
 		/// <param name="output"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <param name="state"></param>
-		private void SetActiveTransmissionStateSingle(int output, eConnectionType type, bool state)
+		private void SetActiveTransmissionStateSingle(int output, eConnectionType flag, bool state)
 		{
-			if (!EnumUtils.HasSingleFlag(type))
-				throw new ArgumentException("Type must have single flag", "type");
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("Type must have single flag", "flag");
 
 			m_ActiveTransmissionStatesSection.Enter();
 
 			try
 			{
-				if (!m_ActiveTransmissionStates.ContainsKey(output))
-				{
-					// No change
-					if (!state)
-						return;
-
-					m_ActiveTransmissionStates[output] = new Dictionary<eConnectionType, bool>();
-				}
-
-				// No change
-				if (m_ActiveTransmissionStates[output].GetDefault(type, false) == state)
+				eConnectionType current = m_ActiveTransmissionStates.GetDefault(output);
+				if (current.HasFlag(flag))
 					return;
 
-				m_ActiveTransmissionStates[output][type] = state;
+				m_SourceDetectionStates[output] = current | flag;
 			}
 			finally
 			{
 				m_ActiveTransmissionStatesSection.Leave();
 			}
 
-			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, type, state));
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, flag, state));
 		}
 
 		#endregion

@@ -12,16 +12,25 @@ using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Extron.Devices.Switchers
 {
-	public abstract class AbstractDtpCrosspointSwitcherControl<TDevice, TSettings> : AbstractRouteSwitcherControl<TDevice>, IDtpCrosspointSwitcherControl
-		where TDevice : AbstractDtpCrosspointDevice<TSettings>
-		where TSettings : AbstractDtpCrosspointSettings, new()
+	public sealed class DtpCrosspointSwitcherControl : AbstractRouteSwitcherControl<IDtpCrosspointDevice>, IDtpCrosspointSwitcherControl
 	{
 		// gets the number of inputs formatted into {0}
-		private string SOURCE_DETECTION_REGEX_FORMAT = "^(?:Frq00 )?([01]){{{0}}}$";
-		private string ROUTE_REGEX_FORMAT = @"^Out(\d\d?) In(\d\d?) (All|Aud|Vid)$";
+		private const string SOURCE_DETECTION_REGEX_FORMAT = "^(?:Frq00 )?([01]){{{0}}}$";
+		private const string ROUTE_REGEX_FORMAT = @"^Out(\d\d?) In(\d\d?) (All|Aud|Vid)$";
+
+		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
+		private readonly SwitcherCache m_Cache;
+		private readonly int m_NumberOfInputs;
+		private readonly int m_NumberOfOutputs;
+
+		#region Properties
 
 		private Regex m_SourceDetectionRegex;
-		protected Regex SourceDetectionRegex
+		private Regex SourceDetectionRegex
 		{
 			get
 			{
@@ -31,27 +40,30 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		}
 
 		private Regex m_RouteRegex;
-		protected Regex RouteRegex
+		private Regex RouteRegex
 		{
-			get
-			{
-				return m_RouteRegex ?? (m_RouteRegex = new Regex(ROUTE_REGEX_FORMAT));
-			}
+			get { return m_RouteRegex ?? (m_RouteRegex = new Regex(ROUTE_REGEX_FORMAT)); }
 		}
 
-		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
-		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
-		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
-		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
-		public abstract int NumberOfInputs { get; }
-		public abstract int NumberOfOutputs { get; }
+		public int NumberOfInputs
+		{
+			get { return m_NumberOfInputs; }
+		}
 
-		private readonly SwitcherCache m_Cache;
+		public int NumberOfOutputs
+		{
+			get { return m_NumberOfOutputs; }
+		}
 
-		public AbstractDtpCrosspointSwitcherControl(TDevice parent, int id) : base(parent, id)
+		#endregion
+
+		public DtpCrosspointSwitcherControl(IDtpCrosspointDevice parent, int id, int numInputs, int numOutputs) : base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
+			m_NumberOfInputs = numInputs;
+			m_NumberOfOutputs = numOutputs;
+
 			Subscribe(parent);
 			Subscribe(m_Cache);
 		}
@@ -131,15 +143,39 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		#endregion
 
+		#region Private Methods
+
+		/// <summary>
+		/// Gets the correct connection type character to send to the Extron switcher
+		/// </summary>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		private char GetConnectionTypeCharacter(eConnectionType type)
+		{
+			switch (type)
+			{
+				case eConnectionType.Audio | eConnectionType.Video:
+					return '!';
+				case eConnectionType.Video:
+					return '%';
+				case eConnectionType.Audio:
+					return '$';
+				default:
+					throw new NotSupportedException(string.Format("{0} routing not supported", type));
+			}
+		}
+
+		#endregion
+
 		#region Parent Callbacks
 
-		private void Subscribe(TDevice parent)
+		private void Subscribe(IDtpCrosspointDevice parent)
 		{
 			parent.OnInitializedChanged += ParentOnOnInitializedChanged;
 			parent.OnResponseReceived += ParentOnOnResponseReceived;
 		}
 
-		private void Unsubscribe(TDevice parent)
+		private void Unsubscribe(IDtpCrosspointDevice parent)
 		{
 			parent.OnInitializedChanged -= ParentOnOnInitializedChanged;
 			parent.OnResponseReceived -= ParentOnOnResponseReceived;
@@ -244,30 +280,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
         {
             OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
         }
-
-		#endregion
-
-		#region Private Methods
-
-		/// <summary>
-		/// Gets the correct connection type character to send to the Extron switcher
-		/// </summary>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		private char GetConnectionTypeCharacter(eConnectionType type)
-		{
-			switch (type)
-			{
-				case eConnectionType.Audio | eConnectionType.Video:
-					return '!';
-				case eConnectionType.Video:
-					return '%';
-				case eConnectionType.Audio:
-					return '$';
-				default:
-					throw new NotSupportedException(string.Format("{0} routing not supported", type));
-			}
-		}
 
 		#endregion
 	}
