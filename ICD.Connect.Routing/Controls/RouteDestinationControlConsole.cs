@@ -44,6 +44,7 @@ namespace ICD.Connect.Routing.Controls
 				throw new ArgumentNullException("instance");
 
 			yield return new ConsoleCommand("PrintSignalDetection", "Prints a table of the source detection state for each input", () => PrintSignalDetection(instance));
+			yield return new ConsoleCommand("PrintInputsActive", "Prints a table of the active state for each input", () => PrintInputsActive(instance));
 		}
 
 		/// <summary>
@@ -67,6 +68,35 @@ namespace ICD.Connect.Routing.Controls
 					string detectedName = detected ? true.ToString() : null;
 
 					builder.AddRow(address, flag, detectedName);
+
+					first = false;
+				}
+			}
+
+			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Prints a table of the input active state for each input.
+		/// </summary>
+		/// <param name="instance"></param>
+		/// <returns></returns>
+		private static string PrintInputsActive(IRouteDestinationControl instance)
+		{
+			TableBuilder builder = new TableBuilder("Input", "Type", "Active");
+
+			foreach (ConnectorInfo input in instance.GetInputs())
+			{
+				bool first = true;
+
+				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(input.ConnectionType))
+				{
+					bool inputActive = instance.GetInputActiveState(input.Address, flag);
+
+					string address = first ? input.Address.ToString() : null;
+					string inputActiveName = inputActive ? true.ToString() : null;
+
+					builder.AddRow(address, flag, inputActiveName);
 
 					first = false;
 				}
