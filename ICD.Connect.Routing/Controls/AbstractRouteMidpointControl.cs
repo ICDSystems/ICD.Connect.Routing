@@ -109,6 +109,7 @@ namespace ICD.Connect.Routing.Controls
 		{
 			base.BuildConsoleStatus(addRow);
 
+			RouteSourceControlConsole.BuildConsoleStatus(this, addRow);
 			RouteMidpointControlConsole.BuildConsoleStatus(this, addRow);
 		}
 
@@ -119,6 +120,9 @@ namespace ICD.Connect.Routing.Controls
 		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
 		{
 			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+			foreach (IConsoleCommand command in RouteSourceControlConsole.GetConsoleCommands(this))
 				yield return command;
 
 			foreach (IConsoleCommand command in RouteMidpointControlConsole.GetConsoleCommands(this))
@@ -141,6 +145,9 @@ namespace ICD.Connect.Routing.Controls
 		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
 			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
+
+			foreach (IConsoleNodeBase node in RouteSourceControlConsole.GetConsoleNodes(this))
 				yield return node;
 
 			foreach (IConsoleNodeBase node in RouteMidpointControlConsole.GetConsoleNodes(this))
