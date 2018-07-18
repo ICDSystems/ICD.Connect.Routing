@@ -106,12 +106,19 @@ namespace ICD.Connect.Routing.Utils
 			try
 			{
 				eConnectionType current = m_SourceDetectionStates.GetDefault(input);
-				changed = type & ~current;
+				eConnectionType result;
 
-				if (changed == eConnectionType.None)
+				if (state)
+					result = current | type;
+				else
+					result = current & ~type;
+
+				if (result == current)
 					return false;
 
-				m_SourceDetectionStates[input] = current | type;
+				changed = current ^ result;
+
+				m_SourceDetectionStates[input] = result;
 			}
 			finally
 			{
@@ -299,7 +306,7 @@ namespace ICD.Connect.Routing.Utils
 		private void UpdateInputOutputMapSingle(int? oldInput, int? newInput, int output, eConnectionType flag)
 		{
 			if (!EnumUtils.HasSingleFlag(flag))
-				throw new ArgumentException("Type must have single flag", "type");
+				throw new ArgumentException("Type must have single flag", "flag");
 
 			// No change
 			if (oldInput == newInput)
@@ -383,10 +390,17 @@ namespace ICD.Connect.Routing.Utils
 			try
 			{
 				eConnectionType current = m_ActiveTransmissionStates.GetDefault(output);
-				if (current.HasFlag(flag))
+				eConnectionType result;
+
+				if (state)
+					result = current | flag;
+				else
+					result = current & ~flag;
+
+				if (result == current)
 					return;
 
-				m_SourceDetectionStates[output] = current | flag;
+				m_SourceDetectionStates[output] = result;
 			}
 			finally
 			{

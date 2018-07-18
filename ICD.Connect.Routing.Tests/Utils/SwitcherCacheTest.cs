@@ -41,6 +41,7 @@ namespace ICD.Connect.Routing.Tests.Utils
 			Assert.IsFalse(cache.SetSourceDetectedState(1, eConnectionType.Video, false));
 			Assert.IsTrue(cache.SetSourceDetectedState(1, eConnectionType.Video, true));
 			Assert.IsFalse(cache.SetSourceDetectedState(1, eConnectionType.Video, true));
+			
 			Assert.IsTrue(cache.SetSourceDetectedState(1, eConnectionType.Video | eConnectionType.Audio, true));
 			Assert.IsTrue(cache.SetSourceDetectedState(1, eConnectionType.Video, false));
 
