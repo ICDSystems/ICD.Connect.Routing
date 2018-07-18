@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Routing.Connections;
 
 namespace ICD.Connect.Routing.Controls
 {
@@ -41,7 +43,31 @@ namespace ICD.Connect.Routing.Controls
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 
-			yield break;
+			yield return new ConsoleCommand("PrintOutputsTransmission", "Prints a table of the active transmission state for each output", () => PrintOutputsTransmission(instance));
+		}
+
+		private static string PrintOutputsTransmission(IRouteSourceControl instance)
+		{
+			TableBuilder builder = new TableBuilder("Output", "Type", "Transmitting");
+
+			foreach (ConnectorInfo output in instance.GetOutputs())
+			{
+				bool first = true;
+
+				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(output.ConnectionType))
+				{
+					bool transmitting = instance.GetActiveTransmissionState(output.Address, flag);
+
+					string address = first ? output.Address.ToString() : null;
+					string transmittingName = transmitting ? true.ToString() : null;
+
+					builder.AddRow(address, flag, transmittingName);
+
+					first = false;
+				}
+			}
+
+			return builder.ToString();
 		}
 	}
 }
