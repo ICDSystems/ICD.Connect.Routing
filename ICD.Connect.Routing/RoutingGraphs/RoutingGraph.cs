@@ -1530,23 +1530,23 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Unroutes the consecutive connections a -> b.
 		/// </summary>
-		/// <param name="a"></param>
-		/// <param name="b"></param>
+		/// <param name="incomingConnection"></param>
+		/// <param name="outgoingConnection"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if unauthorized to unroute the connections</returns>
-		private bool Unroute(Connection a, Connection b, eConnectionType type, int roomId)
+		private bool Unroute(Connection incomingConnection, Connection outgoingConnection, eConnectionType type, int roomId)
 		{
-			if (a == null)
-				throw new ArgumentNullException("a");
+			if (incomingConnection == null)
+				throw new ArgumentNullException("incomingConnection");
 
-			if (b == null)
-				throw new ArgumentNullException("b");
+			if (outgoingConnection == null)
+				throw new ArgumentNullException("outgoingConnection");
 
-			if (a.Destination.Device != b.Source.Device || a.Destination.Control != b.Source.Control)
+			if (incomingConnection.Destination.Device != outgoingConnection.Source.Device || incomingConnection.Destination.Control != outgoingConnection.Source.Control)
 				throw new InvalidOperationException("Connections are not consecutive");
 
-			type = EnumUtils.GetFlagsIntersection(a.ConnectionType, b.ConnectionType, type);
+			type = EnumUtils.GetFlagsIntersection(incomingConnection.ConnectionType, outgoingConnection.ConnectionType, type);
 
 			//ConnectionUsageInfo currentUsage = ConnectionUsages.GetConnectionUsageInfo(b);
 			// TODO - Needs to support combine spaces
@@ -1558,12 +1558,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			//previousUsage.RemoveRoom(roomId, type);
 			//currentUsage.RemoveRoom(roomId, type);
 
-			IRouteSwitcherControl switcher = this.GetSourceControl(b) as IRouteSwitcherControl;
+			IRouteSwitcherControl switcher = this.GetSourceControl(outgoingConnection) as IRouteSwitcherControl;
 			if (switcher == null)
 				return true;
 
-			int input = b.Destination.Address;
-			int output = b.Source.Address;
+			int input = incomingConnection.Destination.Address;
+			int output = outgoingConnection.Source.Address;
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 			{
