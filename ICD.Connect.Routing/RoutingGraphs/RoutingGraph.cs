@@ -43,7 +43,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private readonly SafeCriticalSection m_PendingRoutesSection;
 		private readonly Dictionary<Guid, int> m_PendingRoutes;
 
-		private RoutingCache m_Cache; 
+		private readonly RoutingCache m_Cache; 
 
 		#region Events
 
@@ -133,6 +133,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			m_PendingRoutes = new Dictionary<Guid, int>();
 			m_PendingRoutesSection = new SafeCriticalSection();
+
+			m_Cache = new RoutingCache(this);
 		}
 
 		/// <summary>
@@ -148,6 +150,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			OnDestinationInputActiveStateChanged = null;
 
 			base.DisposeFinal(disposing);
+
+			m_Cache.Dispose();
 		}
 
 		/// <summary>
@@ -2074,7 +2078,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
 
-			m_Cache = new RoutingCache(this);
+			m_Cache.RebuildCache();
 		}
 
 		private IEnumerable<StaticRoute> GetStaticRoutes(RoutingGraphSettings settings, IDeviceFactory factory)
