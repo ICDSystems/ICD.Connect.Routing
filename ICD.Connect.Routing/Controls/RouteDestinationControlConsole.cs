@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
@@ -56,7 +57,7 @@ namespace ICD.Connect.Routing.Controls
 		{
 			TableBuilder builder = new TableBuilder("Input", "Type", "Detected");
 
-			foreach (ConnectorInfo input in instance.GetInputs())
+			foreach (ConnectorInfo input in instance.GetInputs().OrderBy(c => c.Address))
 			{
 				bool first = true;
 
@@ -85,7 +86,7 @@ namespace ICD.Connect.Routing.Controls
 		{
 			TableBuilder builder = new TableBuilder("Input", "Type", "Active");
 
-			foreach (ConnectorInfo input in instance.GetInputs())
+			foreach (ConnectorInfo input in instance.GetInputs().OrderBy(c => c.Address))
 			{
 				bool first = true;
 

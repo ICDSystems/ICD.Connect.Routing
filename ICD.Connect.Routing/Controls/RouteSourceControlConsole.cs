@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
@@ -50,7 +51,7 @@ namespace ICD.Connect.Routing.Controls
 		{
 			TableBuilder builder = new TableBuilder("Output", "Type", "Transmitting");
 
-			foreach (ConnectorInfo output in instance.GetOutputs())
+			foreach (ConnectorInfo output in instance.GetOutputs().OrderBy(o => o.Address))
 			{
 				bool first = true;
 
