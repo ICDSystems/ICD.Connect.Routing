@@ -80,6 +80,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
 				                .Select(f => this.Route(input, output, f))
+								.ToArray()
 				                .Unanimous(false);
 			}
 
@@ -110,6 +111,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
 				                .Select(f => ClearOutput(output, f))
+								.ToArray()
 				                .Unanimous(false);
 			}
 
@@ -136,7 +138,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(f => GetSignalDetectedState(input, f)).Unanimous(false);
+				                .Select(f => GetSignalDetectedState(input, f))
+								.Unanimous(false);
 			}
 
 			switch (type)

@@ -110,6 +110,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
 				                .Select(t => this.Route(input, output, t))
+								.ToArray()
 				                .Unanimous(false);
 			}
 
@@ -130,6 +131,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
 				                .Select(t => ClearOutput(output, t))
+								.ToArray()
 				                .Unanimous(false);
 			}
 

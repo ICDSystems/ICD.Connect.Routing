@@ -149,8 +149,9 @@ namespace ICD.Connect.Routing.Atlona
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-					.Select(t => this.Route(input, output, t))
-					.Unanimous(false);
+				                .Select(t => this.Route(input, output, t))
+				                .ToArray()
+				                .Unanimous(false);
 			}
 
 			switch (type)
@@ -181,6 +182,7 @@ namespace ICD.Connect.Routing.Atlona
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
 								.Select(t => ClearOutput(output, t))
+								.ToArray()
 								.Unanimous(false);
 			}
 
