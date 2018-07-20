@@ -143,12 +143,6 @@ namespace ICD.Connect.Routing.Atlona
 			if (args != null)
 				command = string.Format(command, args);
 
-			if (!IsConnected)
-			{
-				Log(eSeverity.Critical, "Unable to connect");
-				return;
-			}
-
 			m_ConnectionStateManager.Send(command + '\r');
 		}
 
