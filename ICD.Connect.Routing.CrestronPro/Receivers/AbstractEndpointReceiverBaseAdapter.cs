@@ -1,6 +1,7 @@
 ﻿using System;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
+using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Routing.Devices;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
@@ -306,26 +307,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 			if (factory == null)
 				throw new ArgumentNullException("factory");
 
-			if (settings.DmSwitch == null)
-			{
-				if (settings.Ipid == null)
-					throw new InvalidOperationException("Can't instantiate ControlSystem endpoint without IPID");
-				return InstantiateReceiver((byte)settings.Ipid, ProgramInfo.ControlSystem);
-			}
-
-			if (settings.DmOutputAddress == null)
-				throw new InvalidOperationException("Can't instantiate DM endpoint without DM address");
-
-			IDmParent provider = factory.GetDeviceById((int)settings.DmSwitch) as IDmParent;
-			if (provider == null)
-				throw new InvalidOperationException(string.Format("Device {0} is not a {1}", settings.DmSwitch,
-				                                                  typeof(IDmParent).Name));
-
-			DMOutput output = provider.GetDmOutput((int)settings.DmOutputAddress);
-
-			return settings.Ipid == null
-				       ? InstantiateReceiver(output)
-				       : InstantiateReceiver((byte)settings.Ipid, output);
+			return DmEndpointFactoryUtils.InstantiateReceiver(settings, factory, this);
 		}
 
 		public abstract TReceiver InstantiateReceiver(byte ipid, CrestronControlSystem controlSystem);
