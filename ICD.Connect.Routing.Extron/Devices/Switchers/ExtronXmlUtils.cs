@@ -13,7 +13,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		{
 			foreach (string controlElement in XmlUtils.GetChildElementsAsString(xml))
 			{
-				int id = XmlUtils.GetAttributeAsInt(xml, "id");
+				int id = XmlUtils.GetAttributeAsInt(controlElement, "id");
 				string type = XmlUtils.GetAttributeAsString(controlElement, "type");
 				string name = XmlUtils.TryReadChildElementContentAsString(controlElement, "Name");
 
