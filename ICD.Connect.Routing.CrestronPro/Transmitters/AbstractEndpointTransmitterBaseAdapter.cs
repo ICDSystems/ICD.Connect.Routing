@@ -332,7 +332,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 			try
 			{
-				transmitter = InstantiateTransmitter(settings, factory);
+				transmitter = DmEndpointFactoryUtils.InstantiateTransmitter(settings, factory, this);
 			}
 			catch (Exception e)
 			{
@@ -340,31 +340,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			}
 
 			SetTransmitter(transmitter, settings.DmSwitch);
-#else
-            throw new NotImplementedException();
 #endif
 		}
 
 #if SIMPLSHARP
-		/// <summary>
-		/// Determines the best way to instantiate the endpoint based on the available information.
-		/// Instantiates via parent DM Switch if specified, otherwise uses the ControlSystem.
-		/// </summary>
-		/// <param name="settings"></param>
-		/// <param name="factory"></param>
-		/// <returns></returns>
-		[NotNull]
-		private TTransmitter InstantiateTransmitter(TSettings settings, IDeviceFactory factory)
-		{
-			if (settings == null)
-				throw new ArgumentNullException("settings");
-
-			if (factory == null)
-				throw new ArgumentNullException("factory");
-
-			return DmEndpointFactoryUtils.InstantiateTransmitter(settings, factory, this);
-		}
-
 		/// <summary>
 		/// Instantiates the transmitter with the given IPID against the control system.
 		/// </summary>

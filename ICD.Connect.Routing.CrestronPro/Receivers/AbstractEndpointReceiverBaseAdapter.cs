@@ -279,7 +279,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 
 			try
 			{
-				scaler = InstantiateEndpoint(settings, factory);
+				scaler = DmEndpointFactoryUtils.InstantiateReceiver(settings, factory, this);
 			}
 			catch (Exception e)
 			{
@@ -292,28 +292,26 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 
 #if SIMPLSHARP
 		/// <summary>
-		/// Determines the best way to instantiate a DMEndpoint based on the available information.
-		/// Instantiates via parent DM Switch if specified, otherwise uses the ControlSystem.
+		/// Instantiates the receiver with the given IPID against the control system.
 		/// </summary>
-		/// <param name="settings"></param>
-		/// <param name="factory"></param>
+		/// <param name="ipid"></param>
+		/// <param name="controlSystem"></param>
 		/// <returns></returns>
-		[NotNull]
-		private TReceiver InstantiateEndpoint(TSettings settings, IDeviceFactory factory)
-		{
-			if (settings == null)
-				throw new ArgumentNullException("settings");
-
-			if (factory == null)
-				throw new ArgumentNullException("factory");
-
-			return DmEndpointFactoryUtils.InstantiateReceiver(settings, factory, this);
-		}
-
 		public abstract TReceiver InstantiateReceiver(byte ipid, CrestronControlSystem controlSystem);
 
+		/// <summary>
+		/// Instantiates the receiver against the given DM Ouptut and configures it with the given IPID.
+		/// </summary>
+		/// <param name="ipid"></param>
+		/// <param name="output"></param>
+		/// <returns></returns>
 		public abstract TReceiver InstantiateReceiver(byte ipid, DMOutput output);
 
+		/// <summary>
+		/// Instantiates the receiver against the given DM Output.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
 		public abstract TReceiver InstantiateReceiver(DMOutput output);
 #endif
 
