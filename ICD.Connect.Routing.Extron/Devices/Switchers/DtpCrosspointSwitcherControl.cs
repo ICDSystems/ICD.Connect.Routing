@@ -35,7 +35,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			get
 			{
 				return m_SourceDetectionRegex ??
-				       (m_SourceDetectionRegex = new Regex(string.Format(SOURCE_DETECTION_REGEX_FORMAT, NumberOfInputs)));
+					   (m_SourceDetectionRegex = new Regex(string.Format(SOURCE_DETECTION_REGEX_FORMAT, NumberOfInputs)));
 			}
 		}
 
@@ -72,6 +72,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		{
 			base.DisposeFinal(disposing);
 			Unsubscribe(Parent);
+			Unsubscribe(m_Cache);
 		}
 
 		#region Methods
@@ -83,12 +84,24 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			return Enumerable.Range(1, NumberOfInputs).Select(input => new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video));
+			// hdmi/dtp inputs
+			foreach (var input in Enumerable.Range(1, NumberOfInputs))
+				yield return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
+
+			// analog audio inputs -- disabled for now
+			//foreach (var input in Enumerable.Range(1, 6))
+			//    yield return new ConnectorInfo(input + 1000, eConnectionType.Audio);
 		}
 
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			return Enumerable.Range(1, NumberOfOutputs).Select(input => new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video));
+			// hdmi/dtp outputs
+			foreach (var output in Enumerable.Range(1, NumberOfOutputs))
+				yield return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
+
+			// analog audio outputs
+			foreach (var output in Enumerable.Range(1, Math.Min(NumberOfOutputs, 4)))
+				yield return new ConnectorInfo(output + 1000, eConnectionType.Audio);
 		}
 
 		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
@@ -108,13 +121,19 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// <returns></returns>
 		public override bool Route(RouteOperation info)
 		{
-			if (info.LocalInput < 1 || info.LocalInput > NumberOfInputs)
-				throw new ArgumentOutOfRangeException("info", string.Format("Input must be between 1 and {0}", NumberOfInputs));
+			int localInput = info.LocalInput; // % 1000;  
+			int localOutput = info.LocalOutput % 1000;
 
-			if (info.LocalOutput < 1 || info.LocalOutput > NumberOfOutputs)
-				throw new ArgumentOutOfRangeException("info", string.Format("Output must be between 1 and {0}", NumberOfOutputs));
+			if ((/*info.LocalInput > 1000 ||*/ info.LocalOutput > 1000) && info.ConnectionType != eConnectionType.Audio)
+				throw new ArgumentOutOfRangeException("info", "Cannot route anything other than audio to analog audio outputs");
 
-			Route(info.LocalInput, info.LocalOutput, info.ConnectionType);
+			if (localInput < 1 || localInput > NumberOfInputs)
+				throw new ArgumentOutOfRangeException("info", string.Format("Input must be between 1 and {0} (or add 1000 for analog audio inputs)", NumberOfInputs));
+
+			if (localOutput < 1 || localOutput > NumberOfOutputs)
+				throw new ArgumentOutOfRangeException("info", string.Format("Output must be between 1 and {0} (or add 1000 for analog audio outputs)", NumberOfOutputs));
+
+			Route(localInput, localOutput, info.ConnectionType);
 			return true;
 		}
 
@@ -229,6 +248,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 						break;
 				}
 				m_Cache.SetInputForOutput(output, input > 0 ? input : null, type);
+				if (type.HasFlag(eConnectionType.Audio) && output >= 1 && output <= 4)
+					m_Cache.SetInputForOutput(output + 1000, input > 0 ? input : null, eConnectionType.Audio);
 			}
 		}
 
@@ -248,38 +269,38 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		private void Subscribe(SwitcherCache cache)
 		{
 			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
-            cache.OnRouteChange += CacheOnRouteChange;
-            cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
-            cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
+			cache.OnRouteChange += CacheOnRouteChange;
+			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
+			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
 		}
 
-        private void Unsubscribe(SwitcherCache cache)
-        {
-            cache.OnSourceDetectionStateChange -= CacheOnSourceDetectionStateChange;
-            cache.OnRouteChange -= CacheOnRouteChange;
-            cache.OnActiveInputsChanged -= CacheOnActiveInputsChanged;
-            cache.OnActiveTransmissionStateChanged -= CacheOnActiveTransmissionStateChanged;
-        }
+		private void Unsubscribe(SwitcherCache cache)
+		{
+			cache.OnSourceDetectionStateChange -= CacheOnSourceDetectionStateChange;
+			cache.OnRouteChange -= CacheOnRouteChange;
+			cache.OnActiveInputsChanged -= CacheOnActiveInputsChanged;
+			cache.OnActiveTransmissionStateChanged -= CacheOnActiveTransmissionStateChanged;
+		}
 
-        private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
-        {
-            OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
-        }
+		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
+		{
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
+		}
 
-        private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
+		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
 		}
 
-        private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
-        {
-            OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
-        }
+		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
+		{
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
+		}
 
-        private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
-        {
-            OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
-        }
+		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
+		{
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
+		}
 
 		#endregion
 	}

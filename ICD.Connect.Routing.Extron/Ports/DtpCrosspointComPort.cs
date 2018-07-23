@@ -47,13 +47,13 @@ namespace ICD.Connect.Routing.Extron.Ports
 			eComSoftwareHandshakeType softwareHandshake, bool reportCtsChanges)
 		{
 			m_Parent.InitializeComPort(baudRate, numberOfDataBits, parityType, numberOfStopBits);
-			
+
 			var comPort = m_Port as IComPort;
 			if (comPort != null)
 				comPort.SetComPortSpec(
-					baudRate, numberOfDataBits, 
-					parityType, numberOfStopBits, 
-					protocolType, hardwareHandShake, 
+					baudRate, numberOfDataBits,
+					parityType, numberOfStopBits,
+					protocolType, hardwareHandShake,
 					softwareHandshake, reportCtsChanges);
 		}
 
@@ -63,35 +63,35 @@ namespace ICD.Connect.Routing.Extron.Ports
 			return m_ConnectionStateManager.Send(data);
 		}
 
-	    public override void Connect()
-	    {
-		    if (m_ConnectionStateManager.PortNumber == null)
-		    {
-			    m_Port = m_Parent.GetSerialInsertionPort();
-			    m_ConnectionStateManager.SetPort(m_Port);
-		    }
+		public override void Connect()
+		{
+			if (m_ConnectionStateManager.PortNumber == null)
+			{
+				m_Port = m_Parent.GetSerialInsertionPort();
+				m_ConnectionStateManager.SetPort(m_Port);
+			}
 
 			m_ConnectionStateManager.Connect();
 
 			UpdateIsConnectedState();
-	    }
+		}
 
-	    protected override bool GetIsConnectedState()
-	    {
-		    return m_ConnectionStateManager.IsConnected;
-	    }
+		protected override bool GetIsConnectedState()
+		{
+			return m_ConnectionStateManager.IsConnected;
+		}
 
-	    #endregion
+		#endregion
 
 		#region Settings
 
 		protected override void ApplySettingsFinal(DtpCrosspointComPortSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
-			
+
 			m_Parent = factory.GetOriginatorById<IDtpHdmiDevice>(settings.Parent);
-            if (m_Parent != null)
-			    Subscribe(m_Parent);
+			if (m_Parent != null)
+				Subscribe(m_Parent);
 		}
 
 		protected override void CopySettingsFinal(DtpCrosspointComPortSettings settings)
@@ -103,9 +103,9 @@ namespace ICD.Connect.Routing.Extron.Ports
 
 		protected override void ClearSettingsFinal()
 		{
-		    if (m_Parent != null)
-		        Unsubscribe(m_Parent);
-		    m_Parent = null; 
+			if (m_Parent != null)
+				Unsubscribe(m_Parent);
+			m_Parent = null;
 
 			base.ClearSettingsFinal();
 		}
@@ -130,9 +130,9 @@ namespace ICD.Connect.Routing.Extron.Ports
 				Connect();
 		}
 
-        #endregion
+		#endregion
 
-        #region Port Callbacks
+		#region Port Callbacks
 
 		private void Subscribe(ConnectionStateManager connectionStateManager)
 		{
@@ -150,24 +150,24 @@ namespace ICD.Connect.Routing.Extron.Ports
 			Receive(e.Data);
 		}
 
-        #endregion
+		#endregion
 
-        #region Console
+		#region Console
 
-        public override IEnumerable<IConsoleCommand> GetConsoleCommands()
-        {
-            foreach(var command in base.GetConsoleCommands())
-                yield return command;
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (var command in base.GetConsoleCommands())
+				yield return command;
 
-            yield return new GenericConsoleCommand<eComBaudRates, eComDataBits, eComParityType, eComStopBits>(
-                "SetComPortSpec", "Sets the ComPort spec", 
-                (a,b,c,d) => SetComPortSpec(a, b, c, d, 
-                    eComProtocolType.ComspecProtocolRS232,
-                    eComHardwareHandshakeType.ComspecHardwareHandshakeNone,
-                    eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
-                    false));
-        }
+			yield return new GenericConsoleCommand<eComBaudRates, eComDataBits, eComParityType, eComStopBits>(
+				"SetComPortSpec", "Sets the ComPort spec",
+				(a, b, c, d) => SetComPortSpec(a, b, c, d,
+					eComProtocolType.ComspecProtocolRS232,
+					eComHardwareHandshakeType.ComspecHardwareHandshakeNone,
+					eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
+					false));
+		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

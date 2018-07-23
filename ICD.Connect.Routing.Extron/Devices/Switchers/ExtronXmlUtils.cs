@@ -13,12 +13,12 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		{
 			foreach (string controlElement in XmlUtils.GetChildElementsAsString(xml))
 			{
-				int id = XmlUtils.GetAttributeAsInt(xml, "id");
+				int id = XmlUtils.GetAttributeAsInt(controlElement, "id");
 				string type = XmlUtils.GetAttributeAsString(controlElement, "type");
 				string name = XmlUtils.TryReadChildElementContentAsString(controlElement, "Name");
 
 				AbstractVolumeRawLevelDeviceControl<IDtpCrosspointDevice> control = null;
-				switch(type)
+				switch (type)
 				{
 					case "Volume":
 						control = GetVolumeControl(controlElement, id, name, parent);
@@ -45,7 +45,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		{
 			eExtronVolumeObject volumeObject =
 				XmlUtils.ReadChildElementContentAsEnum<eExtronVolumeObject>(xml, "VolumeObject", true);
-			
+
 			return new ExtronVolumeDeviceControl(parent, id, name, volumeObject);
 		}
 
@@ -54,7 +54,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			eExtronVolumeType volumeType = XmlUtils.ReadChildElementContentAsEnum<eExtronVolumeType>(xml, "VolumeType", true);
 			int? volumeGroupId = XmlUtils.TryReadChildElementContentAsInt(xml, "VolumeGroupId");
 			int? muteGroupId = XmlUtils.TryReadChildElementContentAsInt(xml, "MuteGroupId");
-			
+
 			return new ExtronGroupVolumeDeviceControl(parent, id, name, volumeType, volumeGroupId, muteGroupId);
 		}
 	}

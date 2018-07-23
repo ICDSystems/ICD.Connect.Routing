@@ -25,10 +25,10 @@ using ICD.Connect.Settings.Core;
 namespace ICD.Connect.Routing.Extron.Devices.Switchers
 {
 	public abstract class AbstractDtpCrosspointDevice<TSettings> : AbstractDevice<TSettings>, IDtpCrosspointDevice
-		where TSettings: AbstractDtpCrosspointSettings, new()
+		where TSettings : AbstractDtpCrosspointSettings, new()
 	{
 
-        private const string PORT_INITIALIZED_REGEX = @"Lrpt(I|O)(\d{1,2})\*((?:0|1){1,2})";
+		private const string PORT_INITIALIZED_REGEX = @"Lrpt(I|O)(\d{1,2})\*((?:0|1){1,2})";
 
 		/// <summary>
 		/// The device likes to drop connection if there's no activity for 5 mins,
@@ -41,14 +41,14 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// </summary>
 		public event EventHandler<BoolEventArgs> OnInitializedChanged;
 
-        /// <summary>
-        /// Raised when an input serial port is initialized.
-        /// </summary>
+		/// <summary>
+		/// Raised when an input serial port is initialized.
+		/// </summary>
 		public event EventHandler<IntEventArgs> OnInputPortInitialized;
 
-        /// <summary>
-        /// Raised when an output serial port is initialized.
-        /// </summary>
+		/// <summary>
+		/// Raised when an output serial port is initialized.
+		/// </summary>
 		public event EventHandler<IntEventArgs> OnOutputPortInitialized;
 
 		/// <summary>
@@ -78,7 +78,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// Gets/sets the password for logging into the device.
 		/// </summary>
 		public string Password { get; set; }
-		
+
 		/// <summary>
 		/// Returns true when the codec is connected.
 		/// </summary>
@@ -160,7 +160,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		{
 			if (args != null)
 				command = string.Format(command, args);
-			
+
 			m_ConnectionStateManager.Send(command + '\r');
 		}
 
@@ -242,7 +242,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		}
 
 		public void SetTxComPortSpec(int input, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
-		                             eComStopBits stopBits)
+									 eComStopBits stopBits)
 		{
 			int? portOffset = GetPortOffsetFromInput(input);
 			if (portOffset == null)
@@ -252,7 +252,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		}
 
 		public void SetRxComPortSpec(int output, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
-		                             eComStopBits stopBits)
+									 eComStopBits stopBits)
 		{
 			int? portOffset = GetPortOffsetFromOutput(output);
 			if (portOffset == null)
@@ -352,7 +352,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// <returns></returns>
 		private int? GetPortOffsetFromOutput(int output)
 		{
-			
+
 
 			int portOffset = output - GetNumberOfOutputs() + (NumberOfDtpInputPorts + NumberOfDtpOutputPorts);
 			if (portOffset <= NumberOfDtpInputPorts)
@@ -380,7 +380,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			return new AsyncTcpClient
 			{
 				Address = Address,
-				Port = (ushort) (m_StartingComPort + portOffset)
+				Port = (ushort)(m_StartingComPort + portOffset)
 			};
 		}
 
@@ -478,16 +478,16 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 				}
 			}
 
-            Match match = Regex.Match(args.Data, PORT_INITIALIZED_REGEX);
-            if (match.Success)
-            {
-                int address = int.Parse(match.Groups[2].Value);
-                if (match.Groups[1].Value == "I")
-                    OnInputPortInitialized.Raise(this, new IntEventArgs(address));
-                if (match.Groups[1].Value == "O")
-                    OnOutputPortInitialized.Raise(this, new IntEventArgs(address));
-            }
-        }
+			Match match = Regex.Match(args.Data, PORT_INITIALIZED_REGEX);
+			if (match.Success)
+			{
+				int address = int.Parse(match.Groups[2].Value);
+				if (match.Groups[1].Value == "I")
+					OnInputPortInitialized.Raise(this, new IntEventArgs(address));
+				if (match.Groups[1].Value == "O")
+					OnOutputPortInitialized.Raise(this, new IntEventArgs(address));
+			}
+		}
 
 		#endregion
 
@@ -497,7 +497,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		{
 			connectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
 			connectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
-			connectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived;;
+			connectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived; ;
 		}
 
 		private void Unsubscribe(ConnectionStateManager connectionStateManager)
@@ -531,7 +531,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			base.ApplySettingsFinal(settings, factory);
 
 			Password = settings.Password;
-		    Address = settings.Address;
+			Address = settings.Address;
 
 			ISerialPort port = null;
 
@@ -548,7 +548,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 				LoadControls(settings.Config);
 
 			m_DtpInputPortsSection.Enter();
-			try 
+			try
 			{
 				m_DtpInputPorts.Clear();
 				foreach (var pair in settings.DtpInputPorts)
@@ -578,7 +578,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 						Log(eSeverity.Error, "{0} is not a valid DTP Output address", pair.Key);
 						continue;
 					}
-					
+
 					m_DtpOutputPorts.Add(pair.Key, pair.Value);
 				}
 			}

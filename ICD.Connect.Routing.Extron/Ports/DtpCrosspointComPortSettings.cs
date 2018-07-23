@@ -12,7 +12,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 	{
 		private const string PARENT_ELEMENT = "Parent";
 
-		[OriginatorIdSettingsProperty(typeof (IDtpHdmiDevice))]
+		[OriginatorIdSettingsProperty(typeof(IDtpHdmiDevice))]
 		public int Parent { get; set; }
 
 		protected override void WriteElements(IcdXmlTextWriter writer)
