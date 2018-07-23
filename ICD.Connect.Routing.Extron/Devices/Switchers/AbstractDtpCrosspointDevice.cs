@@ -497,7 +497,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		{
 			connectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
 			connectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
-			connectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived; ;
+			connectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived;
 		}
 
 		private void Unsubscribe(ConnectionStateManager connectionStateManager)
