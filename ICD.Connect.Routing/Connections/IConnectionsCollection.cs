@@ -40,16 +40,6 @@ namespace ICD.Connect.Routing.Connections
 		                                            eConnectionType type);
 
 		/// <summary>
-		/// Gets the input connections for the device matching any of the given type flags.
-		/// </summary>
-		/// <param name="destinationDeviceId"></param>
-		/// <param name="destinationControlId"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		IEnumerable<Connection> GetInputConnectionsAny(int destinationDeviceId, int destinationControlId,
-		                                               eConnectionType type);
-
-		/// <summary>
 		/// Gets the connection for the given endpoint.
 		/// </summary>
 		/// <param name="source"></param>
@@ -82,15 +72,6 @@ namespace ICD.Connect.Routing.Connections
 		/// <param name="flag"></param>
 		/// <returns></returns>
 		IEnumerable<Connection> GetOutputConnections(int sourceDeviceId, int sourceControlId, eConnectionType flag);
-
-		/// <summary>
-		/// Gets the output connections for the given source device matching any of the given type flags.
-		/// </summary>
-		/// <param name="sourceDeviceId"></param>
-		/// <param name="sourceControlId"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		IEnumerable<Connection> GetOutputConnectionsAny(int sourceDeviceId, int sourceControlId, eConnectionType type);
 
 		/// <summary>
 		/// Given a source endpoint and a final destination endpoint,
