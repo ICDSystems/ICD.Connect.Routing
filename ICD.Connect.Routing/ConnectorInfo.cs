@@ -1,11 +1,12 @@
-﻿using ICD.Common.Utils;
+﻿using System;
+using ICD.Common.Utils;
 using ICD.Connect.Routing.Connections;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace ICD.Connect.Routing
 {
-	public struct ConnectorInfo
+	public struct ConnectorInfo : IComparable<ConnectorInfo>
 	{
 		private readonly int m_Address;
 		private readonly eConnectionType m_ConnectionType;
@@ -38,6 +39,15 @@ namespace ICD.Connect.Routing
 		}
 
 		#region Methods
+
+		public int CompareTo(ConnectorInfo other)
+		{
+			int delta = Address.CompareTo(other.Address);
+			if (delta != 0)
+				return delta;
+
+			return ConnectionType.CompareTo(other.ConnectionType);
+		}
 
 		/// <summary>
 		/// Gets the string representation for this instance.
