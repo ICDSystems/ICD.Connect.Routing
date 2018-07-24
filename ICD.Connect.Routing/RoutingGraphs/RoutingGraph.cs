@@ -1928,9 +1928,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (switcher == null)
 				return;
 
-			// Update connection ownership
-			//ConnectionUsages.UpdateConnectionsUsage(switcher, args.Output, args.Type);
-
 			IcdHashSet<EndpointInfo> oldSources = new IcdHashSet<EndpointInfo>();
 			IcdHashSet<EndpointInfo> newSources = new IcdHashSet<EndpointInfo>();
 
