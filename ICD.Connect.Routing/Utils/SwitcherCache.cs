@@ -188,7 +188,7 @@ namespace ICD.Connect.Routing.Utils
 		}
 
 		/// <summary>
-		/// Gets the caches outputs for the given input.
+		/// Gets the cached outputs for the given input.
 		/// </summary>
 		/// <param name="input"></param>
 		/// <param name="type"></param>
