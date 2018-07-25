@@ -107,7 +107,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		public override bool Route(RouteOperation info)
 		{
 			if(m_debug)
-				Log(eSeverity.Debug, "DMPS route input {0} -> output {1}, {2}", info.LocalInput, info.LocalOutput, info.ConnectionType);
+				Logger.AddEntry(eSeverity.Debug, "DMPS route input {0} -> output {1}, {2}", info.LocalInput, info.LocalOutput, info.ConnectionType);
 
 			eConnectionType type = info.ConnectionType;
 			int input = info.LocalInput;
