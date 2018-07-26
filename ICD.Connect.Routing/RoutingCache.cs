@@ -937,7 +937,6 @@ namespace ICD.Connect.Routing
 
 			if (endpointChanged)
 				OnTransmissionStateChanged.Raise(this, new CacheStateChangedEventArgs(new[] { args.Endpoint },
-																					  m_EndpointToSources.GetDefault(args.Endpoint),
 																					  args.Type,
 																					  args.State));
 		}
@@ -955,7 +954,6 @@ namespace ICD.Connect.Routing
 
 			if (endpointChanged)
 				OnDetectionStateChanged.Raise(this, new CacheStateChangedEventArgs(new[] { args.Endpoint },
-																				   m_EndpointToSources.GetDefault(args.Endpoint),
 																				   args.Type,
 																				   args.State));
 		}
@@ -973,7 +971,6 @@ namespace ICD.Connect.Routing
 
 			if (endpointChanged)
 				OnDestinationEndpointActiveChanged.Raise(this, new CacheStateChangedEventArgs(new[] { args.Endpoint },
-																							  m_EndpointToDestinations.GetDefault(args.Endpoint),
 																							  args.Type,
 																							  args.State));
 		}
