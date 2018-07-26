@@ -100,14 +100,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
-			if (EnumUtils.HasMultipleFlags(type))
-			{
-				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(t => GetSignalDetectedState(input, t))
-				                .Unanimous(false);
-			}
-
-			return m_Cache.GetSourceDetectedState(input, type);
+			return EnumUtils.GetFlagsExceptNone(type)
+			                .Select(t => m_Cache.GetSourceDetectedState(input, t))
+			                .Unanimous(false);
 		}
 
 		/// <summary>
@@ -117,6 +112,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		/// <returns>True if routing successful.</returns>
 		public override bool Route(RouteOperation info)
 		{
+			if (info == null)
+				throw new ArgumentNullException("info");
+
 			eConnectionType type = info.ConnectionType;
 			int input = info.LocalInput;
 			int output = info.LocalOutput;
