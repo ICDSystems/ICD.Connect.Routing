@@ -35,9 +35,24 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		private const ushort DIGITAL_VIDEO_DETECTED_6 = 406;
 		private const ushort DIGITAL_VIDEO_DETECTED_7 = 407;
 
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+
+		/// <summary>
+		/// Called when a route changes.
+		/// </summary>
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		// Keeps track of source detection
