@@ -900,9 +900,6 @@ namespace ICD.Connect.Routing
 
 		private void RoutingGraphOnRouteChanged(object sender, SwitcherRouteChangeEventArgs args)
 		{
-			Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> oldState =
-				m_DestinationToSourceCache.ToDictionary();
-
 			IcdHashSet<EndpointInfo> oldSourceEndpoints = args.OldSourceEndpoints.ToIcdHashSet();
 			IcdHashSet<EndpointInfo> newSourceEndpoints = args.NewSourceEndpoints.ToIcdHashSet();
 			IcdHashSet<EndpointInfo> destinationEndpoints = args.DestinationEndpoints.ToIcdHashSet();
@@ -921,24 +918,9 @@ namespace ICD.Connect.Routing
 				if (m_DebugEnabled)
 					PrintRouteMaps();
 
-				IcdHashSet<IDestination> newRouteDestinations = new IcdHashSet<IDestination>();
-				IcdHashSet<ISource> newRouteSources = new IcdHashSet<ISource>();
+				OnEndpointRouteChanged.Raise(this, new EndpointRouteChangedEventArgs());
 
-				foreach (EndpointInfo destinationEndpoint in destinationEndpoints.Where(destinationEndpoint => m_EndpointToDestinations.ContainsKey(destinationEndpoint)))
-					newRouteDestinations.AddRange(m_EndpointToDestinations[destinationEndpoint]);
-
-				foreach (EndpointInfo sourceEndpoint in newSourceEndpoints.Where(sourceEndpoint => m_EndpointToSources.ContainsKey(sourceEndpoint)))
-					newRouteSources.AddRange(m_EndpointToSources[sourceEndpoint]);
-
-				Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> newRoutes =
-					m_DestinationToSourceCache.Except(oldState).ToDictionary();
-
-				Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> removedRoutes =
-					oldState.Except(m_DestinationToSourceCache).ToDictionary();
-
-				OnEndpointRouteChanged.Raise(this, new EndpointRouteChangedEventArgs(newRoutes, removedRoutes));
-
-				OnSourceDestinationRouteChanged.Raise(this, new SourceDestinationRouteChangedEventArgs(newRouteSources, newRouteDestinations, flag));
+				OnSourceDestinationRouteChanged.Raise(this, new SourceDestinationRouteChangedEventArgs(flag));
 			}
 		}
 
@@ -1351,100 +1333,5 @@ namespace ICD.Connect.Routing
 		}
 
 		#endregion
-	}
-
-	public sealed class CacheStateChangedEventArgs : EventArgs
-	{
-		public IEnumerable<EndpointInfo> Endpoints { get; private set; }
-
-		public IEnumerable<ISource> Sources { get; private set; }
-
-		public IEnumerable<IDestination> Destinations { get; private set; }
-
-		public eConnectionType Type { get; private set; }
-
-		public bool State { get; private set; }
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="endpoints"></param>
-		/// <param name="sources"></param>
-		/// <param name="type"></param>
-		/// <param name="state"></param>
-		public CacheStateChangedEventArgs(IEnumerable<EndpointInfo> endpoints, IEnumerable<ISource> sources, eConnectionType type, bool state)
-		{
-			Endpoints = endpoints;
-			Sources = sources;
-			Destinations = Enumerable.Empty<IDestination>();
-			Type = type;
-			State = state;
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="endpoints"></param>
-		/// <param name="destinations"></param>
-		/// <param name="type"></param>
-		/// <param name="state"></param>
-		public CacheStateChangedEventArgs(IEnumerable<EndpointInfo> endpoints, IEnumerable<IDestination> destinations, eConnectionType type, bool state)
-		{
-			Endpoints = endpoints;
-			Sources = Enumerable.Empty<ISource>();
-			Destinations = destinations;
-			Type = type;
-			State = state;
-		}
-	}
-
-	public sealed class EndpointRouteChangedEventArgs : EventArgs
-	{
-		public Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> NewRoutes { get; private set; }
-
-		public Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> RemovedRoutes { get; private set; }
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public EndpointRouteChangedEventArgs(Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> newRoutes,
-			Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> removedRoutes)
-		{
-			NewRoutes = newRoutes;
-			RemovedRoutes = removedRoutes;
-		}
-	}
-
-	public sealed class SourceDestinationRouteChangedEventArgs : EventArgs
-	{
-		public IEnumerable<ISource> Sources { get; private set; }
-
-		public IEnumerable<IDestination> Destinations { get; private set; }
-
-		public eConnectionType Type { get; private set; }
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="sources"></param>
-		/// <param name="destinations"></param>
-		/// <param name="type"></param>
-		public SourceDestinationRouteChangedEventArgs(IEnumerable<ISource> sources,
-													  IEnumerable<IDestination> destinations,
-													  eConnectionType type)
-		{
-			Sources = sources;
-			Destinations = destinations;
-			Type = type;
-		}
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		/// <param name="args"></param>
-		public SourceDestinationRouteChangedEventArgs(SourceDestinationRouteChangedEventArgs args)
-			: this(args.Sources, args.Destinations, args.Type)
-		{
-		}
 	}
 }
