@@ -290,7 +290,7 @@ namespace ICD.Connect.Routing.Utils
 			}
 
 			UpdateInputOutputMapSingle(oldInput, input, output, flag);
-			SetActiveTransmissionStateSingle(output, flag, input.HasValue);
+			SetActiveTransmissionState(output, flag, input.HasValue);
 
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(oldInput, input, output, flag));
 			return true;
@@ -378,12 +378,11 @@ namespace ICD.Connect.Routing.Utils
 		/// Sets the active transmission state for the given output and type.
 		/// </summary>
 		/// <param name="output"></param>
-		/// <param name="flag"></param>
+		/// <param name="type"></param>
 		/// <param name="state"></param>
-		private void SetActiveTransmissionStateSingle(int output, eConnectionType flag, bool state)
+		private void SetActiveTransmissionState(int output, eConnectionType type, bool state)
 		{
-			if (!EnumUtils.HasSingleFlag(flag))
-				throw new ArgumentException("Type must have single flag", "flag");
+			eConnectionType changed;
 
 			m_ActiveTransmissionStatesSection.Enter();
 
@@ -393,12 +392,14 @@ namespace ICD.Connect.Routing.Utils
 				eConnectionType result;
 
 				if (state)
-					result = current | flag;
+					result = current | type;
 				else
-					result = current & ~flag;
+					result = current & ~type;
 
 				if (result == current)
 					return;
+
+				changed = current ^ result;
 
 				m_SourceDetectionStates[output] = result;
 			}
@@ -407,7 +408,7 @@ namespace ICD.Connect.Routing.Utils
 				m_ActiveTransmissionStatesSection.Leave();
 			}
 
-			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, flag, state));
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, changed, state));
 		}
 
 		#endregion
