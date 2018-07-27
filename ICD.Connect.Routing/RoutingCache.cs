@@ -360,7 +360,8 @@ namespace ICD.Connect.Routing
 							  .Where(d => !inputActive || m_DestinationEndpointActive.GetDefault(d).HasFlag(flag))
 							  .SelectMany(d => GetSourceEndpointsForDestinationEndpoint(d, flag))
 							  .Distinct()
-							  .Where(s => !signalDetected || m_SourceEndpointDetected.GetDefault(s).HasFlag(flag));
+							  .Where(s => !signalDetected || m_SourceEndpointDetected.GetDefault(s).HasFlag(flag))
+							  .ToArray();
 		}
 
 		/// <summary>
@@ -385,7 +386,8 @@ namespace ICD.Connect.Routing
 							  .Where(s => !inputActive || m_SourceEndpointTransmitting.GetDefault(s).HasFlag(flag))
 							  .SelectMany(s => GetDestinationEndpointsForSourceEndpoint(s, flag))
 							  .Distinct()
-							  .Where(s => !signalDetected || m_SourceEndpointDetected.GetDefault(s).HasFlag(flag));
+							  .Where(s => !signalDetected || m_SourceEndpointDetected.GetDefault(s).HasFlag(flag))
+							  .ToArray();
 		}
 
 		/// <summary>
