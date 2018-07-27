@@ -249,10 +249,8 @@ namespace ICD.Connect.Routing
 
 			IcdHashSet<IDestination> destinations = new IcdHashSet<IDestination>();
 
-			foreach (var sourceEndpoint in m_SourceToEndpoints[source])
-			{
+			foreach (EndpointInfo sourceEndpoint in m_SourceToEndpoints[source])
 				destinations.AddRange(GetDestinationsForSourceEndpoint(sourceEndpoint, flag));
-			}
 
 			return destinations;
 		}
@@ -308,10 +306,8 @@ namespace ICD.Connect.Routing
 
 			IcdHashSet<EndpointInfo> endpoints = new IcdHashSet<EndpointInfo>();
 
-			foreach (var destinationEndpoint in m_DestinationToEndpoints[destination])
-			{
+			foreach (EndpointInfo destinationEndpoint in m_DestinationToEndpoints[destination])
 				endpoints.AddRange(GetSourceEndpointsForDestinationEndpoint(destinationEndpoint, flag));
-			}
 
 			return endpoints;
 		}
@@ -330,10 +326,8 @@ namespace ICD.Connect.Routing
 
 			IcdHashSet<EndpointInfo> endpoints = new IcdHashSet<EndpointInfo>();
 
-			foreach (var sourceEndpoint in m_SourceToEndpoints[source])
-			{
+			foreach (EndpointInfo sourceEndpoint in m_SourceToEndpoints[source])
 				endpoints.AddRange(GetDestinationEndpointsForSourceEndpoint(sourceEndpoint, flag));
-			}
 
 			return endpoints;
 		}
