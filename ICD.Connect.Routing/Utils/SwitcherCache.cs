@@ -323,7 +323,7 @@ namespace ICD.Connect.Routing.Utils
 
 				changed = current ^ result;
 
-				m_SourceDetectionStates[output] = result;
+				m_ActiveTransmissionStates[output] = result;
 			}
 			finally
 			{
