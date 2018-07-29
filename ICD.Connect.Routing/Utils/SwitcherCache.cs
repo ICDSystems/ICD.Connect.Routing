@@ -356,12 +356,12 @@ namespace ICD.Connect.Routing.Utils
 				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 				{
 					// Remove the output from the old input
-					if (oldInput.HasValue && InputOutputMapRemove(oldInput.Value, output, flag))
-						oldChange |= flag;
+					if (oldInput.HasValue)
+						oldChange |= InputOutputMapRemove(oldInput.Value, output, flag);
 
 					// Add the output to the new input
-					if (newInput.HasValue && InputOutputMapAdd(newInput.Value, output, flag))
-						newChange |= flag;
+					if (newInput.HasValue)
+						newChange |= InputOutputMapAdd(newInput.Value, output, flag);
 				}
 			}
 			finally
@@ -382,8 +382,8 @@ namespace ICD.Connect.Routing.Utils
 		/// <param name="input"></param>
 		/// <param name="output"></param>
 		/// <param name="flag"></param>
-		/// <returns></returns>
-		private bool InputOutputMapRemove(int input, int output, eConnectionType flag)
+		/// <returns>The flag if the input is no longer being used by any output, otherwise none</returns>
+		private eConnectionType InputOutputMapRemove(int input, int output, eConnectionType flag)
 		{
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("Type must have single flag", "flag");
@@ -394,10 +394,17 @@ namespace ICD.Connect.Routing.Utils
 			{
 				Dictionary<eConnectionType, IcdHashSet<int>> cache;
 				if (!m_InputOutputMap.TryGetValue(input, out cache))
-					return false;
+					return eConnectionType.None;
 
 				IcdHashSet<int> innerCache;
-				return cache.TryGetValue(flag, out innerCache) && innerCache.Remove(output);
+				if (!cache.TryGetValue(flag, out innerCache))
+					return eConnectionType.None;
+
+				if (!innerCache.Remove(output))
+					return eConnectionType.None;
+
+				// Is the input no longer being used for the given flag?
+				return innerCache.Count == 0 ? flag : eConnectionType.None;
 			}
 			finally
 			{
@@ -412,7 +419,7 @@ namespace ICD.Connect.Routing.Utils
 		/// <param name="output"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		private bool InputOutputMapAdd(int input, int output, eConnectionType flag)
+		private eConnectionType InputOutputMapAdd(int input, int output, eConnectionType flag)
 		{
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("Type must have single flag", "flag");
@@ -435,7 +442,11 @@ namespace ICD.Connect.Routing.Utils
 					cache.Add(flag, innerCache);
 				}
 
-				return innerCache.Add(output);
+				if (!innerCache.Add(output))
+					return eConnectionType.None;
+
+				// Is the input now being used for the given flag?
+				return innerCache.Count == 1 ? flag : eConnectionType.None;
 			}
 			finally
 			{
