@@ -717,7 +717,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentNullException("finalDestinations");
 
 			if (EnumUtils.HasMultipleFlags(flag))
-				throw new ArgumentException("ConnectionType has multiple flags", "type");
+				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
 			// Does the input connection lead to a midpoint?
 			IRouteMidpointControl midpoint =
@@ -785,6 +785,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                          eConnectionType type, bool signalDetected,
 		                                                          bool inputActive)
 		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
 			// TODO - Foreach flag in type, loop back from destination endpoints
 
 			foreach (Connection[] path in FindActivePaths(source, type, signalDetected, inputActive))
@@ -877,6 +883,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <returns></returns>
 		public override IEnumerable<Connection[]> FindActivePaths(ISource source, eConnectionType type, bool signalDetected, bool inputActive)
 		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
 			return Connections.FilterEndpointsAny(source, type)
 			                  .SelectMany(e => FindActivePaths(e, type, signalDetected, inputActive));
 		}
@@ -1245,19 +1254,19 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (op == null)
 				throw new ArgumentNullException("op");
 
-			int value;
+			m_PendingRoutesSection.Enter();
+
 			try
 			{
-				m_PendingRoutesSection.Enter();
 				if (!m_PendingRoutes.ContainsKey(op.Id))
 					m_PendingRoutes[op.Id] = 0;
-				value = ++(m_PendingRoutes[op.Id]);
+
+				return m_PendingRoutes[op.Id]++;
 			}
 			finally
 			{
 				m_PendingRoutesSection.Leave();
 			}
-			return value;
 		}
 
 		/// <summary>
@@ -1551,16 +1560,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new InvalidOperationException("Connections are not consecutive");
 
 			type = EnumUtils.GetFlagsIntersection(incomingConnection.ConnectionType, outgoingConnection.ConnectionType, type);
-
-			//ConnectionUsageInfo currentUsage = ConnectionUsages.GetConnectionUsageInfo(b);
-			// TODO - Needs to support combine spaces
-			//if (!currentUsage.CanRoute(roomId, type))
-			//	return false;
-
-			// Remove from usages
-			//ConnectionUsageInfo previousUsage = ConnectionUsages.GetConnectionUsageInfo(a);
-			//previousUsage.RemoveRoom(roomId, type);
-			//currentUsage.RemoveRoom(roomId, type);
 
 			IRouteSwitcherControl switcher = this.GetSourceControl(outgoingConnection) as IRouteSwitcherControl;
 			if (switcher == null)
