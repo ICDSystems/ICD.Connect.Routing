@@ -787,17 +787,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			// TODO - Foreach flag in type, loop back from destination endpoints
-
-			foreach (Connection[] path in FindActivePaths(source, type, signalDetected, inputActive))
-			{
-				// It's possible the path goes through our destination
-				int index = path.FindIndex(c => destination.Contains(c.Destination));
-				if (index < 0)
-					continue;
-
-				yield return path.Take(index + 1).ToArray(index + 1);
-			}
+			return Connections.FilterEndpointsAny(source, type)
+			                  .SelectMany(e => FindActivePaths(source, destination, type, signalDetected, inputActive));
 		}
 
 		/// <summary>
