@@ -768,6 +768,66 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
+		/// Finds the path currently routed to the destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="flag"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		public override Connection[] FindActivePath(EndpointInfo destination, eConnectionType flag, bool signalDetected, bool inputActive)
+		{
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("Type enum requires exactly 1 flag.", "flag");
+
+			List<Connection> result = new List<Connection>();
+
+			IRouteDestinationControl destinationControl = this.GetDestinationControl(destination);
+			if (destinationControl == null)
+				return result.ToArray(result.Count);
+
+			while (true)
+			{
+				// If there is no input connection to this destination then we are done.
+				Connection inputConnection = m_Connections.GetInputConnection(destination);
+				if (inputConnection == null || !inputConnection.ConnectionType.HasFlag(flag))
+					return result.ToArray(result.Count);
+
+				IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
+				if (sourceControl == null)
+					return result.ToArray(result.Count);
+
+				// Ensure the source output even supports the given type.
+				ConnectorInfo output = sourceControl.GetOutput(inputConnection.Source.Address);
+				if (!output.ConnectionType.HasFlag(flag))
+					return result.ToArray(result.Count);
+
+				// If we care about signal detection state, don't follow this path if the source isn't detected by the destination.
+				if (signalDetected && !destinationControl.GetSignalDetectedState(inputConnection.Destination.Address, flag))
+					return result.ToArray(result.Count);
+
+				// If we care about input active state, don't follow this path if the input isn't active on the destination.
+				if (inputActive && !destinationControl.GetInputActiveState(inputConnection.Destination.Address, flag))
+					return result.ToArray(result.Count);
+
+				result.Insert(0, inputConnection);
+
+				// Get the input address from the source if it is a midpoint device.
+				IRouteMidpointControl midpointControl = sourceControl as IRouteMidpointControl;
+				if (midpointControl == null)
+					return result.ToArray(result.Count);
+
+				ConnectorInfo? input = midpointControl.GetInput(inputConnection.Source.Address, flag);
+				if (input == null)
+					return result.ToArray(result.Count);
+
+				// Loop
+				destination = midpointControl.GetInputEndpointInfo(input.Value.Address);
+				destinationControl = midpointControl;
+			}
+		}
+
+		/// <summary>
 		/// Finds the current paths from the given source to the destination.
 		/// Return multiple paths if multiple connection types are provided.
 		/// </summary>
@@ -805,16 +865,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                          eConnectionType type, bool signalDetected,
 		                                                          bool inputActive)
 		{
-			// TODO - Foreach flag in type, loop back from destination
-
-			foreach (Connection[] path in FindActivePaths(source, type, signalDetected, inputActive))
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 			{
-				// It's possible the path goes through our destination
-				int index = path.FindIndex(c => c.Destination == destination);
+				Connection[] path = FindActivePath(destination, flag, signalDetected, inputActive);
+
+				// Find the intersection with the source
+				int index = path.FindIndex(c => c.Source == source);
 				if (index < 0)
 					continue;
 
-				yield return path.Take(index + 1).ToArray(index + 1);
+				yield return path.Skip(index).ToArray();
 			}
 		}
 
@@ -1524,9 +1584,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		{
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 			{
-				EndpointInfo? source = GetActiveSourceEndpoint(destination, flag, false, false);
-				if (source.HasValue)
-					Unroute(source.Value, destination, flag, roomId);
+				Connection[] path = FindActivePath(destination, flag, false, false);
+				Unroute(path, flag, roomId);
 			}
 		}
 

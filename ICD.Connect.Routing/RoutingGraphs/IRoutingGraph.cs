@@ -348,6 +348,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		IEnumerable<ConnectionPath> FindAllPaths(ISource source, IDestination destination, eConnectionType flag, int roomId);
 
 		/// <summary>
+		/// Finds the path currently routed to the destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="flag"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		Connection[] FindActivePath(EndpointInfo destination, eConnectionType flag, bool signalDetected, bool inputActive);
+
+		/// <summary>
 		/// Finds the current paths from the given source to the destination.
 		/// Return multiple paths if multiple connection types are provided.
 		/// </summary>
