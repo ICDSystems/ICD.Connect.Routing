@@ -730,8 +730,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				                                   finalDestinations,
 				                                   flag)
 				             .Where(c =>
-				                    // TODO - Needs to support combine spaces
-				                    //ConnectionUsages.CanRouteConnection(c, source, roomId, type) &&
 				                    c.IsAvailableToSourceDevice(source.Device) &&
 				                    c.IsAvailableToRoom(roomId));
 		}
@@ -765,8 +763,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				                                   finalDestination,
 				                                   flag)
 				             .Where(c =>
-									// TODO - Needs to support combine spaces
-									//ConnectionUsages.CanRouteConnection(c, source, roomId, type) &&
 									c.IsAvailableToSourceDevice(source.Device) &&
 				                    c.IsAvailableToRoom(roomId));
 		}
@@ -949,7 +945,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				yield break;
 			}
 
-			// If we care about signal detection state, don't follow this path if the source isn't detected by the destination.
 			IRouteDestinationControl destination = this.GetDestinationControl(outputConnection);
 			if (destination == null)
 			{
@@ -967,6 +962,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				yield break;
 			}
 
+			// If we care about signal detection state, don't follow this path if the source isn't detected by the destination.
 			if (signalDetected && !destination.GetSignalDetectedState(outputConnection.Destination.Address, type))
 			{
 				if (visited.Count > 0)
@@ -1485,6 +1481,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="roomId"></param>
 		public override void Unroute(Connection[] path, eConnectionType type, int roomId)
 		{
+			if (path == null)
+				throw new ArgumentNullException("path");
+
 			// Loop backwards looking for switchers closest to the destination
 			for (int index = path.Length - 1; index > 0; index--)
 			{
