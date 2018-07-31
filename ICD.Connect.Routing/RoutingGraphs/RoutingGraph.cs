@@ -1233,7 +1233,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		/// <param name="op"></param>
 		/// <param name="path"></param>
-		public override void RoutePath(RouteOperation op, IEnumerable<Connection> path)
+		public override void RoutePath(RouteOperation op, ConnectionPath path)
 		{
 			if (op == null)
 				throw new ArgumentNullException("op");

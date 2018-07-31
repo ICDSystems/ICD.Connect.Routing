@@ -510,7 +510,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		/// <param name="op"></param>
 		/// <param name="path"></param>
-		public abstract void RoutePath(RouteOperation op, IEnumerable<Connection> path);
+		public abstract void RoutePath(RouteOperation op, ConnectionPath path);
 
 		/// <summary>
 		/// Applies the given path to the switchers.

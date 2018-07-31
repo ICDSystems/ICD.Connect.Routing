@@ -490,7 +490,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		/// <param name="op"></param>
 		/// <param name="path"></param>
-		void RoutePath(RouteOperation op, IEnumerable<Connection> path);
+		void RoutePath(RouteOperation op, ConnectionPath path);
 
 		/// <summary>
 		/// Applies the given path to the switchers.
