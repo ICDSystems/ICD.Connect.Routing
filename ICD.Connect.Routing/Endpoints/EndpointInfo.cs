@@ -153,7 +153,6 @@ namespace ICD.Connect.Routing.Endpoints
 			return 0;
 		}
 
-
 		#endregion
 	}
 }
