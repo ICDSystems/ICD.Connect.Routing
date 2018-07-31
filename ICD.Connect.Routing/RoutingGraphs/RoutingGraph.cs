@@ -1128,20 +1128,21 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 			{
+				RouteOperation flagOperation = new RouteOperation(operation)
+				{
+					ConnectionType = flag
+				};
+
 				ConnectionPath path = FindPath(source, destination, flag, roomId);
 
 				if (path == null)
 				{
-					Log(eSeverity.Error, "No path found for route {0}", operation);
+					Log(eSeverity.Error, "No path found for route {0}", flagOperation);
 					continue;
 				}
 
-				RouteOperation flagOperation = new RouteOperation(operation)
-				{
-					Source = path.SourceEndpoint,
-					Destination = path.DestinationEndpoint,
-					ConnectionType = flag
-				};
+				flagOperation.Source = path.SourceEndpoint;
+				flagOperation.Destination = path.DestinationEndpoint;
 
 				RoutePath(flagOperation, path);
 			}
