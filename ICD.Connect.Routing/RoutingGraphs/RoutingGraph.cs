@@ -1120,32 +1120,19 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			RouteOperation operation = new RouteOperation
-			{
-				ConnectionType = type,
-				RoomId = roomId
-			};
+			List<ConnectionPath> paths = new List<ConnectionPath>();
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 			{
-				RouteOperation flagOperation = new RouteOperation(operation)
-				{
-					ConnectionType = flag
-				};
-
 				ConnectionPath path = FindPath(source, destination, flag, roomId);
 
 				if (path == null)
-				{
-					Log(eSeverity.Error, "No path found for route {0}", flagOperation);
-					continue;
-				}
-
-				flagOperation.Source = path.SourceEndpoint;
-				flagOperation.Destination = path.DestinationEndpoint;
-
-				RoutePath(flagOperation, path);
+					Log(eSeverity.Error, "No path found for route Source={0} Destination={1} Type={2}", source, destination, flag);
+				else
+					paths.Add(path);
 			}
+
+			RoutePaths(paths, roomId);
 		}
 
 		/// <summary>
@@ -1177,19 +1164,19 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (op == null)
 				throw new ArgumentNullException("op");
 
+			List<ConnectionPath> paths = new List<ConnectionPath>();
+
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(op.ConnectionType))
 			{
 				ConnectionPath path = FindPath(op.Source, op.Destination, flag, op.RoomId);
-				RouteOperation operation = new RouteOperation(op) {ConnectionType = flag};
 
 				if (path == null)
-				{
-					Log(eSeverity.Error, "No path found for route {0}", operation);
-					continue;
-				}
-
-				RoutePath(operation, path);
+					Log(eSeverity.Error, "No path found for route Source={0} Destination={1} Type={2}", op.Source, op.Destination, flag);
+				else
+					paths.Add(path);
 			}
+
+			RoutePaths(paths, op.RoomId);
 		}
 
 		/// <summary>
@@ -1205,6 +1192,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (destinations == null)
 				throw new ArgumentNullException("destinations");
 
+			List<ConnectionPath> paths = new List<ConnectionPath>();
+
 			IList<EndpointInfo> destinationsList = destinations as IList<EndpointInfo> ?? destinations.ToList();
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
@@ -1214,58 +1203,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				foreach (KeyValuePair<EndpointInfo, ConnectionPath> kvp in pathsForDestinations)
 				{
-					RouteOperation operation = new RouteOperation
-					{
-						Source = source,
-						Destination = kvp.Key,
-						ConnectionType = flag,
-						RoomId = roomId
-					};
-
 					ConnectionPath path = kvp.Value;
 
-					RoutePath(operation, path);
+					if (path == null)
+						Log(eSeverity.Error, "No path found for route Source={0} Destination={1} Type={2}", source, kvp.Key, flag);
+					else
+						paths.Add(path);
 				}
 			}
-		}
 
-		/// <summary>
-		/// Applies the given path to the switchers.
-		/// </summary>
-		/// <param name="op"></param>
-		/// <param name="path"></param>
-		public override void RoutePath(RouteOperation op, ConnectionPath path)
-		{
-			if (op == null)
-				throw new ArgumentNullException("op");
-
-			if (path == null)
-				throw new ArgumentNullException("path");
-
-			// Configure the switchers
-			foreach (Connection[] pair in path.GetAdjacentPairs())
-			{
-				Connection connection = pair[0];
-				Connection nextConnection = pair[1];
-
-				RouteOperation switchOperation = new RouteOperation(op)
-				{
-					LocalInput = connection.Destination.Address,
-					LocalOutput = nextConnection.Source.Address,
-				};
-
-				IRouteSwitcherControl switcher = this.GetDestinationControl(connection) as IRouteSwitcherControl;
-				if (switcher == null)
-					continue;
-
-				switcher.Route(switchOperation);
-			}
-
-			int pendingRoutes = m_PendingRoutesSection.Execute(() => m_PendingRoutes.GetDefault(op.Id, 0));
-			if (pendingRoutes > 0)
-				return;
-
-			OnRouteFinished.Raise(this, new RouteFinishedEventArgs(op, true));
+			RoutePaths(paths, roomId);
 		}
 
 		/// <summary>
@@ -1278,15 +1225,63 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (path == null)
 				throw new ArgumentNullException("path");
 
-			RouteOperation operation = new RouteOperation
-			{
-				Source = path.SourceEndpoint,
-				Destination = path.DestinationEndpoint,
-				ConnectionType = path.ConnectionType,
-				RoomId = roomId
-			};
+			RoutePaths(new[] {path}, roomId);
+		}
 
-			RoutePath(operation, path);
+		/// <summary>
+		/// Applies the given paths to the switchers.
+		/// </summary>
+		/// <param name="paths"></param>
+		/// <param name="roomId"></param>
+		public override void RoutePaths(IEnumerable<ConnectionPath> paths, int roomId)
+		{
+			if (paths == null)
+				throw new ArgumentNullException("paths");
+
+			// Build a reduced set of switcher operations
+			RouteOperationAggregator aggregator = new RouteOperationAggregator();
+
+			foreach (ConnectionPath path in paths)
+			{
+				foreach (Connection[] pair in path.GetAdjacentPairs())
+				{
+					Connection connection = pair[0];
+
+					IRouteSwitcherControl switcher = this.GetDestinationControl(connection) as IRouteSwitcherControl;
+					if (switcher == null)
+						continue;
+
+					Connection nextConnection = pair[1];
+
+					RouteOperation switchOperation = new RouteOperation
+					{
+						LocalInput = connection.Destination.Address,
+						LocalOutput = nextConnection.Source.Address,
+						LocalDevice = connection.Destination.Device,
+						LocalControl = connection.Destination.Control,
+						Source = path.SourceEndpoint,
+						Destination = path.DestinationEndpoint,
+						RoomId = roomId,
+						ConnectionType = path.ConnectionType
+					};
+
+					aggregator.Add(switchOperation);
+				}
+			}
+
+			// Apply the routes
+			foreach (RouteOperation op in aggregator)
+			{
+				IRouteSwitcherControl switcher = GetControl<IRouteSwitcherControl>(op.LocalDevice, op.LocalControl);
+				switcher.Route(op);
+
+				RouteOperation opCopy = op;
+				int pendingRoutes = m_PendingRoutesSection.Execute(() => m_PendingRoutes.GetDefault(opCopy.Id, 0));
+				if (pendingRoutes > 0)
+					return;
+
+				OnRouteFinished.Raise(this, new RouteFinishedEventArgs(op, true));
+			}
 		}
 
 		/// <summary>

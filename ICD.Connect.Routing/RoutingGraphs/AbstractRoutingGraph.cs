@@ -508,16 +508,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Applies the given path to the switchers.
 		/// </summary>
-		/// <param name="op"></param>
-		/// <param name="path"></param>
-		public abstract void RoutePath(RouteOperation op, ConnectionPath path);
-
-		/// <summary>
-		/// Applies the given path to the switchers.
-		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="roomId"></param>
 		public abstract void RoutePath(ConnectionPath path, int roomId);
+
+		/// <summary>
+		/// Applies the given paths to the switchers.
+		/// </summary>
+		/// <param name="paths"></param>
+		/// <param name="roomId"></param>
+		public abstract void RoutePaths(IEnumerable<ConnectionPath> paths, int roomId);
 
 		/// <summary>
 		/// Routes the source to the destination.

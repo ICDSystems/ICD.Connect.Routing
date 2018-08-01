@@ -488,16 +488,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Applies the given path to the switchers.
 		/// </summary>
-		/// <param name="op"></param>
-		/// <param name="path"></param>
-		void RoutePath(RouteOperation op, ConnectionPath path);
-
-		/// <summary>
-		/// Applies the given path to the switchers.
-		/// </summary>
 		/// <param name="path"></param>
 		/// <param name="roomId"></param>
 		void RoutePath(ConnectionPath path, int roomId);
+
+		/// <summary>
+		/// Applies the given paths to the switchers.
+		/// </summary>
+		/// <param name="paths"></param>
+		/// <param name="roomId"></param>
+		void RoutePaths(IEnumerable<ConnectionPath> paths, int roomId);
 
 		/// <summary>
 		/// Searches for switchers currently routing the source to the destination and unroutes them.
@@ -638,6 +638,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		IRouteDestinationControl GetDestinationControl(IRouteSourceControl sourceControl, int address, eConnectionType type,
 		                                               out int destinationInput);
 
+		/// <summary>
+		/// Gets the destination control with the given id for the given device.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="control"></param>
+		/// <returns></returns>
 		IRouteDestinationControl GetDestinationControl(int device, int control);
 
 		/// <summary>
