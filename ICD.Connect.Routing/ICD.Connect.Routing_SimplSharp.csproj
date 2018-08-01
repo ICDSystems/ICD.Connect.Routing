@@ -173,8 +173,10 @@
     <Compile Include="Controls\IRouteSourceControl.cs" />
     <Compile Include="Controls\IRouteSwitcherControl.cs" />
     <Compile Include="RouteOperation.cs" />
+    <Compile Include="RoutingGraphs\PathBuilderQuery.cs" />
     <Compile Include="RoutingGraphs\RoutingGraph.cs" />
     <Compile Include="RoutingGraphs\RoutingGraphConsole.cs" />
+    <Compile Include="RoutingGraphs\PathBuilder.cs" />
     <Compile Include="RoutingGraphs\RoutingGraphSettings.cs" />
     <Compile Include="RoutingGraphs\StaticRoutesCollection.cs" />
     <Compile Include="SourceDestinationRouteChangedEventArgs.cs" />
