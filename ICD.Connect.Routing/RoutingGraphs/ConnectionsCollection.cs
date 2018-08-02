@@ -81,6 +81,22 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Gets the connection for the given endpoint.
 		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public Connection GetInputConnection(EndpointInfo destination, eConnectionType type)
+		{
+			Connection connection = GetInputConnection(destination);
+			return connection == null
+				       ? null
+				       : connection.ConnectionType.HasFlags(type)
+					         ? connection
+					         : null;
+		}
+
+		/// <summary>
+		/// Gets the connection for the given endpoint.
+		/// </summary>
 		/// <param name="destinationControl"></param>
 		/// <param name="input"></param>
 		/// <returns></returns>
@@ -174,6 +190,23 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			{
 				m_ConnectionsSection.Leave();
 			}
+		}
+
+		/// <summary>
+		/// Gets the connection for the given endpoint.
+		/// </summary>
+		/// <param name="source">The source endpoint for the target connection</param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		public Connection GetOutputConnection(EndpointInfo source, eConnectionType type)
+		{
+			Connection connection = GetOutputConnection(source);
+			return connection == null
+				       ? null
+				       : connection.ConnectionType.HasFlags(type)
+					         ? connection
+					         : null;
 		}
 
 		/// <summary>

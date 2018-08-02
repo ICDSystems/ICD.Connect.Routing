@@ -225,7 +225,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (!instance.Sources.ContainsChild(source) || !instance.Destinations.ContainsChild(destination))
 				return "There is no source or destination with that id";
 
-			IPathFinder pathFinder = new DefaultPathFinder(instance);
+			IPathFinder pathFinder = new DefaultPathFinder(instance, roomId);
 
 			IEnumerable<ConnectionPath> paths =
 				PathBuilder.FindPaths()
@@ -268,7 +268,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				                .Where(instance.Destinations.ContainsChild)
 				                .Select(d => instance.Destinations.GetChild(d));
 
-			IPathFinder pathFinder = new DefaultPathFinder(instance);
+			IPathFinder pathFinder = new DefaultPathFinder(instance, roomId);
 
 			IEnumerable<ConnectionPath> paths =
 				PathBuilder.FindPaths()

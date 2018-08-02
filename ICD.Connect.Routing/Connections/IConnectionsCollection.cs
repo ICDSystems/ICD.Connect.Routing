@@ -24,6 +24,15 @@ namespace ICD.Connect.Routing.Connections
 		/// <summary>
 		/// Gets the connection for the given endpoint.
 		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		Connection GetInputConnection(EndpointInfo destination, eConnectionType input);
+
+		/// <summary>
+		/// Gets the connection for the given endpoint.
+		/// </summary>
 		/// <param name="destinationControl"></param>
 		/// <param name="input"></param>
 		/// <returns></returns>
@@ -58,6 +67,25 @@ namespace ICD.Connect.Routing.Connections
 		Connection GetOutputConnection(IRouteSourceControl sourceControl, int output);
 
 		/// <summary>
+		/// Gets the connection for the given endpoint.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		Connection GetOutputConnection(EndpointInfo sourceEndpoint, eConnectionType type);
+
+		/// <summary>
+		/// Given a source endpoint and a final destination endpoint,
+		/// returns the possible output connection from the source to reach the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="finalDestination"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		Connection GetOutputConnection(EndpointInfo source, EndpointInfo finalDestination, eConnectionType flag);
+
+		/// <summary>
 		/// Gets the output connections for the given source device.
 		/// </summary>
 		/// <param name="sourceDeviceId"></param>
@@ -73,17 +101,6 @@ namespace ICD.Connect.Routing.Connections
 		/// <param name="flag"></param>
 		/// <returns></returns>
 		IEnumerable<Connection> GetOutputConnections(int sourceDeviceId, int sourceControlId, eConnectionType flag);
-
-		/// <summary>
-		/// Given a source endpoint and a final destination endpoint,
-		/// returns the possible output connection from the source to reach the destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="finalDestination"></param>
-		/// <param name="flag"></param>
-		/// <returns></returns>
-		[CanBeNull]
-		Connection GetOutputConnection(EndpointInfo source, EndpointInfo finalDestination, eConnectionType flag);
 
 		/// <summary>
 		/// Gets the output connections from the given source control in order to reach the given destination endpoint.
