@@ -25,10 +25,10 @@ namespace ICD.Connect.Routing.Connections
 		/// Gets the connection for the given endpoint.
 		/// </summary>
 		/// <param name="destination"></param>
-		/// <param name="input"></param>
+		/// <param name="type"></param>
 		/// <returns></returns>
 		[CanBeNull]
-		Connection GetInputConnection(EndpointInfo destination, eConnectionType input);
+		Connection GetInputConnection(EndpointInfo destination, eConnectionType type);
 
 		/// <summary>
 		/// Gets the connection for the given endpoint.
