@@ -101,6 +101,9 @@
     <Compile Include="Endpoints\Destinations\CoreDestinationCollection.cs" />
     <Compile Include="Endpoints\Groups\CoreDestinationGroupCollection.cs" />
     <Compile Include="EventArguments\SwitcherRouteChangeEventArgs.cs" />
+    <Compile Include="Pathfinding\AbstractPathFinder.cs" />
+    <Compile Include="Pathfinding\DefaultPathFinder.cs" />
+    <Compile Include="Pathfinding\IPathFinder.cs" />
     <Compile Include="Proxies\AbstractProxyRouteControl.cs" />
     <Compile Include="Proxies\AbstractProxyRouteDestinationControl.cs" />
     <Compile Include="Proxies\AbstractProxyRouteMidpointControl.cs" />
@@ -173,10 +176,10 @@
     <Compile Include="Controls\IRouteSourceControl.cs" />
     <Compile Include="Controls\IRouteSwitcherControl.cs" />
     <Compile Include="RouteOperation.cs" />
-    <Compile Include="RoutingGraphs\PathBuilderQuery.cs" />
+    <Compile Include="Pathfinding\PathBuilderQuery.cs" />
     <Compile Include="RoutingGraphs\RoutingGraph.cs" />
     <Compile Include="RoutingGraphs\RoutingGraphConsole.cs" />
-    <Compile Include="RoutingGraphs\PathBuilder.cs" />
+    <Compile Include="Pathfinding\PathBuilder.cs" />
     <Compile Include="RoutingGraphs\RoutingGraphSettings.cs" />
     <Compile Include="RoutingGraphs\StaticRoutesCollection.cs" />
     <Compile Include="SourceDestinationRouteChangedEventArgs.cs" />

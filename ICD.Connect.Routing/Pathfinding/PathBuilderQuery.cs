@@ -5,7 +5,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints;
 
-namespace ICD.Connect.Routing.RoutingGraphs
+namespace ICD.Connect.Routing.Pathfinding
 {
 	/// <summary>
 	/// Describes a single search for a path.
@@ -14,7 +14,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 	{
 		private readonly List<EndpointInfo> m_SourceEndpoints;
 		private readonly List<EndpointInfo[]> m_DestinationEndpoints;
-		private eConnectionType m_ConnectionType;
+
+		/// <summary>
+		/// Sets the connection type for the query.
+		/// </summary>
+		/// <value></value>
+		public eConnectionType Type { get; set; }
 
 		/// <summary>
 		/// Constructor.
@@ -23,6 +28,15 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		{
 			m_SourceEndpoints = new List<EndpointInfo>();
 			m_DestinationEndpoints = new List<EndpointInfo[]>();
+		}
+
+		/// <summary>
+		/// Gets the ordered source endpoints for the query.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> GetStart()
+		{
+			return m_SourceEndpoints;
 		}
 
 		/// <summary>
@@ -51,15 +65,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			AddEnd(destinationEndpoints);
 		}
 
-		/// <summary>
-		/// Sets the connection type for the query.
-		/// </summary>
-		/// <param name="flags"></param>
-		public void SetType(eConnectionType flags)
-		{
-			m_ConnectionType = flags;
-		}
-
 		public void AddEnd(IEnumerable<EndpointInfo> destinationEndpoints)
 		{
 			if (destinationEndpoints == null)
@@ -71,6 +76,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				                    .ToArray();
 
 			m_DestinationEndpoints.Add(endpoints);
+		}
+
+		public IEnumerable<EndpointInfo[]> GetEnds()
+		{
+			return m_DestinationEndpoints;
 		}
 	}
 }

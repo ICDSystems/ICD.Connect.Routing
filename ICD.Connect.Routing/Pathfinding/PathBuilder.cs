@@ -7,7 +7,7 @@ using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
 using ICD.Connect.Routing.Endpoints.Sources;
 
-namespace ICD.Connect.Routing.RoutingGraphs
+namespace ICD.Connect.Routing.Pathfinding
 {
 	public sealed class PathBuilder : IPathBuilderStartNew, IPathBuilderFrom, IPathBuilderTo, IPathBuilderOfType
 	{
@@ -27,7 +27,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// Starts a new PathBuilder chain.
 		/// </summary>
 		/// <returns></returns>
-		public static IPathBuilderStartNew FindPath()
+		public static IPathBuilderStartNew FindPaths()
 		{
 			return new PathBuilder();
 		}
@@ -44,6 +44,30 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			m_Current = new PathBuilderQuery();
 			m_Current.SetStart(sourceEndpoints);
+
+			return this;
+		}
+
+		/// <summary>
+		/// Sets the start position, end position and type for the path.
+		/// </summary>
+		/// <param name="operation"></param>
+		/// <returns></returns>
+		public IPathBuilderOfType ForOperation(RouteOperation operation)
+		{
+			if (operation == null)
+				throw new ArgumentNullException("operation");
+
+			if (m_Current != null)
+				throw new InvalidOperationException();
+
+			PathBuilderQuery current = new PathBuilderQuery();
+
+			current.SetStart(new[] {operation.Source});
+			current.SetEnd(new[] {operation.Destination});
+			current.Type = operation.ConnectionType;
+
+			m_Queries.Add(current);
 
 			return this;
 		}
@@ -88,7 +112,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (m_Current == null)
 				throw new InvalidOperationException();
 
-			m_Current.SetType(flags);
+			m_Current.Type = flags;
 
 			return this;
 		}
@@ -97,7 +121,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// Starts describing a new path.
 		/// </summary>
 		/// <returns></returns>
-		public IPathBuilderStartNew And()
+		public IPathBuilderStartNew AndFindPaths()
 		{
 			if (m_Current == null)
 				throw new InvalidOperationException();
@@ -112,15 +136,18 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// Yields the path/s for the defined queries.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<ConnectionPath> Now()
+		public IEnumerable<ConnectionPath> With(IPathFinder pathFinder)
 		{
+			if (pathFinder == null)
+				throw new ArgumentNullException("pathFinder");
+
 			if (m_Current == null)
 				throw new InvalidOperationException();
 
 			m_Queries.Add(m_Current);
 			m_Current = null;
 
-			throw new NotImplementedException();
+			return pathFinder.FindPaths(m_Queries);
 		}
 	}
 
@@ -136,6 +163,13 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="sourceEndpoints"></param>
 		/// <returns></returns>
 		IPathBuilderFrom From(IEnumerable<EndpointInfo> sourceEndpoints);
+
+		/// <summary>
+		/// Sets the start position, end position and type for the path.
+		/// </summary>
+		/// <param name="operation"></param>
+		/// <returns></returns>
+		IPathBuilderOfType ForOperation(RouteOperation operation);
 	}
 
 	public static class PathBuilderStartNewExtensions
@@ -269,7 +303,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="extends"></param>
 		/// <param name="destinations"></param>
 		/// <returns></returns>
-		public static IPathBuilderTo To(this IPathBuilderFrom extends, IEnumerable<IDestination> destinations)
+		public static IPathBuilderTo To<T>(this IPathBuilderFrom extends, IEnumerable<T> destinations)
+			where T : IDestination
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");
@@ -279,7 +314,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			IPathBuilderTo result = null;
 
-			foreach (IDestination destination in destinations)
+			foreach (T destination in destinations)
 				result = result == null ? extends.To(destination) : result.AndTo(destination);
 
 			if (result == null)
@@ -368,7 +403,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="extends"></param>
 		/// <param name="destinations"></param>
 		/// <returns></returns>
-		public static IPathBuilderTo AndTo(this IPathBuilderTo extends, IEnumerable<IDestination> destinations)
+		public static IPathBuilderTo AndTo<T>(this IPathBuilderTo extends, IEnumerable<T> destinations)
+			where T : IDestination
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");
@@ -376,7 +412,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (destinations == null)
 				throw new ArgumentNullException("destinations");
 
-			foreach (IDestination destination in destinations)
+			foreach (T destination in destinations)
 				extends = extends.AndTo(destination);
 
 			return extends;
@@ -389,12 +425,13 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// Starts describing a new path.
 		/// </summary>
 		/// <returns></returns>
-		IPathBuilderStartNew And();
+		IPathBuilderStartNew AndFindPaths();
 
 		/// <summary>
 		/// Yields the path/s for the defined queries.
 		/// </summary>
+		/// <param name="pathFinder"></param>
 		/// <returns></returns>
-		IEnumerable<ConnectionPath> Now();
+		IEnumerable<ConnectionPath> With(IPathFinder pathFinder);
 	}
 }

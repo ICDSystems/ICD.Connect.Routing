@@ -10,6 +10,7 @@ using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
 using ICD.Connect.Routing.Endpoints.Groups;
 using ICD.Connect.Routing.Endpoints.Sources;
+using ICD.Connect.Routing.Pathfinding;
 using ICD.Connect.Routing.Utils;
 using ICD.Connect.Settings;
 
@@ -77,6 +78,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private static string PrintSources(IRoutingGraph instance)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			TableBuilder builder = new TableBuilder("Id", "Source");
 
 			foreach (ISource source in instance.Sources.GetChildren().OrderBy(c => c.Id))
@@ -87,6 +91,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private static string PrintDestinations(IRoutingGraph instance)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			TableBuilder builder = new TableBuilder("Id", "Destination");
 
 			foreach (IDestination destination in instance.Destinations.GetChildren().OrderBy(c => c.Id))
@@ -100,11 +107,17 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		private static string PrintTable(IRoutingGraph instance)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			return new RoutingGraphTableBuilder(instance).ToString();
 		}
 
 		private static string PrintConnections(IRoutingGraph instance)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			TableBuilder builder = new TableBuilder("Source", "Output", "Destination", "Input", "Type");
 
 			foreach (Connection con in instance.Connections.GetChildren().OrderBy(c => c.Source.Device).ThenBy(c => c.Source.Address))
@@ -115,6 +128,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private static string PrintPathable(IRoutingGraph instance)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			TableBuilder builder = new TableBuilder("Source", "Type", "Destination");
 
 			ISource[] sources = instance.Sources.ToArray();
@@ -169,6 +185,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		private static string PrintUsages(IRoutingGraph instance)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			TableBuilder builder = new TableBuilder("Connection", "Type", "Source", "Rooms");
 
 			Connection[] connections = instance.Connections.ToArray();
@@ -200,18 +219,33 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private static string RouteConsoleCommand(IRoutingGraph instance, int source, int destination, eConnectionType connectionType, int roomId)
 		{
-			if (!instance.Sources.ContainsChild(source) || !instance.Destinations.ContainsChild(destination))
-				return "Krang does not contains a source or destination with that id";
+			if (instance == null)
+				throw new ArgumentNullException("instance");
 
-			instance.Route(instance.Sources.GetChild(source), instance.Destinations.GetChild(destination), connectionType, roomId);
+			if (!instance.Sources.ContainsChild(source) || !instance.Destinations.ContainsChild(destination))
+				return "There is no source or destination with that id";
+
+			IPathFinder pathFinder = new DefaultPathFinder(instance);
+
+			IEnumerable<ConnectionPath> paths =
+				PathBuilder.FindPaths()
+				           .From(instance.Sources.GetChild(source))
+				           .To(instance.Destinations.GetChild(destination))
+				           .OfType(connectionType)
+				           .With(pathFinder);
+
+			instance.RoutePaths(paths, roomId);
 
 			return "Sucessfully executed route command";
 		}
 
 		private static string RouteGroupConsoleCommand(IRoutingGraph instance, int source, int destinationGroup, eConnectionType connectionType, int roomId)
 		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
 			if (!instance.Sources.ContainsChild(source) || !instance.DestinationGroups.ContainsChild(destinationGroup))
-				return "Krang does not contains a source or destination group with that id";
+				return "There is no source or destination group with that id";
 
 			Route(instance, instance.Sources.GetChild(source), instance.DestinationGroups.GetChild(destinationGroup), connectionType, roomId);
 
@@ -220,13 +254,30 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private static void Route(IRoutingGraph instance, ISource source, IDestinationGroup destinationGroup, eConnectionType connectionType, int roomId)
 		{
-			foreach (
-				IDestination destination in
-				destinationGroup.Destinations.Where(instance.Destinations.ContainsChild).Select(d => instance.Destinations.GetChild(d)))
-			{
-				IDestination destination1 = destination;
-				ThreadingUtils.SafeInvoke(() => instance.Route(source, destination1, connectionType, roomId));
-			}
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (destinationGroup == null)
+				throw new ArgumentNullException("destinationGroup");
+
+			IEnumerable<IDestination> destinations =
+				destinationGroup.Destinations
+				                .Where(instance.Destinations.ContainsChild)
+				                .Select(d => instance.Destinations.GetChild(d));
+
+			IPathFinder pathFinder = new DefaultPathFinder(instance);
+
+			IEnumerable<ConnectionPath> paths =
+				PathBuilder.FindPaths()
+				           .From(source)
+				           .To(destinations)
+				           .OfType(connectionType)
+				           .With(pathFinder);
+
+			instance.RoutePaths(paths, roomId);
 		}
 	}
 }
