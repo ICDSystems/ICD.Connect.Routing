@@ -135,6 +135,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_PendingRoutesSection = new SafeCriticalSection();
 
 			m_Cache = new RoutingCache(this);
+
+			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
 		}
 
 		/// <summary>
