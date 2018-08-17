@@ -458,7 +458,18 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                          eConnectionType type, bool signalDetected,
 		                                                          bool inputActive)
 		{
-			return from flag in EnumUtils.GetFlagsExceptNone(type) select FindActivePath(destination, flag, signalDetected, inputActive) into path let index = path.FindIndex(c => c.Source == source) where index >= 0 select path.Skip(index).ToArray();
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+			{
+				Connection[] path = FindActivePath(destination, flag, signalDetected, inputActive);
+				if (path == null)
+					continue;
+
+				int index = path.FindIndex(c => c.Source == source);
+				if (index < 0)
+					continue;
+
+				yield return path.Skip(index).ToArray();
+			}
 		}
 
 		/// <summary>
