@@ -441,7 +441,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentNullException("destination");
 
 			return Connections.FilterEndpointsAny(source, type)
-			                  .SelectMany(e => FindActivePaths(source, destination, type, signalDetected, inputActive));
+			                  .SelectMany(e => FindActivePaths(e, destination, type, signalDetected, inputActive));
 		}
 
 		/// <summary>
