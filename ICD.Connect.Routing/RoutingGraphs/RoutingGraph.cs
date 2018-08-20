@@ -29,22 +29,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 	[PublicAPI]
 	public sealed class RoutingGraph : AbstractRoutingGraph<RoutingGraphSettings>
 	{
-		private readonly IcdHashSet<IRouteSwitcherControl> m_SubscribedSwitchers;
-		private readonly IcdHashSet<IRouteDestinationControl> m_SubscribedDestinations;
-		private readonly IcdHashSet<IRouteSourceControl> m_SubscribedSources;
-
-		private readonly ConnectionsCollection m_Connections;
-		private readonly StaticRoutesCollection m_StaticRoutes;
-		private readonly ConnectionUsageCollection m_ConnectionUsages;
-		private readonly CoreSourceCollection m_Sources;
-		private readonly CoreDestinationCollection m_Destinations;
-		private readonly CoreDestinationGroupCollection m_DestinationGroups;
-
-		private readonly SafeCriticalSection m_PendingRoutesSection;
-		private readonly Dictionary<Guid, int> m_PendingRoutes;
-
-		private readonly RoutingCache m_Cache; 
-
 		#region Events
 
 		/// <summary>
@@ -73,6 +57,22 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public override event EventHandler<EndpointStateEventArgs> OnDestinationInputActiveStateChanged;
 
 		#endregion
+
+		private readonly IcdHashSet<IRouteSwitcherControl> m_SubscribedSwitchers;
+		private readonly IcdHashSet<IRouteDestinationControl> m_SubscribedDestinations;
+		private readonly IcdHashSet<IRouteSourceControl> m_SubscribedSources;
+
+		private readonly ConnectionsCollection m_Connections;
+		private readonly StaticRoutesCollection m_StaticRoutes;
+		private readonly ConnectionUsageCollection m_ConnectionUsages;
+		private readonly CoreSourceCollection m_Sources;
+		private readonly CoreDestinationCollection m_Destinations;
+		private readonly CoreDestinationGroupCollection m_DestinationGroups;
+
+		private readonly SafeCriticalSection m_PendingRoutesSection;
+		private readonly Dictionary<Guid, int> m_PendingRoutes;
+
+		private readonly RoutingCache m_Cache;
 
 		#region Properties
 
@@ -382,8 +382,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			while (true)
 			{
 				// If there is no input connection to this destination then we are done.
-				Connection inputConnection = m_Connections.GetInputConnection(destination);
-				if (inputConnection == null || !inputConnection.ConnectionType.HasFlag(flag))
+				Connection inputConnection = m_Connections.GetInputConnection(destination, flag);
+				if (inputConnection == null)
 					return result.ToArray(result.Count);
 
 				IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
@@ -919,10 +919,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			foreach (Connection[] path in FindActivePaths(source, type, false, false))
 			{
 				// Loop backwards looking for switchers closest to the destination
-				for (int index = path.Length - 1; index > 0; index--)
+				foreach (Connection[] pair in path.GetAdjacentPairs().Reverse())
 				{
-					Connection previous = path[index - 1];
-					Connection current = path[index];
+					Connection previous = pair[0];
+					Connection current = pair[1];
 
 					if (!Unroute(previous, current, type, roomId))
 						break;
@@ -942,6 +942,36 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		{
 			foreach (Connection[] path in FindActivePaths(source, destination, type, false, false))
 				Unroute(path, type, roomId);
+		}
+
+		/// <summary>
+		/// Unroutes all switchers routing the active source to the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		public override void Unroute(IDestination destination, eConnectionType type, int roomId)
+		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			foreach (EndpointInfo endpoint in Connections.FilterEndpointsAny(destination, type))
+				UnrouteDestination(endpoint, type, roomId);
+		}
+
+		/// <summary>
+		/// Unroutes all switchers routing the active source to the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		private void UnrouteDestination(EndpointInfo destination, eConnectionType type, int roomId)
+		{
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
+			{
+				Connection[] path = FindActivePath(destination, flag, false, false);
+				Unroute(path, flag, roomId);
+			}
 		}
 
 		/// <summary>
@@ -980,36 +1010,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
-		/// Unroutes all switchers routing the active source to the given destination.
-		/// </summary>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		public override void Unroute(IDestination destination, eConnectionType type, int roomId)
-		{
-			if (destination == null)
-				throw new ArgumentNullException("destination");
-
-			foreach (EndpointInfo endpoint in Connections.FilterEndpointsAny(destination, type))
-				UnrouteDestination(endpoint, type, roomId);
-		}
-
-		/// <summary>
-		/// Unroutes all switchers routing the active source to the given destination.
-		/// </summary>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		private void UnrouteDestination(EndpointInfo destination, eConnectionType type, int roomId)
-		{
-			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
-			{
-				Connection[] path = FindActivePath(destination, flag, false, false);
-				Unroute(path, flag, roomId);
-			}
-		}
-
-		/// <summary>
 		/// Unroutes the consecutive connections a -> b.
 		/// </summary>
 		/// <param name="incomingConnection"></param>
@@ -1039,9 +1039,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 			{
-				ConnectorInfo? connector = switcher.GetInput(output, flag);
-
 				// Don't unroute if there is no path here
+				ConnectorInfo? connector = switcher.GetInput(output, flag);
 				if (!connector.HasValue || connector.Value.Address != input)
 					continue;
 
