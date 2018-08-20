@@ -11,7 +11,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.RoutingGraphs;
 
-namespace ICD.Connect.Routing.Pathfinding
+namespace ICD.Connect.Routing.PathFinding
 {
 	public sealed class DefaultPathFinder : AbstractPathFinder
 	{

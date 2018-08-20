@@ -5,7 +5,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints;
 
-namespace ICD.Connect.Routing.Pathfinding
+namespace ICD.Connect.Routing.PathFinding
 {
 	/// <summary>
 	/// Describes a single search for a path.

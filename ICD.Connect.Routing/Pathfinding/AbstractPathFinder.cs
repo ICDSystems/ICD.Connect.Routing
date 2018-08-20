@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ICD.Connect.Routing.Connections;
 
-namespace ICD.Connect.Routing.Pathfinding
+namespace ICD.Connect.Routing.PathFinding
 {
 	public abstract class AbstractPathFinder : IPathFinder
 	{

@@ -10,7 +10,7 @@ using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
 using ICD.Connect.Routing.Endpoints.Groups;
 using ICD.Connect.Routing.Endpoints.Sources;
-using ICD.Connect.Routing.Pathfinding;
+using ICD.Connect.Routing.PathFinding;
 using ICD.Connect.Routing.Utils;
 using ICD.Connect.Settings;
 

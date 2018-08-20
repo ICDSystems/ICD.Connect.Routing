@@ -7,7 +7,7 @@ using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
 using ICD.Connect.Routing.Endpoints.Sources;
 
-namespace ICD.Connect.Routing.Pathfinding
+namespace ICD.Connect.Routing.PathFinding
 {
 	public sealed class PathBuilder : IPathBuilderStartNew, IPathBuilderFrom, IPathBuilderTo, IPathBuilderOfType
 	{
