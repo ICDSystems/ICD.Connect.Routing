@@ -74,7 +74,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private readonly RoutingCache m_Cache;
 
+		private ICore m_CachedCore;
+
 		#region Properties
+
+		public ICore Core { get { return m_CachedCore = m_CachedCore ?? ServiceProvider.GetService<ICore>(); } }
 
 		/// <summary>
 		/// Gets the connections collection.
@@ -1076,7 +1080,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <returns></returns>
 		public override T GetControl<T>(int device, int control)
 		{
-			return ServiceProvider.GetService<ICore>().GetControl<T>(device, control);
+			return Core.GetControl<T>(device, control);
 		}
 
 		public override IRouteDestinationControl GetDestinationControl(int device, int control)
