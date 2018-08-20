@@ -365,6 +365,71 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
+		/// Finds the current paths from the given source to the destination.
+		/// Return multiple paths if multiple connection types are provided.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		public override IEnumerable<Connection[]> FindActivePaths(ISource source, IDestination destination,
+		                                                          eConnectionType type, bool signalDetected,
+		                                                          bool inputActive)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			// Optimization - Only one of the source endpoints may be routed to the destination endpoint for the given type
+			return Connections.FilterEndpointsAny(destination, type)
+			                  .SelectMany(d => FindActivePaths(source, d, type, signalDetected, inputActive));
+		}
+
+		/// <summary>
+		/// Finds the current paths from the given source to the destination.
+		/// Return multiple paths if multiple connection types are provided.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		public override IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, EndpointInfo destination,
+		                                                          eConnectionType type, bool signalDetected,
+		                                                          bool inputActive)
+		{
+			return EnumUtils.GetFlagsExceptNone(type)
+			                .Select(f => FindActivePath(source, destination, f, signalDetected, inputActive))
+							.Where(p => p != null);
+		}
+
+		/// <summary>
+		/// Finds the current paths from the given source to the destination.
+		/// Return multiple paths if multiple connection types are provided.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		public override IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, IDestination destination,
+		                                                          eConnectionType type, bool signalDetected,
+		                                                          bool inputActive)
+		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			return Connections.FilterEndpointsAny(destination, type)
+			                  .SelectMany(e => FindActivePaths(source, e, type, signalDetected, inputActive));
+		}
+
+		/// <summary>
 		/// Finds the path currently routed to the destination.
 		/// </summary>
 		/// <param name="destination"></param>
@@ -425,76 +490,29 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
-		/// Finds the current paths from the given source to the destination.
-		/// Return multiple paths if multiple connection types are provided.
+		/// Finds the path currently routed from the source to the destination.
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="destination"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <param name="signalDetected"></param>
 		/// <param name="inputActive"></param>
 		/// <returns></returns>
-		public override IEnumerable<Connection[]> FindActivePaths(ISource source, IDestination destination,
-		                                                          eConnectionType type, bool signalDetected,
-		                                                          bool inputActive)
+		[CanBeNull]
+		private Connection[] FindActivePath(EndpointInfo source, EndpointInfo destination, eConnectionType flag, bool signalDetected, bool inputActive)
 		{
-			if (source == null)
-				throw new ArgumentNullException("source");
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("Type enum requires exactly 1 flag.", "flag");
 
-			if (destination == null)
-				throw new ArgumentNullException("destination");
+			Connection[] path = FindActivePath(destination, flag, signalDetected, inputActive);
+			if (path == null)
+				return null;
 
-			return Connections.FilterEndpointsAny(source, type)
-			                  .SelectMany(e => FindActivePaths(e, destination, type, signalDetected, inputActive));
-		}
+			int index = path.FindIndex(c => c.Source == source);
+			if (index < 0)
+				return null;
 
-		/// <summary>
-		/// Finds the current paths from the given source to the destination.
-		/// Return multiple paths if multiple connection types are provided.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="signalDetected"></param>
-		/// <param name="inputActive"></param>
-		/// <returns></returns>
-		public override IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, EndpointInfo destination,
-		                                                          eConnectionType type, bool signalDetected,
-		                                                          bool inputActive)
-		{
-			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
-			{
-				Connection[] path = FindActivePath(destination, flag, signalDetected, inputActive);
-				if (path == null)
-					continue;
-
-				int index = path.FindIndex(c => c.Source == source);
-				if (index < 0)
-					continue;
-
-				yield return path.Skip(index).ToArray();
-			}
-		}
-
-		/// <summary>
-		/// Finds the current paths from the given source to the destination.
-		/// Return multiple paths if multiple connection types are provided.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="signalDetected"></param>
-		/// <param name="inputActive"></param>
-		/// <returns></returns>
-		public override IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, IDestination destination,
-		                                                          eConnectionType type, bool signalDetected,
-		                                                          bool inputActive)
-		{
-			if (destination == null)
-				throw new ArgumentNullException("destination");
-
-			return Connections.FilterEndpointsAny(destination, type)
-			                  .SelectMany(e => FindActivePaths(source, e, type, signalDetected, inputActive));
+			return path.Skip(index).ToArray();
 		}
 
 		/// <summary>
@@ -508,14 +526,18 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="inputActive"></param>
 		/// <returns></returns>
 		private IEnumerable<Connection[]> FindActivePaths(ISource source, EndpointInfo destination,
-		                                                          eConnectionType type,
-		                                                          bool signalDetected, bool inputActive)
+		                                                  eConnectionType type,
+		                                                  bool signalDetected, bool inputActive)
 		{
 			if (source == null)
 				throw new ArgumentNullException("source");
 
-			return Connections.FilterEndpointsAny(source, type)
-			                  .SelectMany(e => FindActivePaths(e, destination, type, signalDetected, inputActive));
+			// Optimization - Only one of the source endpoints may be routed to the destination endpoint for the given type
+			return EnumUtils.GetFlagsExceptNone(type)
+			                .Select(f => Connections.FilterEndpoints(source, f)
+			                                        .Select(s => FindActivePath(s, destination, f, signalDetected, inputActive))
+			                                        .FirstOrDefault(p => p != null))
+			                .Where(p => p != null);
 		}
 
 		/// <summary>
@@ -527,10 +549,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="inputActive"></param>
 		/// <returns></returns>
 		private IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type,
-		                                                          bool signalDetected, bool inputActive)
+		                                                  bool signalDetected, bool inputActive)
 		{
 			return EnumUtils.GetFlagsExceptNone(type)
-							.SelectMany(f => FindActivePathsSingleFlag(source, f, signalDetected, inputActive));
+			                .SelectMany(f => FindActivePathsSingleFlag(source, f, signalDetected, inputActive));
 		}
 
 		/// <summary>
