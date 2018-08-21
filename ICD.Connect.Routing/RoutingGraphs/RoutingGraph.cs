@@ -167,8 +167,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="eventArgs"></param>
 		private void ConnectionsOnConnectionsChanged(object sender, EventArgs eventArgs)
 		{
-			//ConnectionUsages.RemoveInvalid();
-
 			SubscribeSwitchers();
 			SubscribeDestinations();
 			SubscribeSources();
@@ -193,15 +191,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The sources</returns>
 		public override IEnumerable<EndpointInfo> GetActiveSourceEndpoints(IDestination destination, eConnectionType type,
-		                                                                   bool signalDetected,
-		                                                                   bool inputActive)
+		                                                                   bool signalDetected, bool inputActive)
 		{
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			return destination.GetEndpoints()
-			                  .SelectMany(e => GetActiveSourceEndpoints(e, type, signalDetected, inputActive))
-							  .Distinct();
+			return m_Connections.FilterEndpointsAny(destination, type)
+			                    .SelectMany(e => GetActiveSourceEndpoints(e, type, signalDetected, inputActive))
+			                    .Distinct();
 		}
 
 		/// <summary>
@@ -215,7 +212,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The sources</returns>
 		private IEnumerable<EndpointInfo> GetActiveSourceEndpoints(EndpointInfo destinationInput, eConnectionType type,
-		                                                                   bool signalDetected, bool inputActive)
+		                                                           bool signalDetected, bool inputActive)
 		{
 			IRouteDestinationControl destination = GetDestinationControl(destinationInput.Device, destinationInput.Control);
 			if (destination == null)
@@ -240,41 +237,45 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="inputActive"></param>
 		/// <exception cref="ArgumentNullException"></exception>
 		/// <returns>The source</returns>
-		public override EndpointInfo? GetActiveSourceEndpoint(IRouteDestinationControl destination, int input,
-		                                                      eConnectionType flag, bool signalDetected, bool inputActive)
+		public override EndpointInfo? GetActiveSourceEndpoint(IRouteDestinationControl destination, int input, eConnectionType flag, bool signalDetected, bool inputActive)
 		{
-			if (destination == null)
-				throw new ArgumentNullException("destination");
+			while (true)
+			{
+				if (destination == null)
+					throw new ArgumentNullException("destination");
 
-			if (EnumUtils.HasMultipleFlags(flag))
-				throw new ArgumentException("Connection type must be a single flag", "flag");
+				if (EnumUtils.HasMultipleFlags(flag))
+					throw new ArgumentException("Connection type must be a single flag", "flag");
 
-			if (signalDetected && !destination.GetSignalDetectedState(input, flag))
-				return null;
+				if (signalDetected && !destination.GetSignalDetectedState(input, flag))
+					return null;
 
-			if (inputActive && !destination.GetInputActiveState(input, flag))
-				return null;
+				if (inputActive && !destination.GetInputActiveState(input, flag))
+					return null;
 
-			Connection inputConnection = m_Connections.GetInputConnection(destination, input);
-			if (inputConnection == null)
-				return null;
+				Connection inputConnection = m_Connections.GetInputConnection(destination, input);
+				if (inputConnection == null)
+					return null;
 
-			// Narrow the type by what the connection supports
-			if (!inputConnection.ConnectionType.HasFlag(flag))
-				return null;
+				// Narrow the type by what the connection supports
+				if (!inputConnection.ConnectionType.HasFlag(flag))
+					return null;
 
-			IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
-			if (sourceControl == null)
-				return null;
+				IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
+				if (sourceControl == null)
+					return null;
 
-			IRouteMidpointControl sourceAsMidpoint = sourceControl as IRouteMidpointControl;
-			if (sourceAsMidpoint == null)
-				return sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
+				IRouteMidpointControl sourceAsMidpoint = sourceControl as IRouteMidpointControl;
+				if (sourceAsMidpoint == null)
+					return sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
 
-			ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, flag);
-			return sourceConnector.HasValue
-				       ? GetActiveSourceEndpoint(sourceAsMidpoint, sourceConnector.Value.Address, flag, signalDetected, inputActive)
-				       : sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
+				ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, flag);
+				if (!sourceConnector.HasValue)
+					return sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
+
+				destination = sourceAsMidpoint;
+				input = sourceConnector.Value.Address;
+			}
 		}
 
 		/// <summary>
@@ -442,11 +443,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("Type enum requires exactly 1 flag.", "flag");
 
-			List<Connection> result = new List<Connection>();
-
 			IRouteDestinationControl destinationControl = GetControl<IRouteDestinationControl>(destination.Device, destination.Control);
 			if (destinationControl == null)
-				return result.ToArray(result.Count);
+				return new Connection[0];
+
+			List<Connection> result = new List<Connection>();
 
 			while (true)
 			{
@@ -862,7 +863,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (sourceControl == null)
 				throw new ArgumentNullException("sourceControl");
 
-			Unroute(sourceControl.GetOutputEndpointInfo(sourceAddress), type, roomId);
+			EndpointInfo sourceEndpoint = sourceControl.GetOutputEndpointInfo(sourceAddress);
+
+			Unroute(sourceEndpoint, type, roomId);
 		}
 
 		/// <summary>
@@ -885,9 +888,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (destinationControl == null)
 				throw new ArgumentNullException("destinationControl");
 
-			Unroute(sourceControl.GetOutputEndpointInfo(sourceAddress),
-			        destinationControl.GetInputEndpointInfo(destinationAddress),
-			        type, roomId);
+			EndpointInfo sourceEndpoint = sourceControl.GetOutputEndpointInfo(sourceAddress);
+			EndpointInfo destinationEndpoint = destinationControl.GetInputEndpointInfo(destinationAddress);
+
+			Unroute(sourceEndpoint, destinationEndpoint, type, roomId);
 		}
 
 		/// <summary>
