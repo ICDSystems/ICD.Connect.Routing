@@ -852,6 +852,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("Connection type has multiple flags", "flag");
 
+			// Can only route through midpoints
+			IRouteMidpointControl midpoint = m_RoutingGraph.GetDestinationControl(inputConnection) as IRouteMidpointControl;
+			if (midpoint == null)
+				return Enumerable.Empty<Connection>();
+
 			return GetOutputConnections(inputConnection.Destination.Device, inputConnection.Destination.Control, flag);
 		}
 
