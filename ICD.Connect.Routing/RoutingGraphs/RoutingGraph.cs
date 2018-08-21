@@ -444,7 +444,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			List<Connection> result = new List<Connection>();
 
-			IRouteDestinationControl destinationControl = this.GetDestinationControl(destination);
+			IRouteDestinationControl destinationControl = GetControl<IRouteDestinationControl>(destination.Device, destination.Control);
 			if (destinationControl == null)
 				return result.ToArray(result.Count);
 
@@ -789,7 +789,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					OnRouteFinished.Raise(this, new RouteFinishedEventArgs(op, success));
 				}
 				else
-					m_PendingRoutes[op.Id] --;
+					m_PendingRoutes[op.Id]--;
 			}
 			finally
 			{
