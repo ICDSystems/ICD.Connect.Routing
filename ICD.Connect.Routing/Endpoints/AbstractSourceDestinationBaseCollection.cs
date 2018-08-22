@@ -11,7 +11,7 @@ namespace ICD.Connect.Routing.Endpoints
 {
 	public abstract class AbstractSourceDestinationBaseCollection<T> : AbstractOriginatorCollection<T>,
 	                                                                   ISourceDestinationBaseCollection<T>
-		where T : ISourceDestinationBase
+		where T : class, ISourceDestinationBase
 	{
 		private readonly Dictionary<DeviceControlInfo, Dictionary<int, Dictionary<eConnectionType, List<T>>>> m_EndpointCache;
 		private readonly SafeCriticalSection m_EndpointCacheSection;
