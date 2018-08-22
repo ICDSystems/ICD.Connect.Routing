@@ -99,7 +99,7 @@ namespace ICD.Connect.Routing.Controls
 		/// <returns></returns>
 		public override ConnectorInfo GetOutput(int address)
 		{
-			throw new NotImplementedException();
+			return Parent.GetOutput(address);
 		}
 
 		/// <summary>
@@ -109,7 +109,7 @@ namespace ICD.Connect.Routing.Controls
 		/// <returns></returns>
 		public override bool ContainsOutput(int output)
 		{
-			throw new NotImplementedException();
+			return Parent.ContainsOutput(output);
 		}
 
 		/// <summary>
