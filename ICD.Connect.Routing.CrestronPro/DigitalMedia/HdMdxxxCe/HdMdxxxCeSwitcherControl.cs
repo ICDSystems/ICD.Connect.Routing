@@ -186,6 +186,26 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdxxxCe
 		}
 
 		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int address)
+		{
+			return GetOutputs().First(o => o.Address == address);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return GetOutputs().Any(o => o.Address == output);
+		}
+
+		/// <summary>
 		/// Returns the outputs.
 		/// </summary>
 		/// <returns></returns>
@@ -206,6 +226,32 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdxxxCe
 		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
 		{
 			return m_Cache.GetOutputsForInput(input, type);
+		}
+
+		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			if (!ContainsInput(input))
+				throw new ArgumentOutOfRangeException("input");
+
+			return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			if (m_Switcher == null)
+				return false;
+
+			return input >= 1 && input <= m_Switcher.NumberOfInputs;
 		}
 
 		/// <summary>

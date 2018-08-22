@@ -1,5 +1,4 @@
-﻿
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.DmcHdo
 {

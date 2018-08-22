@@ -28,6 +28,11 @@ namespace ICD.Connect.Routing.Controls
 
 		#region Methods
 
+		/// <summary>
+		/// Performs the given route operation.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <returns></returns>
 		public abstract bool Route(RouteOperation info);
 
 		/// <summary>

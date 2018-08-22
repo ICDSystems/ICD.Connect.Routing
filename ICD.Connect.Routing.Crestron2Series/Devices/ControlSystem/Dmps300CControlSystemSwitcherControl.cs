@@ -184,6 +184,16 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		}
 
 		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return output >= 1 && output <= 7;
+		}
+
+		/// <summary>
 		/// Returns the outputs.
 		/// </summary>
 		/// <returns></returns>

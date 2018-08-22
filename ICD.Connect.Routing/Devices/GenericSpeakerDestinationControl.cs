@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Connect.Routing.Connections;
@@ -18,7 +17,20 @@ namespace ICD.Connect.Routing.Devices
 		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+
+		private IRoutingGraph m_CachedRoutingGraph;
+
+		/// <summary>
+		/// Gets the routing graph.
+		/// </summary>
+		public IRoutingGraph RoutingGraph
+		{
+			get { return m_CachedRoutingGraph = m_CachedRoutingGraph ?? ServiceProvider.GetService<IRoutingGraph>(); }
+		}
 
 		/// <summary>
 		/// Constructor.
@@ -52,17 +64,10 @@ namespace ICD.Connect.Routing.Devices
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
-			if (EnumUtils.HasMultipleFlags(type))
-			{
-				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(t => GetSignalDetectedState(input, t))
-				                .Unanimous(false);
-			}
+			if (type != eConnectionType.Audio)
+				throw new ArgumentOutOfRangeException("type");
 
-			if (type == eConnectionType.Audio)
-				return true;
-
-			throw new ArgumentException("type");
+			return true;
 		}
 
 		/// <summary>
@@ -76,19 +81,39 @@ namespace ICD.Connect.Routing.Devices
 		}
 
 		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			if (!ContainsInput(input))
+				throw new ArgumentOutOfRangeException("input");
+
+			return new ConnectorInfo(input, eConnectionType.Audio);
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			Connection connection = RoutingGraph.Connections.GetInputConnection(this, input);
+			return connection != null && connection.ConnectionType.HasFlag(eConnectionType.Audio);
+		}
+
+		/// <summary>
 		/// Returns the inputs.
 		/// </summary>
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
 			return
-				ServiceProvider.GetService<IRoutingGraph>()
-				               .Connections
-				               .GetChildren()
-				               .Where(c => c.ConnectionType.HasFlag(eConnectionType.Audio) &&
-				                           c.Destination.Device == Parent.Id &&
-				                           c.Destination.Control == Id)
-				               .Select(c => new ConnectorInfo(c.Destination.Address, eConnectionType.Audio));
+				RoutingGraph.Connections
+				            .GetInputConnections(Parent.Id, Id, eConnectionType.Audio)
+				            .Select(c => new ConnectorInfo(c.Destination.Address, eConnectionType.Audio));
 		}
 
 		#endregion

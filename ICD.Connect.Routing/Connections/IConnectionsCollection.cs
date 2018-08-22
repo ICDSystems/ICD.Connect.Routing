@@ -50,6 +50,14 @@ namespace ICD.Connect.Routing.Connections
 		                                            eConnectionType type);
 
 		/// <summary>
+		/// Gets the input connections for the device.
+		/// </summary>
+		/// <param name="destinationDeviceId"></param>
+		/// <param name="destinationControlId"></param>
+		/// <returns></returns>
+		IEnumerable<Connection> GetInputConnections(int destinationDeviceId, int destinationControlId);
+
+		/// <summary>
 		/// Gets the connection for the given endpoint.
 		/// </summary>
 		/// <param name="source"></param>

@@ -18,6 +18,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 
 	    private const ushort ANALOG_DISABLE_FREERUN_JOIN = 48;
 
+	    /// <summary>
+	    /// Raised when the device starts/stops actively transmitting on an output.
+	    /// </summary>
 	    public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 	    private bool m_ActiveTransmissionState;
@@ -98,6 +101,14 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 
 	    #region Methods
 
+	    /// <summary>
+	    /// Returns true if the device is actively transmitting on the given output.
+	    /// This is NOT the same as sending video, since some devices may send an
+	    /// idle signal by default.
+	    /// </summary>
+	    /// <param name="output"></param>
+	    /// <param name="type"></param>
+	    /// <returns></returns>
 	    public override bool GetActiveTransmissionState(int output, eConnectionType type)
 	    {
 		    if (EnumUtils.HasMultipleFlags(type))
@@ -124,6 +135,29 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 				    throw new ArgumentOutOfRangeException("type");
 		    }
 		}
+
+	    /// <summary>
+	    /// Gets the output at the given address.
+	    /// </summary>
+	    /// <param name="output"></param>
+	    /// <returns></returns>
+	    public override ConnectorInfo GetOutput(int output)
+	    {
+		    if (!ContainsOutput(output))
+				throw new ArgumentOutOfRangeException("output");
+
+			return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
+	    }
+
+	    /// <summary>
+	    /// Returns true if the source contains an output at the given address.
+	    /// </summary>
+	    /// <param name="output"></param>
+	    /// <returns></returns>
+	    public override bool ContainsOutput(int output)
+	    {
+		    return output == 1;
+	    }
 
 	    public override IEnumerable<ConnectorInfo> GetOutputs()
 	    {

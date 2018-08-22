@@ -144,6 +144,31 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		/// <summary>
+		/// Gets the input connections for the device.
+		/// </summary>
+		/// <param name="destinationDeviceId"></param>
+		/// <param name="destinationControlId"></param>
+		/// <returns></returns>
+		public IEnumerable<Connection> GetInputConnections(int destinationDeviceId, int destinationControlId)
+		{
+			DeviceControlInfo info = new DeviceControlInfo(destinationDeviceId, destinationControlId);
+
+			m_ConnectionsSection.Enter();
+
+			try
+			{
+				IcdOrderedDictionary<int, Connection> map;
+				return m_InputConnectionLookup.TryGetValue(info, out map)
+					       ? map.Values.ToArray(map.Count)
+					       : Enumerable.Empty<Connection>();
+			}
+			finally
+			{
+				m_ConnectionsSection.Leave();
+			}
+		}
+
+		/// <summary>
 		/// Gets the input connections for the device matching any of the given type flags.
 		/// </summary>
 		/// <param name="destinationDeviceId"></param>

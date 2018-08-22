@@ -49,20 +49,14 @@ namespace ICD.Connect.Routing.Controls
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public virtual ConnectorInfo GetOutput(int address)
-		{
-			return GetOutputs().First(c => c.Address == address);
-		}
+		public abstract ConnectorInfo GetOutput(int address);
 
 		/// <summary>
 		/// Returns true if the source contains an output at the given address.
 		/// </summary>
 		/// <param name="output"></param>
 		/// <returns></returns>
-		public virtual bool ContainsOutput(int output)
-		{
-			return GetOutputs().Any(c => c.Address == output);
-		}
+		public abstract bool ContainsOutput(int output);
 
 		/// <summary>
 		/// Returns the outputs.

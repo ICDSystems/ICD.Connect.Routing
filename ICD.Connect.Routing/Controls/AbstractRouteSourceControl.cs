@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
@@ -12,6 +11,9 @@ namespace ICD.Connect.Routing.Controls
 	public abstract class AbstractRouteSourceControl<T> : AbstractRouteControl<T>, IRouteSourceControl
 		where T : IDeviceBase
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public abstract event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 		/// <summary>
@@ -39,20 +41,14 @@ namespace ICD.Connect.Routing.Controls
 		/// </summary>
 		/// <param name="output"></param>
 		/// <returns></returns>
-		public virtual ConnectorInfo GetOutput(int output)
-		{
-			return GetOutputs().First(c => c.Address == output);
-		}
+		public abstract ConnectorInfo GetOutput(int output);
 
 		/// <summary>
 		/// Returns true if the source contains an output at the given address.
 		/// </summary>
 		/// <param name="output"></param>
 		/// <returns></returns>
-		public virtual bool ContainsOutput(int output)
-		{
-			return GetOutputs().Any(c => c.Address == output);
-		}
+		public abstract bool ContainsOutput(int output);
 
 		/// <summary>
 		/// Returns the outputs.

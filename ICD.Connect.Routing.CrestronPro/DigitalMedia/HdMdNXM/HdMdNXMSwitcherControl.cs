@@ -16,9 +16,24 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM
 {
 	public sealed class HdMdNXMSwitcherControl : AbstractRouteSwitcherControl<IHdMdNXMAdapter>
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+
+		/// <summary>
+		/// Called when a route changes.
+		/// </summary>
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		// Crestron is garbage at tracking the active routing states on the 4x2,
@@ -161,7 +176,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM
 		/// <returns></returns>
 		public override bool ContainsInput(int input)
 		{
-			return input > 0 && input <= 4;
+			return input >= 1 && input <= 4;
 		}
 
 		/// <summary>
@@ -183,7 +198,30 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			return Enumerable.Range(1, 4).Select(i => GetInput(i));
+			return Enumerable.Range(1, 4).Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
+		}
+
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int address)
+		{
+			if (!ContainsOutput(address))
+				throw new ArgumentOutOfRangeException("address");
+
+			return new ConnectorInfo(address, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return output >= 1 && output <= 2;
 		}
 
 		/// <summary>

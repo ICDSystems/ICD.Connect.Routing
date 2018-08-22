@@ -18,9 +18,24 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		private const string SOURCE_DETECTION_REGEX_FORMAT = "^(?:Frq00 )?([01]){{{0}}}$";
 		private const string ROUTE_REGEX_FORMAT = @"^Out(\d\d?) In(\d\d?) (All|Aud|Vid)$";
 
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+		/// <summary>
+		/// Called when a route changes.
+		/// </summary>
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		private readonly SwitcherCache m_Cache;
@@ -58,6 +73,13 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		#endregion
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="parent"></param>
+		/// <param name="id"></param>
+		/// <param name="numInputs"></param>
+		/// <param name="numOutputs"></param>
 		public DtpCrosspointSwitcherControl(IDtpCrosspointDevice parent, int id, int numInputs, int numOutputs) : base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
@@ -70,22 +92,57 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		protected override void DisposeFinal(bool disposing)
 		{
+			OnSourceDetectionStateChange = null;
+			OnActiveInputsChanged = null;
+			OnActiveTransmissionStateChanged = null;
+
 			base.DisposeFinal(disposing);
+
 			Unsubscribe(Parent);
 			Unsubscribe(m_Cache);
 		}
 
 		#region Methods
 
+		/// <summary>
+		/// Returns true if a signal is detected at the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
+		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			return GetInputs().First(i => i.Address == input);
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			return GetInputs().Any(i => i.Address == input);
+		}
+
+		/// <summary>
+		/// Returns the inputs.
+		/// </summary>
+		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
 			// hdmi/dtp inputs
-			foreach (var input in Enumerable.Range(1, NumberOfInputs))
+			foreach (int input in Enumerable.Range(1, NumberOfInputs))
 				yield return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
 
 			// analog audio inputs -- disabled for now
@@ -93,22 +150,59 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			//    yield return new ConnectorInfo(input + 1000, eConnectionType.Audio);
 		}
 
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int address)
+		{
+			return GetOutputs().First(o => o.Address == address);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return GetOutputs().Any(o => o.Address == output);
+		}
+
+		/// <summary>
+		/// Returns the outputs.
+		/// </summary>
+		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
 			// hdmi/dtp outputs
-			foreach (var output in Enumerable.Range(1, NumberOfOutputs))
+			foreach (int output in Enumerable.Range(1, NumberOfOutputs))
 				yield return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
 
 			// analog audio outputs
-			foreach (var output in Enumerable.Range(1, Math.Min(NumberOfOutputs, 4)))
+			foreach (int output in Enumerable.Range(1, Math.Min(NumberOfOutputs, 4)))
 				yield return new ConnectorInfo(output + 1000, eConnectionType.Audio);
 		}
 
+		/// <summary>
+		/// Gets the outputs for the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
 		{
 			return m_Cache.GetOutputsForInput(input, type);
 		}
 
+		/// <summary>
+		/// Gets the input routed to the given output matching the given type.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
 		public override ConnectorInfo? GetInput(int output, eConnectionType type)
 		{
 			return m_Cache.GetInputConnectorInfoForOutput(output, type);
@@ -255,7 +349,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		private void InitializeCache()
 		{
-			var builder = new StringBuilder();
+			StringBuilder builder = new StringBuilder();
 			for (int i = 1; i <= NumberOfOutputs; i++)
 				builder.Append(i + "$" + i + "%");
 			Parent.SendCommand(builder.ToString());

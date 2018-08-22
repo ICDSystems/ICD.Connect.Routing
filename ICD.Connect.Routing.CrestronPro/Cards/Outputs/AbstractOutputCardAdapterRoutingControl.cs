@@ -1,10 +1,10 @@
-﻿using ICD.Common.Utils.Extensions;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Common.Properties;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
@@ -14,6 +14,9 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
 	public abstract class AbstractOutputCardAdapterRoutingControl<TParent> : AbstractRouteSourceControl<TParent>
 		where TParent : IOutputCardAdapter
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 		/// <summary>
@@ -43,6 +46,60 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
 			Unsubscribe(Parent);
 			Unsubscribe(m_Card);
 		}
+
+		#region Methods
+
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int output)
+		{
+			int index = output - 1;
+
+			CardDevice card;
+			if (!Parent.GetInternalCards().TryElementAt(index, out card))
+				throw new ArgumentOutOfRangeException("output");
+
+			return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return output >= 1 && output <= Parent.GetInternalCards().Count();
+		}
+
+		/// <summary>
+		/// Returns the outputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs()
+		{
+			int address = 0;
+			return Parent.GetInternalCards().Select(card => new ConnectorInfo(address++, eConnectionType.Audio | eConnectionType.Video));
+		}
+
+		/// <summary>
+		/// Returns true if the device is actively transmitting on the given output.
+		/// This is NOT the same as sending video, since some devices may send an
+		/// idle signal by default.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override bool GetActiveTransmissionState(int output, eConnectionType type)
+		{
+			IRouteSwitcherControl control = GetParentSwitcherControl();
+			return control != null && control.GetActiveTransmissionState(output, type);
+		}
+
+		#endregion
 
 		#region Parent Callbacks
 
@@ -76,32 +133,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
 			m_Card = card;
 
 			Subscribe(m_Card);
-		}
-
-		/// <summary>
-		/// Returns the outputs.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetOutputs()
-		{
-			CardDevice[] cards = Parent.GetInternalCards().ToArray();
-
-			for (int index = 0; index < cards.Length; index++)
-				yield return new ConnectorInfo(index + 1, eConnectionType.Audio | eConnectionType.Video);
-		}
-
-		/// <summary>
-		/// Returns true if the device is actively transmitting on the given output.
-		/// This is NOT the same as sending video, since some devices may send an
-		/// idle signal by default.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public override bool GetActiveTransmissionState(int output, eConnectionType type)
-		{
-			IRouteSwitcherControl control = GetParentSwitcherControl();
-			return control != null && control.GetActiveTransmissionState(output, type);
 		}
 
 		[CanBeNull]

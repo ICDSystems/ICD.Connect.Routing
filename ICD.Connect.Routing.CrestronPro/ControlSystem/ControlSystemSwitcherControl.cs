@@ -19,9 +19,24 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 {
 	public sealed class ControlSystemSwitcherControl : AbstractRouteSwitcherControl<ControlSystemDevice>
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+
+		/// <summary>
+		/// Called when a route changes.
+		/// </summary>
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		// Keeps track of source detection
@@ -208,8 +223,22 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		/// <returns></returns>
 		public override ConnectorInfo GetOutput(int address)
 		{
+			if (!ContainsOutput(address))
+				throw new ArgumentOutOfRangeException("address");
+
 			eCardInputOutputType type = Parent.GetDmOutput(address).CardInputOutputType;
 			return new ConnectorInfo(address, GetConnectionType(type));
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			CrestronCollection<ICardInputOutputType> outputs = Parent.ControlSystem.SwitcherOutputs;
+			return outputs != null && outputs.Contains((uint)output);
 		}
 
 		/// <summary>
@@ -279,9 +308,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		/// <returns></returns>
 		public override bool ContainsInput(int input)
 		{
-			if (!Parent.ControlSystem.SupportsSwitcherInputs)
-				return false;
-			return input > 0 && input <= Parent.ControlSystem.NumberOfSwitcherInputs;
+			CrestronCollection<ICardInputOutputType> inputs = Parent.ControlSystem.SwitcherInputs;
+			return inputs != null && inputs.Contains((uint)input);
 		}
 
 		#endregion
