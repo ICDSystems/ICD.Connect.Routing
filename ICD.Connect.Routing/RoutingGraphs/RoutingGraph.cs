@@ -510,10 +510,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return null;
 
 			int index = path.FindIndex(c => c.Source == source);
-			if (index < 0)
-				return null;
 
-			return path.Skip(index).ToArray();
+			return index < 0 ? null : path.Skip(index).ToArray();
 		}
 
 		/// <summary>
