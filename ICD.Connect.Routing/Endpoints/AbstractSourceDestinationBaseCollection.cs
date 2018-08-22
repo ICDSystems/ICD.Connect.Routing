@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.Comparers;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
-using ICD.Connect.Settings.Comparers;
 
 namespace ICD.Connect.Routing.Endpoints
 {
@@ -13,16 +13,22 @@ namespace ICD.Connect.Routing.Endpoints
 	                                                                   ISourceDestinationBaseCollection<T>
 		where T : class, ISourceDestinationBase
 	{
-		private readonly Dictionary<DeviceControlInfo, Dictionary<int, Dictionary<eConnectionType, List<T>>>> m_EndpointCache;
+		private readonly IcdOrderedDictionary<EndpointInfo, List<T>> m_EndpointCache;
+		private readonly IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, List<T>>> m_EndpointTypeCache;
 		private readonly SafeCriticalSection m_EndpointCacheSection;
+
+		private readonly PredicateComparer<T, int> m_ChildIdComparer;
+
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		protected AbstractSourceDestinationBaseCollection()
 		{
-			m_EndpointCache = new Dictionary<DeviceControlInfo, Dictionary<int, Dictionary<eConnectionType, List<T>>>>();
+			m_EndpointCache = new IcdOrderedDictionary<EndpointInfo, List<T>>();
+			m_EndpointTypeCache = new IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, List<T>>>();
 			m_EndpointCacheSection = new SafeCriticalSection();
+			m_ChildIdComparer = new PredicateComparer<T, int>(c => c.Id);
 		}
 
 		/// <summary>
@@ -36,9 +42,10 @@ namespace ICD.Connect.Routing.Endpoints
 
 			try
 			{
-				return EnumUtils.GetValuesExceptNone<eConnectionType>()
-				                .SelectMany(f => GetChildren(endpoint, f))
-				                .Distinct();
+				List<T> children;
+				return m_EndpointCache.TryGetValue(endpoint, out children)
+					       ? children.ToArray(children.Count)
+					       : Enumerable.Empty<T>();
 			}
 			finally
 			{
@@ -58,18 +65,12 @@ namespace ICD.Connect.Routing.Endpoints
 
 			try
 			{
-				DeviceControlInfo deviceControl = endpoint.GetDeviceControlInfo();
-
-				if (!m_EndpointCache.ContainsKey(deviceControl))
-					return Enumerable.Empty<T>();
-				
-				if (!m_EndpointCache[deviceControl].ContainsKey(endpoint.Address))
+				IcdOrderedDictionary<eConnectionType, List<T>> types;
+				if (!m_EndpointTypeCache.TryGetValue(endpoint, out types))
 					return Enumerable.Empty<T>();
 
-				if (!m_EndpointCache[deviceControl][endpoint.Address].ContainsKey(type))
-					return Enumerable.Empty<T>();
-
-				return m_EndpointCache[deviceControl][endpoint.Address][type];
+				List<T> children;
+				return types.TryGetValue(type, out children) ? children.ToArray(children.Count) : Enumerable.Empty<T>();
 			}
 			finally
 			{
@@ -89,22 +90,36 @@ namespace ICD.Connect.Routing.Endpoints
 			{
 				foreach (T child in children)
 				{
-					DeviceControlInfo deviceControl = child.GetDeviceControlInfo();
-
-					if (!m_EndpointCache.ContainsKey(deviceControl))
-						m_EndpointCache[deviceControl] = new Dictionary<int, Dictionary<eConnectionType, List<T>>>();
-
-					foreach (int address in child.GetAddresses())
+					foreach (EndpointInfo endpoint in child.GetEndpoints())
 					{
-						if (!m_EndpointCache[deviceControl].ContainsKey(address))
-							m_EndpointCache[deviceControl].Add(address, new Dictionary<eConnectionType, List<T>>());
+						// Add to the cache
+						List<T> childCache;
+						if (!m_EndpointCache.TryGetValue(endpoint, out childCache))
+						{
+							childCache = new List<T>();
+							m_EndpointCache[endpoint] = childCache;
+						}
+
+						childCache.AddSorted(child, m_ChildIdComparer);
+
+						// Add to the typed cache
+						IcdOrderedDictionary<eConnectionType, List<T>> types;
+						if (!m_EndpointTypeCache.TryGetValue(endpoint, out types))
+						{
+							types = new IcdOrderedDictionary<eConnectionType, List<T>>();
+							m_EndpointTypeCache[endpoint] = types;
+						}
 
 						foreach (eConnectionType combination in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
 						{
-							if (!m_EndpointCache[deviceControl][address].ContainsKey(combination))
-								m_EndpointCache[deviceControl][address].Add(combination, new List<T>());
+							List<T> childTypeCache;
+							if (!types.TryGetValue(combination, out childTypeCache))
+							{
+								childTypeCache = new List<T>();
+								types[combination] = childTypeCache;
+							}
 
-							m_EndpointCache[deviceControl][address][combination].AddSorted(child, new OriginatorIdComparer<T>());
+							childTypeCache.AddSorted(child, m_ChildIdComparer);
 						}
 					}
 				}
@@ -127,22 +142,19 @@ namespace ICD.Connect.Routing.Endpoints
 			{
 				foreach (T child in children)
 				{
-					DeviceControlInfo deviceControl = child.GetDeviceControlInfo();
-
-					if (!m_EndpointCache.ContainsKey(deviceControl))
-						return;
-
-					foreach (int address in child.GetAddresses())
+					foreach (EndpointInfo endpoint in child.GetEndpoints())
 					{
-						if (!m_EndpointCache[deviceControl].ContainsKey(address))
-							continue;
+						// Remove from the cache
+						List<T> childCache;
+						if (m_EndpointCache.TryGetValue(endpoint, out childCache))
+							childCache.Remove(child);
 
-						foreach (eConnectionType combination in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
+						// Remove from the typed cache
+						IcdOrderedDictionary<eConnectionType, List<T>> types;
+						if (m_EndpointTypeCache.TryGetValue(endpoint, out types))
 						{
-							if (!m_EndpointCache[deviceControl][address].ContainsKey(combination))
-								continue;
-
-							m_EndpointCache[deviceControl][address][combination].Remove(child);
+							foreach (KeyValuePair<eConnectionType, List<T>> kvp in types)
+								kvp.Value.Remove(child);
 						}
 					}
 				}
