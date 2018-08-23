@@ -283,7 +283,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="device"></param>
 		/// <param name="control"></param>
 		/// <returns></returns>
-		T GetControl<T>(int device, int control) where T : IRouteControl;
+		T GetControl<T>(int device, int control) where T : class, IRouteControl;
 
 		/// <summary>
 		/// Gets the immediate destination control at the given address.
@@ -337,7 +337,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="endpoint"></param>
 		/// <returns></returns>
 		public static T GetControl<T>(this IRoutingGraph extends, EndpointInfo endpoint)
-			where T : IRouteControl
+			where T : class, IRouteControl
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");

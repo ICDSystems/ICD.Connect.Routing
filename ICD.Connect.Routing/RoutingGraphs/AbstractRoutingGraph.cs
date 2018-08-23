@@ -313,7 +313,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="device"></param>
 		/// <param name="control"></param>
 		/// <returns></returns>
-		public abstract T GetControl<T>(int device, int control) where T : IRouteControl;
+		public abstract T GetControl<T>(int device, int control) where T : class, IRouteControl;
 
 		/// <summary>
 		/// Gets the immediate destination control at the given address.
