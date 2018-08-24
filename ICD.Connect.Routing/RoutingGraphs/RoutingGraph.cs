@@ -454,40 +454,43 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				// If there is no input connection to this destination then we are done.
 				Connection inputConnection = m_Connections.GetInputConnection(destination, flag);
 				if (inputConnection == null)
-					return result.ToArray(result.Count);
+					break;
 
 				IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
 				if (sourceControl == null)
-					return result.ToArray(result.Count);
+					break;
 
 				// Ensure the source output even supports the given type.
 				ConnectorInfo output = sourceControl.GetOutput(inputConnection.Source.Address);
 				if (!output.ConnectionType.HasFlag(flag))
-					return result.ToArray(result.Count);
+					break;
 
 				// If we care about signal detection state, don't follow this path if the source isn't detected by the destination.
 				if (signalDetected && !destinationControl.GetSignalDetectedState(inputConnection.Destination.Address, flag))
-					return result.ToArray(result.Count);
+					break;
 
 				// If we care about input active state, don't follow this path if the input isn't active on the destination.
 				if (inputActive && !destinationControl.GetInputActiveState(inputConnection.Destination.Address, flag))
-					return result.ToArray(result.Count);
+					break;
 
-				result.Insert(0, inputConnection);
+				result.Add(inputConnection);
 
 				// Get the input address from the source if it is a midpoint device.
 				IRouteMidpointControl midpointControl = sourceControl as IRouteMidpointControl;
 				if (midpointControl == null)
-					return result.ToArray(result.Count);
+					break;
 
 				ConnectorInfo? input = midpointControl.GetInput(inputConnection.Source.Address, flag);
 				if (input == null)
-					return result.ToArray(result.Count);
+					break;
 
 				// Loop
 				destination = midpointControl.GetInputEndpointInfo(input.Value.Address);
 				destinationControl = midpointControl;
 			}
+
+			result.Reverse();
+			return result.ToArray(result.Count);
 		}
 
 		/// <summary>
