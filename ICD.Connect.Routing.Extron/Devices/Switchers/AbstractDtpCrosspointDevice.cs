@@ -110,7 +110,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		#endregion
 
-		public AbstractDtpCrosspointDevice()
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractDtpCrosspointDevice()
 		{
 			m_DtpInputPorts = new Dictionary<int, int>();
 			m_DtpOutputPorts = new Dictionary<int, int>();

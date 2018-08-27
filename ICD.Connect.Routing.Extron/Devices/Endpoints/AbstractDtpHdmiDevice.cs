@@ -37,7 +37,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 
 		#endregion
 
-		public AbstractDtpHdmiDevice()
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractDtpHdmiDevice()
 		{
 			Controls.Add(new DtpHdmiMidpointControl<AbstractDtpHdmiDevice<TSettings>>(this, 0));
 		}
