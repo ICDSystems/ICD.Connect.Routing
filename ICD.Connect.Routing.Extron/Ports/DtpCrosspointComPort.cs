@@ -156,7 +156,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 
 		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
 		{
-			foreach (var command in base.GetConsoleCommands())
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
 				yield return command;
 
 			yield return new GenericConsoleCommand<eComBaudRates, eComDataBits, eComParityType, eComStopBits>(
@@ -166,6 +166,15 @@ namespace ICD.Connect.Routing.Extron.Ports
 					eComHardwareHandshakeType.ComspecHardwareHandshakeNone,
 					eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
 					false));
+		}
+
+		/// <summary>
+		/// Workaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
 		}
 
 		#endregion
