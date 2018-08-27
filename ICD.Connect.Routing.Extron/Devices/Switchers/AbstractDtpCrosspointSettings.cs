@@ -36,7 +36,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		public string Config { get; set; }
 
-		private Dictionary<int, int> m_DtpInputPorts = new Dictionary<int, int>();
+		private readonly Dictionary<int, int> m_DtpInputPorts = new Dictionary<int, int>();
 		public IEnumerable<KeyValuePair<int, int>> DtpInputPorts
 		{
 			get { return m_DtpInputPorts.ToArray(m_DtpInputPorts.Count); }
@@ -71,7 +71,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			}
 		}
 
-		private Dictionary<int, int> m_DtpOutputPorts = new Dictionary<int, int>();
+		private readonly Dictionary<int, int> m_DtpOutputPorts = new Dictionary<int, int>();
 		public IEnumerable<KeyValuePair<int, int>> DtpOutputPorts
 		{
 			get { return m_DtpOutputPorts.ToArray(m_DtpOutputPorts.Count); }
