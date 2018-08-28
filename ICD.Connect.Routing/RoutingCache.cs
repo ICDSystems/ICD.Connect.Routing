@@ -27,14 +27,11 @@ namespace ICD.Connect.Routing
 		public event EventHandler<EndpointRouteChangedEventArgs> OnEndpointRouteChanged;
 		public event EventHandler<SourceDestinationRouteChangedEventArgs> OnSourceDestinationRouteChanged;
 
-
-
 		#endregion
 
 		#region Private Members
 
 		private readonly IRoutingGraph m_RoutingGraph;
-		private bool m_DebugEnabled;
 
 		private readonly Dictionary<ISource, IcdHashSet<EndpointInfo>> m_SourceToEndpoints;
 		private readonly Dictionary<EndpointInfo, IcdHashSet<ISource>> m_EndpointToSources;
@@ -50,6 +47,8 @@ namespace ICD.Connect.Routing
 
 		private readonly Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> m_DestinationEndpointToSourceEndpointCache;
 		private readonly Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> m_SourceEndpointToDestinationEndpointCache;
+
+		private bool m_DebugEnabled;
 
 		#endregion
 
@@ -87,6 +86,7 @@ namespace ICD.Connect.Routing
 		{
 			OnTransmissionStateChanged = null;
 			OnDetectionStateChanged = null;
+			OnDestinationEndpointActiveChanged = null;
 			OnEndpointRouteChanged = null;
 			OnSourceDestinationRouteChanged = null;
 
@@ -776,6 +776,7 @@ namespace ICD.Connect.Routing
 														 eConnectionType type)
 		{
 			bool changed = false;
+
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type has multiple flags", "type");
 
@@ -783,10 +784,7 @@ namespace ICD.Connect.Routing
 				EndpointInfo destination in destinations.Where(destination => m_DestinationEndpointToSourceEndpointCache.ContainsKey(destination)))
 			{
 				foreach (EndpointInfo endpointToRemove in oldSourceEndpoints)
-				{
-					m_DestinationEndpointToSourceEndpointCache[destination][type].Remove(endpointToRemove);
-					changed = true;
-				}
+					changed |= m_DestinationEndpointToSourceEndpointCache[destination][type].Remove(endpointToRemove);
 			}
 
 			return changed;
@@ -813,10 +811,7 @@ namespace ICD.Connect.Routing
 					AddDestinationToDestinationToSourceCache(destination);
 
 				foreach (EndpointInfo endpointToAdd in newSourceEndpoints)
-				{
-					m_DestinationEndpointToSourceEndpointCache[destination][type].Add(endpointToAdd);
-					changed = true;
-				}
+					changed |= m_DestinationEndpointToSourceEndpointCache[destination][type].Add(endpointToAdd);
 			}
 
 			return changed;
@@ -827,6 +822,7 @@ namespace ICD.Connect.Routing
 													eConnectionType type)
 		{
 			bool changed = false;
+
 			if (oldSourceEndpoints == null)
 				throw new ArgumentNullException("oldSourceEndpoints");
 
@@ -845,10 +841,7 @@ namespace ICD.Connect.Routing
 					continue;
 
 				foreach (EndpointInfo endpointToRemove in destinations)
-				{
-					m_SourceEndpointToDestinationEndpointCache[source][type].Remove(endpointToRemove);
-					changed = true;
-				}
+					changed |= m_SourceEndpointToDestinationEndpointCache[source][type].Remove(endpointToRemove);
 			}
 
 			return changed;
@@ -859,6 +852,7 @@ namespace ICD.Connect.Routing
 											   eConnectionType type)
 		{
 			bool changed = false;
+
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type has multiple flags", "type");
 
@@ -872,10 +866,7 @@ namespace ICD.Connect.Routing
 					m_SourceEndpointToDestinationEndpointCache[source][type] = new IcdHashSet<EndpointInfo>();
 
 				foreach (EndpointInfo endpointToAdd in destinations)
-				{
-					m_SourceEndpointToDestinationEndpointCache[source][type].Add(endpointToAdd);
-					changed = true;
-				}
+					changed |= m_SourceEndpointToDestinationEndpointCache[source][type].Add(endpointToAdd);
 			}
 
 			return changed;
