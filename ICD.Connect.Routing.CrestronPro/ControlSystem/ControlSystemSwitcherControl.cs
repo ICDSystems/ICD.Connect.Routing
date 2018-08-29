@@ -48,8 +48,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		public ControlSystemSwitcherControl(ControlSystemDevice parent)
-			: base(parent, 0)
+		/// <param name="id"></param>
+		public ControlSystemSwitcherControl(ControlSystemDevice parent, int id)
+			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
 			m_Cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
@@ -57,7 +58,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			m_Cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
 			m_Cache.OnRouteChange += CacheOnRouteChange;
 
-			Subscribe(parent);
 			SetControlSystem(parent.ControlSystem);
 		}
 
@@ -74,7 +74,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 			base.DisposeFinal(disposing);
 
-			Unsubscribe(Parent);
 			SetControlSystem(null);
 		}
 
@@ -479,38 +478,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			}
 		}
 
-		#endregion
-
-		#region Parent Callbacks
-
-		/// <summary>
-		/// Subscribe to the parent events.
-		/// </summary>
-		/// <param name="parent"></param>
-		private void Subscribe(ControlSystemDevice parent)
-		{
-			parent.OnControlSystemChanged += ParentOnControlSystemChanged;
-		}
-
-		/// <summary>
-		/// Unsubscribe from the parent events.
-		/// </summary>
-		/// <param name="parent"></param>
-		private void Unsubscribe(ControlSystemDevice parent)
-		{
-			parent.OnControlSystemChanged -= ParentOnControlSystemChanged;
-		}
-
-		/// <summary>
-		/// Called when the parents wrapped control system changes.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="controlSystem"></param>
-		private void ParentOnControlSystemChanged(ControlSystemDevice sender, CrestronControlSystem controlSystem)
-		{
-			SetControlSystem(controlSystem);
-		}
-
 		private void SetControlSystem(CrestronControlSystem controlSystem)
 		{
 			Unsubscribe(m_SubscribedControlSystem);
@@ -519,10 +486,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 			if (m_SubscribedControlSystem != null && m_SubscribedControlSystem.SystemControl != null)
 			{
-                if (m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool)
+				if (m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool)
 					m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.BoolValue = true;
 
-                if (m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool)
+				if (m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool)
 					m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.BoolValue = true;
 			}
 
