@@ -6,7 +6,6 @@ using ICD.Connect.Misc.CrestronPro.Devices;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
-using ICD.Connect.Misc.CrestronPro.Devices;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
