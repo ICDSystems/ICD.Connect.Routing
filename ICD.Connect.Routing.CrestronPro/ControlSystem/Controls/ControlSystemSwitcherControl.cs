@@ -1,5 +1,4 @@
-﻿using ICD.Common.Utils.Services.Logging;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,6 +6,7 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
@@ -15,7 +15,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.CrestronPro.ControlSystem
+namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 {
 	public sealed class ControlSystemSwitcherControl : AbstractRouteSwitcherControl<ControlSystemDevice>
 	{
@@ -77,7 +77,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			SetControlSystem(null);
 		}
 
-		#region Routing
+#region Routing
 
 		/// <summary>
 		/// Returns true if a signal is detected at the given input.
@@ -311,9 +311,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			return inputs != null && inputs.Contains((uint)input);
 		}
 
-		#endregion
+#endregion
 
-		#region Private Methods
+#region Private Methods
 
 		/// <summary>
 		/// Returns true if a signal is detected at the given input.
@@ -518,9 +518,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region CrestronControlSystem Callbacks
+#region CrestronControlSystem Callbacks
 
 		/// <summary>
 		/// Subscribe to the ControlSystem events.
@@ -663,9 +663,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			}
 		}
 
-		#endregion
+#endregion
 
-		#region Cache Callbacks
+#region Cache Callbacks
 
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
@@ -687,9 +687,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
 		}
 
-		#endregion
+#endregion
 
-		#region Console
+#region Console
 
 		/// <summary>
 		/// Calls the delegate for each console status item.
@@ -712,7 +712,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				       : "Not Supported");
 		}
 
-		#endregion
+#endregion
 	}
 }
 

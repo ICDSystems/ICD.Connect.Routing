@@ -2,6 +2,7 @@
 using ICD.Common.Properties;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;

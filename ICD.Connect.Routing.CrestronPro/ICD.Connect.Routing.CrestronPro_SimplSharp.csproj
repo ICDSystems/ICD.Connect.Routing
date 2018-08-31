@@ -133,7 +133,12 @@
     <Compile Include="Cards\ICardSettings.cs" />
     <Compile Include="ControlSystem\ControlSystemDevice.cs" />
     <Compile Include="ControlSystem\ControlSystemDeviceSettings.cs" />
-    <Compile Include="ControlSystem\ControlSystemSwitcherControl.cs" />
+    <Compile Include="ControlSystem\Controls\AbstractMPC3BasicTouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\AbstractMPC3x101TouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\AbstractMPC3x3XXBaseTouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\ControlSystemSwitcherControl.cs" />
+    <Compile Include="ControlSystem\Controls\MPC3x201TouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\MPC3x30xTouchScreenControl.cs" />
     <Compile Include="DigitalMedia\BladeSwitch\AbstractCrestronBladeSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\BladeSwitch\AbstractCrestronBladeSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
@@ -279,6 +284,22 @@
     <ProjectReference Include="..\..\ICD.Connect.Misc\ICD.Connect.Misc.CrestronPro\ICD.Connect.Misc.CrestronPro_SimplSharp.csproj">
       <Project>{46CD87DE-F3EF-41D4-8783-9ECF21183765}</Project>
       <Name>ICD.Connect.Misc.CrestronPro_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Panels\ICD.Connect.Panels.CrestronPro\ICD.Connect.Panels.CrestronPro_SimplSharp.csproj">
+      <Project>{8B2F1E99-BB66-4120-8B2C-EB4A2222AF5B}</Project>
+      <Name>ICD.Connect.Panels.CrestronPro_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Panels\ICD.Connect.Panels.Crestron\ICD.Connect.Panels.Crestron_SimplSharp.csproj">
+      <Project>{EF71F157-ED75-4B30-ABC9-1E7811615528}</Project>
+      <Name>ICD.Connect.Panels.Crestron_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Panels\ICD.Connect.Panels\ICD.Connect.Panels_SimplSharp.csproj">
+      <Project>{A441FE98-6A8E-4EF3-98F0-D17041D2E118}</Project>
+      <Name>ICD.Connect.Panels_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Protocol\ICD.Connect.Protocol\ICD.Connect.Protocol_SimplSharp.csproj">
+      <Project>{2E4E01B8-D4EA-4FB1-9FCE-0A0DC8D83C8A}</Project>
+      <Name>ICD.Connect.Protocol_SimplSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ICD.Connect.Settings\ICD.Connect.Settings\ICD.Connect.Settings_SimplSharp.csproj">
       <Project>{5B84EB3C-1C3A-4C4D-98C2-69F67CF51D5A}</Project>
