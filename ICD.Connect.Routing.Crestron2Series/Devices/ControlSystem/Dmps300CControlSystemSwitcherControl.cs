@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Commands;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.XSig;
 using ICD.Connect.Routing.Connections;
@@ -34,6 +36,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		private const ushort DIGITAL_VIDEO_DETECTED_5 = 405;
 		private const ushort DIGITAL_VIDEO_DETECTED_6 = 406;
 		private const ushort DIGITAL_VIDEO_DETECTED_7 = 407;
+
+		private bool m_debug;
 
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
@@ -102,6 +106,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		/// <returns>True if routing successful.</returns>
 		public override bool Route(RouteOperation info)
 		{
+			if(m_debug)
+				Log(eSeverity.Debug, "DMPS route input {0} -> output {1}, {2}", info.LocalInput, info.LocalOutput, info.ConnectionType);
+
 			eConnectionType type = info.ConnectionType;
 			int input = info.LocalInput;
 			int output = info.LocalOutput;
@@ -423,6 +430,27 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
 		{
 			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
+		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (var cmd in GetBaseConsoleCommands())
+				yield return cmd;
+
+			yield return new ConsoleCommand("EnableSwitchNotification", "prints debug info when the dmps is asked to make a route", ()=> m_debug=true);
+		}
+
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
 		}
 
 		#endregion
