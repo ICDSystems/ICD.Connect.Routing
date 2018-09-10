@@ -11,7 +11,7 @@ using ICD.Connect.Settings.Core;
 namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 {
 	public abstract class AbstractDtpHdmiDevice<TSettings> : AbstractDevice<TSettings>, IDtpHdmiDevice
-		where TSettings: IDtpHdmiDeviceSettings, new()
+		where TSettings : IDtpHdmiDeviceSettings, new()
 	{
 		public event EventHandler<BoolEventArgs> OnPortInitialized;
 
@@ -37,7 +37,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 
 		#endregion
 
-		public AbstractDtpHdmiDevice()
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractDtpHdmiDevice()
 		{
 			Controls.Add(new DtpHdmiMidpointControl<AbstractDtpHdmiDevice<TSettings>>(this, 0));
 		}
@@ -50,8 +53,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 
 		protected override bool GetIsOnlineStatus()
 		{
-		    if (Parent == null)
-		        return false;
+			if (Parent == null)
+				return false;
 			return Parent.IsOnline;
 		}
 
@@ -72,7 +75,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 
 			if (settings.DtpSwitch != null)
 				Parent = factory.GetOriginatorById<IDtpCrosspointDevice>(settings.DtpSwitch.Value);
-            if(Parent != null)
+			if (Parent != null)
 				Subscribe(Parent);
 		}
 
@@ -91,18 +94,18 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 
 		protected virtual void Subscribe(IDtpCrosspointDevice parent)
 		{
-            parent.OnIsOnlineStateChanged += ParentOnOnIsOnlineStateChanged;
+			parent.OnIsOnlineStateChanged += ParentOnOnIsOnlineStateChanged;
 		}
 
-	    protected virtual void Unsubscribe(IDtpCrosspointDevice parent)
+		protected virtual void Unsubscribe(IDtpCrosspointDevice parent)
 		{
-		    parent.OnIsOnlineStateChanged -= ParentOnOnIsOnlineStateChanged;
+			parent.OnIsOnlineStateChanged -= ParentOnOnIsOnlineStateChanged;
 		}
-        
-	    private void ParentOnOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs e)
-	    {
-	        UpdateCachedOnlineStatus();
-	    }
+
+		private void ParentOnOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs e)
+		{
+			UpdateCachedOnlineStatus();
+		}
 
 		#endregion
 	}

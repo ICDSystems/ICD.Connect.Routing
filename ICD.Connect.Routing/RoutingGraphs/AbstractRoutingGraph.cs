@@ -124,21 +124,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                                   bool inputActive);
 
 		/// <summary>
-		/// Finds the actively routed sources for the destination at the given input address.
-		/// Will return multiple items when connection types are combined, e.g. seperate audio and video sources.
-		/// </summary>
-		/// <param name="destinationInput"></param>
-		/// <param name="type"></param>
-		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
-		/// <param name="inputActive"></param>
-		/// <exception cref="ArgumentNullException"></exception>
-		/// <returns>The sources</returns>
-		public abstract IEnumerable<EndpointInfo> GetActiveSourceEndpoints(EndpointInfo destinationInput,
-		                                                                   eConnectionType type,
-		                                                                   bool signalDetected,
-		                                                                   bool inputActive);
-
-		/// <summary>
 		/// Finds the actively routed source for the destination at the given input address.
 		/// </summary>
 		/// <param name="destination"></param>
@@ -151,61 +136,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract EndpointInfo? GetActiveSourceEndpoint(IRouteDestinationControl destination, int input,
 		                                                      eConnectionType flag,
 		                                                      bool signalDetected, bool inputActive);
-
-		/// <summary>
-		/// Finds the actively routed source for the destination at the given input address.
-		/// </summary>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
-		/// <param name="inputActive"></param>
-		/// <exception cref="ArgumentNullException"></exception>
-		/// <returns>The source</returns>
-		public EndpointInfo? GetActiveSourceEndpoint(EndpointInfo destination, eConnectionType type, bool signalDetected,
-		                                             bool inputActive)
-		{
-			IRouteDestinationControl control = GetDestinationControl(destination.Device, destination.Control);
-			return GetActiveSourceEndpoint(control, destination.Address, type, signalDetected, inputActive);
-		}
-
-		/// <summary>
-		/// Finds the destinations that the source is actively routed to.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="type"></param>
-		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
-		/// <param name="inputActive"></param>
-		/// <exception cref="ArgumentNullException"></exception>
-		/// <returns>The sources</returns>
-		public abstract IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(ISource source, eConnectionType type,
-		                                                                        bool signalDetected, bool inputActive);
-
-		/// <summary>
-		/// Finds the destinations that the source is actively routed to.
-		/// </summary>
-		/// <param name="sourceOutput"></param>
-		/// <param name="type"></param>
-		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
-		/// <param name="inputActive"></param>
-		/// <exception cref="ArgumentNullException"></exception>
-		/// <returns>The sources</returns>
-		public abstract IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(EndpointInfo sourceOutput,
-		                                                                        eConnectionType type, bool signalDetected,
-		                                                                        bool inputActive);
-
-		/// <summary>
-		/// Finds the destinations that the source is actively routed to.
-		/// </summary>
-		/// <param name="sourceControl"></param>
-		/// <param name="sourceOutput"></param>
-		/// <param name="type"></param>
-		/// <param name="signalDetected">When true skips inputs where no video is detected.</param>
-		/// <param name="inputActive"></param>
-		/// <exception cref="ArgumentNullException"></exception>
-		/// <returns>The sources</returns>
-		public abstract IEnumerable<EndpointInfo> GetActiveDestinationEndpoints(IRouteSourceControl sourceControl,
-		                                                                        int sourceOutput, eConnectionType type,
-		                                                                        bool signalDetected, bool inputActive);
 
 		/// <summary>
 		/// Recurses over all of the source devices that can be routed to the destination.
@@ -250,140 +180,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract bool InputActive(EndpointInfo endpoint, eConnectionType type);
 
 		/// <summary>
-		/// Returns true if there is a path from the given source to the given destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
-		public abstract bool HasPath(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
-
-		/// <summary>
-		/// Finds the best available path from the source to the destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="flag"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
-		public abstract ConnectionPath FindPath(ISource source, IDestination destination, eConnectionType flag, int roomId);
-
-		/// <summary>
-		/// Finds the best available path from the source to the destination.
-		/// </summary>
-		/// <param name="sourceEndpoint"></param>
-		/// <param name="destination"></param>
-		/// <param name="flag"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
-		public abstract ConnectionPath FindPath(EndpointInfo sourceEndpoint, IDestination destination, eConnectionType flag,
-												int roomId);
-
-		/// <summary>
-		/// Finds the best available path from the source to the destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destinationEndpoint"></param>
-		/// <param name="flag"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
-		public abstract ConnectionPath FindPath(ISource source, EndpointInfo destinationEndpoint, eConnectionType flag,
-		                                        int roomId);
-
-		/// <summary>
-		/// Finds the best available paths from the source to the destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<ConnectionPath> FindPaths(ISource source, IDestination destination, eConnectionType type,
-		                                                      int roomId);
-
-		/// <summary>
-		/// Finds the best available paths from the source to the destination.
-		/// </summary>
-		/// <param name="sourceEndpoint"></param>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<ConnectionPath> FindPaths(EndpointInfo sourceEndpoint, IDestination destination,
-		                                                      eConnectionType type, int roomId);
-
-		/// <summary>
-		/// Finds the best available paths from the source to the destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destinationEndpoint"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<ConnectionPath> FindPaths(ISource source, EndpointInfo destinationEndpoint,
-		                                                      eConnectionType type, int roomId);
-
-		/// <summary>
-		/// Finds the best available paths from the source to the destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		public abstract IEnumerable<ConnectionPath> FindPaths(EndpointInfo source, EndpointInfo destination,
-		                                                      eConnectionType type, int roomId);
-
-		/// <summary>
-		/// Finds the shortest available path from the source to the destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="flag"></param>
-		/// <param name="roomId"></param>
-		public abstract ConnectionPath FindPath(EndpointInfo source, EndpointInfo destination, eConnectionType flag,
-		                                        int roomId);
-
-		/// <summary>
-		/// Returns the shortest paths from the source to the given destinations.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destinations"></param>
-		/// <param name="flag"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(EndpointInfo source,
-		                                                                                       IEnumerable<EndpointInfo>
-			                                                                                       destinations,
-		                                                                                       eConnectionType flag,
-		                                                                                       int roomId);
-
-		/// <summary>
-		/// Returns the best available paths from the source to the given destinations.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destinations"></param>
-		/// <param name="flag"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<KeyValuePair<EndpointInfo, ConnectionPath>> FindPathsMulti(ISource source,
-		                                                                                       IEnumerable<IDestination>
-			                                                                                       destinations,
-		                                                                                       eConnectionType flag,
-		                                                                                       int roomId);
-
-		/// <summary>
-		/// Finds all of the available paths from the source to the destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="flag"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<ConnectionPath> FindAllPaths(ISource source, IDestination destination,
-		                                                         eConnectionType flag, int roomId);
-
-		/// <summary>
 		/// Finds the current paths from the given source to the destination.
 		/// Return multiple paths if multiple connection types are provided.
 		/// </summary>
@@ -425,82 +221,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                          eConnectionType type, bool signalDetected,
 		                                                          bool inputActive);
 
-		/// <summary>
-		/// Finds the current paths from the given source to the destination.
-		/// Return multiple paths if multiple connection types are provided.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="signalDetected"></param>
-		/// <param name="inputActive"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<Connection[]> FindActivePaths(ISource source, EndpointInfo destination,
-		                                                          eConnectionType type, bool signalDetected,
-		                                                          bool inputActive);
-
-		/// <summary>
-		/// Finds all of the active paths from the given source.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="type"></param>
-		/// <param name="signalDetected"></param>
-		/// <param name="inputActive"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<Connection[]> FindActivePaths(ISource source, eConnectionType type, bool signalDetected,
-		                                                          bool inputActive);
-
-		/// <summary>
-		/// Finds all of the active paths from the given source.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="type"></param>
-		/// <param name="signalDetected"></param>
-		/// <param name="inputActive"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type,
-		                                                          bool signalDetected, bool inputActive);
-
 		#endregion
 
 		#region Routing
-
-		/// <summary>
-		/// Routes the best available path from the source to the destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		/// <returns>False if route could not be established</returns>
-		public abstract void Route(ISource source, IDestination destination, eConnectionType type, int roomId);
-
-		/// <summary>
-		/// Routes the source to the destination.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		/// <returns>False if route could not be established</returns>
-		public abstract void Route(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
-
-		/// <summary>
-		/// Routes the source to the destinations.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destinations"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		public abstract void RouteMultiple(EndpointInfo source, IEnumerable<EndpointInfo> destinations, eConnectionType type,
-		                                   int roomId);
-
-		/// <summary>
-		/// Applies the given path to the switchers.
-		/// </summary>
-		/// <param name="op"></param>
-		/// <param name="path"></param>
-		public abstract void RoutePath(RouteOperation op, IEnumerable<Connection> path);
 
 		/// <summary>
 		/// Applies the given path to the switchers.
@@ -510,25 +233,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract void RoutePath(ConnectionPath path, int roomId);
 
 		/// <summary>
-		/// Routes the source to the destination.
+		/// Applies the given paths to the switchers.
 		/// </summary>
-		/// <param name="sourceControl"></param>
-		/// <param name="sourceAddress"></param>
-		/// <param name="destinationControl"></param>
-		/// <param name="destinationAddress"></param>
-		/// <param name="type"></param>
+		/// <param name="paths"></param>
 		/// <param name="roomId"></param>
-		/// <returns>False if route could not be established</returns>
-		public abstract void Route(IRouteSourceControl sourceControl, int sourceAddress,
-		                           IRouteDestinationControl destinationControl,
-		                           int destinationAddress, eConnectionType type, int roomId);
-
-		/// <summary>
-		/// Performs the routing operation.
-		/// </summary>
-		/// <param name="op"></param>>
-		/// <returns>False if route could not be established</returns>
-		public abstract void Route(RouteOperation op);
+		public abstract void RoutePaths(IEnumerable<ConnectionPath> paths, int roomId);
 
 		/// <summary>
 		/// Searches for switchers currently routing the source to the destination and unroutes them.
@@ -548,16 +257,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		public abstract void Unroute(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId);
-
-		/// <summary>
-		/// Searches for switchers currently routing the source to the destination and unroutes them.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		/// <returns></returns>
 		public abstract void Unroute(ISource source, EndpointInfo destination, eConnectionType type, int roomId);
 
 		/// <summary>
@@ -568,42 +267,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="roomId"></param>
 		/// <returns></returns>
 		public abstract void Unroute(IRouteSourceControl sourceControl, eConnectionType type, int roomId);
-
-		/// <summary>
-		/// Searches for switchers currently routing the source and unroutes them.
-		/// </summary>
-		/// <param name="sourceControl"></param>
-		/// <param name="sourceAddress"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		public abstract void Unroute(IRouteSourceControl sourceControl, int sourceAddress, eConnectionType type, int roomId);
-
-		/// <summary>
-		/// Searches for switchers currently routing the source to the destination and unroutes them.
-		/// </summary>
-		/// <param name="sourceControl"></param>
-		/// <param name="sourceAddress"></param>
-		/// <param name="destinationControl"></param>
-		/// <param name="destinationAddress"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		/// <returns>False if the devices could not be unrouted.</returns>
-		public abstract void Unroute(IRouteSourceControl sourceControl, int sourceAddress,
-		                             IRouteDestinationControl destinationControl,
-		                             int destinationAddress, eConnectionType type, int roomId);
-
-		/// <summary>
-		/// Unroutes every path from the given source to the destination.
-		/// </summary>
-		/// <param name="sourceControl"></param>
-		/// <param name="sourceAddress"></param>
-		/// <param name="destinationControl"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		/// <returns>False if the devices could not be unrouted.</returns>
-		public abstract void Unroute(IRouteSourceControl sourceControl, int sourceAddress,
-		                             IRouteDestinationControl destinationControl,
-		                             eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Unroutes every path from the given source to the destination.
@@ -633,14 +296,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="roomId"></param>
 		public abstract void Unroute(IDestination destination, eConnectionType type, int roomId);
 
-		/// <summary>
-		/// Unroutes all switchers routing the active source to the given destination.
-		/// </summary>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		public abstract void UnrouteDestination(EndpointInfo destination, eConnectionType type, int roomId);
-
 		#endregion
 
 		#region Devices
@@ -658,7 +313,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="device"></param>
 		/// <param name="control"></param>
 		/// <returns></returns>
-		public abstract T GetControl<T>(int device, int control) where T : IRouteControl;
+		public abstract T GetControl<T>(int device, int control) where T : class, IRouteControl;
 
 		/// <summary>
 		/// Gets the immediate destination control at the given address.
@@ -673,15 +328,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		                                                               out int destinationInput);
 
 		public abstract IRouteDestinationControl GetDestinationControl(int device, int control);
-
-		/// <summary>
-		/// Returns the immediate source controls from [1 -> input count] inclusive, including nulls.
-		/// </summary>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <returns></returns>
-		public abstract IEnumerable<IRouteSourceControl> GetSourceControls(IRouteDestinationControl destination,
-		                                                                   eConnectionType type);
 
 		/// <summary>
 		/// Gets the immediate source control at the given address.

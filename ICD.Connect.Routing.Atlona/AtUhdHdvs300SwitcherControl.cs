@@ -21,12 +21,28 @@ namespace ICD.Connect.Routing.Atlona
 		private const string REGEX_SOURCE_DETECT_SINGLE = @"^InputStatus(\d) (0|1)";
 		private const string REGEX_ROUTING = @"^x(\d)AVx1";
 
-		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
-		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
-		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
-		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
+	    /// <summary>
+	    /// Raised when an input source status changes.
+	    /// </summary>
+	    public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+	    /// <summary>
+	    /// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+	    /// </summary>
+	    public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+
+	    /// <summary>
+	    /// Raised when the device starts/stops actively transmitting on an output.
+	    /// </summary>
+	    public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+	    /// <summary>
+	    /// Called when a route changes.
+	    /// </summary>
+	    public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		private readonly SwitcherCache m_Cache;
+
 		private bool m_OutputOn;
 
 		/// <summary>
@@ -90,7 +106,30 @@ namespace ICD.Connect.Routing.Atlona
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
-		/// <summary>
+	    /// <summary>
+	    /// Gets the input at the given address.
+	    /// </summary>
+	    /// <param name="input"></param>
+	    /// <returns></returns>
+	    public override ConnectorInfo GetInput(int input)
+	    {
+			if (!ContainsInput(input))
+				throw new ArgumentOutOfRangeException("input");
+
+			return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
+	    }
+
+	    /// <summary>
+	    /// Returns true if the destination contains an input at the given address.
+	    /// </summary>
+	    /// <param name="input"></param>
+	    /// <returns></returns>
+	    public override bool ContainsInput(int input)
+	    {
+		    return input >= 1 && input <= 5;
+	    }
+
+	    /// <summary>
 		/// Returns the inputs.
 		/// </summary>
 		/// <returns></returns>
@@ -99,7 +138,30 @@ namespace ICD.Connect.Routing.Atlona
 			return Enumerable.Range(1, 5).Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
 		}
 
-		/// <summary>
+	    /// <summary>
+	    /// Gets the output at the given address.
+	    /// </summary>
+	    /// <param name="address"></param>
+	    /// <returns></returns>
+	    public override ConnectorInfo GetOutput(int address)
+	    {
+			if (!ContainsOutput(address))
+				throw new ArgumentOutOfRangeException("address");
+
+			return new ConnectorInfo(address, eConnectionType.Audio | eConnectionType.Video);
+	    }
+
+	    /// <summary>
+	    /// Returns true if the source contains an output at the given address.
+	    /// </summary>
+	    /// <param name="output"></param>
+	    /// <returns></returns>
+	    public override bool ContainsOutput(int output)
+	    {
+		    return output == 1;
+	    }
+
+	    /// <summary>
 		/// Returns the outputs.
 		/// </summary>
 		/// <returns></returns>

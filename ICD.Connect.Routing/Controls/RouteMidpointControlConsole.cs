@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
@@ -65,7 +66,7 @@ namespace ICD.Connect.Routing.Controls
 
 					string typeString = type.ToString();
 					string detectedString = instance.GetSignalDetectedState(input.Address, type) ? "True" : string.Empty;
-					string outputsString = StringUtils.ArrayFormat(instance.GetOutputs(input.Address, type));
+					string outputsString = StringUtils.ArrayFormat(instance.GetOutputs(input.Address, type).Order());
 
 					builder.AddRow(inputString, typeString, detectedString, outputsString);
 				}

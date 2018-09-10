@@ -1,11 +1,11 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Connect.Devices;
+using ICD.Connect.Misc.CrestronPro.Devices;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
-using ICD.Connect.Misc.CrestronPro.Devices;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
@@ -13,46 +13,14 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 	/// <summary>
 	/// Wraps a CrestronControlSystem to provide a device that can be used as a port provider and a switcher.
 	/// </summary>
-	public sealed class ControlSystemDevice : AbstractDevice<ControlSystemDeviceSettings>
-#if SIMPLSHARP
-	                                          , IPortParent, IDmParent
-#endif
+	public sealed class ControlSystemDevice : AbstractDevice<ControlSystemDeviceSettings>, IPortParent, IDmParent
 	{
-#if SIMPLSHARP
-		public delegate void ControlSystemChangeCallback(ControlSystemDevice sender, CrestronControlSystem controlSystem);
-
-		/// <summary>
-		/// Raised when the wrapped control system changes.
-		/// </summary>
-		public event ControlSystemChangeCallback OnControlSystemChanged;
-
-		private CrestronControlSystem m_ControlSystem;
-#endif
-
-		#region Controls
-
 #if SIMPLSHARP
 		/// <summary>
 		/// Gets the wrapped Crestron control system.
 		/// </summary>
-		public CrestronControlSystem ControlSystem
-		{
-			get { return m_ControlSystem; }
-			private set
-			{
-				if (value == m_ControlSystem)
-					return;
-
-				m_ControlSystem = value;
-
-				ControlSystemChangeCallback handler = OnControlSystemChanged;
-				if (handler != null)
-					handler(this, m_ControlSystem);
-			}
-		}
+		public CrestronControlSystem ControlSystem { get; private set; }
 #endif
-
-		#endregion
 
 		/// <summary>
 		/// Constructor.
@@ -62,7 +30,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 #if SIMPLSHARP
 			SetControlSystem(ProgramInfo.ControlSystem);
 
-			Controls.Add(new ControlSystemSwitcherControl(this));
+			Controls.Add(new ControlSystemSwitcherControl(this, 0));
 #endif
 		}
 

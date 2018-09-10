@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
@@ -52,20 +51,14 @@ namespace ICD.Connect.Routing.Controls
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		public virtual ConnectorInfo GetInput(int input)
-		{
-			return GetInputs().First(c => c.Address == input);
-		}
+		public abstract ConnectorInfo GetInput(int input);
 
 		/// <summary>
 		/// Returns true if the destination contains an input at the given address.
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		public virtual bool ContainsInput(int input)
-		{
-			return GetInputs().Any(c => c.Address == input);
-		}
+		public abstract bool ContainsInput(int input);
 
 		/// <summary>
 		/// Returns the inputs.

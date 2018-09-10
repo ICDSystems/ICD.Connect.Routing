@@ -70,12 +70,52 @@ namespace ICD.Connect.Routing.Controls
 		}
 
 		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			return Parent.GetInput(input);
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			return Parent.ContainsInput(input);
+		}
+
+		/// <summary>
 		/// Returns the inputs.
 		/// </summary>
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
 			return Parent.GetInputs();
+		}
+
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int address)
+		{
+			return Parent.GetOutput(address);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return Parent.ContainsOutput(output);
 		}
 
 		/// <summary>

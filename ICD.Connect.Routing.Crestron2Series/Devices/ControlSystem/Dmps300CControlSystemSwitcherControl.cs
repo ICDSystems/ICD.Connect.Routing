@@ -36,12 +36,26 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		private const ushort DIGITAL_VIDEO_DETECTED_5 = 405;
 		private const ushort DIGITAL_VIDEO_DETECTED_6 = 406;
 		private const ushort DIGITAL_VIDEO_DETECTED_7 = 407;
-
 		private bool m_debug;
 
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+
+		/// <summary>
+		/// Called when a route changes.
+		/// </summary>
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		// Keeps track of source detection
@@ -89,14 +103,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
-			if (EnumUtils.HasMultipleFlags(type))
-			{
-				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(t => GetSignalDetectedState(input, t))
-				                .Unanimous(false);
-			}
-
-			return m_Cache.GetSourceDetectedState(input, type);
+			return EnumUtils.GetFlagsExceptNone(type)
+			                .Select(t => m_Cache.GetSourceDetectedState(input, t))
+			                .Unanimous(false);
 		}
 
 		/// <summary>
@@ -108,6 +117,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		{
 			if(m_debug)
 				Log(eSeverity.Debug, "DMPS route input {0} -> output {1}, {2}", info.LocalInput, info.LocalOutput, info.ConnectionType);
+
+			if (info == null)
+				throw new ArgumentNullException("info");
 
 			eConnectionType type = info.ConnectionType;
 			int input = info.LocalInput;
@@ -175,6 +187,16 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 				default:
 					throw new ArgumentOutOfRangeException("address");
 			}
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return output >= 1 && output <= 7;
 		}
 
 		/// <summary>

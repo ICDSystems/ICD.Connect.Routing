@@ -111,9 +111,18 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 
 			DMInput input = provider.GetDmInput((int)settings.DmInputAddress);
 
-			return settings.Ipid == null
-				       ? adapter.InstantiateTransmitter(input)
-				       : adapter.InstantiateTransmitter((byte)settings.Ipid, input);
+			try
+			{
+				// DMPS3 4K
+				return adapter.InstantiateTransmitter(input);
+			}
+			catch (ArgumentException)
+			{
+				if (settings.Ipid == null)
+					throw new InvalidOperationException("Can't instantiate DM endpoint without IPID");
+
+				return adapter.InstantiateTransmitter((byte)settings.Ipid, input);
+			}
 		}
 
 		/// <summary>
@@ -156,9 +165,18 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 
 			DMOutput output = provider.GetDmOutput((int)settings.DmOutputAddress);
 
-			return settings.Ipid == null
-				       ? adapter.InstantiateReceiver(output)
-				       : adapter.InstantiateReceiver((byte)settings.Ipid, output);
+			try
+			{
+				// DMPS3 4K
+				return adapter.InstantiateReceiver(output);
+			}
+			catch (ArgumentException)
+			{
+				if (settings.Ipid == null)
+					throw new InvalidOperationException("Can't instantiate DM endpoint without IPID");
+				
+				return adapter.InstantiateReceiver((byte)settings.Ipid, output);
+			}
 		}
 #endif
 	}

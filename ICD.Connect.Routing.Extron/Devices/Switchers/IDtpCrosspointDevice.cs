@@ -16,15 +16,15 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// Raised when the device sends a response.
 		/// </summary>
 		event EventHandler<StringEventArgs> OnResponseReceived;
-		
+
 		ISerialPort GetInputSerialInsertionPort(int input);
 		ISerialPort GetOutputSerialInsertionPort(int output);
 
-	    void SetTxComPortSpec(int input, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
-	                             eComStopBits stopBits);
+		void SetTxComPortSpec(int input, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
+								 eComStopBits stopBits);
 
 		void SetRxComPortSpec(int output, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
-	                              eComStopBits stopBits);
+								  eComStopBits stopBits);
 
 		void SendCommand(string command, params object[] args);
 	}

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol.Ports;
-using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Extron.Devices.Switchers
@@ -15,7 +13,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 	{
 		private const string ELEMENT_PORT = "Port";
 		private const string ELEMENT_PASSWORD = "Password";
-	    private const string ELEMENT_ADDRESS = "Address";
+		private const string ELEMENT_ADDRESS = "Address";
 		private const string ELEMENT_CONFIG = "Config";
 
 		private const string ELEMENT_DTP_INPUT_PORT = "DtpInputPort";
@@ -34,11 +32,11 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		public string Password { get; set; }
 
 		[IpAddressSettingsProperty]
-        public string Address { get; set; }
+		public string Address { get; set; }
 
 		public string Config { get; set; }
 
-		private Dictionary<int, int> m_DtpInputPorts = new Dictionary<int, int>();
+		private readonly Dictionary<int, int> m_DtpInputPorts = new Dictionary<int, int>();
 		public IEnumerable<KeyValuePair<int, int>> DtpInputPorts
 		{
 			get { return m_DtpInputPorts.ToArray(m_DtpInputPorts.Count); }
@@ -57,12 +55,12 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 							item.Key);
 						continue;
 					}
-					if(item.Key <= 0)
+					if (item.Key <= 0)
 					{
 						Logger.AddEntry(eSeverity.Error, "{0} - DtpInputPort -> Input value must be greater than 0");
 						continue;
 					}
-					if(item.Value <= 0)
+					if (item.Value <= 0)
 					{
 						Logger.AddEntry(eSeverity.Error, "{0} - DtpInputPort -> Port value must be greater than 0");
 						continue;
@@ -73,7 +71,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			}
 		}
 
-		private Dictionary<int, int> m_DtpOutputPorts = new Dictionary<int, int>();
+		private readonly Dictionary<int, int> m_DtpOutputPorts = new Dictionary<int, int>();
 		public IEnumerable<KeyValuePair<int, int>> DtpOutputPorts
 		{
 			get { return m_DtpOutputPorts.ToArray(m_DtpOutputPorts.Count); }
@@ -92,12 +90,12 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 							item.Key);
 						continue;
 					}
-					if(item.Key <= 0)
+					if (item.Key <= 0)
 					{
 						Logger.AddEntry(eSeverity.Error, "{0} - DtpInputPort -> Input value must be greater than 0");
 						continue;
 					}
-					if(item.Value <= 0)
+					if (item.Value <= 0)
 					{
 						Logger.AddEntry(eSeverity.Error, "{0} - DtpInputPort -> Port value must be greater than 0");
 						continue;
@@ -118,7 +116,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 			writer.WriteElementString(ELEMENT_PORT, IcdXmlConvert.ToString(Port));
 			writer.WriteElementString(ELEMENT_PASSWORD, Password);
-            writer.WriteElementString(ELEMENT_ADDRESS, Address);
+			writer.WriteElementString(ELEMENT_ADDRESS, Address);
 			writer.WriteElementString(ELEMENT_CONFIG, Config);
 
 			XmlUtils.WriteDictToXml(writer, DtpInputPorts, ELEMENT_DTP_INPUT_PORTS, ELEMENT_DTP_INPUT_PORT,

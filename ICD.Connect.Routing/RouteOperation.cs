@@ -37,6 +37,16 @@ namespace ICD.Connect.Routing
 		public int LocalOutput { get; set; }
 
 		/// <summary>
+		/// When configuring a single switcher, describes the id of the switcher device.
+		/// </summary>
+		public int LocalDevice { get; set; }
+
+		/// <summary>
+		/// When configuring a single switcher, describes the id of the switcher control.
+		/// </summary>
+		public int LocalControl { get; set; }
+
+		/// <summary>
 		/// The media types that are being routed.
 		/// </summary>
 		public eConnectionType ConnectionType { get; set; }
@@ -66,11 +76,12 @@ namespace ICD.Connect.Routing
 		public RouteOperation(RouteOperation op)
 			: this()
 		{
-			Id = op.Id;
 			Source = op.Source;
 			Destination = op.Destination;
 			LocalInput = op.LocalInput;
 			LocalOutput = op.LocalOutput;
+			LocalDevice = op.LocalDevice;
+			LocalControl = op.LocalControl;
 			ConnectionType = op.ConnectionType;
 			RoomId = op.RoomId;
 			RouteRequestFrom = op.RouteRequestFrom;
@@ -98,6 +109,12 @@ namespace ICD.Connect.Routing
 			if (LocalOutput != 0)
 				builder.AppendProperty("LocalOutput", LocalOutput);
 
+			if (LocalDevice != 0)
+				builder.AppendProperty("LocalDevice", LocalDevice);
+
+			if (LocalControl != 0)
+				builder.AppendProperty("LocalControl", LocalControl);
+
 			// If connection type is "None" then we probably want to know
 			builder.AppendProperty("ConnectionType", ConnectionType);
 
@@ -106,29 +123,6 @@ namespace ICD.Connect.Routing
 
 			if (RouteRequestFrom != default(HostInfo))
 				builder.AppendProperty("RouteRequestFrom", RouteRequestFrom);
-
-			return builder.ToString();
-		}
-
-		/// <summary>
-		/// Returns a shorthand string representation for a local routing operation.
-		/// </summary>
-		/// <returns></returns>
-		public string ToStringLocal()
-		{
-			ReprBuilder builder = new ReprBuilder(this);
-
-			if (Source != default(EndpointInfo))
-				builder.AppendProperty("Source", Source);
-
-			if (Destination != default(EndpointInfo))
-				builder.AppendProperty("Destination", Destination);
-
-			// If connection type is "None" then we probably want to know
-			builder.AppendProperty("ConnectionType", ConnectionType);
-
-			if (RoomId != 0)
-				builder.AppendProperty("RoomId", RoomId);
 
 			return builder.ToString();
 		}

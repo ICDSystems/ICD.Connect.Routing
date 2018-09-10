@@ -63,7 +63,45 @@ namespace ICD.Connect.Routing.Tests.Utils
 		[Test]
 		public void SetInputForOutputTest()
 		{
-			Assert.Inconclusive();
+			List<ActiveInputStateChangeEventArgs> activeInputsArgs = new List<ActiveInputStateChangeEventArgs>();
+			List<TransmissionStateEventArgs> activeTransmissionStateArgs = new List<TransmissionStateEventArgs>();
+			List<RouteChangeEventArgs> routeEventArgs = new List<RouteChangeEventArgs>();
+
+			SwitcherCache cache = new SwitcherCache();
+
+			cache.OnActiveInputsChanged += (sender, args) => activeInputsArgs.Add(args);
+			cache.OnActiveTransmissionStateChanged += (sender, args) => activeTransmissionStateArgs.Add(args);
+			cache.OnRouteChange += (sender, args) => routeEventArgs.Add(args);
+
+			// Test no change
+			Assert.IsFalse(cache.SetInputForOutput(1, null, eConnectionType.Video));
+			Assert.AreEqual(0, activeInputsArgs.Count);
+			Assert.AreEqual(0, activeTransmissionStateArgs.Count);
+			Assert.AreEqual(0, routeEventArgs.Count);
+
+			// Test change
+			Assert.IsTrue(cache.SetInputForOutput(1, 1, eConnectionType.Video));
+			Assert.AreEqual(1, activeInputsArgs.Count);
+			Assert.AreEqual(1, activeTransmissionStateArgs.Count);
+			Assert.AreEqual(1, routeEventArgs.Count);
+
+			// Test no change
+			Assert.IsFalse(cache.SetInputForOutput(1, 1, eConnectionType.Video));
+			Assert.AreEqual(1, activeInputsArgs.Count);
+			Assert.AreEqual(1, activeTransmissionStateArgs.Count);
+			Assert.AreEqual(1, routeEventArgs.Count);
+
+			// Test split
+			Assert.IsTrue(cache.SetInputForOutput(2, 1, eConnectionType.Video));
+			Assert.AreEqual(1, activeInputsArgs.Count);
+			Assert.AreEqual(2, activeTransmissionStateArgs.Count);
+			Assert.AreEqual(2, routeEventArgs.Count);
+
+			// Test clearing one of the routes
+			Assert.IsTrue(cache.SetInputForOutput(2, null, eConnectionType.Video));
+			Assert.AreEqual(1, activeInputsArgs.Count);
+			Assert.AreEqual(3, activeTransmissionStateArgs.Count);
+			Assert.AreEqual(3, routeEventArgs.Count);
 		}
 
 		[Test]

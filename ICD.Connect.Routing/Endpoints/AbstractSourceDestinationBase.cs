@@ -15,7 +15,11 @@ namespace ICD.Connect.Routing.Endpoints
 		where TSettings : ISourceDestinationBaseSettings, new()
 	{
 		private readonly List<int> m_AddressesOrdered;
+		private readonly List<EndpointInfo> m_EndpointsOrdered;
+
 		private readonly IcdHashSet<int> m_Addresses;
+		private readonly IcdHashSet<EndpointInfo> m_Endpoints;
+
 		private readonly SafeCriticalSection m_AddressesSection;
 
 		/// <summary>
@@ -77,8 +81,12 @@ namespace ICD.Connect.Routing.Endpoints
 		protected AbstractSourceDestinationBase()
 		{
 			m_AddressesSection = new SafeCriticalSection();
+
 			m_Addresses = new IcdHashSet<int>();
+			m_Endpoints = new IcdHashSet<EndpointInfo>();
+
 			m_AddressesOrdered = new List<int>();
+			m_EndpointsOrdered = new List<EndpointInfo>();
 		}
 
 		/// <summary>
@@ -118,6 +126,15 @@ namespace ICD.Connect.Routing.Endpoints
 		}
 
 		/// <summary>
+		/// Gets all of the addresses as endpoint info.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> GetEndpoints()
+		{
+			return m_AddressesSection.Execute(() => m_EndpointsOrdered.ToArray(m_EndpointsOrdered.Count));
+		}
+
+		/// <summary>
 		/// Sets the addresses used by this source/destination.
 		/// </summary>
 		/// <param name="addresses"></param>
@@ -128,10 +145,19 @@ namespace ICD.Connect.Routing.Endpoints
 			try
 			{
 				m_Addresses.Clear();
+				m_Endpoints.Clear();
+
 				m_AddressesOrdered.Clear();
+				m_EndpointsOrdered.Clear();
 
 				m_Addresses.AddRange(addresses);
 				m_AddressesOrdered.AddSorted(m_Addresses);
+
+				foreach (EndpointInfo endpoint in m_AddressesOrdered.Select(i => new EndpointInfo(Device, Control, i)))
+				{
+					m_EndpointsOrdered.Add(endpoint);
+					m_Endpoints.Add(endpoint);
+				}
 			}
 			finally
 			{
@@ -146,9 +172,29 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <returns></returns>
 		public bool Contains(EndpointInfo endpoint)
 		{
-			return endpoint.Device == Device &&
-			       endpoint.Control == Control &&
-			       m_AddressesSection.Execute(() => m_Addresses.Contains(endpoint.Address));
+			return m_AddressesSection.Execute(() => m_Endpoints.Contains(endpoint));
+		}
+
+		/// <summary>
+		/// Filters the endpoints by the endpoints contained in this source/destination.
+		/// </summary>
+		/// <param name="endpoints"></param>
+		/// <returns></returns>
+		public IEnumerable<EndpointInfo> FilterEndpoints(IEnumerable<EndpointInfo> endpoints)
+		{
+			if (endpoints == null)
+				throw new ArgumentNullException("endpoints");
+
+			m_AddressesSection.Enter();
+
+			try
+			{
+				return endpoints.Where(e => m_Endpoints.Contains(e)).ToArray();
+			}
+			finally
+			{
+				m_AddressesSection.Leave();
+			}
 		}
 
 		#endregion

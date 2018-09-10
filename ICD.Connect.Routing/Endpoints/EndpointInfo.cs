@@ -1,5 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Controls;
 using Newtonsoft.Json;
 
@@ -8,7 +12,7 @@ namespace ICD.Connect.Routing.Endpoints
 	/// <summary>
 	/// Simple struct defining the connection address on a routing control.
 	/// </summary>
-	public struct EndpointInfo : IComparable
+	public struct EndpointInfo : IComparable<EndpointInfo>, IEquatable<EndpointInfo>
 	{
 		private readonly int m_DeviceId;
 		private readonly int m_ControlId;
@@ -55,9 +59,73 @@ namespace ICD.Connect.Routing.Endpoints
 		{
 			ReprBuilder builder = new ReprBuilder(this);
 
-			builder.AppendProperty("Device", Device);
-			builder.AppendProperty("Control", Control);
-			builder.AppendProperty("Address", Address);
+			builder.AppendProperty("Device", m_DeviceId);
+			builder.AppendProperty("Control", m_ControlId);
+			builder.AppendProperty("Address", m_Address);
+
+			return builder.ToString();
+		}
+
+		/// <summary>
+		/// Reduces a sequence of endpoints into a human readable string.
+		/// </summary>
+		/// <param name="endpoints"></param>
+		/// <returns></returns>
+		public static string ArrayRangeFormat(IEnumerable<EndpointInfo> endpoints)
+		{
+			if (endpoints == null)
+				throw new ArgumentNullException("endpoints");
+
+			IcdOrderedDictionary<DeviceControlInfo, List<int>> deviceControlAddresses =
+				new IcdOrderedDictionary<DeviceControlInfo, List<int>>();
+
+			foreach (EndpointInfo endpoint in endpoints)
+			{
+				DeviceControlInfo deviceControl = endpoint.GetDeviceControlInfo();
+
+				List<int> addresses;
+				if (!deviceControlAddresses.TryGetValue(deviceControl, out addresses))
+				{
+					addresses = new List<int>();
+					deviceControlAddresses.Add(deviceControl, addresses);
+				}
+
+				if (addresses.BinarySearch(endpoint.m_Address) < 0)
+					addresses.AddSorted(endpoint.m_Address);
+			}
+
+			if (deviceControlAddresses.Count == 0)
+				return null;
+
+			// EndpointInfo(Device=x, Control=y, Addresses=[1-10])
+			if (deviceControlAddresses.Count == 1)
+			{
+				KeyValuePair<DeviceControlInfo, List<int>> kvp = deviceControlAddresses.First();
+				return ArrayRangeFormat(kvp.Key, kvp.Value);
+			}
+
+			// [EndpointInfo(Device=x, Control=y, Addresses=[1-10]), EndpointInfo(Device=z, Control=w, Addresses=[1-10])]
+			string[] formats = deviceControlAddresses.Select(kvp => ArrayRangeFormat(kvp.Key, kvp.Value)).ToArray();
+			return StringUtils.ArrayFormat(formats);
+		}
+
+		/// <summary>
+		/// Reduces a sequence of addresses into a human readable string.
+		/// </summary>
+		/// <param name="deviceControl"></param>
+		/// <param name="addresses"></param>
+		/// <returns></returns>
+		private static string ArrayRangeFormat(DeviceControlInfo deviceControl, IList<int> addresses)
+		{
+			ReprBuilder builder = new ReprBuilder(new EndpointInfo());
+
+			builder.AppendProperty("Device", deviceControl.DeviceId);
+			builder.AppendProperty("Control", deviceControl.ControlId);
+
+			if (addresses.Count == 1)
+				builder.AppendProperty("Address", addresses[0]);
+			else
+				builder.AppendPropertyRaw("Addresses", StringUtils.ArrayRangeFormat(addresses));
 
 			return builder.ToString();
 		}
@@ -92,7 +160,7 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <returns></returns>
 		public static bool operator !=(EndpointInfo a1, EndpointInfo a2)
 		{
-			return !(a1 == a2);
+			return !a1.Equals(a2);
 		}
 
 		/// <summary>
@@ -102,20 +170,19 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <returns></returns>
 		public override bool Equals(object other)
 		{
-			if (other == null || GetType() != other.GetType())
-				return false;
-
-			return GetHashCode() == ((EndpointInfo)other).GetHashCode();
+			return other is EndpointInfo && Equals((EndpointInfo)other);
 		}
 
 		/// <summary>
-		/// Returns true if the endpoints share the same control info without checking address.
+		/// Returns true if this instance is equal to the given endpoint.
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
-		public bool EqualsControl(EndpointInfo other)
+		public bool Equals(EndpointInfo other)
 		{
-			return other.Device == m_DeviceId && other.Control == m_ControlId;
+			return m_DeviceId == other.m_DeviceId &&
+			       m_ControlId == other.m_ControlId &&
+			       m_Address == other.m_Address;
 		}
 
 		/// <summary>
@@ -134,10 +201,8 @@ namespace ICD.Connect.Routing.Endpoints
 			}
 		}
 
-		public int CompareTo(object obj)
+		public int CompareTo(EndpointInfo other)
 		{
-			EndpointInfo other = (EndpointInfo)obj;
-
 			int result = Device.CompareTo(other.Device);
 			if (result != 0)
 				return result;
@@ -146,13 +211,8 @@ namespace ICD.Connect.Routing.Endpoints
 			if (result != 0)
 				return result;
 
-			result = Address.CompareTo(other.Address);
-			if (result != 0)
-				return result;
-
-			return 0;
+			return Address.CompareTo(other.Address);
 		}
-
 
 		#endregion
 	}
