@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Protocol;
-using ICD.Connect.Protocol.Network.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Routing.Extron.Devices.Endpoints;
-using ICD.Connect.Routing.Extron.Devices.Switchers;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Extron.Ports
 {
-	public class DtpCrosspointComPort : AbstractComPort<DtpCrosspointComPortSettings>
+	public sealed class DtpCrosspointComPort : AbstractComPort<DtpCrosspointComPortSettings>
 	{
 		private ISerialPort m_Port;
 		private IDtpHdmiDevice m_Parent;

@@ -1,13 +1,10 @@
-﻿using System;
-using System.Text.RegularExpressions;
+﻿using System.Text.RegularExpressions;
 using ICD.Common.Utils.EventArguments;
-using ICD.Common.Utils.Extensions;
-using ICD.Connect.Audio.Controls;
 using ICD.Connect.Routing.Extron.Devices.Switchers;
 
 namespace ICD.Connect.Routing.Extron.Controls.Volume
 {
-	public class ExtronVolumeDeviceControl : AbstractExtronVolumeDeviceControl, IVolumeMuteFeedbackDeviceControl
+	public sealed class ExtronVolumeDeviceControl : AbstractExtronVolumeDeviceControl
 	{
 		private const string VOLUME_FEEDBACK_REGEX = @"Ds(?:G|H)(\d{5})\*(-?\d+)";
 		private const string MUTE_FEEDBACK_REGEX = @"Ds(\d{5})\*(-?\d+)";
