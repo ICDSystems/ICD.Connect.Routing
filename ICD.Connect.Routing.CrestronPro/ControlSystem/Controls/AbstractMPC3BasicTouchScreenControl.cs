@@ -1,20 +1,35 @@
 using System;
+using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
+using ICD.Connect.Misc.Keypads;
+#if SIMPLSHARP
+using Crestron.SimplSharpPro;
+#endif
 using ICD.Connect.Panels;
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using ICD.Connect.Panels.CrestronPro.Controls.TouchScreens;
 using ICD.Connect.Panels.EventArguments;
 using ICD.Connect.Panels.SmartObjectCollections;
-using ICD.Connect.Protocol.Sigs;
+using eSigType = ICD.Connect.Protocol.Sigs.eSigType;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 {
-	public abstract class AbstractMPC3BasicTouchScreenControl : AbstractThreeSeriesTouchScreenControl<ControlSystemDevice>,
-	                                                            IMPC3BasicTouchScreenControl
+	public abstract class
+#if SIMPLSHARP
+		AbstractMPC3BasicTouchScreenControl<TTouchScreen>
+#else
+		AbstractMPC3BasicTouchScreenControl
+#endif
+ : AbstractThreeSeriesTouchScreenControl<ControlSystemDevice>, IMPC3BasicTouchScreenControl
+#if SIMPLSHARP
+		where TTouchScreen : MPC3Basic
+#endif
 	{
 		/// <summary>
 		/// Raised when the user interacts with the panel.
 		/// </summary>
 		public override event EventHandler<SigInfoEventArgs> OnAnyOutput;
+
+#region Panel Properties
 
 		/// <summary>
 		/// Gets the time that the user last interacted with the panel.
@@ -26,6 +41,360 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		/// </summary>
 		public override ISmartObjectCollection SmartObjects { get { throw new NotImplementedException(); } }
 
+#if SIMPLSHARP
+		private readonly TTouchScreen m_TouchScreen;
+
+		/// <summary>
+		/// Gets the wrapped Crestron TouchScreen instance.
+		/// </summary>
+		protected TTouchScreen TouchScreen { get { return m_TouchScreen; } }
+#endif
+
+#endregion
+
+		#region TouchScreen Properties
+
+		/// <summary>
+		/// When true, indicates automatic LED brightness adjustment based ambient light is enabled on this device.
+		/// </summary>
+		public bool AutoBrightnessEnabled
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.AutoBrightnessEnabledFeedBack.BoolValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Property that returns true when the mute button is enabled on this device, false otherwise.
+		/// </summary>
+		public bool MuteButtonEnabled
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.MuteButtonEnabledFeedBack.BoolValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Property that returns true when the power button is enabled on this device, false otherwise.
+		/// </summary>
+		public bool PowerButtonEnabled
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.PowerButtonEnabledFeedBack.BoolValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Indicates the LED brightness level in Active State,
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// </summary>
+		public ushort ActiveBrightnessPercent
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.ActiveBrightnessFeedBack.UShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Indicates the LED brightness level in Standby State.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// </summary>
+		public ushort StandbyBrightnessPercent
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.StandbyBrightnessFeedBack.UShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Indicates Active State timeout value in minutes.
+		/// </summary>
+		public ushort ActiveTimeoutMinutes
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.ActiveTimeoutFeedBack.UShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Indicates Standby State timeout value in minutes.
+		/// </summary>
+		public ushort StandbyTimeoutMinutes
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.StandbyTimeoutFeedBack.UShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Indicates the button LED brightness level.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// </summary>
+		public ushort LedBrightnessPercent
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.LEDBrightnessFeedBack.UShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Reports the current ambient light threshold level in lux unit.
+		/// This property is only valid when the AutoBrightnessEnabled property is set to true.
+		/// </summary>
+		public ushort AmbientLightThresholdForAutoBrightnessAdjustmentLux
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.AmbientLightThresholdForAutoBrightnessAdjustmentFeedBack.UShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Reports the current active mode auto brightness low level in lux unit.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// </summary>
+		public ushort ActiveModeAutoBrightnessLowLevelPercent
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.ActiveModeAutoBrightnessLowLevelFeedBack.UShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Reports the current active mode auto brightness high level in lux unit.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// </summary>
+		public ushort ActiveModeAutoBrightnessHighLevelPercent
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.ActiveModeAutoBrightnessHighLevelFeedBack.UShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Reports the current standby mode auto brightness low level in lux unit.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// </summary>
+		public ushort StandbyModeAutoBrightnessLowLevelPercent
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.StandbyModeAutoBrightnessLowLevelFeedBack.UShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Reports the current standby mode auto brightness high level in lux unit.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// </summary>
+		public ushort StandbyModeAutoBrightnessHighLevelPercent
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.StandbyModeAutoBrightnessHighLevelFeedBack.UShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Reports the current ambient light level in lux unit for selecting high LED level vs low LED level.
+		/// 100-400: normal office, 600: bright lab, 10000+: direct sunlight.
+		/// </summary>
+		public ushort AmbientLightLevelLux
+		{
+			get
+			{
+#if SIMPLSHARP
+				return TouchScreen.AmbientLightLevelFeedBack.UShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Get the Button object corresponding to the Mute button for this device.
+		/// </summary>
+		public eButtonState Mute
+		{
+			get
+			{
+#if SIMPLSHARP
+				return ButtonStateConverter.GetButtonState(TouchScreen.Mute);
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Get the Button object corresponding to the Power button for this device.
+		/// </summary>
+		public eButtonState Power
+		{
+			get
+			{
+#if SIMPLSHARP
+				return ButtonStateConverter.GetButtonState(TouchScreen.Power);
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Get the Button object corresponding to the Button1 button for this device.
+		/// </summary>
+		public eButtonState Button1
+		{
+			get
+			{
+#if SIMPLSHARP
+				return ButtonStateConverter.GetButtonState(TouchScreen.Button1);
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Get the Button object corresponding to the Button2 button for this device.
+		/// </summary>
+		public eButtonState Button2
+		{
+			get
+			{
+#if SIMPLSHARP
+				return ButtonStateConverter.GetButtonState(TouchScreen.Button2);
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Get the Button object corresponding to the Button3 buttonm for this device.
+		/// </summary>
+		public eButtonState Button3
+		{
+			get
+			{
+#if SIMPLSHARP
+				return ButtonStateConverter.GetButtonState(TouchScreen.Button3);
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Get the Button object corresponding to the Button4 button for this device.
+		/// </summary>
+		public eButtonState Button4
+		{
+			get
+			{
+#if SIMPLSHARP
+				return ButtonStateConverter.GetButtonState(TouchScreen.Button4);
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Get the Button object corresponding to the Button5 button for this device.
+		/// </summary>
+		public eButtonState Button5
+		{
+			get
+			{
+#if SIMPLSHARP
+				return ButtonStateConverter.GetButtonState(TouchScreen.Button5);
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Get the Button object corresponding to the Button6 button for this device.
+		/// </summary>
+		public eButtonState Button6
+		{
+			get
+			{
+#if SIMPLSHARP
+				return ButtonStateConverter.GetButtonState(TouchScreen.Button6);
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		#endregion
+
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -34,7 +403,14 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		protected AbstractMPC3BasicTouchScreenControl(ControlSystemDevice parent, int id)
 			: base(parent, id)
 		{
+#if SIMPLSHARP
+			m_TouchScreen = parent.ControlSystem.ControllerTouchScreenSlotDevice as TTouchScreen;
+			if (m_TouchScreen == null)
+				throw new InvalidOperationException();
+#endif
 		}
+
+#region Panel Methods
 
 		/// <summary>
 		/// Clears the assigned input sig values.
@@ -95,5 +471,271 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		{
 			throw new NotImplementedException();
 		}
+
+#endregion
+
+		#region TouchScreen Methods
+
+		/// <summary>
+		/// Enable the mute button on this device.
+		/// </summary>
+		public void SetMuteButtonEnabled(bool enable)
+		{
+#if SIMPLSHARP
+			if (enable)
+				TouchScreen.EnableMuteButton();
+			else
+				TouchScreen.DisableMuteButton();
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Enable the power button on this device.
+		/// </summary>
+		/// <param name="enable"></param>
+		public void SetPowerButtonEnabled(bool enable)
+		{
+#if SIMPLSHARP
+			if (enable)
+				TouchScreen.EnablePowerButton();
+			else
+				TouchScreen.DisablePowerButton();
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Enable a given numerical button on this device.
+		/// </summary>
+		/// <param name="buttonNumber">1-6 on MPC3-201 Touchscreen panel.</param>
+		/// <param name="enabled"></param>
+		/// <exception cref="T:System.IndexOutOfRangeException">Invalid Button Number specified.</exception>
+		public void SetNumericalButtonEnabled(uint buttonNumber, bool enabled)
+		{
+#if SIMPLSHARP
+			if (enabled)
+				TouchScreen.EnableNumericalButton(buttonNumber);
+			else
+				TouchScreen.DisableNumericalButton(buttonNumber);
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Enable the volume down button on this device.
+		/// </summary>
+		public void SetVolumeDownButtonEnabled(bool enable)
+		{
+#if SIMPLSHARP
+			// Crestron gives us disable but not enable...
+			if (enable)
+				throw new NotSupportedException();
+			else
+				TouchScreen.DisableVolumeDownButton();
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Enable the volume up button on this device.
+		/// </summary>
+		public void SetVolumeUpButtonEnabled(bool enable)
+		{
+#if SIMPLSHARP
+			// Crestron gives us disable but not enable...
+			if (enable)
+				throw new NotSupportedException();
+			else
+				TouchScreen.DisableVolumeUpButton();
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Enable automatic LED brightness adjustment based ambient light while the property is true.
+		/// Setting the property to false will disable it.
+		/// </summary>
+		public void SetAutoBrightnessEnabled(bool enable)
+		{
+#if SIMPLSHARP
+			TouchScreen.AutoBrightnessEnabled.BoolValue = enable;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Property to indicate if a numerical button is enabled for a button number on this device.
+		/// </summary>
+		public bool GetNumericalButtonEnabled(uint buttonNumber)
+		{
+#if SIMPLSHARP
+			return TouchScreen.NumericalButtonEnabledFeedBack[buttonNumber].BoolValue;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Specifies LED brightness level in active state.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// This property is not supported by <see cref="T:Crestron.SimplSharpPro.MPC3x30xTouchscreen"/>.
+		/// </summary>
+		public void SetActiveBrightness(ushort percent)
+		{
+#if SIMPLSHARP
+			TouchScreen.ActiveBrightness.UShortValue = percent;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Specifies LED brightness level in standby state.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// This property is not supported by <see cref="T:Crestron.SimplSharpPro.MPC3x30xTouchscreen"/>.
+		/// </summary>
+		public void SetStandbyBrightness(ushort percent)
+		{
+#if SIMPLSHARP
+			TouchScreen.StandbyBrightness.UShortValue = percent;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Specifies the Active State timeout value in minutes.
+		/// Value 0: the timeout is disabled.
+		/// This property is not supported by <see cref="T:Crestron.SimplSharpPro.MPC3x30xTouchscreen"/>.
+		/// </summary>
+		public void SetActiveTimeout(ushort minutes)
+		{
+#if SIMPLSHARP
+			TouchScreen.ActiveTimeout.UShortValue = minutes;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Specifies the Standby State timeout value in minutes.
+		/// Value 0: the timeout is disabled.
+		/// This property is not supported by <see cref="T:Crestron.SimplSharpPro.MPC3x30xTouchscreen"/>.
+		/// </summary>
+		public void SetStandbyTimeout(ushort minutes)
+		{
+#if SIMPLSHARP
+			TouchScreen.StandbyTimeout.UShortValue = minutes;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Specifies the button LED brightness level.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// </summary>
+		public void SetLedBrightness(ushort percent)
+		{
+#if SIMPLSHARP
+			TouchScreen.LEDBrightness.UShortValue = percent;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Specifies ambient light level in lux unit for selecting high LED level vs low LED level.
+		/// This property is only valid when the <see cref="P:Crestron.SimplSharpPro.MPC3Basic.AutoBrightnessEnabled"/> property is set to true.
+		/// </summary>
+		public void SetAmbientLightThresholdForAutoBrightnessAdjustment(ushort lux)
+		{
+#if SIMPLSHARP
+			TouchScreen.AmbientLightThresholdForAutoBrightnessAdjustment.UShortValue = lux;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Specifies active mode auto brightness low level in lux unit.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// This property is not supported by <see cref="T:Crestron.SimplSharpPro.MPC3x30xTouchscreen"/>.
+		/// </summary>
+		public void SetActiveModeAutoBrightnessLowLevel(ushort percent)
+		{
+#if SIMPLSHARP
+			TouchScreen.ActiveModeAutoBrightnessLowLevel.UShortValue = percent;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Specifies active mode auto brightness high level in lux unit.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// This property is not supported by <see cref="T:Crestron.SimplSharpPro.MPC3x30xTouchscreen"/>.
+		/// 
+		/// </summary>
+		public void SetActiveModeAutoBrightnessHighLevel(ushort percent)
+		{
+#if SIMPLSHARP
+			TouchScreen.ActiveModeAutoBrightnessHighLevel.UShortValue = percent;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Specifies standby mode auto brightness low level in lux unit.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// This property is not supported by <see cref="T:Crestron.SimplSharpPro.MPC3x30xTouchscreen"/>.
+		/// 
+		/// </summary>
+		public void SetStandbyModeAutoBrightnessLowLevel(ushort percent)
+		{
+#if SIMPLSHARP
+			TouchScreen.StandbyModeAutoBrightnessLowLevel.UShortValue = percent;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Specifies standby mode auto brightness high level in lux unit.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// This property is not supported by <see cref="T:Crestron.SimplSharpPro.MPC3x30xTouchscreen"/>.
+		/// </summary>
+		public void SetStandbyModeAutoBrightnessHighLevel(ushort percent)
+		{
+#if SIMPLSHARP
+			TouchScreen.StandbyModeAutoBrightnessHighLevel.UShortValue = percent;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Property to set volume bargraph level on this device.
+		/// Valid values range from 0 (0%) to 65535 (100%).
+		/// This property is not supported by <see cref="T:Crestron.SimplSharpPro.MPC3x30xTouchscreen"/>.
+		/// </summary>
+		public void SetVolumeBargraph(ushort percent)
+		{
+#if SIMPLSHARP
+			TouchScreen.VolumeBargraph.UShortValue = percent;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		#endregion
 	}
 }

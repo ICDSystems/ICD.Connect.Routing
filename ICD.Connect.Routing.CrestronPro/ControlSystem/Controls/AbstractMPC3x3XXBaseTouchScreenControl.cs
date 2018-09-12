@@ -1,9 +1,17 @@
-﻿using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro;
+#endif
+using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 {
-	public abstract class AbstractMPC3x3XXBaseTouchScreenControl : AbstractMPC3BasicTouchScreenControl,
-	                                                               IMPC3x3XXBaseTouchScreenControl
+#if SIMPLSHARP
+	public abstract class AbstractMPC3x3XXBaseTouchScreenControl<TTouchScreen> :
+		AbstractMPC3BasicTouchScreenControl<TTouchScreen>, IMPC3x3XXBaseTouchScreenControl
+		where TTouchScreen : MPC3x3XXBase
+#else
+	public abstract class AbstractMPC3x3XXBaseTouchScreenControl : AbstractMPC3BasicTouchScreenControl, IMPC3x3XXBaseTouchScreenControl
+#endif
 	{
 		/// <summary>
 		/// Constructor.

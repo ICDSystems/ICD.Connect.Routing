@@ -1,8 +1,16 @@
-﻿using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro;
+#endif
+using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 {
-	public sealed class MPC3x201TouchScreenControl : AbstractMPC3x101TouchScreenControl, IMPC3x201TouchScreenControl
+	public sealed class MPC3x201TouchScreenControl :
+#if SIMPLSHARP
+		AbstractMPC3x101TouchScreenControl<MPC3x201Touchscreen>, IMPC3x201TouchScreenControl
+#else
+		AbstractMPC3x101TouchScreenControl, IMPC3x201TouchScreenControl
+#endif
 	{
 		/// <summary>
 		/// Constructor.
