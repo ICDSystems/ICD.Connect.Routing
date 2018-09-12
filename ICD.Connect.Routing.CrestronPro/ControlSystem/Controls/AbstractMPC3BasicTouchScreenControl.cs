@@ -1,14 +1,17 @@
 using System;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
 using ICD.Connect.Misc.Keypads;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DeviceSupport;
 #endif
 using ICD.Connect.Panels;
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using ICD.Connect.Panels.CrestronPro.Controls.TouchScreens;
 using ICD.Connect.Panels.EventArguments;
 using ICD.Connect.Panels.SmartObjectCollections;
+using eButtonState = ICD.Connect.Misc.Keypads.eButtonState;
 using eSigType = ICD.Connect.Protocol.Sigs.eSigType;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
@@ -19,11 +22,16 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 #else
 		AbstractMPC3BasicTouchScreenControl
 #endif
- : AbstractThreeSeriesTouchScreenControl<ControlSystemDevice>, IMPC3BasicTouchScreenControl
+			: AbstractThreeSeriesTouchScreenControl<ControlSystemDevice>, IMPC3BasicTouchScreenControl
 #if SIMPLSHARP
 		where TTouchScreen : MPC3Basic
 #endif
 	{
+		/// <summary>
+		/// Raised when a button state changes.
+		/// </summary>
+		public override event EventHandler<KeypadButtonPressedEventArgs> OnButtonStateChange;
+
 		/// <summary>
 		/// Raised when the user interacts with the panel.
 		/// </summary>
@@ -407,10 +415,28 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			m_TouchScreen = parent.ControlSystem.ControllerTouchScreenSlotDevice as TTouchScreen;
 			if (m_TouchScreen == null)
 				throw new InvalidOperationException();
+
+			Subscribe(m_TouchScreen);
 #endif
 		}
 
-#region Panel Methods
+		/// <summary>
+		/// Override to release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
+		protected override void DisposeFinal(bool disposing)
+		{
+			OnButtonStateChange = null;
+			OnAnyOutput = null;
+
+			base.DisposeFinal(disposing);
+
+#if SIMPLSHARP
+			Unsubscribe(m_TouchScreen);
+#endif
+		}
+
+		#region Panel Methods
 
 		/// <summary>
 		/// Clears the assigned input sig values.
@@ -737,5 +763,42 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		}
 
 		#endregion
+
+#if SIMPLSHARP
+		#region TouchScreen Callbacks
+
+		/// <summary>
+		/// Subscribe to touchscreen events.
+		/// </summary>
+		/// <param name="touchScreen"></param>
+		private void Subscribe(TTouchScreen touchScreen)
+		{
+			touchScreen.ButtonStateChange += TouchScreenOnButtonStateChange;
+		}
+
+		/// <summary>
+		/// Unsubscribe from touchscreen events.
+		/// </summary>
+		/// <param name="touchScreen"></param>
+		private void Unsubscribe(TTouchScreen touchScreen)
+		{
+			touchScreen.ButtonStateChange -= TouchScreenOnButtonStateChange;
+		}
+
+		/// <summary>
+		/// Called when a touchscreen button state changes.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="args"></param>
+		private void TouchScreenOnButtonStateChange(GenericBase device, ButtonEventArgs args)
+		{
+			uint button = args.Button.Number;
+			eButtonState state = ButtonStateConverter.GetButtonState(args.NewButtonState);
+
+			OnButtonStateChange.Raise(this, new KeypadButtonPressedEventArgs(button, state));
+		}
+
+		#endregion
+#endif
 	}
 }
