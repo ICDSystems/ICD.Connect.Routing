@@ -412,6 +412,18 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		}
 
 		/// <summary>
+		/// Select the mute button on this device.
+		/// </summary>
+		public void SetMuteButtonSelected(bool select)
+		{
+#if SIMPLSHARP
+			TouchScreen.FeedbackMute.State = select;
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
 		/// Enable the power button on this device.
 		/// </summary>
 		/// <param name="enable"></param>
@@ -422,6 +434,19 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 				TouchScreen.EnablePowerButton();
 			else
 				TouchScreen.DisablePowerButton();
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Select the power button on this device.
+		/// </summary>
+		/// <param name="select"></param>
+		public void SetPowerButtonSelected(bool select)
+		{
+#if SIMPLSHARP
+			TouchScreen.FeedbackPower.State = select;
 #else
 			throw new NotSupportedException();
 #endif
@@ -440,6 +465,43 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 				TouchScreen.EnableNumericalButton(buttonNumber);
 			else
 				TouchScreen.DisableNumericalButton(buttonNumber);
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Select a given numerical button on this device.
+		/// </summary>
+		/// <param name="buttonNumber">1-6 on MPC3-201 Touchscreen panel.</param>
+		/// <param name="selected"></param>
+		/// <exception cref="T:System.IndexOutOfRangeException">Invalid Button Number specified.</exception>
+		public void SetNumericalButtonSelected(uint buttonNumber, bool selected)
+		{
+#if SIMPLSHARP
+			switch (buttonNumber)
+			{
+				case 1:
+					TouchScreen.Feedback1.State = selected;
+					break;
+				case 2:
+					TouchScreen.Feedback2.State = selected;
+					break;
+				case 3:
+					TouchScreen.Feedback3.State = selected;
+					break;
+				case 4:
+					TouchScreen.Feedback4.State = selected;
+					break;
+				case 5:
+					TouchScreen.Feedback5.State = selected;
+					break;
+				case 6:
+					TouchScreen.Feedback6.State = selected;
+					break;
+				default:
+					throw new IndexOutOfRangeException();
+			}
 #else
 			throw new NotSupportedException();
 #endif
