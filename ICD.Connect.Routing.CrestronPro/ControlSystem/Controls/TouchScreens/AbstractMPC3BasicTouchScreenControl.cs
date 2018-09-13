@@ -446,38 +446,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		}
 
 		/// <summary>
-		/// Enable the volume down button on this device.
-		/// </summary>
-		public void SetVolumeDownButtonEnabled(bool enable)
-		{
-#if SIMPLSHARP
-			// Crestron gives us disable but not enable...
-			if (enable)
-				throw new NotSupportedException();
-			
-			TouchScreen.DisableVolumeDownButton();
-#else
-			throw new NotSupportedException();
-#endif
-		}
-
-		/// <summary>
-		/// Enable the volume up button on this device.
-		/// </summary>
-		public void SetVolumeUpButtonEnabled(bool enable)
-		{
-#if SIMPLSHARP
-			// Crestron gives us disable but not enable...
-			if (enable)
-				throw new NotSupportedException();
-			
-			TouchScreen.DisableVolumeUpButton();
-#else
-			throw new NotSupportedException();
-#endif
-		}
-
-		/// <summary>
 		/// Enable automatic LED brightness adjustment based ambient light while the property is true.
 		/// Setting the property to false will disable it.
 		/// </summary>

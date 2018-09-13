@@ -171,6 +171,36 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		#region Methods
 
 		/// <summary>
+		/// Enable the volume down button on this device.
+		/// </summary>
+		public void SetVolumeDownButtonEnabled(bool enable)
+		{
+#if SIMPLSHARP
+			if (enable)
+				TouchScreen.EnableVolumeDownButton();
+			else
+				TouchScreen.DisableVolumeDownButton();
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
+		/// Enable the volume up button on this device.
+		/// </summary>
+		public void SetVolumeUpButtonEnabled(bool enable)
+		{
+#if SIMPLSHARP
+			if (enable)
+				TouchScreen.EnableVolumeUpButton();
+			else
+				TouchScreen.DisableVolumeUpButton();
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		/// <summary>
 		/// Method to enable beeping for front panel button presses.
 		/// </summary>
 		public void SetButtonPressBeepingEnabled(bool enable)
