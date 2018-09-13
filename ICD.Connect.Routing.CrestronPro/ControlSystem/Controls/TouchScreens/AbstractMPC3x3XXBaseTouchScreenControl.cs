@@ -3,7 +3,7 @@ using Crestron.SimplSharpPro;
 #endif
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 
-namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
+namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
 #if SIMPLSHARP
 	public abstract class AbstractMPC3x3XXBaseTouchScreenControl<TTouchScreen> :

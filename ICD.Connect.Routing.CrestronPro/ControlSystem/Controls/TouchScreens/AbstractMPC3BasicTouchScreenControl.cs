@@ -1,15 +1,15 @@
-using System;
-using ICD.Common.Utils.Extensions;
-using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
-using ICD.Connect.Misc.Keypads;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 #endif
+using System;
+using ICD.Common.Utils.Extensions;
+using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
+using ICD.Connect.Misc.Keypads;
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using eButtonState = ICD.Connect.Misc.Keypads.eButtonState;
 
-namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
+namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
 #if SIMPLSHARP
 	public abstract class AbstractMPC3BasicTouchScreenControl<TTouchScreen> : AbstractControlSystemTouchScreenControl<TTouchScreen>, IMPC3BasicTouchScreenControl
@@ -374,7 +374,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		protected AbstractMPC3BasicTouchScreenControl(ControlSystemDevice parent, int id)
 			: base(parent, id)
 		{
+#if SIMPLSHARP
 			Subscribe(TouchScreen);
+#endif
 		}
 
 		/// <summary>
@@ -392,7 +394,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 #endif
 		}
 
-		#region TouchScreen Methods
+#region TouchScreen Methods
 
 		/// <summary>
 		/// Enable the mute button on this device.
@@ -654,10 +656,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 #endif
 		}
 
-		#endregion
+#endregion
 
 #if SIMPLSHARP
-		#region TouchScreen Callbacks
+#region TouchScreen Callbacks
 
 		/// <summary>
 		/// Subscribe to touchscreen events.
@@ -690,7 +692,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			OnButtonStateChange.Raise(this, new KeypadButtonPressedEventArgs(button, state));
 		}
 
-		#endregion
+#endregion
 #endif
 	}
 }

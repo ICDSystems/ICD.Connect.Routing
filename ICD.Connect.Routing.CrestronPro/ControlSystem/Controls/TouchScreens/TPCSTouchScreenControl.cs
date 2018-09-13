@@ -3,13 +3,13 @@
 using Crestron.SimplSharpPro;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
+namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
 	public sealed class TPCSTouchScreenControl
 #if SIMPLSHARP
 		: AbstractControlSystemTouchScreenControl<TPCSTouchscreen>, ITPCSTouchScreenControl
 #else
-		AbstractControlSystemTouchScreenControl, ITPCSTouchScreenControl
+		: AbstractControlSystemTouchScreenControl, ITPCSTouchScreenControl
 #endif
 	{
 		/// <summary>

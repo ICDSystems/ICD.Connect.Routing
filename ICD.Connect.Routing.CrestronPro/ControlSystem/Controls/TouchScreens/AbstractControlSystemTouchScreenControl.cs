@@ -1,14 +1,14 @@
-﻿using System;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 #endif
+using System;
 using ICD.Connect.Panels;
 using ICD.Connect.Panels.CrestronPro.Controls.TouchScreens;
 using ICD.Connect.Panels.EventArguments;
 using ICD.Connect.Panels.SmartObjectCollections;
 using eSigType = ICD.Connect.Protocol.Sigs.eSigType;
 
-namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
+namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
 #if SIMPLSHARP
 	public abstract class AbstractControlSystemTouchScreenControl<TTouchScreen> :

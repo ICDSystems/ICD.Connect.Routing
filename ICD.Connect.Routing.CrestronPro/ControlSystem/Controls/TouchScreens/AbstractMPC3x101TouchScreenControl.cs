@@ -1,13 +1,13 @@
-﻿using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 #else
 using System;
 #endif
+using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
 using ICD.Connect.Misc.Keypads;
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 
-namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
+namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
 #if SIMPLSHARP
 	public abstract class AbstractMPC3x101TouchScreenControl<TTouchPanel> : AbstractMPC3BasicTouchScreenControl<TTouchPanel>, IMPC3x101TouchScreenControl

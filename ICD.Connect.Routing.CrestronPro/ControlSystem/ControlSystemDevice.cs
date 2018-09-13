@@ -4,6 +4,7 @@ using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls;
+using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
