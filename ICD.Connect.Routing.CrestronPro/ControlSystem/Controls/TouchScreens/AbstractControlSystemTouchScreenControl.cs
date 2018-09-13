@@ -58,6 +58,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			m_TouchScreen = parent.ControlSystem.ControllerTouchScreenSlotDevice as TTouchScreen;
 			if (m_TouchScreen == null)
 				throw new InvalidOperationException();
+
+			m_TouchScreen.Register();
 #endif
 		}
 
