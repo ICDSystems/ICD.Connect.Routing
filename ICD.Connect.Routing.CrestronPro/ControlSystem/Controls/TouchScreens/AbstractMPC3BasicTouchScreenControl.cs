@@ -6,59 +6,22 @@ using ICD.Connect.Misc.Keypads;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 #endif
-using ICD.Connect.Panels;
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
-using ICD.Connect.Panels.CrestronPro.Controls.TouchScreens;
-using ICD.Connect.Panels.EventArguments;
-using ICD.Connect.Panels.SmartObjectCollections;
 using eButtonState = ICD.Connect.Misc.Keypads.eButtonState;
-using eSigType = ICD.Connect.Protocol.Sigs.eSigType;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 {
-	public abstract class
 #if SIMPLSHARP
-		AbstractMPC3BasicTouchScreenControl<TTouchScreen>
-#else
-		AbstractMPC3BasicTouchScreenControl
-#endif
-			: AbstractThreeSeriesTouchScreenControl<ControlSystemDevice>, IMPC3BasicTouchScreenControl
-#if SIMPLSHARP
+	public abstract class AbstractMPC3BasicTouchScreenControl<TTouchScreen> : AbstractControlSystemTouchScreenControl<TTouchScreen>, IMPC3BasicTouchScreenControl
 		where TTouchScreen : MPC3Basic
+#else
+	public abstract class AbstractMPC3BasicTouchScreenControl : AbstractControlSystemTouchScreenControl, IMPC3BasicTouchScreenControl
 #endif
 	{
 		/// <summary>
 		/// Raised when a button state changes.
 		/// </summary>
-		public override event EventHandler<KeypadButtonPressedEventArgs> OnButtonStateChange;
-
-		/// <summary>
-		/// Raised when the user interacts with the panel.
-		/// </summary>
-		public override event EventHandler<SigInfoEventArgs> OnAnyOutput;
-
-#region Panel Properties
-
-		/// <summary>
-		/// Gets the time that the user last interacted with the panel.
-		/// </summary>
-		public override DateTime? LastOutput { get { throw new NotImplementedException(); } }
-
-		/// <summary>
-		/// Collection containing the loaded SmartObjects of this device.
-		/// </summary>
-		public override ISmartObjectCollection SmartObjects { get { throw new NotImplementedException(); } }
-
-#if SIMPLSHARP
-		private readonly TTouchScreen m_TouchScreen;
-
-		/// <summary>
-		/// Gets the wrapped Crestron TouchScreen instance.
-		/// </summary>
-		protected TTouchScreen TouchScreen { get { return m_TouchScreen; } }
-#endif
-
-#endregion
+		public event EventHandler<KeypadButtonPressedEventArgs> OnButtonStateChange;
 
 		#region TouchScreen Properties
 
@@ -411,13 +374,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		protected AbstractMPC3BasicTouchScreenControl(ControlSystemDevice parent, int id)
 			: base(parent, id)
 		{
-#if SIMPLSHARP
-			m_TouchScreen = parent.ControlSystem.ControllerTouchScreenSlotDevice as TTouchScreen;
-			if (m_TouchScreen == null)
-				throw new InvalidOperationException();
-
-			Subscribe(m_TouchScreen);
-#endif
+			Subscribe(TouchScreen);
 		}
 
 		/// <summary>
@@ -427,78 +384,13 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		protected override void DisposeFinal(bool disposing)
 		{
 			OnButtonStateChange = null;
-			OnAnyOutput = null;
 
 			base.DisposeFinal(disposing);
 
 #if SIMPLSHARP
-			Unsubscribe(m_TouchScreen);
+			Unsubscribe(TouchScreen);
 #endif
 		}
-
-		#region Panel Methods
-
-		/// <summary>
-		/// Clears the assigned input sig values.
-		/// </summary>
-		public override void Clear()
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Sends the serial data to the panel.
-		/// </summary>
-		/// <param name="number"></param>
-		/// <param name="text"></param>
-		public override void SendInputSerial(uint number, string text)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Sends the analog data to the panel.
-		/// </summary>
-		/// <param name="number"></param>
-		/// <param name="value"></param>
-		public override void SendInputAnalog(uint number, ushort value)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Sends the digital data to the panel.
-		/// </summary>
-		/// <param name="number"></param>
-		/// <param name="value"></param>
-		public override void SendInputDigital(uint number, bool value)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Unregisters the callback for output sig change events.
-		/// </summary>
-		/// <param name="number"></param>
-		/// <param name="type"></param>
-		/// <param name="callback"></param>
-		public override void UnregisterOutputSigChangeCallback(uint number, eSigType type, Action<SigCallbackManager, SigInfoEventArgs> callback)
-		{
-			throw new NotImplementedException();
-		}
-
-		/// <summary>
-		/// Registers the callback for output sig change events.
-		/// </summary>
-		/// <param name="number"></param>
-		/// <param name="type"></param>
-		/// <param name="callback"></param>
-		public override void RegisterOutputSigChangeCallback(uint number, eSigType type, Action<SigCallbackManager, SigInfoEventArgs> callback)
-		{
-			throw new NotImplementedException();
-		}
-
-#endregion
 
 		#region TouchScreen Methods
 
@@ -560,8 +452,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			// Crestron gives us disable but not enable...
 			if (enable)
 				throw new NotSupportedException();
-			else
-				TouchScreen.DisableVolumeDownButton();
+			
+			TouchScreen.DisableVolumeDownButton();
 #else
 			throw new NotSupportedException();
 #endif
@@ -576,8 +468,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			// Crestron gives us disable but not enable...
 			if (enable)
 				throw new NotSupportedException();
-			else
-				TouchScreen.DisableVolumeUpButton();
+			
+			TouchScreen.DisableVolumeUpButton();
 #else
 			throw new NotSupportedException();
 #endif

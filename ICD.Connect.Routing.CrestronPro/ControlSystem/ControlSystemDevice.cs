@@ -2,6 +2,7 @@
 using ICD.Common.Properties;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -32,8 +33,44 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			SetControlSystem(ProgramInfo.ControlSystem);
 
 			Controls.Add(new ControlSystemSwitcherControl(this, 0));
+
+			IThreeSeriesTouchScreenControl touchScreen = InstantiateTouchScreen(this, 1);
+			if (touchScreen != null)
+				Controls.Add(touchScreen);
 #endif
 		}
+
+#if SIMPLSHARP
+		/// <summary>
+		/// Creates the touchscreen control instance based on the type of control system.
+		/// </summary>
+		/// <param name="parent"></param>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		private static IThreeSeriesTouchScreenControl InstantiateTouchScreen(ControlSystemDevice parent, int id)
+		{
+			if (parent == null)
+				throw new ArgumentNullException("controlSystemDevice");
+
+			switch (parent.ControlSystem.TouchscreenType)
+			{
+				case eTouchscreenType.TPCS:
+					return new TPCSTouchScreenControl(parent, id);
+				case eTouchscreenType.Fliptop:
+					return new FTTouchScreenControl(parent, id);
+				case eTouchscreenType.TSCW730:
+					return new TSCW730TouchScreenControl(parent, id);
+				case eTouchscreenType.MPC3x201:
+					return new MPC3x201TouchScreenControl(parent, id);
+				case eTouchscreenType.MPC3x30x:
+					return new MPC3x30xTouchScreenControl(parent, id);
+
+				default:
+					return null;
+			}
+		}
+#endif
 
 		#region Methods
 
