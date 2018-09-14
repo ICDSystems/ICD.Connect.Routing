@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [9.0.0] - 2018-09-14
+### Added
+ - DMPS3 4K support
+ - Added new pathfinding workflow
+ - ControlSystemDevice touchscreen controls
+
+### Changed
+ - Significant routing performance improvements
+ - Switcher operations are aggregated into as few operations as possible
+
 ## [8.0.0] - 2018-07-19
 ### Added
  - Added routing cache for reducing number of events and optimizing routing queries 
