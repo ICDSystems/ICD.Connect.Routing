@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -18,6 +19,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 	public abstract class AbstractMPC3BasicTouchScreenControl : AbstractControlSystemTouchScreenControl, IMPC3BasicTouchScreenControl
 #endif
 	{
+		private readonly Dictionary<uint, bool> m_CachedNumericalButtonSelected;
+		private readonly Dictionary<uint, bool> m_CachedNumericalButtonEnabled;
 		private bool? m_CachedMuteButtonEnabled;
 		private bool? m_CachedPowerButtonEnabled;
 
@@ -381,6 +384,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			: base(parent, id)
 		{
 #if SIMPLSHARP
+			m_CachedNumericalButtonSelected = new Dictionary<uint, bool>();
+			m_CachedNumericalButtonEnabled = new Dictionary<uint, bool>();
+
 			Subscribe(TouchScreen);
 #endif
 		}
@@ -487,6 +493,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		public void SetNumericalButtonEnabled(uint buttonNumber, bool enabled)
 		{
 #if SIMPLSHARP
+			bool cached;
+			if (m_CachedNumericalButtonEnabled.TryGetValue(buttonNumber, out cached) && enabled == cached)
+				return;
+
+			m_CachedNumericalButtonEnabled[buttonNumber] = enabled;
+
 			if (enabled)
 				TouchScreen.EnableNumericalButton(buttonNumber);
 			else
@@ -505,6 +517,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		public void SetNumericalButtonSelected(uint buttonNumber, bool selected)
 		{
 #if SIMPLSHARP
+			bool cached;
+			if (m_CachedNumericalButtonSelected.TryGetValue(buttonNumber, out cached) && selected == cached)
+				return;
+
+			m_CachedNumericalButtonSelected[buttonNumber] = selected;
+
 			switch (buttonNumber)
 			{
 				case 1:
