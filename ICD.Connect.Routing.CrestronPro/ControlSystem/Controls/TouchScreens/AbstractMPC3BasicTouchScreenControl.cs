@@ -18,6 +18,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 	public abstract class AbstractMPC3BasicTouchScreenControl : AbstractControlSystemTouchScreenControl, IMPC3BasicTouchScreenControl
 #endif
 	{
+		private bool? m_CachedMuteButtonEnabled;
+		private bool? m_CachedPowerButtonEnabled;
+
+		private bool? m_CachedMuteButtonSelected;
+		private bool? m_CachedPowerButtonSelected;
+
 		/// <summary>
 		/// Raised when a button state changes.
 		/// </summary>
@@ -402,6 +408,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		public void SetMuteButtonEnabled(bool enable)
 		{
 #if SIMPLSHARP
+			if (enable == m_CachedMuteButtonEnabled)
+				return;
+
+			m_CachedMuteButtonEnabled = enable;
+
 			if (enable)
 				TouchScreen.EnableMuteButton();
 			else
@@ -417,6 +428,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		public void SetMuteButtonSelected(bool select)
 		{
 #if SIMPLSHARP
+			if (select == m_CachedMuteButtonSelected)
+				return;
+
+			m_CachedMuteButtonSelected = select;
+
 			TouchScreen.FeedbackMute.State = select;
 #else
 			throw new NotSupportedException();
@@ -430,6 +446,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		public void SetPowerButtonEnabled(bool enable)
 		{
 #if SIMPLSHARP
+			if (enable == m_CachedPowerButtonEnabled)
+				return;
+
+			m_CachedPowerButtonEnabled = enable;
+
 			if (enable)
 				TouchScreen.EnablePowerButton();
 			else
@@ -446,6 +467,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		public void SetPowerButtonSelected(bool select)
 		{
 #if SIMPLSHARP
+			if (select == m_CachedPowerButtonSelected)
+				return;
+
+			m_CachedPowerButtonSelected = select;
+
 			TouchScreen.FeedbackPower.State = select;
 #else
 			throw new NotSupportedException();
