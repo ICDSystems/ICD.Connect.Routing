@@ -37,6 +37,8 @@
     <ProjectReference Include="..\..\ICD.Common.Utils\ICD.Common.Utils\ICD.Common.Utils_NetStandard.csproj" />
     <ProjectReference Include="..\..\ICD.Connect.Devices\ICD.Connect.Devices\ICD.Connect.Devices_NetStandard.csproj" />
     <ProjectReference Include="..\..\ICD.Connect.Misc\ICD.Connect.Misc.CrestronPro\ICD.Connect.Misc.CrestronPro_NetStandard.csproj" />
+    <ProjectReference Include="..\..\ICD.Connect.Panels\ICD.Connect.Panels.CrestronPro\ICD.Connect.Panels.CrestronPro_NetStandard.csproj" />
+    <ProjectReference Include="..\..\ICD.Connect.Panels\ICD.Connect.Panels.Crestron\ICD.Connect.Panels.Crestron_NetStandard.csproj" />
     <ProjectReference Include="..\ICD.Connect.Routing\ICD.Connect.Routing_NetStandard.csproj" />
   </ItemGroup>
 

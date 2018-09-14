@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Connect.Settings.Attributes;
+﻿using ICD.Connect.Settings.Attributes;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;

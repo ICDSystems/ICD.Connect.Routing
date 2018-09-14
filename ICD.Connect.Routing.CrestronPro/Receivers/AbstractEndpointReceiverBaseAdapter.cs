@@ -13,8 +13,6 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.Devices.Extensions;
-using ICD.Connect.Misc.CrestronPro;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers

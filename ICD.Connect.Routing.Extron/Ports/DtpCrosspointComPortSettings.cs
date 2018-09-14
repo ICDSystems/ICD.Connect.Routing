@@ -1,14 +1,13 @@
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Routing.Extron.Devices.Endpoints;
-using ICD.Connect.Routing.Extron.Devices.Switchers;
 using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Extron.Ports
 {
 	[KrangSettings("DtpCrosspointComPort", typeof(DtpCrosspointComPort))]
-	public class DtpCrosspointComPortSettings : AbstractComPortSettings
+	public sealed class DtpCrosspointComPortSettings : AbstractComPortSettings
 	{
 		private const string PARENT_ELEMENT = "Parent";
 
