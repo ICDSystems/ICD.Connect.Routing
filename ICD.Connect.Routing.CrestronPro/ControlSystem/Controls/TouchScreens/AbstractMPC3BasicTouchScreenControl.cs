@@ -21,6 +21,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 	{
 		private readonly Dictionary<uint, bool> m_CachedNumericalButtonSelected;
 		private readonly Dictionary<uint, bool> m_CachedNumericalButtonEnabled;
+
 		private bool? m_CachedMuteButtonEnabled;
 		private bool? m_CachedPowerButtonEnabled;
 
