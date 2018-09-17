@@ -158,10 +158,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 
 			m_TouchScreen.Register();
 
-			m_SmartObjects = new SmartObjectCollectionAdapter();
-			m_BooleanInput = new DeviceBooleanInputCollectionAdapter();
-			m_UShortInput = new DeviceUShortInputCollectionAdapter();
-			m_StringInput = new DeviceStringInputCollectionAdapter();
+			m_SmartObjects = new SmartObjectCollectionAdapter(m_TouchScreen.SmartObjects);
+			m_BooleanInput = new DeviceBooleanInputCollectionAdapter(m_TouchScreen.BooleanInput);
+			m_UShortInput = new DeviceUShortInputCollectionAdapter(m_TouchScreen.UShortInput);
+			m_StringInput = new DeviceStringInputCollectionAdapter(m_TouchScreen.StringInput);
 
 			Subscribe(m_SmartObjects);
 #endif
