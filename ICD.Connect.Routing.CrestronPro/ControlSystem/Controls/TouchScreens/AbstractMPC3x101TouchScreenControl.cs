@@ -1,11 +1,19 @@
-﻿#if SIMPLSHARP
+﻿using System;
+using System.Collections.Generic;
+using ICD.Common.Utils.EventArguments;
+using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DeviceSupport;
 #else
 using System;
 #endif
 using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
-using ICD.Connect.Misc.Keypads;
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
+using eButtonState = ICD.Connect.Misc.Keypads.eButtonState;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
@@ -16,6 +24,13 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 	public abstract class AbstractMPC3x101TouchScreenControl : AbstractMPC3BasicTouchScreenControl, IMPC3x101TouchScreenControl
 #endif
 	{
+		/// <summary>
+		/// Raised when the proximity sensor detection state changes.
+		/// </summary>
+		public event EventHandler<BoolEventArgs> OnProximityDetectedStateChange;
+
+		private bool m_ProximityDetected;
+
 		#region Properties
 
 		/// <summary>
@@ -69,13 +84,17 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public bool ProximityDetected
 		{
-			get
+			get { return m_ProximityDetected; }
+			private set
 			{
-#if SIMPLSHARP
-				return TouchScreen.ProximityDetectedFeedBack.BoolValue;
-#else
-				throw new NotSupportedException();
-#endif
+				if (value == m_ProximityDetected)
+					return;
+
+				m_ProximityDetected = value;
+
+				Log(eSeverity.Informational, "ProximityDetected changed to {0}", m_ProximityDetected);
+
+				OnProximityDetectedStateChange.Raise(this, new BoolEventArgs(m_ProximityDetected));
 			}
 		}
 
@@ -168,6 +187,17 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 		}
 
+		/// <summary>
+		/// Override to release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
+		protected override void DisposeFinal(bool disposing)
+		{
+			OnProximityDetectedStateChange = null;
+
+			base.DisposeFinal(disposing);
+		}
+
 		#region Methods
 
 		/// <summary>
@@ -239,6 +269,85 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 #else
 			throw new NotSupportedException();
 #endif
+		}
+
+		#endregion
+
+#if SIMPLSHARP
+		/// <summary>
+		/// Called when a touchscreen panel state changes.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="args"></param>
+		protected override void TouchScreenOnPanelStateChange(GenericBase device, BaseEventArgs args)
+		{
+			base.TouchScreenOnPanelStateChange(device, args);
+
+			switch (args.EventId)
+			{
+				case FrontPanelEventIds.ProximityDetectedEventId:
+					ProximityDetected = TouchScreen.ProximityDetectedFeedBack.BoolValue;
+					break;
+			}
+		}
+#endif
+
+		#region Console
+
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
+
+			foreach (IConsoleNodeBase node in MPC3x101TouchScreenControlConsole.GetConsoleNodes(this))
+				yield return node;
+		}
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			MPC3x101TouchScreenControlConsole.BuildConsoleStatus(this, addRow);
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+
+			foreach (IConsoleCommand command in MPC3x101TouchScreenControlConsole.GetConsoleCommands(this))
+				yield return command;
+		}
+
+		/// <summary>
+		/// Workaround for the "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
+		}
+
+		/// <summary>
+		/// Workaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
+		{
+			return base.GetConsoleNodes();
 		}
 
 		#endregion
