@@ -6,7 +6,7 @@ using ICD.Connect.Routing.Extron.Devices.Switchers;
 
 namespace ICD.Connect.Routing.Extron.Controls.Volume
 {
-	public abstract class AbstractExtronVolumeDeviceControl : AbstractVolumeRawLevelDeviceControl<IDtpCrosspointDevice>, IVolumeMuteFeedbackDeviceControl
+	public abstract class AbstractExtronVolumeDeviceControl : AbstractVolumeLevelDeviceControl<IDtpCrosspointDevice>, IVolumeMuteFeedbackDeviceControl
 	{
 		public event EventHandler<BoolEventArgs> OnMuteStateChanged;
 
