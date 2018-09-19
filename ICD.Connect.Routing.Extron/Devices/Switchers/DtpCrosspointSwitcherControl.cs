@@ -239,6 +239,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// <param name="type"></param>
 		public void Route(int input, int output, eConnectionType type)
 		{
+			output = output % 1000;
+
 			Parent.SendCommand("{0}*{1}{2}", input, output, GetConnectionTypeCharacter(type));
 		}
 
@@ -250,6 +252,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// <returns></returns>
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
+			output = output % 1000;
+
 			Parent.SendCommand("0*{0}{1}", output, GetConnectionTypeCharacter(type));
 			return true;
 		}

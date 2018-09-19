@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Text.RegularExpressions;
-using ICD.Common.Properties;
+﻿using System.Text.RegularExpressions;
 using ICD.Common.Utils.EventArguments;
-using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.Audio.Controls;
 using ICD.Connect.Routing.Extron.Devices.Switchers;
 
 namespace ICD.Connect.Routing.Extron.Controls.Volume
 {
-	public class ExtronGroupVolumeDeviceControl : AbstractExtronVolumeDeviceControl, IVolumeMuteFeedbackDeviceControl
+	public sealed class ExtronGroupVolumeDeviceControl : AbstractExtronVolumeDeviceControl
 	{
 		private const string GROUP_FEEDBACK_REGEX = @"GrpmD(\d{1,2})\*(-?\d+)";
 
