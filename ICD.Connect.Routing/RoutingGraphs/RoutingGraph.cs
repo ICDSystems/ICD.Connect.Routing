@@ -1022,20 +1022,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				Connection previous = path[index - 1];
 				Connection current = path[index];
 
-				IRouteMidpointControl midpoint = this.GetSourceControl(current) as IRouteMidpointControl;
-				if (midpoint == null)
-					continue;
-
-				IRouteSwitcherControl switcher = midpoint as IRouteSwitcherControl;
+				IRouteSwitcherControl switcher = this.GetSourceControl(current) as IRouteSwitcherControl;
 				if (switcher == null)
 					continue;
 
-				if (!Unroute(previous, current, type, roomId))
+				if (!Unroute(switcher, previous.Destination.Address, current.Source.Address, type, roomId))
 					break;
 
 				// Stop unrouting if the input is routed to other outputs - we reached a fork
 				int input = previous.Destination.Address;
-				if (midpoint.GetOutputs(input, type).Any())
+				if (switcher.GetOutputs(input, type).Any())
 					break;
 			}
 		}
@@ -1067,6 +1063,23 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			int input = incomingConnection.Destination.Address;
 			int output = outgoingConnection.Source.Address;
+
+			return Unroute(switcher, input, output, type, roomId);
+		}
+
+		/// <summary>
+		/// Unroutes the consecutive connections a -> b.
+		/// </summary>
+		/// <param name="switcher"></param>
+		/// <param name="input"></param>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		/// <returns>False if unauthorized to unroute the connections</returns>
+		private bool Unroute(IRouteSwitcherControl switcher, int input, int output, eConnectionType type, int roomId)
+		{
+			if (switcher == null)
+				throw new ArgumentNullException("switcher");
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 			{
