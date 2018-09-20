@@ -6,14 +6,14 @@ using ICD.Connect.Routing.Extron.Devices.Switchers;
 
 namespace ICD.Connect.Routing.Extron.Controls.Volume
 {
-	public abstract class AbstractExtronVolumeDeviceControl : AbstractVolumeRawLevelDeviceControl<IDtpCrosspointDevice>, IVolumeMuteFeedbackDeviceControl
+	public abstract class AbstractExtronVolumeDeviceControl : AbstractVolumeLevelDeviceControl<IDtpCrosspointDevice>, IVolumeMuteFeedbackDeviceControl
 	{
 		public event EventHandler<BoolEventArgs> OnMuteStateChanged;
 
 		private readonly string m_Name;
 		private readonly eExtronVolumeType m_VolumeType;
 
-		private float m_VolumeRaw;
+		private float m_VolumeLevel;
 		private bool m_IsMuted;
 		
 		protected AbstractExtronVolumeDeviceControl(IDtpCrosspointDevice parent, int id, string name, eExtronVolumeType volumeType)
@@ -54,9 +54,9 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 			}
 		}
 
-		public override float VolumeRaw
+		public override float VolumeLevel
 		{
-			get { return m_VolumeRaw; }
+			get { return m_VolumeLevel; }
 		}
 
 		protected override float VolumeRawMinAbsolute
@@ -91,8 +91,8 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		/// <param name="value"></param>
 		protected void SetVolumeRawProperty(float value)
 		{
-			m_VolumeRaw = value;
-			VolumeFeedback(m_VolumeRaw);
+			m_VolumeLevel = value;
+			VolumeFeedback(m_VolumeLevel);
 		}
 
 		#endregion
