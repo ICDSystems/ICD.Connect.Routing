@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 
 		#region Methods
 
-		public override void SetVolumeRaw(float volume)
+		public override void SetVolumeLevel(float volume)
 		{
 			int volumeParam = (int) (volume * 10);
 			if(m_VolumeGroupId != null)
