@@ -80,7 +80,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// <param name="id"></param>
 		/// <param name="numInputs"></param>
 		/// <param name="numOutputs"></param>
-		public DtpCrosspointSwitcherControl(IDtpCrosspointDevice parent, int id, int numInputs, int numOutputs) : base(parent, id)
+		public DtpCrosspointSwitcherControl(IDtpCrosspointDevice parent, int id, int numInputs, int numOutputs)
+			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
 			m_NumberOfInputs = numInputs;
