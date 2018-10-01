@@ -178,7 +178,9 @@ namespace ICD.Connect.Routing.Utils
 
 			ConnectorInfo? input = switcher.GetInput(info.Address, flag);
 
-			return string.Format("{0} (input={1})", outputActive, input == null ? null : (object)input.Value.Address);
+			return input.HasValue
+				? string.Format("{0} (input={1})", outputActive, input == input.Value)
+				: string.Format("{0}", outputActive);
 		}
 	}
 }

@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added console command to 2 series dmps for logging when the dmps makes a route
 
+## [10.0.0] - 2018-09-25
+### Added
+ - Implemented touchscreen occupancy features
+
+### Changed
+ - Volume control refactoring
+ - Fixed bug where Extron switcher was not unrouting audio correctly
+ - Small performance improvements to routing
+
 ## [9.0.0] - 2018-09-14
 ### Added
  - DMPS3 4K support
