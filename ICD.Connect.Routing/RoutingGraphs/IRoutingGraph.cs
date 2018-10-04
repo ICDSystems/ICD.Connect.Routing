@@ -266,6 +266,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="roomId"></param>
 		void Unroute(IDestination destination, eConnectionType type, int roomId);
 
+		/// <summary>
+		/// Unroutes all switchers routing the active source to the given endpoint.
+		/// </summary>
+		/// <param name="destinationEndpoint"></param>
+		/// <param name="type"></param>
+		/// <param name="roomId"></param>
+		void UnrouteDestination(EndpointInfo destinationEndpoint, eConnectionType type, int roomId);
+
 		#endregion
 
 		#region Devices

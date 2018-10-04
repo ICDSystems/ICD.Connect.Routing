@@ -996,7 +996,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="destination"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-		private void UnrouteDestination(EndpointInfo destination, eConnectionType type, int roomId)
+		public override void UnrouteDestination(EndpointInfo destination, eConnectionType type, int roomId)
 		{
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 			{
