@@ -12,16 +12,4 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx35X
 		where TSettings : IDmNvx35XAdapterSettings, new()
 	{
 	}
-
-	public abstract class AbstractDmNvx35XAdapterSettings : AbstractDmNvxBaseClassAdapterSettings, IDmNvx35XAdapterSettings
-	{
-	}
-
-	public interface IDmNvx35XAdapterSettings : IDmNvxBaseClassAdapterSettings
-	{
-	}
-
-	public interface IDmNvx35XAdapter : IDmNvxBaseClassAdapter
-	{
-	}
 }
