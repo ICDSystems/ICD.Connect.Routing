@@ -1,9 +1,7 @@
-﻿using System;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 #endif
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx35X;
-using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx350
 {
@@ -28,21 +26,5 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx350
 			return new Crestron.SimplSharpPro.DM.Streaming.DmNvx350(ethernetId, controlSystem);
 		}
 #endif
-	}
-
-	[KrangSettings(FACTORY_NAME)]
-	public sealed class DmNvx350AdapterSettings : AbstractDmNvx35XAdapterSettings
-	{
-		private const string FACTORY_NAME = "DmNvx350";
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(DmNvx350Adapter); } }
 	}
 }

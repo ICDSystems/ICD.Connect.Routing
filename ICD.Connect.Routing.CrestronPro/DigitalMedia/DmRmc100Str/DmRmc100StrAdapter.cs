@@ -1,5 +1,4 @@
-﻿using System;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 #endif
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase;
@@ -30,19 +29,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmRmc100Str
 #endif
 	}
 
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("DmRmc100Str", typeof(DmRmc100StrAdapter))]
 	public sealed class DmRmc100StrAdapterSettings : AbstractDm100XStrBaseAdapterSettings
 	{
-		private const string FACTORY_NAME = "DmRmc100Str";
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(DmRmc100StrAdapter); } }
 	}
 }
