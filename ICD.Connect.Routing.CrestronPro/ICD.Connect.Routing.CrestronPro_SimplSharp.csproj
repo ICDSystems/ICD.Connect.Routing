@@ -165,6 +165,7 @@
     <Compile Include="DigitalMedia\DmNvx35X\IDmNvx35XAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmNvxBaseClass\AbstractDmNvxBaseClassAdapter.cs" />
     <Compile Include="DigitalMedia\DmNvxBaseClass\AbstractDmNvxBaseClassAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvxBaseClass\eDeviceMode.cs" />
     <Compile Include="DigitalMedia\DmNvxBaseClass\IDmNvxBaseClassAdapter.cs" />
     <Compile Include="DigitalMedia\DmNvxBaseClass\IDmNvxBaseClassAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmRmc100Str\DmRmc100StrAdapter.cs" />
