@@ -14,6 +14,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmRmc100Str
 	{
 #if SIMPLSHARP
 		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public DmRmc100StrAdapter()
+		{
+			Controls.Add(new DmRmc100StrMidpointControl(this, 0));
+		}
+
+		/// <summary>
 		/// Creates a new instance of the wrapped internal switcher.
 		/// </summary>
 		/// <param name="ethernetId"></param>

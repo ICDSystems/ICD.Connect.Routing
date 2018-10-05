@@ -188,6 +188,7 @@
     <Compile Include="DigitalMedia\DmMd8X14kC\DmMd8X14kCAdapter.cs" />
     <Compile Include="DigitalMedia\DmMd8X14kC\DmMd8X14kCAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmRmc100Str\DmRmc100StrAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmRmc100Str\DmRmc100StrMidpointControl.cs" />
     <Compile Include="DigitalMedia\HdMd300Ce\HdMd300CeAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd300Ce\HdMd300CeAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd400Ce\HdMd400CeAdapter.cs" />
