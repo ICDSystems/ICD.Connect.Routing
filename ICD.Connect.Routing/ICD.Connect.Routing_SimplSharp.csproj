@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ICD.Connect.Routing</RootNamespace>
-    <AssemblyName>ICD.Connect.Routing_SimplSharp</AssemblyName>
+    <AssemblyName>ICD.Connect.Routing</AssemblyName>
     <ProjectTypeGuids>{0B4745B0-194B-4BB6-8E21-E9057CA92500};{4D628B5B-2FBC-4AA6-8C16-197242AEB884};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <PlatformFamilyName>WindowsCE</PlatformFamilyName>
     <PlatformID>E2BECB1F-8C8C-41ba-B736-9BE7D946A398</PlatformID>
@@ -68,6 +68,31 @@
     <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CacheStateChangedEventArgs.cs" />
+    <Compile Include="Controls\AbstractRouteInputSelectControl.cs" />
+    <Compile Include="Controls\RouteSourceControlConsole.cs" />
+    <Compile Include="Controls\IRouteInputSelectControl.cs" />
+    <Compile Include="Controls\RouteDestinationControl.cs" />
+    <Compile Include="Controls\RouteDestinationControlConsole.cs" />
+    <Compile Include="Controls\RouteMidpointControl.cs" />
+    <Compile Include="Controls\RouteMidpointControlConsole.cs" />
+    <Compile Include="Controls\RouteSwitcherControl.cs" />
+    <Compile Include="Controls\RouteSwitcherControlConsole.cs" />
+    <Compile Include="Controls\RouteSourceControl.cs" />
+    <Compile Include="Devices\AbstractRouteDestinationDevice.cs" />
+    <Compile Include="Devices\AbstractRouteDevice.cs" />
+    <Compile Include="Devices\AbstractRouteMidpointDevice.cs" />
+    <Compile Include="Devices\AbstractRouteSourceDevice.cs" />
+    <Compile Include="Devices\AbstractRouteSwitcherDevice.cs" />
+    <Compile Include="Devices\GenericSpeakerDestinationControl.cs" />
+    <Compile Include="Devices\GenericSpeakerDevice.cs" />
+    <Compile Include="Devices\GenericSpeakerDeviceSettings.cs" />
+    <Compile Include="Devices\IRouteDestinationDevice.cs" />
+    <Compile Include="Devices\IRouteDevice.cs" />
+    <Compile Include="Devices\IRouteMidpointDevice.cs" />
+    <Compile Include="Devices\IRouteSourceDevice.cs" />
+    <Compile Include="Devices\IRouteSwitcherDevice.cs" />
+    <Compile Include="EndpointRouteChangedEventArgs.cs" />
     <Compile Include="Endpoints\AbstractSourceDestinationBaseCollection.cs" />
     <Compile Include="Endpoints\Destinations\IDestinationCollection.cs" />
     <Compile Include="Endpoints\ISourceDestinationBaseCollection.cs" />
@@ -76,6 +101,26 @@
     <Compile Include="Endpoints\Destinations\CoreDestinationCollection.cs" />
     <Compile Include="Endpoints\Groups\CoreDestinationGroupCollection.cs" />
     <Compile Include="EventArguments\SwitcherRouteChangeEventArgs.cs" />
+    <Compile Include="PathFinding\AbstractPathFinder.cs" />
+    <Compile Include="PathFinding\DefaultPathFinder.cs" />
+    <Compile Include="PathFinding\IPathFinder.cs" />
+    <Compile Include="Proxies\AbstractProxyRouteControl.cs" />
+    <Compile Include="Proxies\AbstractProxyRouteDestinationControl.cs" />
+    <Compile Include="Proxies\AbstractProxyRouteMidpointControl.cs" />
+    <Compile Include="Proxies\AbstractProxyRouteSourceControl.cs" />
+    <Compile Include="Proxies\AbstractProxyRouteSwitcherControl.cs" />
+    <Compile Include="Proxies\IProxyRouteControl.cs" />
+    <Compile Include="Proxies\IProxyRouteDestinationControl.cs" />
+    <Compile Include="Proxies\IProxyRouteMidpointControl.cs" />
+    <Compile Include="Proxies\IProxyRouteSourceControl.cs" />
+    <Compile Include="Proxies\IProxyRouteSwitcherControl.cs" />
+    <Compile Include="Proxies\ProxyRouteControl.cs" />
+    <Compile Include="Proxies\ProxyRouteDestinationControl.cs" />
+    <Compile Include="Proxies\ProxyRouteMidpointControl.cs" />
+    <Compile Include="Proxies\ProxyRouteSourceControl.cs" />
+    <Compile Include="Proxies\ProxyRouteSwitcherControl.cs" />
+    <Compile Include="RouteOperationAggregator.cs" />
+    <Compile Include="RoutingCache.cs" />
     <Compile Include="RoutingGraphs\AbstractRoutingGraph.cs" />
     <Compile Include="RoutingGraphs\AbstractRoutingGraphSettings.cs" />
     <Compile Include="Connections\ConnectionPath.cs" />
@@ -131,9 +176,13 @@
     <Compile Include="Controls\IRouteSourceControl.cs" />
     <Compile Include="Controls\IRouteSwitcherControl.cs" />
     <Compile Include="RouteOperation.cs" />
+    <Compile Include="PathFinding\PathBuilderQuery.cs" />
     <Compile Include="RoutingGraphs\RoutingGraph.cs" />
+    <Compile Include="RoutingGraphs\RoutingGraphConsole.cs" />
+    <Compile Include="PathFinding\PathBuilder.cs" />
     <Compile Include="RoutingGraphs\RoutingGraphSettings.cs" />
     <Compile Include="RoutingGraphs\StaticRoutesCollection.cs" />
+    <Compile Include="SourceDestinationRouteChangedEventArgs.cs" />
     <Compile Include="StaticRoutes\IStaticRoutesCollection.cs" />
     <Compile Include="StaticRoutes\StaticRoute.cs" />
     <Compile Include="StaticRoutes\StaticRouteSettings.cs" />

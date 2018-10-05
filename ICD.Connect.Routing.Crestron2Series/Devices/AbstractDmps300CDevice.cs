@@ -5,30 +5,22 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
+using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.EventArguments;
-using ICD.Connect.Protocol.Heartbeat;
 using ICD.Connect.Protocol.Network.Tcp;
-using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.SerialBuffers;
 using ICD.Connect.Protocol.XSig;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices
 {
-	public abstract class AbstractDmps300CDevice<TSettings> : AbstractDevice<TSettings>, IDmps300CDevice, IConnectable
+	public abstract class AbstractDmps300CDevice<TSettings> : AbstractDevice<TSettings>, IDmps300CDevice
 		where TSettings : IDmps300CDeviceSettings, new()
 	{
 		public event EventHandler<XSigEventArgs> OnSigEvent;
-        public event EventHandler<BoolEventArgs> OnConnectedStateChanged;
-
-	    public bool IsConnected
-	    {
-	        get { return GetIsOnlineStatus(); }
-	    }
-
-	    public Heartbeat Heartbeat { get; private set; }
 
 		private readonly AsyncTcpClient m_Client;
 		private readonly XSigSerialBuffer m_Buffer;
+		private readonly ConnectionStateManager m_ConnectionStateManager;
 
 		#region Properties
 
@@ -40,7 +32,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// <summary>
 		/// Gets the network port of the device.
 		/// </summary>
-		public ushort Port { get { return m_Client.Port; } set { m_Client.Port = value; } }
+		public ushort Port { get { return m_Client.Port; } protected set { m_Client.Port = value; } }
 
 		#endregion
 
@@ -49,14 +41,16 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// </summary>
 		protected AbstractDmps300CDevice()
 		{
-            Heartbeat = new Heartbeat(this);
-			m_Client = new AsyncTcpClient();
+            m_Client = new AsyncTcpClient();
 			m_Buffer = new XSigSerialBuffer();
 
 			Subscribe(m_Buffer);
-			Subscribe(m_Client);
 
-            Heartbeat.StartMonitoring();
+			m_ConnectionStateManager = new ConnectionStateManager(this);
+			m_ConnectionStateManager.OnIsOnlineStateChanged += ClientOnIsOnlineStateChanged;
+			m_ConnectionStateManager.OnSerialDataReceived += ClientOnSerialDataReceived;
+			
+			m_ConnectionStateManager.SetPort(m_Client);
 		}
 
 		/// <summary>
@@ -69,9 +63,11 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 			base.DisposeFinal(disposing);
 
 			Unsubscribe(m_Buffer);
-			Unsubscribe(m_Client);
 
-            Heartbeat.Dispose();
+			m_ConnectionStateManager.SetPort(null);
+			m_ConnectionStateManager.OnIsOnlineStateChanged -= ClientOnIsOnlineStateChanged;
+			m_ConnectionStateManager.OnSerialDataReceived -= ClientOnSerialDataReceived;
+            m_ConnectionStateManager.Dispose();
 
 			m_Client.Dispose();
 		}
@@ -82,28 +78,10 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-		    bool value = m_Client != null && m_Client.IsOnline;
-            OnConnectedStateChanged.Raise(this, new BoolEventArgs(value));
-			return value;
+			return m_ConnectionStateManager != null && m_ConnectionStateManager.IsOnline;
 		}
 
 		#region Methods
-
-	    /// <summary>
-		/// Connect to the device.
-		/// </summary>
-		public void Connect()
-		{
-			m_Client.Connect();
-		}
-
-		/// <summary>
-		/// Disconnect from the device.
-		/// </summary>
-		public void Disconnect()
-		{
-			m_Client.Disconnect();
-		}
 
 		/// <summary>
 		/// Sends the sig data to the device.
@@ -112,32 +90,12 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		public bool SendData(IXSig sig)
 		{
 			string data = StringUtils.ToString(sig.Data);
-			return m_Client.Send(data);
+			return m_ConnectionStateManager.Send(data);
 		}
 
 		#endregion
 
 		#region Client Callbacks
-
-		/// <summary>
-		/// Subscribe to the client events.
-		/// </summary>
-		/// <param name="client"></param>
-		private void Subscribe(ISerialPort client)
-		{
-			client.OnIsOnlineStateChanged += ClientOnIsOnlineStateChanged;
-			client.OnSerialDataReceived += ClientOnSerialDataReceived;
-		}
-
-		/// <summary>
-		/// Unsubscribe from the client events.
-		/// </summary>
-		/// <param name="client"></param>
-		private void Unsubscribe(ISerialPort client)
-		{
-			client.OnIsOnlineStateChanged -= ClientOnIsOnlineStateChanged;
-			client.OnSerialDataReceived -= ClientOnSerialDataReceived;
-		}
 
 		/// <summary>
 		/// Called when we receive data from the client.
@@ -153,8 +111,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// Called when the client online status changes.
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="boolEventArgs"></param>
-		private void ClientOnIsOnlineStateChanged(object sender, BoolEventArgs boolEventArgs)
+		/// <param name="args"></param>
+		private void ClientOnIsOnlineStateChanged(object sender, BoolEventArgs args)
 		{
 			UpdateCachedOnlineStatus();
 		}

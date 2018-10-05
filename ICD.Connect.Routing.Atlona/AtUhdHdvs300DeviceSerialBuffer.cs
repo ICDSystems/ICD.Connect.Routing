@@ -91,26 +91,7 @@ namespace ICD.Connect.Routing.Atlona
 				{
 					while (true)
 					{
-						// Check for login prompt
-						if (data.StartsWith("\r\nLogin:"))
-						{
-							OnLoginPrompt.Raise(this);
-							data = data.Substring("\r\nLogin:".Length);
-						}
-
-						// Check for password prompt
-						if (data.StartsWith("\r\nPassword:"))
-						{
-							OnPasswordPrompt.Raise(this);
-							data = data.Substring("\r\nPassword:".Length);
-						}
-
-						// Check for login successful prompt
-						if (data.StartsWith("\r\n"))
-						{
-							OnEmptyPrompt.Raise(this);
-							data = data.Substring("\r\n".Length);
-						}
+						data = ParseLoginPrompts(data);
 
 						int index = data.IndexOf("\r\n", StringComparison.Ordinal);
 
@@ -135,6 +116,32 @@ namespace ICD.Connect.Routing.Atlona
 			{
 				m_ParseSection.Leave();
 			}
+		}
+
+		private string ParseLoginPrompts(string data)
+		{
+			// Check for login prompt
+			if (data.StartsWith("\r\nLogin:"))
+			{
+				OnLoginPrompt.Raise(this);
+				return data.Substring("\r\nLogin:".Length);
+			}
+
+			// Check for password prompt
+			if (data.StartsWith("\r\nPassword:"))
+			{
+				OnPasswordPrompt.Raise(this);
+				return data.Substring("\r\nPassword:".Length);
+			}
+
+			// Check for login successful prompt
+			if (data.StartsWith("\r\n"))
+			{
+				OnEmptyPrompt.Raise(this);
+				return data.Substring("\r\n".Length);
+			}
+
+			return data;
 		}
 	}
 }

@@ -1,52 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
+using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.Comparers;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
-using ICD.Connect.Settings.Comparers;
 
 namespace ICD.Connect.Routing.Endpoints
 {
 	public abstract class AbstractSourceDestinationBaseCollection<T> : AbstractOriginatorCollection<T>,
 	                                                                   ISourceDestinationBaseCollection<T>
-		where T : ISourceDestinationBase
+		where T : class, ISourceDestinationBase
 	{
-		private readonly Dictionary<EndpointInfo, Dictionary<eConnectionType, List<T>>> m_EndpointCache;
+		private readonly IcdOrderedDictionary<EndpointInfo, List<T>> m_EndpointCache;
+		private readonly IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, List<T>>> m_EndpointTypeCache;
 		private readonly SafeCriticalSection m_EndpointCacheSection;
+
+		private readonly PredicateComparer<T, int> m_ChildIdComparer;
+
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		protected AbstractSourceDestinationBaseCollection()
 		{
-			m_EndpointCache = new Dictionary<EndpointInfo, Dictionary<eConnectionType, List<T>>>();
+			m_EndpointCache = new IcdOrderedDictionary<EndpointInfo, List<T>>();
+			m_EndpointTypeCache = new IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, List<T>>>();
 			m_EndpointCacheSection = new SafeCriticalSection();
+			m_ChildIdComparer = new PredicateComparer<T, int>(c => c.Id);
 		}
 
 		/// <summary>
 		/// Gets the child with the given endpoint info.
 		/// </summary>
 		/// <param name="endpoint"></param>
-		/// <param name="flag"></param>
 		/// <returns></returns>
-		public IEnumerable<T> GetChildren(EndpointInfo endpoint, eConnectionType flag)
+		public IEnumerable<T> GetChildren(EndpointInfo endpoint)
 		{
-			if (!EnumUtils.HasSingleFlag(flag))
-				throw new ArgumentException("Connection type has multiple flags");
-
 			m_EndpointCacheSection.Enter();
 
 			try
 			{
-				if (!m_EndpointCache.ContainsKey(endpoint))
-					return Enumerable.Empty<T>();
-
-				if (!m_EndpointCache[endpoint].ContainsKey(flag))
-					return Enumerable.Empty<T>();
-
-				return m_EndpointCache[endpoint][flag];
+				List<T> children;
+				return m_EndpointCache.TryGetValue(endpoint, out children)
+					       ? children.ToArray(children.Count)
+					       : Enumerable.Empty<T>();
 			}
 			finally
 			{
@@ -55,28 +54,74 @@ namespace ICD.Connect.Routing.Endpoints
 		}
 
 		/// <summary>
-		/// Called each time a child is added to the collection before any events are raised.
+		/// Gets the child with the given endpoint info.
 		/// </summary>
-		/// <param name="child"></param>
-		protected override void ChildAdded(T child)
+		/// <param name="endpoint"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public IEnumerable<T> GetChildren(EndpointInfo endpoint, eConnectionType type)
 		{
-			base.ChildAdded(child);
-
 			m_EndpointCacheSection.Enter();
 
 			try
 			{
-				EndpointInfo endpoint = child.Endpoint;
+				IcdOrderedDictionary<eConnectionType, List<T>> types;
+				if (!m_EndpointTypeCache.TryGetValue(endpoint, out types))
+					return Enumerable.Empty<T>();
 
-				if (!m_EndpointCache.ContainsKey(endpoint))
-					m_EndpointCache[endpoint] = new Dictionary<eConnectionType, List<T>>();
+				List<T> children;
+				return types.TryGetValue(type, out children) ? children.ToArray(children.Count) : Enumerable.Empty<T>();
+			}
+			finally
+			{
+				m_EndpointCacheSection.Leave();
+			}
+		}
 
-				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(child.ConnectionType))
+		/// <summary>
+		/// Called when children are added to the collection before any events are raised.
+		/// </summary>
+		/// <param name="children"></param>
+		protected override void ChildrenAdded(IEnumerable<T> children)
+		{
+			m_EndpointCacheSection.Enter();
+
+			try
+			{
+				foreach (T child in children)
 				{
-					if (!m_EndpointCache[endpoint].ContainsKey(flag))
-						m_EndpointCache[endpoint].Add(flag, new List<T>());
+					foreach (EndpointInfo endpoint in child.GetEndpoints())
+					{
+						// Add to the cache
+						List<T> childCache;
+						if (!m_EndpointCache.TryGetValue(endpoint, out childCache))
+						{
+							childCache = new List<T>();
+							m_EndpointCache[endpoint] = childCache;
+						}
 
-					m_EndpointCache[endpoint][flag].AddSorted(child, new OriginatorIdComparer<T>());
+						childCache.AddSorted(child, m_ChildIdComparer);
+
+						// Add to the typed cache
+						IcdOrderedDictionary<eConnectionType, List<T>> types;
+						if (!m_EndpointTypeCache.TryGetValue(endpoint, out types))
+						{
+							types = new IcdOrderedDictionary<eConnectionType, List<T>>();
+							m_EndpointTypeCache[endpoint] = types;
+						}
+
+						foreach (eConnectionType combination in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
+						{
+							List<T> childTypeCache;
+							if (!types.TryGetValue(combination, out childTypeCache))
+							{
+								childTypeCache = new List<T>();
+								types[combination] = childTypeCache;
+							}
+
+							childTypeCache.AddSorted(child, m_ChildIdComparer);
+						}
+					}
 				}
 			}
 			finally
@@ -86,28 +131,32 @@ namespace ICD.Connect.Routing.Endpoints
 		}
 
 		/// <summary>
-		/// Called each time a child is removed from the collection before any events are raised.
+		/// Called when children are removed from the collection before any events are raised.
 		/// </summary>
-		/// <param name="child"></param>
-		protected override void ChildRemoved(T child)
+		/// <param name="children"></param>
+		protected override void ChildrenRemoved(IEnumerable<T> children)
 		{
-			base.ChildRemoved(child);
-
 			m_EndpointCacheSection.Enter();
 
 			try
 			{
-				EndpointInfo endpoint = child.Endpoint;
-
-				if (!m_EndpointCache.ContainsKey(endpoint))
-					return;
-
-				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(child.ConnectionType))
+				foreach (T child in children)
 				{
-					if (!m_EndpointCache[endpoint].ContainsKey(flag))
-						continue;
+					foreach (EndpointInfo endpoint in child.GetEndpoints())
+					{
+						// Remove from the cache
+						List<T> childCache;
+						if (m_EndpointCache.TryGetValue(endpoint, out childCache))
+							childCache.Remove(child);
 
-					m_EndpointCache[endpoint][flag].Remove(child);
+						// Remove from the typed cache
+						IcdOrderedDictionary<eConnectionType, List<T>> types;
+						if (m_EndpointTypeCache.TryGetValue(endpoint, out types))
+						{
+							foreach (KeyValuePair<eConnectionType, List<T>> kvp in types)
+								kvp.Value.Remove(child);
+						}
+					}
 				}
 			}
 			finally

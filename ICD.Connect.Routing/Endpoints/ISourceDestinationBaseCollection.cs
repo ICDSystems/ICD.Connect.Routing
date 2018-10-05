@@ -5,14 +5,21 @@ using ICD.Connect.Settings;
 namespace ICD.Connect.Routing.Endpoints
 {
 	public interface ISourceDestinationBaseCollection<T> : IOriginatorCollection<T>
-		where T : ISourceDestinationBase
+		where T : class, ISourceDestinationBase
 	{
 		/// <summary>
 		/// Gets the child with the given endpoint info.
 		/// </summary>
 		/// <param name="endpoint"></param>
-		/// <param name="flag"></param>
 		/// <returns></returns>
-		IEnumerable<T> GetChildren(EndpointInfo endpoint, eConnectionType flag);
+		IEnumerable<T> GetChildren(EndpointInfo endpoint);
+
+		/// <summary>
+		/// Gets the child with the given endpoint info.
+		/// </summary>
+		/// <param name="endpoint"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		IEnumerable<T> GetChildren(EndpointInfo endpoint, eConnectionType type);
 	}
 }

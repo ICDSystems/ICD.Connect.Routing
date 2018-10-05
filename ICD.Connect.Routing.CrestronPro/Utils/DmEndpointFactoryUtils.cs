@@ -1,9 +1,14 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Devices.Extensions;
+using ICD.Connect.Routing.CrestronPro.Receivers;
+using ICD.Connect.Routing.CrestronPro.Transmitters;
 using System;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro.DM.Endpoints.Receivers;
+using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
+#endif
 using ICD.Common.Properties;
-using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia;
 using ICD.Connect.Settings.Core;
@@ -15,6 +20,7 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 	/// </summary>
 	public static class DmEndpointFactoryUtils
 	{
+#if SIMPLSHARP
 		/// <summary>
 		/// Determines the best way to instantiate a card based on the available information.
 		/// Instantiates via parent Switch if specified, otherwise uses the ControlSystem.
@@ -66,92 +72,112 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 		}
 
 		/// <summary>
-		/// Determines the best way to instantiate a DMEndpoint based on the available information.
+		/// Determines the best way to instantiate the endpoint based on the available information.
 		/// Instantiates via parent DM Switch if specified, otherwise uses the ControlSystem.
 		/// </summary>
-		/// <typeparam name="TEndpoint"></typeparam>
-		/// <param name="ipid"></param>
-		/// <param name="dmAddress"></param>
-		/// <param name="dmSwitchId"></param>
+		/// <param name="settings"></param>
 		/// <param name="factory"></param>
-		/// <param name="instantiate1">Instantiate via control system with specified IPID</param>
-		/// <param name="instantiate2">Instantiate via DMInput with specified IPID</param>
-		/// <param name="instantiate3">Instantiate via DMInput</param>
+		/// <param name="adapter"></param>
 		/// <returns></returns>
 		[NotNull]
-		public static TEndpoint InstantiateEndpoint<TEndpoint>(byte? ipid, int? dmAddress, int? dmSwitchId,
-		                                                       IDeviceFactory factory,
-		                                                       Func<byte, CrestronControlSystem, TEndpoint> instantiate1,
-		                                                       Func<byte, DMInput, TEndpoint> instantiate2,
-		                                                       Func<DMInput, TEndpoint> instantiate3)
+		public static TTransmitter InstantiateTransmitter<TTransmitter>(IEndpointTransmitterBaseAdapterSettings settings,
+		                                                                IDeviceFactory factory,
+		                                                                IEndpointTransmitterBaseAdapter<TTransmitter> adapter)
+			where TTransmitter : EndpointTransmitterBase
 		{
-			if (dmSwitchId == null)
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
+			if (adapter == null)
+				throw new ArgumentNullException("adapter");
+
+			if (settings.DmSwitch == null)
 			{
-				if (ipid == null)
-					throw new ArgumentNullException("ipid", "Can't instantiate ControlSystem endpoint without IPID");
-				return instantiate1((byte)ipid, ProgramInfo.ControlSystem);
+				if (settings.Ipid == null)
+					throw new InvalidOperationException("Can't instantiate ControlSystem endpoint without IPID");
+				return adapter.InstantiateTransmitter((byte)settings.Ipid, ProgramInfo.ControlSystem);
 			}
 
-			if (dmAddress == null)
-				throw new ArgumentNullException("dmAddress", "Can't instantiate DM endpoint without DM address");
+			if (settings.DmInputAddress == null)
+				throw new InvalidOperationException("Can't instantiate DM endpoint without DM address");
 
-			IDmParent provider = factory.GetDeviceById((int)dmSwitchId) as IDmParent;
+			IDmParent provider = factory.GetDeviceById((int)settings.DmSwitch) as IDmParent;
 			if (provider == null)
-			{
-				throw new ArgumentException(string.Format("Device {0} is not a {1}", dmSwitchId, typeof(IDmParent).Name),
-				                            "dmSwitchId");
-			}
+				throw new InvalidOperationException(string.Format("Device {0} is not a {1}", settings.DmSwitch,
+				                                                  typeof(IDmParent).Name));
 
-			DMInput input = provider.GetDmInput((int)dmAddress);
-			return ipid == null ? instantiate3(input) : instantiate2((byte)ipid, input);
+			DMInput input = provider.GetDmInput((int)settings.DmInputAddress);
+
+			try
+			{
+				// DMPS3 4K
+				return adapter.InstantiateTransmitter(input);
+			}
+			catch (ArgumentException)
+			{
+				if (settings.Ipid == null)
+					throw new InvalidOperationException("Can't instantiate DM endpoint without IPID");
+
+				return adapter.InstantiateTransmitter((byte)settings.Ipid, input);
+			}
 		}
 
 		/// <summary>
 		/// Determines the best way to instantiate a DMEndpoint based on the available information.
 		/// Instantiates via parent DM Switch if specified, otherwise uses the ControlSystem.
 		/// </summary>
-		/// <typeparam name="TEndpoint"></typeparam>
-		/// <param name="ipid"></param>
-		/// <param name="dmAddress"></param>
-		/// <param name="dmSwitchId"></param>
+		/// <param name="settings"></param>
 		/// <param name="factory"></param>
-		/// <param name="instantiate1">Instantiate via control system with specified IPID</param>
-		/// <param name="instantiate2">Instantiate via DMOutput with specified IPID</param>
-		/// <param name="instantiate3">Instantiate via DMOutput</param>
+		/// <param name="adapter"></param>
 		/// <returns></returns>
 		[NotNull]
-		public static TEndpoint InstantiateEndpoint<TEndpoint>(byte? ipid, int? dmAddress, int? dmSwitchId,
+		public static TReceiver InstantiateReceiver<TReceiver>(IEndpointReceiverBaseAdapterSettings settings,
 		                                                       IDeviceFactory factory,
-		                                                       Func<byte, CrestronControlSystem, TEndpoint> instantiate1,
-		                                                       Func<byte, DMOutput, TEndpoint> instantiate2,
-		                                                       Func<DMOutput, TEndpoint> instantiate3)
+		                                                       IEndpointReceiverBaseAdapter<TReceiver> adapter)
+			where TReceiver : EndpointReceiverBase
 		{
-			if (dmSwitchId == null)
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
+			if (adapter == null)
+				throw new ArgumentNullException("adapter");
+
+			if (settings.DmSwitch == null)
 			{
-				if (ipid == null)
-					throw new ArgumentNullException("ipid", "Can't instantiate ControlSystem endpoint without IPID");
-				return instantiate1((byte)ipid, ProgramInfo.ControlSystem);
+				if (settings.Ipid == null)
+					throw new InvalidOperationException("Can't instantiate ControlSystem endpoint without IPID");
+				return adapter.InstantiateReceiver((byte)settings.Ipid, ProgramInfo.ControlSystem);
 			}
 
-			if (dmAddress == null)
-				throw new ArgumentNullException("dmAddress", "Can't instantiate DM endpoint without DM address");
+			if (settings.DmOutputAddress == null)
+				throw new InvalidOperationException("Can't instantiate DM endpoint without DM address");
 
-			IDmParent provider = factory.GetDeviceById((int)dmSwitchId) as IDmParent;
+			IDmParent provider = factory.GetDeviceById((int)settings.DmSwitch) as IDmParent;
 			if (provider == null)
+				throw new InvalidOperationException(string.Format("Device {0} is not a {1}", settings.DmSwitch,
+				                                                  typeof(IDmParent).Name));
+
+			DMOutput output = provider.GetDmOutput((int)settings.DmOutputAddress);
+
+			try
 			{
-				throw new ArgumentException(string.Format("Device {0} is not a {1}", dmSwitchId, typeof(IDmParent).Name),
-				                            "dmSwitchId");
+				// DMPS3 4K
+				return adapter.InstantiateReceiver(output);
 			}
-
-			DMOutput output = provider.GetDmOutput((int)dmAddress);
-			return ipid == null ? instantiate3(output) : instantiate2((byte)ipid, output);
+			catch (ArgumentException)
+			{
+				if (settings.Ipid == null)
+					throw new InvalidOperationException("Can't instantiate DM endpoint without IPID");
+				
+				return adapter.InstantiateReceiver((byte)settings.Ipid, output);
+			}
 		}
-
-		public static int GetSwitcherOutputPortNumber(int physicalCardSlot, int outputOnCard)
-		{
-			return ((physicalCardSlot - 1) * 2) + outputOnCard;
-		}
+#endif
 	}
 }
-
-#endif

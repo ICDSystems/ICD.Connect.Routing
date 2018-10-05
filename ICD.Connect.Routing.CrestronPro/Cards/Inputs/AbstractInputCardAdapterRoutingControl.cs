@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using System.Collections.Generic;
+#if SIMPLSHARP
 using System;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
@@ -14,8 +15,19 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 	public abstract class AbstractInputCardAdapterRoutingControl<TParent> : AbstractRouteMidpointControl<TParent>
 		where TParent : ICardAdapter
 	{
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 		private readonly SwitcherCache m_Cache;
@@ -65,6 +77,120 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		public override sealed bool GetSignalDetectedState(int input, eConnectionType type)
 		{
 			return m_Cache.GetSourceDetectedState(input, type);
+		}
+
+		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			if (ContainsInput(input))
+				return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
+
+			string message = string.Format("No input at address {0}", input);
+			throw new ArgumentOutOfRangeException("input", message);
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			return input == 1;
+		}
+
+		/// <summary>
+		/// Returns the inputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetInputs()
+		{
+			yield return GetInput(1);
+		}
+
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int output)
+		{
+			if (ContainsOutput(output))
+				return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
+
+			string message = string.Format("No output at address {0}", output);
+			throw new ArgumentOutOfRangeException("output", message);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return output == 1;
+		}
+
+		/// <summary>
+		/// Returns the outputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs()
+		{
+			yield return GetOutput(1);
+		}
+
+		/// <summary>
+		/// Gets the outputs for the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
+		{
+			if (input != 1)
+				throw new ArgumentException(string.Format("{0} only has 1 input", GetType().Name), "input");
+
+			switch (type)
+			{
+				case eConnectionType.Audio:
+				case eConnectionType.Video:
+				case eConnectionType.Audio | eConnectionType.Video:
+					yield return GetOutput(1);
+					break;
+
+				default:
+					throw new ArgumentException("type");
+			}
+		}
+
+		/// <summary>
+		/// Gets the input routed to the given output matching the given type.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
+		public override ConnectorInfo? GetInput(int output, eConnectionType type)
+		{
+			if (output != 1)
+				throw new ArgumentException(string.Format("{0} only has 1 output", GetType().Name), "output");
+
+			switch (type)
+			{
+				case eConnectionType.Audio:
+				case eConnectionType.Video:
+				case eConnectionType.Audio | eConnectionType.Video:
+					return GetInput(1);
+
+				default:
+					throw new ArgumentException("type");
+			}
 		}
 
 		#region Parent Callbacks

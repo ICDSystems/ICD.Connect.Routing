@@ -12,9 +12,24 @@ namespace ICD.Connect.Routing.SPlus
 {
 	public sealed class SPlusSwitcherControl : AbstractRouteSwitcherControl<SPlusSwitcher>
 	{
+		/// <summary>
+		/// Called when a route changes.
+		/// </summary>
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		private readonly SwitcherCache m_Cache;
@@ -35,19 +50,19 @@ namespace ICD.Connect.Routing.SPlus
 
 		#region S+ Events
 
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public SPlusGetSignalDetectedState GetSignalDetectedStateCallback { get; set; }
 
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public SPlusGetInputs GetInputsCallback { get; set; }
 
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public SPlusGetOutputs GetOutputsCallback { get; set; }
 
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public SPlusRoute RouteCallback { get; set; }
 
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public SPlusClearOutput ClearOutputCallback { get; set; }
 
 		#endregion
@@ -93,7 +108,7 @@ namespace ICD.Connect.Routing.SPlus
 		/// </summary>
 		/// <param name="input"></param>
 		/// <param name="type"></param>
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public void UpdateSourceDetection(int input, eConnectionType type)
 		{
 			bool state = GetSignalDetectedStateCallback != null && GetSignalDetectedStateCallback(input, type);
@@ -106,7 +121,7 @@ namespace ICD.Connect.Routing.SPlus
 		/// <param name="output"></param>
 		/// <param name="input"></param>
 		/// <param name="type"></param>
-		[PublicAPI("SPlus")]
+		[PublicAPI("S+")]
 		public void SetInputForOutput(int output, int input, eConnectionType type)
 		{
 			m_Cache.SetInputForOutput(output, input, type);
@@ -116,16 +131,51 @@ namespace ICD.Connect.Routing.SPlus
 
 		#region IRouteSwitcherControl
 
+		/// <summary>
+		/// Performs the given route operation.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <returns></returns>
 		public override bool Route(RouteOperation info)
 		{
 			return RouteCallback != null && RouteCallback(info);
 		}
 
+		/// <summary>
+		/// Stops routing to the given output.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns>True if successfully cleared.</returns>
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
 			return ClearOutputCallback != null && ClearOutputCallback(output, type);
 		}
 
+		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			return GetInputs().First(c => c.Address == input);
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			return GetInputs().Any(c => c.Address == input);
+		}
+
+		/// <summary>
+		/// Returns the inputs.
+		/// </summary>
+		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
 			return GetInputsCallback == null
@@ -133,6 +183,30 @@ namespace ICD.Connect.Routing.SPlus
 				       : GetInputsCallback();
 		}
 
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int address)
+		{
+			return GetOutputs().First(c => c.Address == address);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return GetOutputs().Any(c => c.Address == output);
+		}
+
+		/// <summary>
+		/// Returns the outputs.
+		/// </summary>
+		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
 			return GetOutputsCallback == null
@@ -163,6 +237,12 @@ namespace ICD.Connect.Routing.SPlus
 			return m_Cache.GetInputConnectorInfoForOutput(output, type);
 		}
 
+		/// <summary>
+		/// Returns true if a signal is detected at the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
 			return m_Cache.GetSourceDetectedState(input, type);

@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Connect.Settings.Attributes;
+﻿using ICD.Connect.Settings.Attributes;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -14,28 +13,21 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 	public sealed class DmTx201CAdapter :
 		AbstractDmTx201SAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C, DmTx201CAdapterSettings>
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public DmTx201CAdapter()
-		{
-			Controls.Add(new DmTx201CSourceControl(this));
-		}
 
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid,
+		public override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid,
 		                                                                                                    CrestronControlSystem
 			                                                                                                    controlSystem)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(ipid, controlSystem);
 		}
 
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid,
+		public override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(byte ipid,
 		                                                                                                    DMInput input)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(ipid, input);
 		}
 
-		protected override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(DMInput input)
+		public override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C InstantiateTransmitter(DMInput input)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C(input);
 		}
@@ -46,19 +38,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
     }
 #endif
 
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("DmTx201C", typeof(DmTx201CAdapter))]
 	public sealed class DmTx201CAdapterSettings : AbstractDmTx201SAdapterSettings
 	{
-		private const string FACTORY_NAME = "DmTx201C";
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(DmTx201CAdapter); } }
 	}
 }

@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.API.Attributes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.Proxies;
 
 namespace ICD.Connect.Routing.Controls
 {
 	/// <summary>
 	/// A source control has output connectors.
 	/// </summary>
+	[ApiClass(typeof(ProxyRouteSourceControl), typeof(IRouteControl))]
 	public interface IRouteSourceControl : IRouteControl
 	{
 		/// <summary>
@@ -27,6 +30,20 @@ namespace ICD.Connect.Routing.Controls
 		/// <param name="type"></param>
 		/// <returns></returns>
 		bool GetActiveTransmissionState(int output, eConnectionType type);
+
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		ConnectorInfo GetOutput(int output);
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		bool ContainsOutput(int output);
 
 		/// <summary>
 		/// Returns the outputs.

@@ -1,4 +1,10 @@
-﻿using ICD.Common.Utils.Xml;
+﻿using System.Collections.Generic;
+#if STANDARD
+using System.Linq;
+#endif
+using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
@@ -10,12 +16,15 @@ namespace ICD.Connect.Routing.Endpoints
 	{
 		protected const string DEVICE_ELEMENT = "Device";
 		private const string CONTROL_ELEMENT = "Control";
+		private const string ADDRESSES_ELEMENT = "Addresses";
 		private const string ADDRESS_ELEMENT = "Address";
 		private const string CONNECTION_TYPE_ELEMENT = "ConnectionType";
 		private const string ORDER_ELEMENT = "Order";
 		private const string DISABLE_ELEMENT = "Disable";
 
 		private int m_Order = int.MaxValue;
+
+		private readonly IcdHashSet<int> m_Addresses;
 
 		#region Properties
 
@@ -29,11 +38,6 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Gets the endpoint device control.
 		/// </summary>
 		public int Control { get; set; }
-
-		/// <summary>
-		/// Gets the endpoint connector address.
-		/// </summary>
-		public int Address { get; set; }
 
 		/// <summary>
 		/// Specifies which media types to use for the source.
@@ -53,6 +57,33 @@ namespace ICD.Connect.Routing.Endpoints
 		#endregion
 
 		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractSourceDestinationBaseSettings()
+		{
+			m_Addresses = new IcdHashSet<int>();
+		}
+
+		/// <summary>
+		/// Gets the addresses used by this source/destination.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<int> GetAddresses()
+		{
+			return m_Addresses.ToArray(m_Addresses.Count);
+		}
+
+		/// <summary>
+		/// Sets the addresses used by this source/destination.
+		/// </summary>
+		/// <param name="addresses"></param>
+		public void SetAddresses(IEnumerable<int> addresses)
+		{
+			m_Addresses.Clear();
+			m_Addresses.AddRange(addresses);
+		}
+
+		/// <summary>
 		/// Writes property elements to xml.
 		/// </summary>
 		/// <param name="writer"></param>
@@ -62,7 +93,9 @@ namespace ICD.Connect.Routing.Endpoints
 
 			writer.WriteElementString(DEVICE_ELEMENT, IcdXmlConvert.ToString(Device));
 			writer.WriteElementString(CONTROL_ELEMENT, IcdXmlConvert.ToString(Control));
-			writer.WriteElementString(ADDRESS_ELEMENT, IcdXmlConvert.ToString(Address));
+
+			XmlUtils.WriteListToXml(writer, GetAddresses().Order(), ADDRESSES_ELEMENT, ADDRESS_ELEMENT);
+
 			writer.WriteElementString(CONNECTION_TYPE_ELEMENT, ConnectionType.ToString());
 
 			if (Order != int.MaxValue)
@@ -82,12 +115,21 @@ namespace ICD.Connect.Routing.Endpoints
 
 			Device = XmlUtils.TryReadChildElementContentAsInt(xml, DEVICE_ELEMENT) ?? 0;
 			Control = XmlUtils.TryReadChildElementContentAsInt(xml, CONTROL_ELEMENT) ?? 0;
-			Address = XmlUtils.TryReadChildElementContentAsInt(xml, ADDRESS_ELEMENT) ?? 1;
 			ConnectionType =
 				XmlUtils.TryReadChildElementContentAsEnum<eConnectionType>(xml, CONNECTION_TYPE_ELEMENT, true) ??
 				eConnectionType.Audio | eConnectionType.Video;
 			Order = XmlUtils.TryReadChildElementContentAsInt(xml, ORDER_ELEMENT) ?? 0;
 			Disable = XmlUtils.TryReadChildElementContentAsBoolean(xml, DISABLE_ELEMENT) ?? false;
+
+			IEnumerable<int> addresses =
+				XmlUtils.ReadListFromXml(xml, ADDRESSES_ELEMENT, ADDRESS_ELEMENT, e => XmlUtils.ReadElementContentAsInt(e));
+
+			// Migration step
+			int? oldAddress = XmlUtils.TryReadChildElementContentAsInt(xml, ADDRESS_ELEMENT);
+			if (oldAddress.HasValue)
+				addresses = addresses.Append(oldAddress.Value);
+
+			SetAddresses(addresses);
 		}
 
 		/// <summary>

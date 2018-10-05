@@ -9,6 +9,7 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
+using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.RoutingGraphs;
 
@@ -16,9 +17,22 @@ namespace ICD.Connect.Routing.Mock.Source
 {
 	public sealed class MockRouteSourceControl : AbstractRouteSourceControl<IDeviceBase>
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 		private readonly Dictionary<int, Dictionary<eConnectionType, bool>> m_TransmissionStates;
+
+		private IRoutingGraph m_CachedRoutingGraph;
+
+		/// <summary>
+		/// Gets the routing graph.
+		/// </summary>
+		public IRoutingGraph RoutingGraph
+		{
+			get { return m_CachedRoutingGraph = m_CachedRoutingGraph ?? ServiceProvider.GetService<IRoutingGraph>(); }
+		}
 
 		/// <summary>
 		/// Constructor.
@@ -50,16 +64,38 @@ namespace ICD.Connect.Routing.Mock.Source
 		}
 
 		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int address)
+		{
+			Connection connection = RoutingGraph.Connections.GetOutputConnection(new EndpointInfo(Parent.Id, Id, address));
+			if (connection == null)
+				throw new ArgumentOutOfRangeException("address");
+
+			return new ConnectorInfo(connection.Source.Address, connection.ConnectionType);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return RoutingGraph.Connections.GetOutputConnection(new EndpointInfo(Parent.Id, Id, output)) != null;
+		}
+
+		/// <summary>
 		/// Returns the outputs.
 		/// </summary>
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			return
-				ServiceProvider.GetService<IRoutingGraph>()
-				               .Connections.GetChildren()
-				               .Where(c => c.Source.Device == Parent.Id && c.Source.Control == Id)
-				               .Select(c => new ConnectorInfo(c.Source.Address, c.ConnectionType));
+			return RoutingGraph.Connections
+							   .GetOutputConnections(Parent.Id, Id)
+							   .Select(c => new ConnectorInfo(c.Source.Address, c.ConnectionType));
 		}
 
 		/// <summary>

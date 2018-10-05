@@ -49,7 +49,8 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 			if (Card != null)
 			{
 				Unsubscribe(Card);
-				UnRegister(Card);
+				// Input cards can't be unregistered
+				//UnRegister(Card);
 				try
 				{
 					Card.Dispose();
@@ -115,13 +116,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 				Logger.AddEntry(eSeverity.Error, "{0} unable to register parent {1} - {2}", this, parent.GetType().Name,
 				                parentResult);
 			}
-		}
-
-		private void UnRegister(TCard card)
-		{
-			if (card == null || !card.Registered)
-				return;
-			card.UnRegister();
 		}
 
 		/// <summary>

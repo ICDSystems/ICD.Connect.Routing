@@ -8,7 +8,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 	/// Settings for the DmRmcScalerCAdapter.
 	/// </summary>
 	[KrangSettings(FACTORY_NAME)]
-	public sealed class DmRmcScalerCAdapterSettings : AbstractDmRmcScalerCAdapterSettings
+	public sealed class DmRmcScalerCAdapterSettings : AbstractDmRmcScalerCBaseAdapterSettings
 	{
 		private const string FACTORY_NAME = "DmRmcScalerC";
 

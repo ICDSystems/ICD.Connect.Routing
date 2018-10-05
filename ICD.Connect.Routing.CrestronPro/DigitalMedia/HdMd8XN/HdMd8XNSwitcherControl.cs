@@ -17,9 +17,24 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN
 {
 	public sealed class HdMd8XNSwitcherControl : AbstractRouteSwitcherControl<IHdMd8XNAdapter>
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+
+		/// <summary>
+		/// Called when a route changes.
+		/// </summary>
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		private readonly SwitcherCache m_Cache;
@@ -98,6 +113,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
 				                .Select(t => this.Route(input, output, t))
+								.ToArray()
 				                .Unanimous(false);
 			}
 
@@ -137,6 +153,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
 				                .Select(t => ClearOutput(output, t))
+								.ToArray()
 				                .Unanimous(false);
 			}
 
@@ -160,6 +177,29 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN
 		}
 
 		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int address)
+		{
+			return new ConnectorInfo(address, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			if (m_Switcher == null)
+				return false;
+
+			return output >= 1 && output <= m_Switcher.NumberOfOutputs;
+		}
+
+		/// <summary>
 		/// Returns the outputs.
 		/// </summary>
 		/// <returns></returns>
@@ -180,6 +220,32 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN
 		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
 		{
 			return m_Cache.GetOutputsForInput(input, type);
+		}
+
+		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			if (!ContainsInput(input))
+				throw new ArgumentOutOfRangeException("input");
+
+			return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			if (m_Switcher == null)
+				return false;
+
+			return input >= 1 && input <= m_Switcher.NumberOfInputs;
 		}
 
 		/// <summary>

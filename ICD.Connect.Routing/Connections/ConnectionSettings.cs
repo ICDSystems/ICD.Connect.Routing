@@ -14,12 +14,9 @@ namespace ICD.Connect.Routing.Connections
 	/// <summary>
 	/// Settings for a Connection.
 	/// </summary>
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("Connection", typeof(Connection))]
 	public sealed class ConnectionSettings : AbstractSettings
 	{
-		private const string CONNECTION_ELEMENT = "Connection";
-		private const string FACTORY_NAME = "Connection";
-
 		private const string SOURCE_DEVICE_ELEMENT = "SourceDevice";
 		private const string SOURCE_CONTROL_ELEMENT = "SourceControl";
 		private const string SOURCEADDRESS_ELEMENT = "SourceAddress";
@@ -41,39 +38,21 @@ namespace ICD.Connect.Routing.Connections
 		private readonly IcdHashSet<int> m_RoomRestrictions;
 		private readonly SafeCriticalSection m_RoomRestrictionsSection;
 
-		private int m_SourceAddress = 1;
-		private int m_DestinationAddress = 1;
-
 		#region Properties
-
-		/// <summary>
-		/// Gets the xml element.
-		/// </summary>
-		protected override string Element { get { return CONNECTION_ELEMENT; } }
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(Connection); } }
 
 		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int SourceDeviceId { get; set; }
 
 		public int SourceControlId { get; set; }
 
-		public int SourceAddress { get { return m_SourceAddress; } set { m_SourceAddress = value; } }
+		public int SourceAddress { get; set; }
 
 		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int DestinationDeviceId { get; set; }
 
 		public int DestinationControlId { get; set; }
 
-		public int DestinationAddress { get { return m_DestinationAddress; } set { m_DestinationAddress = value; } }
+		public int DestinationAddress { get; set; }
 
 		public eConnectionType ConnectionType { get; set; }
 
@@ -84,6 +63,9 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		public ConnectionSettings()
 		{
+			DestinationAddress = 1;
+			SourceAddress = 1;
+
 			m_RoomRestrictions = new IcdHashSet<int>();
 			m_RoomRestrictionsSection = new SafeCriticalSection();
 

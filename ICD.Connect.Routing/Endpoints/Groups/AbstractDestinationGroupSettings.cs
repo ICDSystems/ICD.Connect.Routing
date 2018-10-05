@@ -8,16 +8,10 @@ namespace ICD.Connect.Routing.Endpoints.Groups
 {
 	public abstract class AbstractDestinationGroupSettings : AbstractSettings
 	{
-		private const string DESTINATIONGROUP_ELEMENT = "DestinationGroup";
 		private const string DESTINATIONS_ELEMENT = "Destinations";
 		private const string DESTINATION_ELEMENT = "Destination";
 		private const string ORDER_ELEMENT = "Order";
 		private const string DISABLE_ELEMENT = "Disable";
-
-		/// <summary>
-		/// Gets the xml element.
-		/// </summary>
-		protected override string Element { get { return DESTINATIONGROUP_ELEMENT; } }
 
 		/// <summary>
 		/// Gets the endpoint device.
