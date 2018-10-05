@@ -1,4 +1,6 @@
-﻿using Crestron.SimplSharpPro.DM.Streaming;
+﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro.DM.Streaming;
+#endif
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase;
 using ICD.Connect.Settings.Core;
 
