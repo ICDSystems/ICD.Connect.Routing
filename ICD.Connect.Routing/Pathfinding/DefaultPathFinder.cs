@@ -16,6 +16,7 @@ namespace ICD.Connect.Routing.PathFinding
 	public sealed class DefaultPathFinder : AbstractPathFinder
 	{
 		private readonly IRoutingGraph m_RoutingGraph;
+		private readonly IConnectionsCollection m_Connections;
 		private readonly int m_RoomId;
 
 		private ILoggerService m_CachedLogger;
@@ -34,6 +35,7 @@ namespace ICD.Connect.Routing.PathFinding
 				throw new ArgumentNullException("routingGraph");
 
 			m_RoutingGraph = routingGraph;
+			m_Connections = m_RoutingGraph.Connections;
 			m_RoomId = roomId;
 		}
 
@@ -64,60 +66,74 @@ namespace ICD.Connect.Routing.PathFinding
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(query.Type))
 			{
-				IcdHashSet<EndpointInfo[]> completedDestinations = new IcdHashSet<EndpointInfo[]>();
-
-				foreach (EndpointInfo sourceEndpoint in query.GetStart())
-				{
-					Connection sourceConnection = m_RoutingGraph.Connections.GetOutputConnection(sourceEndpoint, flag);
-					if (sourceConnection == null)
-						continue;
-
-					foreach (EndpointInfo[] destination in destinations.Where(d => !completedDestinations.Contains(d)))
-					{
-						IcdHashSet<Connection> destinationConnections = new IcdHashSet<Connection>();
-
-						foreach (EndpointInfo destinationEndpoint in destination)
-						{
-							// Ensure the destination has a valid input connection
-							Connection destinationConnection = m_RoutingGraph.Connections.GetInputConnection(destinationEndpoint, flag);
-							if (destinationConnection == null)
-								continue;
-
-							destinationConnections.Add(destinationConnection);
-						}
-
-						ConnectionPath path = GetConnectionPath(sourceEndpoint, destination, sourceConnection, destinationConnections,
-						                                        flag);
-						if (path == null)
-							continue;
-
-						completedDestinations.Add(destination);
-
-						yield return path;
-					}
-				}
-
-				// Log errors
-				foreach (EndpointInfo[] destination in destinations.Where(d => !completedDestinations.Contains(d)))
-				{
-					string sourceText = EndpointInfo.ArrayRangeFormat(query.GetStart());
-					string destinationText = EndpointInfo.ArrayRangeFormat(destination);
-
-					string message = string.Format("{0} failed to find {1} path from {2} to {3}", GetType().Name, flag, sourceText,
-					                               destinationText);
-
-					Logger.AddEntry(eSeverity.Error, message);
-				}
+				foreach (ConnectionPath path in FindPaths(query.GetStart().ToArray(), destinations, flag))
+					yield return path;
 			}
 		}
 
-		private ConnectionPath GetConnectionPath(EndpointInfo sourceEndpoint, IEnumerable<EndpointInfo> destination,
-		                                         Connection sourceConnection, IEnumerable<Connection> destinationConnections,
-		                                         eConnectionType flag)
+		/// <summary>
+		/// Returns the best paths from the source to the destinations.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinations"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		private IEnumerable<ConnectionPath> FindPaths(EndpointInfo[] source, EndpointInfo[][] destinations, eConnectionType flag)
 		{
-			if (destination == null)
-				throw new ArgumentNullException("destination");
+			if (source == null)
+				throw new ArgumentNullException("source");
 
+			if (destinations == null)
+				throw new ArgumentNullException("destinations");
+
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("Connection type has multiple flags", "flag");
+
+			IcdHashSet<EndpointInfo[]> completedDestinations = new IcdHashSet<EndpointInfo[]>();
+
+			// Get the output connections for the source
+			Connection[] sourceConnections =
+				source.Select(s => m_Connections.GetOutputConnection(s, flag))
+					  .Where(c => c != null)
+					  .ToArray();
+
+			foreach (EndpointInfo[] destination in destinations)
+			{
+				// Get the input connections for the destination
+				Connection[] destinationConnections =
+					destination.Select(s => m_Connections.GetInputConnection(s, flag))
+							   .Where(c => c != null)
+							   .ToArray();
+
+				foreach (Connection sourceConnection in sourceConnections)
+				{
+					ConnectionPath path = GetConnectionPath(sourceConnection, destinationConnections, destination, flag);
+					if (path == null)
+						continue;
+
+					completedDestinations.Add(destination);
+
+					yield return path;
+					break;
+				}
+			}
+
+			// Log errors
+			foreach (EndpointInfo[] destination in destinations.Where(d => !completedDestinations.Contains(d)))
+			{
+				string sourceText = EndpointInfo.ArrayRangeFormat(source);
+				string destinationText = EndpointInfo.ArrayRangeFormat(destination);
+
+				string message = string.Format("{0} failed to find {1} path from {2} to {3}", GetType().Name, flag, sourceText,
+											   destinationText);
+
+				Logger.AddEntry(eSeverity.Error, message);
+			}
+		}
+
+		private ConnectionPath GetConnectionPath(Connection sourceConnection, Connection[] destinationConnections,
+												 EndpointInfo[] destination, eConnectionType flag)
+		{
 			if (sourceConnection == null)
 				throw new ArgumentNullException("sourceConnection");
 
@@ -126,12 +142,9 @@ namespace ICD.Connect.Routing.PathFinding
 
 			KeyValuePair<Connection, IEnumerable<Connection>> kvp;
 
-			bool found =
-				RecursionUtils.BreadthFirstSearchManyDestinations(sourceConnection,
-				                                                  destinationConnections,
-				                                                  c =>
-				                                                  GetConnectionChildren(sourceEndpoint, destination, c, flag))
-				              .TryFirst(out kvp);
+			bool found = RecursionUtils
+						 .BreadthFirstSearchManyDestinations(sourceConnection, destinationConnections,
+															 c => GetConnectionChildren(sourceConnection.Source, destination, c, flag)).TryFirst(out kvp);
 
 			return found ? new ConnectionPath(kvp.Value, flag) : null;
 		}
@@ -162,8 +175,7 @@ namespace ICD.Connect.Routing.PathFinding
 				return Enumerable.Empty<Connection>();
 
 			return
-				m_RoutingGraph.Connections
-				              .GetOutputConnections(inputConnection.Destination.GetDeviceControlInfo(),
+				m_Connections.GetOutputConnections(inputConnection.Destination.GetDeviceControlInfo(),
 				                                    finalDestinations,
 				                                    flag)
 				              .Where(c =>
