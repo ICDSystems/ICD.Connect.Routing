@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints;
 
@@ -49,7 +48,7 @@ namespace ICD.Connect.Routing.PathFinding
 				throw new ArgumentNullException("sourceEndpoints");
 
 			m_SourceEndpoints.Clear();
-			m_SourceEndpoints.AddSorted(sourceEndpoints.Distinct());
+			m_SourceEndpoints.AddRange(sourceEndpoints);
 		}
 
 		/// <summary>
@@ -70,12 +69,7 @@ namespace ICD.Connect.Routing.PathFinding
 			if (destinationEndpoints == null)
 				throw new ArgumentNullException("destinationEndpoints");
 
-			EndpointInfo[] endpoints =
-				destinationEndpoints.Distinct()
-				                    .Order()
-				                    .ToArray();
-
-			m_DestinationEndpoints.Add(endpoints);
+			m_DestinationEndpoints.Add(destinationEndpoints.ToArray());
 		}
 
 		public IEnumerable<EndpointInfo[]> GetEnds()
