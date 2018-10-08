@@ -189,6 +189,16 @@
     <Compile Include="DigitalMedia\DmMd8X14kC\DmMd8X14kCAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmRmc100Str\DmRmc100StrAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmRmc100Str\DmRmc100StrMidpointControl.cs" />
+    <Compile Include="DigitalMedia\DmXioDirector160\DmXioDirector160Adapter.cs" />
+    <Compile Include="DigitalMedia\DmXioDirector160\DmXioDirector160AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmXioDirector80\DmXioDirector80Adapter.cs" />
+    <Compile Include="DigitalMedia\DmXioDirector80\DmXioDirector80AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmXioDirectorBase\AbstractDmXioDirectorBaseAdapter.cs" />
+    <Compile Include="DigitalMedia\DmXioDirectorBase\AbstractDmXioDirectorBaseAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmXioDirectorBase\IDmXioDirectorBaseAdapter.cs" />
+    <Compile Include="DigitalMedia\DmXioDirectorBase\IDmXioDirectorBaseAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmXioDirectorEnterprise\DmXioDirectorEnterpriseAdapter.cs" />
+    <Compile Include="DigitalMedia\DmXioDirectorEnterprise\DmXioDirectorEnterpriseAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd300Ce\HdMd300CeAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd300Ce\HdMd300CeAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd400Ce\HdMd400CeAdapter.cs" />
