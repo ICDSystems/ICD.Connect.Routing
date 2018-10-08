@@ -229,15 +229,12 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmRmc100Str
 			switcher.SourceReceive.StreamChange -= DmRmc100Str_StreamChangeEventHandler;
 		}
 
-
 		/// 
 		//Method to handle top level sig change events for DM-RMC-100-STR Device.
 		private void DmRmc100StrEventHandler(GenericBase device, BaseEventArgs args)
 		{
 			if (m_Switcher == null)
 				return;
-
-				m_Switcher.SourceReceive
 		}
 
 		/// 
