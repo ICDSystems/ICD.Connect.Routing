@@ -62,17 +62,19 @@ namespace ICD.Connect.Routing.PathFinding
 			if (query == null)
 				throw new ArgumentNullException("query");
 
+			EndpointInfo[] source = query.GetStart().ToArray();
 			EndpointInfo[][] destinations = query.GetEnds().ToArray();
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(query.Type))
 			{
-				foreach (ConnectionPath path in FindPaths(query.GetStart().ToArray(), destinations, flag))
+				// Return a path from the source to each destination
+				foreach (ConnectionPath path in FindPaths(source, destinations, flag))
 					yield return path;
 			}
 		}
 
 		/// <summary>
-		/// Returns the best paths from the source to the destinations.
+		/// Returns the best path from the source to each destination.
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="destinations"></param>
@@ -93,7 +95,7 @@ namespace ICD.Connect.Routing.PathFinding
 
 			// Get the output connections for the source
 			Connection[] sourceConnections =
-				source.Select(s => m_Connections.GetOutputConnection(s, flag))
+				source.Select(e => m_Connections.GetOutputConnection(e, flag))
 					  .Where(c => c != null)
 					  .ToArray();
 
@@ -101,7 +103,7 @@ namespace ICD.Connect.Routing.PathFinding
 			{
 				// Get the input connections for the destination
 				Connection[] destinationConnections =
-					destination.Select(s => m_Connections.GetInputConnection(s, flag))
+					destination.Select(e => m_Connections.GetInputConnection(e, flag))
 							   .Where(c => c != null)
 							   .ToArray();
 
@@ -176,11 +178,11 @@ namespace ICD.Connect.Routing.PathFinding
 
 			return
 				m_Connections.GetOutputConnections(inputConnection.Destination.GetDeviceControlInfo(),
-				                                    finalDestinations,
-				                                    flag)
-				              .Where(c =>
-				                     c.IsAvailableToSourceDevice(source.Device) &&
-				                     c.IsAvailableToRoom(m_RoomId));
+				                                   finalDestinations,
+				                                   flag)
+				             .Where(c =>
+				                    c.IsAvailableToSourceDevice(source.Device) &&
+				                    c.IsAvailableToRoom(m_RoomId));
 		}
 	}
 }
