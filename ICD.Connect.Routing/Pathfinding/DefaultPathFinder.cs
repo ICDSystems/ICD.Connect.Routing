@@ -91,7 +91,7 @@ namespace ICD.Connect.Routing.PathFinding
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("Connection type has multiple flags", "flag");
 
-			IcdHashSet<EndpointInfo[]> completedDestinations = new IcdHashSet<EndpointInfo[]>();
+			IcdHashSet<EndpointInfo[]> notFound = new IcdHashSet<EndpointInfo[]>(destinations);
 
 			// Get the output connections for the source
 			Connection[] sourceConnections =
@@ -113,7 +113,7 @@ namespace ICD.Connect.Routing.PathFinding
 					if (path == null)
 						continue;
 
-					completedDestinations.Add(destination);
+					notFound.Remove(destination);
 
 					yield return path;
 					break;
@@ -121,7 +121,7 @@ namespace ICD.Connect.Routing.PathFinding
 			}
 
 			// Log errors
-			foreach (EndpointInfo[] destination in destinations.Where(d => !completedDestinations.Contains(d)))
+			foreach (EndpointInfo[] destination in notFound)
 			{
 				string sourceText = EndpointInfo.ArrayRangeFormat(source);
 				string destinationText = EndpointInfo.ArrayRangeFormat(destination);
