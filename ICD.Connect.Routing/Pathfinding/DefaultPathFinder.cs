@@ -133,8 +133,8 @@ namespace ICD.Connect.Routing.PathFinding
 			}
 		}
 
-		private ConnectionPath GetConnectionPath(Connection sourceConnection, Connection[] destinationConnections,
-												 EndpointInfo[] destination, eConnectionType flag)
+		private ConnectionPath GetConnectionPath(Connection sourceConnection, IEnumerable<Connection> destinationConnections,
+		                                         IEnumerable<EndpointInfo> destination, eConnectionType flag)
 		{
 			if (sourceConnection == null)
 				throw new ArgumentNullException("sourceConnection");
@@ -142,11 +142,16 @@ namespace ICD.Connect.Routing.PathFinding
 			if (destinationConnections == null)
 				throw new ArgumentNullException("destinationConnections");
 
+			IList<EndpointInfo> destinationCollection = destination as IList<EndpointInfo> ?? destination.ToArray();
+
 			KeyValuePair<Connection, IEnumerable<Connection>> kvp;
 
-			bool found = RecursionUtils
-						 .BreadthFirstSearchManyDestinations(sourceConnection, destinationConnections,
-															 c => GetConnectionChildren(sourceConnection.Source, destination, c, flag)).TryFirst(out kvp);
+			bool found =
+				RecursionUtils
+					.BreadthFirstSearchManyDestinations(sourceConnection, destinationConnections,
+					                                    c =>
+					                                    GetConnectionChildren(sourceConnection.Source, destinationCollection, c, flag))
+					.TryFirst(out kvp);
 
 			return found ? new ConnectionPath(kvp.Value, flag) : null;
 		}
