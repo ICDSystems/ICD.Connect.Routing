@@ -111,23 +111,13 @@ namespace ICD.Connect.Routing.Connections
 		IEnumerable<Connection> GetOutputConnections(int sourceDeviceId, int sourceControlId, eConnectionType flag);
 
 		/// <summary>
-		/// Gets the output connections from the given source control in order to reach the given destination endpoint.
-		/// </summary>
-		/// <param name="sourceEndpoint"></param>
-		/// <param name="finalDestination"></param>
-		/// <param name="flag"></param>
-		/// <returns></returns>
-		IEnumerable<Connection> GetOutputConnections(DeviceControlInfo sourceEndpoint, EndpointInfo finalDestination,
-		                                             eConnectionType flag);
-
-		/// <summary>
 		/// Gets the output connections from the given source control in order to reach the given destination endpoints.
 		/// </summary>
-		/// <param name="sourceEndpoint"></param>
+		/// <param name="sourceControl"></param>
 		/// <param name="finalDestinations"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		IEnumerable<Connection> GetOutputConnections(DeviceControlInfo sourceEndpoint,
+		IEnumerable<Connection> GetOutputConnections(DeviceControlInfo sourceControl,
 		                                             IEnumerable<EndpointInfo> finalDestinations, eConnectionType flag);
 
 		/// <summary>

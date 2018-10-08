@@ -62,17 +62,19 @@ namespace ICD.Connect.Routing.PathFinding
 			if (query == null)
 				throw new ArgumentNullException("query");
 
+			EndpointInfo[] source = query.GetStart().ToArray();
 			EndpointInfo[][] destinations = query.GetEnds().ToArray();
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(query.Type))
 			{
-				foreach (ConnectionPath path in FindPaths(query.GetStart().ToArray(), destinations, flag))
+				// Return a path from the source to each destination
+				foreach (ConnectionPath path in FindPaths(source, destinations, flag))
 					yield return path;
 			}
 		}
 
 		/// <summary>
-		/// Returns the best paths from the source to the destinations.
+		/// Returns the best path from the source to each destination.
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="destinations"></param>
@@ -89,11 +91,11 @@ namespace ICD.Connect.Routing.PathFinding
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("Connection type has multiple flags", "flag");
 
-			IcdHashSet<EndpointInfo[]> completedDestinations = new IcdHashSet<EndpointInfo[]>();
+			IcdHashSet<EndpointInfo[]> notFound = new IcdHashSet<EndpointInfo[]>(destinations);
 
 			// Get the output connections for the source
 			Connection[] sourceConnections =
-				source.Select(s => m_Connections.GetOutputConnection(s, flag))
+				source.Select(e => m_Connections.GetOutputConnection(e, flag))
 					  .Where(c => c != null)
 					  .ToArray();
 
@@ -101,7 +103,7 @@ namespace ICD.Connect.Routing.PathFinding
 			{
 				// Get the input connections for the destination
 				Connection[] destinationConnections =
-					destination.Select(s => m_Connections.GetInputConnection(s, flag))
+					destination.Select(e => m_Connections.GetInputConnection(e, flag))
 							   .Where(c => c != null)
 							   .ToArray();
 
@@ -111,7 +113,7 @@ namespace ICD.Connect.Routing.PathFinding
 					if (path == null)
 						continue;
 
-					completedDestinations.Add(destination);
+					notFound.Remove(destination);
 
 					yield return path;
 					break;
@@ -119,7 +121,7 @@ namespace ICD.Connect.Routing.PathFinding
 			}
 
 			// Log errors
-			foreach (EndpointInfo[] destination in destinations.Where(d => !completedDestinations.Contains(d)))
+			foreach (EndpointInfo[] destination in notFound)
 			{
 				string sourceText = EndpointInfo.ArrayRangeFormat(source);
 				string destinationText = EndpointInfo.ArrayRangeFormat(destination);
@@ -131,8 +133,8 @@ namespace ICD.Connect.Routing.PathFinding
 			}
 		}
 
-		private ConnectionPath GetConnectionPath(Connection sourceConnection, Connection[] destinationConnections,
-												 EndpointInfo[] destination, eConnectionType flag)
+		private ConnectionPath GetConnectionPath(Connection sourceConnection, IEnumerable<Connection> destinationConnections,
+		                                         IEnumerable<EndpointInfo> destination, eConnectionType flag)
 		{
 			if (sourceConnection == null)
 				throw new ArgumentNullException("sourceConnection");
@@ -140,11 +142,16 @@ namespace ICD.Connect.Routing.PathFinding
 			if (destinationConnections == null)
 				throw new ArgumentNullException("destinationConnections");
 
+			IList<EndpointInfo> destinationCollection = destination as IList<EndpointInfo> ?? destination.ToArray();
+
 			KeyValuePair<Connection, IEnumerable<Connection>> kvp;
 
-			bool found = RecursionUtils
-						 .BreadthFirstSearchManyDestinations(sourceConnection, destinationConnections,
-															 c => GetConnectionChildren(sourceConnection.Source, destination, c, flag)).TryFirst(out kvp);
+			bool found =
+				RecursionUtils
+					.BreadthFirstSearchManyDestinations(sourceConnection, destinationConnections,
+					                                    c =>
+					                                    GetConnectionChildren(sourceConnection.Source, destinationCollection, c, flag))
+					.TryFirst(out kvp);
 
 			return found ? new ConnectionPath(kvp.Value, flag) : null;
 		}
@@ -176,11 +183,11 @@ namespace ICD.Connect.Routing.PathFinding
 
 			return
 				m_Connections.GetOutputConnections(inputConnection.Destination.GetDeviceControlInfo(),
-				                                    finalDestinations,
-				                                    flag)
-				              .Where(c =>
-				                     c.IsAvailableToSourceDevice(source.Device) &&
-				                     c.IsAvailableToRoom(m_RoomId));
+				                                   finalDestinations,
+				                                   flag)
+				             .Where(c =>
+				                    c.IsAvailableToSourceDevice(source.Device) &&
+				                    c.IsAvailableToRoom(m_RoomId));
 		}
 	}
 }
