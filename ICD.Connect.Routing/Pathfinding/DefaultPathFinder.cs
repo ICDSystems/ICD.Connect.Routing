@@ -148,9 +148,10 @@ namespace ICD.Connect.Routing.PathFinding
 
 			bool found =
 				RecursionUtils
-					.BreadthFirstSearchManyDestinations(sourceConnection, destinationConnections,
-					                                    c =>
-					                                    GetConnectionChildren(sourceConnection.Source, destinationCollection, c, flag))
+					.BreadthFirstSearchPathManyDestinations(sourceConnection, destinationConnections,
+					                                        c =>
+						                                        GetConnectionChildren(sourceConnection.Source, destinationCollection, c,
+						                                                              flag))
 					.TryFirst(out kvp);
 
 			return found ? new ConnectionPath(kvp.Value, flag) : null;
