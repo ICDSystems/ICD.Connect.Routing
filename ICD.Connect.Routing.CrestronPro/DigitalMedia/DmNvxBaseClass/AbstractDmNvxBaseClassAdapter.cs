@@ -28,6 +28,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
 		protected AbstractDmNvxBaseClassAdapter()
 		{
 #if SIMPLSHARP
+			Controls.Add(new DmNvxBaseClassSwitcherControl(this, 0));
 			Controls.Add(new DmNvxBaseClassVolumeControl(this, 1));
 #endif
 		}
