@@ -46,7 +46,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 		{
 			base.ParseXml(xml);
 
-			EthernetId = XmlUtils.TryReadChildElementContentAsUInt(xml, ETHERNET_ID_ELEMENT);
+			EthernetId = XmlUtils.TryReadChildElementContentAsByte(xml, ETHERNET_ID_ELEMENT);
 			EndpointId = XmlUtils.TryReadChildElementContentAsUInt(xml, ENDPOINT_ID_ELEMENT);
 			DirectorId = XmlUtils.TryReadChildElementContentAsInt(xml, DIRECTOR_ID_ELEMENT);
 			DomainId = XmlUtils.TryReadChildElementContentAsUInt(xml, DOMAIN_ID_ELEMENT);

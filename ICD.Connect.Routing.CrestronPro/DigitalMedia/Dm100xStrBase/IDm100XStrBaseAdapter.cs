@@ -8,7 +8,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 {
 #if SIMPLSHARP
 	public delegate void Dm100XStrBaseChangeCallback(
-		IDm100XStrBaseAdapter sender, Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase switcher);
+		IDm100XStrBaseAdapter sender, Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase streamer);
 #endif
 
 	public interface IDm100XStrBaseAdapter : IDevice, IPortParent

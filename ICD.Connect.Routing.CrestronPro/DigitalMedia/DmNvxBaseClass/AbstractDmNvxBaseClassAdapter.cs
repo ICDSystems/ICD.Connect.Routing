@@ -23,6 +23,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
 		public eDeviceMode DeviceMode { get { return m_DeviceMode; } }
 
 		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractDmNvxBaseClassAdapter()
+		{
+#if SIMPLSHARP
+			Controls.Add(new DmNvxBaseClassVolumeControl(this, 1));
+#endif
+		}
+
+		/// <summary>
 		/// Configures the current device mode.
 		/// </summary>
 		/// <param name="deviceMode"></param>
