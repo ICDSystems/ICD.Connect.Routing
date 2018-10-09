@@ -1,4 +1,6 @@
 ﻿using ICD.Connect.Devices.Extensions;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXioDirectorBase;
 using ICD.Connect.Routing.CrestronPro.Receivers;
 using ICD.Connect.Routing.CrestronPro.Transmitters;
 using System;
@@ -7,6 +9,7 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Receivers;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
+using Crestron.SimplSharpPro.DM.Streaming;
 #endif
 using ICD.Common.Properties;
 using ICD.Connect.Misc.CrestronPro;
@@ -177,6 +180,53 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 				
 				return adapter.InstantiateReceiver((byte)settings.Ipid, output);
 			}
+		}
+
+		/// <summary>
+		/// Determines the best way to instantiate a DM streamer based on the available information.
+		/// Instantiates via parent Director if specified, otherwise uses the ControlSystem.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="adapter"></param>
+		/// <returns></returns>
+		[NotNull]
+		public static TStreamer InstantiateStreamer<TStreamer>(IDm100XStrBaseAdapterSettings settings,
+		                                                       IDeviceFactory factory,
+		                                                       IDm100XStrBaseAdapter<TStreamer> adapter)
+			where TStreamer : Dm100xStrBase
+		{
+			if (settings == null)
+				throw new ArgumentNullException("settings");
+
+			if (factory == null)
+				throw new ArgumentNullException("factory");
+
+			if (adapter == null)
+				throw new ArgumentNullException("adapter");
+
+			// Simple case: instantiate as an ethernet endpoint.
+			if (settings.EthernetId.HasValue)
+				return adapter.InstantiateStreamer(settings.EthernetId.Value, ProgramInfo.ControlSystem);
+
+			// Harder case: instantiate as part of an XIO Director domain.
+			if (!settings.EndpointId.HasValue)
+				throw new InvalidOperationException("Can't instantiate streamer without endpoint id");
+
+			if (!settings.DirectorId.HasValue)
+				throw new InvalidOperationException("Can't instantiate streamer without director id");
+
+			if (!settings.DomainId.HasValue)
+				throw new InvalidOperationException("Can't instantiate streamer without domain id");
+
+			IDmXioDirectorBaseAdapter director = factory.GetDeviceById(settings.DirectorId.Value) as IDmXioDirectorBaseAdapter;
+			if (director == null)
+				throw new InvalidOperationException(string.Format("Device {0} is not a {1}", settings.DirectorId.Value,
+				                                                  typeof(IDmXioDirectorBaseAdapter).Name));
+
+			DmXioDirectorBase.DmXioDomain domain = director.GetDomain(settings.DomainId.Value);
+
+			return adapter.InstantiateStreamer(settings.EndpointId.Value, domain, settings.IsReceiver);
 		}
 #endif
 	}

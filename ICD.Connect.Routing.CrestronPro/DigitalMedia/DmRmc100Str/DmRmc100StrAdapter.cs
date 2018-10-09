@@ -14,24 +14,26 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmRmc100Str
 	{
 #if SIMPLSHARP
 		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public DmRmc100StrAdapter()
-		{
-			Controls.Add(new DmRmc100StrMidpointControl(this, 0));
-		}
-
-		/// <summary>
 		/// Creates a new instance of the wrapped internal switcher.
 		/// </summary>
 		/// <param name="ethernetId"></param>
 		/// <param name="controlSystem"></param>
 		/// <returns></returns>
-		protected override Crestron.SimplSharpPro.DM.Streaming.DmRmc100Str InstantiateSwitcher(uint ethernetId,
-		                                                                                       CrestronControlSystem
-			                                                                                       controlSystem)
+		public override Crestron.SimplSharpPro.DM.Streaming.DmRmc100Str InstantiateStreamer(uint ethernetId, CrestronControlSystem controlSystem)
 		{
 			return new Crestron.SimplSharpPro.DM.Streaming.DmRmc100Str(ethernetId, controlSystem);
+		}
+
+		/// <summary>
+		/// Creates a new instance of the wrapped internal switcher.
+		/// </summary>
+		/// <param name="endpointId"></param>
+		/// <param name="domain"></param>
+		/// <param name="isReceiver"></param>
+		/// <returns></returns>
+		public override Crestron.SimplSharpPro.DM.Streaming.DmRmc100Str InstantiateStreamer(uint endpointId, Crestron.SimplSharpPro.DM.Streaming.DmXioDirectorBase.DmXioDomain domain, bool isReceiver)
+		{
+			return new Crestron.SimplSharpPro.DM.Streaming.DmRmc100Str(endpointId, domain, isReceiver);
 		}
 #endif
 	}

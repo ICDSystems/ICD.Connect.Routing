@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using System;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 #endif
 using ICD.Common.Properties;
@@ -92,7 +93,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXioDirectorBase
 		/// </summary>
 		/// <param name="switcher"></param>
 		[PublicAPI]
-		protected void SetDirector(TDirector switcher)
+		public void SetDirector(TDirector switcher)
 		{
 			Unsubscribe(Director);
 			Unregister(Director);
@@ -103,6 +104,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXioDirectorBase
 			Subscribe(Director);
 
 			UpdateCachedOnlineStatus();
+		}
+
+		/// <summary>
+		/// Gets the domain with the given id.
+		/// </summary>
+		/// <param name="id"></param>
+		/// <returns></returns>
+		public Crestron.SimplSharpPro.DM.Streaming.DmXioDirectorBase.DmXioDomain GetDomain(uint id)
+		{
+			if (m_Director == null)
+				throw new InvalidOperationException("Wrapped Director is null");
+
+			return m_Director.Domain[id];
 		}
 
 		/// <summary>

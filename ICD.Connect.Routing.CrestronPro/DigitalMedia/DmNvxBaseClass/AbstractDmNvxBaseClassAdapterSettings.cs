@@ -11,6 +11,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
 		public eDeviceMode DeviceMode { get; set; }
 
 		/// <summary>
+		/// Returns true if the settings have been configured for receive.
+		/// </summary>
+		public override bool IsReceiver { get { return DeviceMode == eDeviceMode.Receiver; } }
+
+		/// <summary>
 		/// Writes property elements to xml.
 		/// </summary>
 		/// <param name="writer"></param>

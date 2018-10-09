@@ -41,9 +41,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmRmc100Str
 		public DmRmc100StrMidpointControl(DmRmc100StrAdapter parent, int id)
 			: base(parent, id)
 		{
-			parent.OnSwitcherChanged += ParentOnSwitcherChanged;
+			parent.OnStreamerChanged += ParentOnStreamerChanged;
 
-			SetSwitcher(parent.Switcher);
+			SetSwitcher(parent.Streamer);
 		}
 
 		/// <summary>
@@ -56,7 +56,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmRmc100Str
 			OnActiveInputsChanged = null;
 			OnActiveTransmissionStateChanged = null;
 
-			Parent.OnSwitcherChanged -= ParentOnSwitcherChanged;
+			Parent.OnStreamerChanged -= ParentOnStreamerChanged;
 
 			base.DisposeFinal(disposing);
 
@@ -184,7 +184,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmRmc100Str
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="switcher"></param>
-		private void ParentOnSwitcherChanged(IDm100XStrBaseAdapter sender, Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase switcher)
+		private void ParentOnStreamerChanged(IDm100XStrBaseAdapter sender, Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase switcher)
 		{
 			SetSwitcher(switcher as Crestron.SimplSharpPro.DM.Streaming.DmRmc100Str);
 		}

@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
 			m_DeviceMode = deviceMode;
 
 #if SIMPLSHARP
-			DmNvxControl nvxControl = Switcher == null ? null : Switcher.Control;
+			DmNvxControl nvxControl = Streamer == null ? null : Streamer.Control;
 			if (nvxControl != null)
 				nvxControl.DeviceMode = m_DeviceMode.ToCrestron();
 #endif

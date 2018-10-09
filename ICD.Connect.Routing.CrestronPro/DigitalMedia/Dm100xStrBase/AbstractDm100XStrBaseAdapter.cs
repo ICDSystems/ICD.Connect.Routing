@@ -1,57 +1,58 @@
 ﻿using System;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Routing.CrestronPro.Utils;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 #endif
 using ICD.Common.Properties;
 using ICD.Connect.Devices;
-using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 {
 #if SIMPLSHARP
-	public abstract class AbstractDm100XStrBaseAdapter<TSwitcher, TSettings> : AbstractDevice<TSettings>, IDm100XStrBaseAdapter
-		where TSwitcher : Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase
+	public abstract class AbstractDm100XStrBaseAdapter<TStreamer, TSettings> : AbstractDevice<TSettings>,
+	                                                                           IDm100XStrBaseAdapter<TStreamer>
+		where TStreamer : Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase
 #else
 	public abstract class AbstractDm100XStrBaseAdapter<TSettings> : AbstractDevice<TSettings>, IDm100XStrBaseAdapter
 #endif
 		where TSettings : IDm100XStrBaseAdapterSettings, new()
 	{
 #if SIMPLSHARP
-		public event Dm100XStrBaseChangeCallback OnSwitcherChanged;
+		public event Dm100XStrBaseChangeCallback OnStreamerChanged;
 
-        private TSwitcher m_Switcher;
+		private TStreamer m_Streamer;
 #endif
 
-        #region Properties
+		#region Properties
 
 #if SIMPLSHARP
-        /// <summary>
-        /// Gets the wrapped switcher.
-        /// </summary>
-        public TSwitcher Switcher
+		/// <summary>
+		/// Gets the wrapped streamer.
+		/// </summary>
+		public TStreamer Streamer
 		{
-			get { return m_Switcher; }
+			get { return m_Streamer; }
 			private set
 			{
-				if (value == m_Switcher)
+				if (value == m_Streamer)
 					return;
 
-				m_Switcher = value;
+				m_Streamer = value;
 
-				Dm100XStrBaseChangeCallback handler = OnSwitcherChanged;
+				Dm100XStrBaseChangeCallback handler = OnStreamerChanged;
 				if (handler != null)
-					handler(this, m_Switcher);
+					handler(this, m_Streamer);
 			}
 		}
 
-		Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase IDm100XStrBaseAdapter.Switcher { get { return Switcher; } }
+		Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase IDm100XStrBaseAdapter.Streamer { get { return Streamer; } }
 #endif
 
-        #endregion
+		#endregion
 
-#region Methods
+		#region Methods
 
 		/// <summary>
 		/// Release resources.
@@ -59,61 +60,61 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 		protected override void DisposeFinal(bool disposing)
 		{
 #if SIMPLSHARP
-            OnSwitcherChanged = null;
+			OnStreamerChanged = null;
 #endif
 
 			base.DisposeFinal(disposing);
 
 #if SIMPLSHARP
-            // Unsubscribe and unregister.
-            SetSwitcher(null);
+			// Unsubscribe and unregister.
+			SetStreamer(null);
 #endif
 		}
 
 #if SIMPLSHARP
-        /// <summary>
-        /// Sets the wrapped switcher.
-        /// </summary>
-        /// <param name="switcher"></param>
-        [PublicAPI]
-		public void SetSwitcher(TSwitcher switcher)
+		/// <summary>
+		/// Sets the wrapped streamer.
+		/// </summary>
+		/// <param name="streamer"></param>
+		[PublicAPI]
+		public void SetStreamer(TStreamer streamer)
 		{
-			Unsubscribe(Switcher);
+			Unsubscribe(Streamer);
 
-			if (Switcher != null)
+			if (Streamer != null)
 			{
-				if (Switcher.Registered)
-					Switcher.UnRegister();
+				if (Streamer.Registered)
+					Streamer.UnRegister();
 
 				try
 				{
-					Switcher.Dispose();
+					Streamer.Dispose();
 				}
 				catch
 				{
 				}
 			}
 
-			Switcher = switcher;
+			Streamer = streamer;
 
-			if (Switcher != null && !Switcher.Registered)
+			if (Streamer != null && !Streamer.Registered)
 			{
 				if (Name != null)
-					Switcher.Description = Name;
+					Streamer.Description = Name;
 
-				eDeviceRegistrationUnRegistrationResponse result = Switcher.Register();
+				eDeviceRegistrationUnRegistrationResponse result = Streamer.Register();
 				if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-					Log(eSeverity.Error, "Unable to register {0} - {1}", Switcher.GetType().Name, result);
+					Log(eSeverity.Error, "Unable to register {0} - {1}", Streamer.GetType().Name, result);
 			}
 
-			Subscribe(Switcher);
+			Subscribe(Streamer);
 
 			UpdateCachedOnlineStatus();
 		}
 
 #endif
 
-        #endregion
+		#endregion
 
 		#region Ports
 
@@ -125,10 +126,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 		/// <returns></returns>
 		public virtual ComPort GetComPort(int address)
 		{
-			if (Switcher == null)
+			if (Streamer == null)
 				throw new InvalidOperationException("No switcher instantiated");
 
-			return Switcher.ComPorts[(uint)address];
+			return Streamer.ComPorts[(uint)address];
 		}
 
 		/// <summary>
@@ -138,10 +139,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 		/// <returns></returns>
 		public virtual IROutputPort GetIrOutputPort(int address)
 		{
-			if (Switcher == null)
+			if (Streamer == null)
 				throw new InvalidOperationException("No switcher instantiated");
 
-			return Switcher.IROutputPorts[(uint)address];
+			return Streamer.IROutputPorts[(uint)address];
 		}
 
 		/// <summary>
@@ -182,20 +183,20 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 
 		#region Settings
 
-        /// <summary>
-        /// Override to apply properties to the settings instance.
-        /// </summary>
-        /// <param name="settings"></param>
-        protected override void CopySettingsFinal(TSettings settings)
+		/// <summary>
+		/// Override to apply properties to the settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		protected override void CopySettingsFinal(TSettings settings)
 		{
 			base.CopySettingsFinal(settings);
 
 #if SIMPLSHARP
-            settings.EthernetId = Switcher == null ? (byte)0 : (byte)Switcher.ID;
+			settings.EthernetId = Streamer == null ? (byte)0 : (byte)Streamer.ID;
 #else
             settings.EthernetId = 0;
 #endif
-        }
+		}
 
 		/// <summary>
 		/// Override to clear the instance settings.
@@ -205,7 +206,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 			base.ClearSettingsFinal();
 
 #if SIMPLSHARP
-            SetSwitcher(null);
+			SetStreamer(null);
 #endif
 		}
 
@@ -219,26 +220,37 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 			base.ApplySettingsFinal(settings, factory);
 
 #if SIMPLSHARP
-            TSwitcher switcher = InstantiateSwitcher(settings.EthernetId, ProgramInfo.ControlSystem);
-			SetSwitcher(switcher);
+			TStreamer streamer = DmEndpointFactoryUtils.InstantiateStreamer(settings, factory, this);
+			SetStreamer(streamer);
 #else
-            throw new NotImplementedException();
+            throw new NotSupportedException();
 #endif
-        }
+		}
 
 #if SIMPLSHARP
-        /// <summary>
-        /// Creates a new instance of the wrapped internal switcher.
-        /// </summary>
-        /// <param name="ethernetId"></param>
-        /// <param name="controlSystem"></param>
-        /// <returns></returns>
-        protected abstract TSwitcher InstantiateSwitcher(uint ethernetId, CrestronControlSystem controlSystem);
+		/// <summary>
+		/// Creates a new instance of the wrapped internal switcher.
+		/// </summary>
+		/// <param name="ethernetId"></param>
+		/// <param name="controlSystem"></param>
+		/// <returns></returns>
+		public abstract TStreamer InstantiateStreamer(uint ethernetId, CrestronControlSystem controlSystem);
+
+		/// <summary>
+		/// Creates a new instance of the wrapped internal switcher.
+		/// </summary>
+		/// <param name="endpointId"></param>
+		/// <param name="domain"></param>
+		/// <param name="isReceiver"></param>
+		/// <returns></returns>
+		public abstract TStreamer InstantiateStreamer(uint endpointId,
+		                                              Crestron.SimplSharpPro.DM.Streaming.DmXioDirectorBase.DmXioDomain domain,
+		                                              bool isReceiver);
 #endif
 
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 
 		/// <summary>
 		/// Gets the current online status of the device.
@@ -247,18 +259,18 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 		protected override bool GetIsOnlineStatus()
 		{
 #if SIMPLSHARP
-            return Switcher != null && Switcher.IsOnline;
+			return Streamer != null && Streamer.IsOnline;
 #else
             return false;
 #endif
-        }
+		}
 
 #if SIMPLSHARP
-        /// <summary>
-        /// Subscribe to the switcher events.
-        /// </summary>
-        /// <param name="switcher"></param>
-        private void Subscribe(TSwitcher switcher)
+		/// <summary>
+		/// Subscribe to the switcher events.
+		/// </summary>
+		/// <param name="switcher"></param>
+		private void Subscribe(TStreamer switcher)
 		{
 			if (switcher == null)
 				return;
@@ -270,7 +282,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 		/// Unsubscribe from the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		private void Unsubscribe(TSwitcher switcher)
+		private void Unsubscribe(TStreamer switcher)
 		{
 			if (switcher == null)
 				return;
@@ -289,6 +301,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 		}
 #endif
 
-#endregion
+		#endregion
 	}
 }
