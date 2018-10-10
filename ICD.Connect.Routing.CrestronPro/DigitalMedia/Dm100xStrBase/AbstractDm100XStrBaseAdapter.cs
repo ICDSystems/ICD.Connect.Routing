@@ -20,6 +20,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
 		where TSettings : IDm100XStrBaseAdapterSettings, new()
 	{
 #if SIMPLSHARP
+		/// <summary>
+		/// Raised when the wrapped streamer instance changes.
+		/// </summary>
 		public event Dm100XStrBaseChangeCallback OnStreamerChanged;
 
 		private TStreamer m_Streamer;
