@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Utils;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
@@ -23,31 +24,25 @@ namespace ICD.Connect.Routing.Devices
 		/// <param name="output"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public abstract bool GetActiveTransmissionState(int output, eConnectionType type);
+		public virtual bool GetActiveTransmissionState(int output, eConnectionType type)
+		{
+			// Returns true if the output is transmitting an input on all flags
+			return EnumUtils.GetFlagsExceptNone(type).All(flag => this.GetInputs(output, flag).Any());
+		}
 
 		/// <summary>
 		/// Gets the output at the given address.
 		/// </summary>
 		/// <param name="output"></param>
 		/// <returns></returns>
-		public ConnectorInfo GetOutput(int output)
-		{
-			if (ContainsOutput(output))
-				return GetOutputs().First(c => c.Address == output);
-
-			string message = string.Format("{0} has no output at address {1}", this, output);
-			throw new ArgumentOutOfRangeException("output", message);
-		}
+		public abstract ConnectorInfo GetOutput(int output);
 
 		/// <summary>
 		/// Returns true if the source contains an output at the given address.
 		/// </summary>
 		/// <param name="output"></param>
 		/// <returns></returns>
-		public bool ContainsOutput(int output)
-		{
-			return GetOutputs().Any(o => o.Address == output);
-		}
+		public abstract bool ContainsOutput(int output);
 
 		/// <summary>
 		/// Returns the outputs.
@@ -71,5 +66,15 @@ namespace ICD.Connect.Routing.Devices
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public abstract IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type);
+
+		/// <summary>
+		/// Returns the true if the input is actively being used by the source device.
+		/// For example, a display might true if the input is currently on screen,
+		/// while a switcher may return true if the input is currently routed.
+		/// </summary>
+		public override bool GetInputActiveState(int input, eConnectionType type)
+		{
+			return GetOutputs(input, type).Any();
+		}
 	}
 }

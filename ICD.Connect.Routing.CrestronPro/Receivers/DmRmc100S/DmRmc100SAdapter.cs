@@ -19,25 +19,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100S
 	public sealed class DmRmc100SAdapter : AbstractEndpointReceiverBaseAdapter<DmRmc100SAdapterSettings>
 #endif
 	{
-#if SIMPLSHARP
-		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S InstantiateReceiver(byte ipid,
-		                                                                                            CrestronControlSystem
-			                                                                                            controlSystem)
-		{
-			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S(ipid, controlSystem);
-		}
-
-		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S InstantiateReceiver(byte ipid, DMOutput output)
-		{
-			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S(ipid, output);
-		}
-
-		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S InstantiateReceiver(DMOutput output)
-		{
-			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S(output);
-		}
-#endif
-
 		/// <summary>
 		/// Raised when an input source status changes.
 		/// </summary>
@@ -52,6 +33,18 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100S
 		/// Raised when the device starts/stops actively transmitting on an output.
 		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+		/// <summary>
+		/// Release resources
+		/// </summary>
+		protected override void DisposeFinal(bool disposing)
+		{
+			OnSourceDetectionStateChange = null;
+			OnActiveInputsChanged = null;
+			OnActiveTransmissionStateChanged = null;
+
+			base.DisposeFinal(disposing);
+		}
 
 #if SIMPLSHARP
 		/// <summary>
@@ -138,6 +131,29 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100S
 		}
 
 		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			if (input != 1)
+				throw new ArgumentOutOfRangeException("input");
+
+			return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			return input == 1;
+		}
+
+		/// <summary>
 		/// Returns true if the device is actively transmitting on the given output.
 		/// This is NOT the same as sending video, since some devices may send an
 		/// idle signal by default.
@@ -180,6 +196,29 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100S
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
 			yield return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int output)
+		{
+			if (output != 1)
+				throw new ArgumentOutOfRangeException("output");
+
+			return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return output == 1;
 		}
 
 		/// <summary>
@@ -228,5 +267,26 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100S
 					throw new ArgumentException("type");
 			}
 		}
+
+#if SIMPLSHARP
+
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S InstantiateReceiver(byte ipid,
+		                                                                                            CrestronControlSystem
+			                                                                                            controlSystem)
+		{
+			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S(ipid, controlSystem);
+		}
+
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S InstantiateReceiver(byte ipid, DMOutput output)
+		{
+			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S(ipid, output);
+		}
+
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S InstantiateReceiver(DMOutput output)
+		{
+			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100S(output);
+		}
+
+#endif
 	}
 }
