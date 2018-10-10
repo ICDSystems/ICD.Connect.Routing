@@ -58,6 +58,24 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
 				{OUTPUT_SECONDARY_AUDIO_STREAM, new ConnectorInfo(OUTPUT_SECONDARY_AUDIO_STREAM, eConnectionType.Audio)}
 			};
 
+		private static readonly BiDictionary<int, DmNvxControl.eAudioSource> s_AudioSources =
+			new BiDictionary<int, DmNvxControl.eAudioSource>
+			{
+				{INPUT_HDMI_1, DmNvxControl.eAudioSource.Input1},
+				{INPUT_HDMI_2, DmNvxControl.eAudioSource.Input2},
+				{INPUT_ANALOG_AUDIO, DmNvxControl.eAudioSource.AnalogAudio},
+				{INPUT_STREAM, DmNvxControl.eAudioSource.PrimaryStreamAudio},
+				{INPUT_SECONDARY_AUDIO_STREAM, DmNvxControl.eAudioSource.SecondaryStreamAudio},
+			};
+
+		private static readonly BiDictionary<int, eSfpVideoSourceTypes> s_VideoSources =
+			new BiDictionary<int, eSfpVideoSourceTypes>
+			{
+				{INPUT_HDMI_1, eSfpVideoSourceTypes.Hdmi1},
+				{INPUT_HDMI_2, eSfpVideoSourceTypes.Hdmi2},
+				{INPUT_STREAM, eSfpVideoSourceTypes.Stream}
+			};
+
 		/// <summary>
 		/// Raised when an input source status changes.
 		/// </summary>
@@ -273,7 +291,42 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
 		/// <returns></returns>
 		public override bool Route(RouteOperation info)
 		{
-			throw new NotImplementedException();
+			if (info == null)
+				throw new ArgumentNullException("info");
+
+			if (m_Streamer == null)
+				throw new InvalidOperationException("Wrapped streamer is null");
+
+			eConnectionType type = info.ConnectionType;
+			int input = info.LocalInput;
+			int output = info.LocalOutput;
+
+			if (!ContainsOutput(output))
+				throw new InvalidOperationException("No output at address");
+
+			if (EnumUtils.HasMultipleFlags(type))
+			{
+				return EnumUtils.GetFlagsExceptNone(type)
+								.Select(f => this.Route(input, output, f))
+								.ToArray()
+								.Unanimous(false);
+			}
+
+			switch (type)
+			{
+				case eConnectionType.Audio:
+					m_NvxControl.AudioSource = s_AudioSources.GetValue(input);
+					m_Streamer.SecondaryAudio.Start();
+					return SetActiveInput(input, eConnectionType.Audio);
+
+				case eConnectionType.Video:
+					m_NvxControl.VideoSource = s_VideoSources.GetValue(input);
+					return SetActiveInput(input, eConnectionType.Video);
+
+				default:
+					// ReSharper disable once NotResolvedInText
+					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
+			}
 		}
 
 		/// <summary>
@@ -284,6 +337,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
 		/// <returns>True if successfully cleared.</returns>
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
+			if (m_Streamer == null)
+				throw new InvalidOperationException("Wrapped streamer is null");
+
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
@@ -295,28 +351,34 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
 			switch (type)
 			{
 				case eConnectionType.Audio:
-					return false;
-
-					// TODO - Set to secondary audio stream and stop the stream
-					//m_Streamer.Control.AudioSource = DmNvxControl.eAudioSource.SecondaryStreamAudio;
-					//m_Streamer.Control
-
-					//return GetOutputs().Where(c => c.ConnectionType.HasFlag(eConnectionType.Audio))
-					//                   .Select(c => m_Cache.SetInputForOutput(c.Address, null, eConnectionType.Audio))
-					//                   .ToArray()
-					 //                  .Any(result => result);
+					m_Streamer.SecondaryAudio.Stop();
+					m_NvxControl.AudioSource = DmNvxControl.eAudioSource.SecondaryStreamAudio;
+					return SetActiveInput(null, eConnectionType.Audio);
 
 				case eConnectionType.Video:
-					m_Streamer.Control.VideoSource = eSfpVideoSourceTypes.Disable;
-
-					return GetOutputs().Where(c => c.ConnectionType.HasFlag(eConnectionType.Video))
-					                   .Select(c => m_Cache.SetInputForOutput(c.Address, null, eConnectionType.Video))
-					                   .ToArray()
-					                   .Any(result => result);
+					m_NvxControl.VideoSource = eSfpVideoSourceTypes.Disable;
+					return SetActiveInput(null, eConnectionType.Video);
 
 				default:
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
+		}
+
+		/// <summary>
+		/// Updates the cache with the active input for the given flag.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		private bool SetActiveInput(int? input, eConnectionType flag)
+		{
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentOutOfRangeException("flag");
+
+			return GetOutputs().Where(c => c.ConnectionType.HasFlag(flag))
+							   .Select(c => m_Cache.SetInputForOutput(c.Address, input, flag))
+			                   .ToArray()
+			                   .Any(result => result);
 		}
 
 		#endregion
@@ -387,10 +449,58 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
 					OnServerUrlChange.Raise(this, new StringEventArgs(ServerUrl));
 					break;
 
+				case DMInputEventIds.ActiveAudioSourceEventId:
+					UpdateAudioRouting();
+					break;
+
+				case DMInputEventIds.ActiveVideoSourceEventId:
+					UpdateVideoRouting();
+					break;
+
+				case DMInputEventIds.ElapsedSecEventId:
+					break;
+
 				default:
 					IcdConsole.PrintLine(eConsoleColor.Magenta, "{0} - {1}", this, args.EventId);
 					break;
 			}
+		}
+
+		/// <summary>
+		/// Updates the cached state of the audio routing to match the device.
+		/// </summary>
+		private void UpdateAudioRouting()
+		{
+			DmNvxControl.eAudioSource audioSource = m_NvxControl.AudioSourceFeedback;
+			bool secondaryAudioEnabled =
+				m_Streamer.SecondaryAudio.StatusFeedback !=
+				Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass.DmNvx35xSecondaryAudio.eDeviceStatus.StreamStopped;
+
+			if (audioSource == DmNvxControl.eAudioSource.SecondaryStreamAudio && !secondaryAudioEnabled)
+			{
+				SetActiveInput(null, eConnectionType.Audio);
+				return;
+			}
+
+			int audioInput;
+			if (s_AudioSources.TryGetKey(audioSource, out audioInput))
+				SetActiveInput(audioInput, eConnectionType.Audio);
+			else
+				SetActiveInput(null, eConnectionType.Audio);
+		}
+
+		/// <summary>
+		/// Updates the cached state of the video routing to match the device.
+		/// </summary>
+		private void UpdateVideoRouting()
+		{
+			eSfpVideoSourceTypes videoSource = m_NvxControl.VideoSourceFeedback;
+
+			int videoInput;
+			if (s_VideoSources.TryGetKey(videoSource, out videoInput))
+				SetActiveInput(videoInput, eConnectionType.Video);
+			else
+				SetActiveInput(null, eConnectionType.Video);
 		}
 
 		#endregion
@@ -429,6 +539,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
 		{
 			base.BuildConsoleStatus(addRow);
 
+			addRow("Device Mode", Parent.DeviceMode);
 			addRow("Server URL", ServerUrl);
 		}
 
