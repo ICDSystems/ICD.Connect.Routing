@@ -1,4 +1,4 @@
-﻿namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd6XN
+﻿namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMd6XN
 {
 #if SIMPLSHARP
 	public abstract class AbstractDmMd6XNAdapter<TSwitcher, TSettings> : AbstractCrestronSwitchAdapter<TSwitcher, TSettings>, IDmMd6XNAdapter

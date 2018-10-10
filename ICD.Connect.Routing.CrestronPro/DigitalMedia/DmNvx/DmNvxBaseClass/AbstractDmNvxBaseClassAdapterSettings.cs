@@ -1,7 +1,7 @@
 ﻿using ICD.Common.Utils.Xml;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 {
 	public abstract class AbstractDmNvxBaseClassAdapterSettings : AbstractDm100XStrBaseAdapterSettings,
 	                                                              IDmNvxBaseClassAdapterSettings

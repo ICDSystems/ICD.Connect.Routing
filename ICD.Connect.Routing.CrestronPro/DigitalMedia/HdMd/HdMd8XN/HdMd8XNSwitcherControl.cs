@@ -13,7 +13,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 {
 	public sealed class HdMd8XNSwitcherControl : AbstractRouteSwitcherControl<IHdMd8XNAdapter>
 	{

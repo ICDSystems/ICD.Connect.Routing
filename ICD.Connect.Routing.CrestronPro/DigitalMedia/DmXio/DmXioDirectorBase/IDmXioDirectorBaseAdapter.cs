@@ -1,6 +1,6 @@
 ﻿using ICD.Connect.Devices;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXioDirectorBase
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 {
 #if SIMPLSHARP
 	public delegate void DmXioDirectorChangeCallback(

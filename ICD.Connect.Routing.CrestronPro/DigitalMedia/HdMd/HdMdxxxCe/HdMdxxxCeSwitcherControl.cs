@@ -14,7 +14,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdxxxCe
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 {
 	public sealed class HdMdxxxCeSwitcherControl : AbstractRouteSwitcherControl<IHdMdxxxCeAdapter>
 	{

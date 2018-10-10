@@ -1,6 +1,6 @@
-﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass;
+﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx35X
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvx35X
 {
 #if SIMPLSHARP
 	public abstract class AbstractDmNvx35XAdapter<TSwitcher, TSettings> :

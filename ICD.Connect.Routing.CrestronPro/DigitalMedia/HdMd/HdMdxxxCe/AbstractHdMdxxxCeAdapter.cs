@@ -3,7 +3,7 @@
 using Crestron.SimplSharpPro.DM;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdxxxCe
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 {
 #if SIMPLSHARP
 	public abstract class AbstractHdMdxxxCeAdapter<TSwitch, TSettings> : AbstractCrestronSwitchAdapter<TSwitch, TSettings>, IHdMdxxxCeAdapter

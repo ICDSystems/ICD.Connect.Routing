@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using Crestron.SimplSharpPro;
@@ -10,9 +11,8 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Audio.Console;
 using ICD.Connect.Audio.Controls;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 {
 	public sealed class DmNvxBaseClassVolumeControl : AbstractVolumeLevelDeviceControl<IDmNvxBaseClassAdapter>, IVolumeMuteFeedbackDeviceControl
 	{

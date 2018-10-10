@@ -1,10 +1,10 @@
-﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
 #endif
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd4X24kE
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd4X24kE
 {
 	/// <summary>
 	/// HdMd4X24kEAdapter wraps a HdMd4x24kE to provide a routing device.

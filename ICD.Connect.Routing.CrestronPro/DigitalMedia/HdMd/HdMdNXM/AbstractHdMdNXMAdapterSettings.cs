@@ -1,7 +1,7 @@
 ﻿using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 {
 	public abstract class AbstractHdMdNXMAdapterSettings : AbstractCrestronSwitchAdapterSettings, IHdMdNXMAdapterSettings
 	{

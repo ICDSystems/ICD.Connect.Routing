@@ -1,6 +1,6 @@
 ﻿using ICD.Connect.Devices.Extensions;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXioDirectorBase;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase;
 using ICD.Connect.Routing.CrestronPro.Receivers;
 using ICD.Connect.Routing.CrestronPro.Transmitters;
 using System;

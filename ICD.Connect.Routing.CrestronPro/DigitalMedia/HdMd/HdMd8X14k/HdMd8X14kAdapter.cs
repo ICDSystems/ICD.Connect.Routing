@@ -1,10 +1,10 @@
-﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
 #endif
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8X14k
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8X14k
 {
 #if SIMPLSHARP
 	public sealed class HdMd8X14kAdapter : AbstractHdMd8XNAdapter<HdMd8x14k, HdMd8X14kAdapterSettings>

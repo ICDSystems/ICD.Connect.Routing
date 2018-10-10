@@ -1,10 +1,11 @@
 ﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
+
 #else
 using System;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdMNXN
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 {
 #if SIMPLSHARP
 // ReSharper disable once InconsistentNaming

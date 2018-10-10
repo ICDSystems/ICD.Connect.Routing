@@ -1,8 +1,9 @@
 ﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
+
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd8XN
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 {
 #if SIMPLSHARP
 	public abstract class AbstractHdMd8XNAdapter<TSwitch, TSettings> : AbstractCrestronSwitchAdapter<TSwitch, TSettings>, IHdMd8XNAdapter

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 {
 	public enum eDeviceMode
 	{

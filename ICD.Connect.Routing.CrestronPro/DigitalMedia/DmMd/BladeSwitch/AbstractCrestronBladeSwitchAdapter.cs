@@ -1,4 +1,4 @@
-﻿namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.BladeSwitch
+﻿namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 {
 #if SIMPLSHARP
 	public abstract class AbstractCrestronBladeSwitchAdapter<TSwitch, TSettings> :

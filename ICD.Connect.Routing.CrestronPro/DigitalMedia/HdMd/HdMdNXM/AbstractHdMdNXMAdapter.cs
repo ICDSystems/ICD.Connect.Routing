@@ -1,11 +1,9 @@
 ﻿using ICD.Connect.API.Nodes;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
-#else
-using System;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 {
 #if SIMPLSHARP
 	public abstract class AbstractHdMdNXMAdapter<TSwitcher, TSettings> : AbstractCrestronSwitchAdapter<TSwitcher, TSettings>, IHdMdNXMAdapter

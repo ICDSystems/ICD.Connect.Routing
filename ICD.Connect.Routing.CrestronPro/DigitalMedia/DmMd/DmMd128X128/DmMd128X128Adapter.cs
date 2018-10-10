@@ -1,10 +1,10 @@
-﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.BladeSwitch;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
 #endif
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd128X128
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMd128X128
 {
 #if SIMPLSHARP
 	public sealed class DmMd128X128Adapter : AbstractCrestronBladeSwitchAdapter<DmMd128x128, DmMd128X128AdapterSettings>

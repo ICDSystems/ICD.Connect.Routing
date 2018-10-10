@@ -12,7 +12,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 {
 	public sealed class HdMdNXMSwitcherControl : AbstractRouteSwitcherControl<IHdMdNXMAdapter>
 	{

@@ -1,4 +1,4 @@
-﻿namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdxxxCe
+﻿namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 {
 	public interface IHdMdxxxCeAdapterSettings : ICrestronSwitchAdapterSettings
 	{

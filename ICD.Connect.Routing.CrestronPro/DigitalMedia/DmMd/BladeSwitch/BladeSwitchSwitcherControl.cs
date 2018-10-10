@@ -14,7 +14,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.BladeSwitch
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 {
 	public sealed class BladeSwitchSwitcherControl : AbstractRouteSwitcherControl<ICrestronBladeSwitchAdapter>
 	{

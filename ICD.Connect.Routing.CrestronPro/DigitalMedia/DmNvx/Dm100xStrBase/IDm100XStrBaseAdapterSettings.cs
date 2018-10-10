@@ -1,8 +1,8 @@
 using ICD.Connect.Devices;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXioDirectorBase;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 {
 	public interface IDm100XStrBaseAdapterSettings : IDeviceSettings
 	{

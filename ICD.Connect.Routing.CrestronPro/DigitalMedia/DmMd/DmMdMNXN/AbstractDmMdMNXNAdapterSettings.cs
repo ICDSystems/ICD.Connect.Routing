@@ -3,7 +3,7 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMdMNXN
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 {
 // ReSharper disable once InconsistentNaming
 	public abstract class AbstractDmMdMNXNAdapterSettings : AbstractDeviceSettings, IDmMdNXNAdapterSettings

@@ -1,14 +1,14 @@
 ﻿using System;
+using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Devices;
 using ICD.Connect.Routing.CrestronPro.Utils;
+using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 #endif
-using ICD.Common.Properties;
-using ICD.Connect.Devices;
-using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 {
 #if SIMPLSHARP
 	public abstract class AbstractDm100XStrBaseAdapter<TStreamer, TSettings> : AbstractDevice<TSettings>,

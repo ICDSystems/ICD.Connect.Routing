@@ -1,8 +1,9 @@
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
+
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMdNXM
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 {
 	public interface IHdMdNXMAdapter : ICrestronSwitchAdapter
 	{

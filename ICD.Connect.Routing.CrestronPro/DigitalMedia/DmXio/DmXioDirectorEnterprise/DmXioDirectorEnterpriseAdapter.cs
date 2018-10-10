@@ -1,7 +1,7 @@
 ﻿using ICD.Connect.Misc.CrestronPro;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXioDirectorBase;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXioDirectorEnterprise
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorEnterprise
 {
 #if SIMPLSHARP
 	public sealed class DmXioDirectorEnterpriseAdapter :

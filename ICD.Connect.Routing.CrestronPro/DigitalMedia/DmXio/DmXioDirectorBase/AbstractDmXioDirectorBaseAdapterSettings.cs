@@ -2,7 +2,7 @@ using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXioDirectorBase
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 {
 	public abstract class AbstractDmXioDirectorBaseAdapterSettings : AbstractDeviceSettings,
 	                                                                 IDmXioDirectorBaseAdapterSettings

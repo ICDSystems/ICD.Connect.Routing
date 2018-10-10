@@ -1,10 +1,10 @@
 ﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM.Streaming;
 #endif
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
 using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvxBaseClass
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 {
 #if SIMPLSHARP
 	public abstract class AbstractDmNvxBaseClassAdapter<TSwitcher, TSettings> :

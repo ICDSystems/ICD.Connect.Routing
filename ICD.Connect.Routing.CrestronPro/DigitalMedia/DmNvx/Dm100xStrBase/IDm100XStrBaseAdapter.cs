@@ -4,7 +4,7 @@ using Crestron.SimplSharpPro;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.Dm100xStrBase
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 {
 #if SIMPLSHARP
 	public delegate void Dm100XStrBaseChangeCallback(

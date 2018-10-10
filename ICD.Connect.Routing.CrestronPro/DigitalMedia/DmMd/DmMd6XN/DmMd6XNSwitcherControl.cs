@@ -13,7 +13,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd6XN
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMd6XN
 {
 	public sealed class DmMd6XNSwitcherControl : AbstractRouteSwitcherControl<IDmMd6XNAdapter>
 	{

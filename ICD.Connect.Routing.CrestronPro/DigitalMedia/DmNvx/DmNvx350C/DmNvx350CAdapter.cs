@@ -1,9 +1,9 @@
 ﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 #endif
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx35X;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvx35X;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx350C
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvx350C
 {
 #if SIMPLSHARP
 	public sealed class DmNvx350CAdapter :

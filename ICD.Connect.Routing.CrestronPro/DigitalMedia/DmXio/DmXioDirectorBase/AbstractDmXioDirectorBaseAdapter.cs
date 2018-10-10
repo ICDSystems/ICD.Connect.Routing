@@ -1,15 +1,15 @@
-﻿using System;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
+using System;
 using Crestron.SimplSharpPro;
-#endif
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Services.Logging;
+#endif
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXioDirectorBase
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 {
 #if SIMPLSHARP
 	public abstract class AbstractDmXioDirectorBaseAdapter<TDirector, TSettings> : AbstractDevice<TSettings>, IDmXioDirectorBaseAdapter
