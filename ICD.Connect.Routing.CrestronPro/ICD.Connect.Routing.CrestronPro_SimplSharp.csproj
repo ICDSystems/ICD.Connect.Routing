@@ -170,7 +170,6 @@
     <Compile Include="DigitalMedia\DmNvxBaseClass\eDeviceMode.cs" />
     <Compile Include="DigitalMedia\DmNvxBaseClass\IDmNvxBaseClassAdapter.cs" />
     <Compile Include="DigitalMedia\DmNvxBaseClass\IDmNvxBaseClassAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmRmc100Str\DmRmc100StrAdapter.cs" />
     <Compile Include="DigitalMedia\BladeSwitch\BladeSwitchSwitcherControl.cs" />
     <Compile Include="DigitalMedia\DmMd128X128\DmMd128X128Adapter.cs" />
     <Compile Include="DigitalMedia\DmMd128X128\DmMd128X128AdapterSettings.cs" />
@@ -189,8 +188,6 @@
     <Compile Include="DigitalMedia\DmMd6XN\IDmMd6XNAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd8X14kC\DmMd8X14kCAdapter.cs" />
     <Compile Include="DigitalMedia\DmMd8X14kC\DmMd8X14kCAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmRmc100Str\DmRmc100StrAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmRmc100Str\DmRmc100StrMidpointControl.cs" />
     <Compile Include="DigitalMedia\DmXioDirector160\DmXioDirector160Adapter.cs" />
     <Compile Include="DigitalMedia\DmXioDirector160\DmXioDirector160AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmXioDirector80\DmXioDirector80Adapter.cs" />
