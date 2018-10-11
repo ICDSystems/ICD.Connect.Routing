@@ -1,9 +1,9 @@
-﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Streaming;
 using ICD.Common.Utils;
@@ -14,6 +14,7 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
@@ -99,17 +100,41 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <summary>
 		/// Raised when the server url changes.
 		/// </summary>
-		public event EventHandler<StringEventArgs> OnServerUrlChange; 
+		public event EventHandler<StringEventArgs> OnServerUrlChange;
+
+		/// <summary>
+		/// Raised when the multicast address changes.
+		/// </summary>
+		public event EventHandler<StringEventArgs> OnMulticastAddressChange;
+
+		/// <summary>
+		/// Raised when the secondary audio multicast address changes.
+		/// </summary>
+		public event EventHandler<StringEventArgs> OnSecondaryAudioMulticastAddressChange;
 
 		private readonly SwitcherCache m_Cache;
 
 		private Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass m_Streamer;
 		private DmNvxControl m_NvxControl;
 
+		#region Properties
+
 		/// <summary>
-		/// Gets the URL for the incoming stream.
+		/// Gets the URL for the stream.
 		/// </summary>
 		public string ServerUrl { get { return m_NvxControl == null ? null : m_NvxControl.ServerUrlFeedback.StringValue; } }
+
+		/// <summary>
+		/// Gets the multicast address for the stream.
+		/// </summary>
+		public string MulticastAddress { get { return m_NvxControl == null ? null : m_NvxControl.MulticastAddressFeedback.StringValue; } }
+
+		/// <summary>
+		/// Gets the multicast address for the secondary audio stream.
+		/// </summary>
+		public string SecondaryAudioMulticastAddress { get { return m_Streamer == null ? null : m_Streamer.SecondaryAudio.MulticastAddressFeedback.StringValue; } }
+
+		#endregion
 
 		/// <summary>
 		/// Constructor.
@@ -142,6 +167,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			OnActiveTransmissionStateChanged = null;
 			OnRouteChange = null;
 			OnServerUrlChange = null;
+			OnMulticastAddressChange = null;
+			OnSecondaryAudioMulticastAddressChange = null;
 
 			base.DisposeFinal(disposing);
 
@@ -153,7 +180,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		#region Methods
 
 		/// <summary>
-		/// Sets the URL for the incoming stream.
+		/// Sets the URL for the stream.
 		/// </summary>
 		/// <param name="url"></param>
 		public void SetServerUrl(string url)
@@ -162,6 +189,32 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				throw new InvalidOperationException("Wrapped streamer is null");
 
 			m_NvxControl.ServerUrl.StringValue = url;
+		}
+
+		/// <summary>
+		/// Sets the multicast address for the stream.
+		/// </summary>
+		/// <param name="address"></param>
+		public void SetMulticastAddress(string address)
+		{
+			if (m_NvxControl == null)
+				throw new InvalidOperationException("Wrapped streamer is null");
+
+			m_NvxControl.MulticastAddress.StringValue = address;
+		}
+
+		/// <summary>
+		/// Sets the multicast address for the stream.
+		/// </summary>
+		/// <param name="address"></param>
+		public void SetSecondaryAudioMulticastAddress(string address)
+		{
+			if (m_Streamer == null)
+				throw new InvalidOperationException("Wrapped streamer is null");
+
+			m_Streamer.SecondaryAudio.SecondaryAudioMode =
+				Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass.DmNvx35xSecondaryAudio.eSecondaryAudioMode.Manual;
+			m_Streamer.SecondaryAudio.MulticastAddress.StringValue = address;
 		}
 
 		/// <summary>
@@ -422,6 +475,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				return;
 
 			streamer.BaseEvent += StreamerOnBaseEvent;
+			streamer.SecondaryAudio.SecondaryAudioChange += SecondaryAudioOnSecondaryAudioChange;
 		}
 
 		/// <summary>
@@ -434,6 +488,22 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				return;
 
 			streamer.BaseEvent -= StreamerOnBaseEvent;
+			streamer.SecondaryAudio.SecondaryAudioChange -= SecondaryAudioOnSecondaryAudioChange;
+		}
+
+		/// <summary>
+		/// Called when secondary audio raises a base event.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		private void SecondaryAudioOnSecondaryAudioChange(object sender, GenericEventArgs args)
+		{
+			switch (args.EventId)
+			{
+				case DMInputEventIds.MulticastAddressEventId:
+					OnSecondaryAudioMulticastAddressChange.Raise(this, new StringEventArgs(SecondaryAudioMulticastAddress));
+					break;
+			}
 		}
 
 		/// <summary>
@@ -447,6 +517,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			{
 				case DMInputEventIds.ServerUrlEventId:
 					OnServerUrlChange.Raise(this, new StringEventArgs(ServerUrl));
+					break;
+
+				case DMInputEventIds.MulticastAddressEventId:
+					OnMulticastAddressChange.Raise(this, new StringEventArgs(MulticastAddress));
 					break;
 
 				case DMInputEventIds.ActiveAudioSourceEventId:
@@ -541,6 +615,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			addRow("Device Mode", Parent.DeviceMode);
 			addRow("Server URL", ServerUrl);
+			addRow("Multicast Address", MulticastAddress);
+			addRow("Secondary Audio Multicast Address", SecondaryAudioMulticastAddress);
 		}
 
 		/// <summary>
@@ -553,6 +629,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				yield return command;
 
 			yield return new GenericConsoleCommand<string>("SetServerUrl", "SetServerUrl <URL>", url => SetServerUrl(url));
+			yield return new GenericConsoleCommand<string>("SetMulticastAddress", "SetMulticastAddress <ADDRESS>", address => SetMulticastAddress(address));
+			yield return new GenericConsoleCommand<string>("SetSecondaryAudioMulticastAddress", "SetSecondaryAudioMulticastAddress <ADDRESS>", adress => SetSecondaryAudioMulticastAddress(adress));
 		}
 
 		/// <summary>
