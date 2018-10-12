@@ -147,6 +147,8 @@
     <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\AbstractDmNvxStreamSwitcherDevice.cs" />
+    <Compile Include="DigitalMedia\DmNvx\AbstractDmNvxStreamSwitcherSettings.cs" />
     <Compile Include="DigitalMedia\DmNvx\Dm100xStrBase\AbstractDm100XStrBaseAdapter.cs" />
     <Compile Include="DigitalMedia\DmNvx\Dm100xStrBase\AbstractDm100XStrBaseAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmNvx\Dm100xStrBase\IDm100XStrBaseAdapter.cs" />
@@ -188,6 +190,13 @@
     <Compile Include="DigitalMedia\DmMd\DmMd6XN\IDmMd6XNAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmMd\DmMd8X14kC\DmMd8X14kCAdapter.cs" />
     <Compile Include="DigitalMedia\DmMd\DmMd8X14kC\DmMd8X14kCAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxPrimaryStreamSwitcher\DmNvxPrimaryStreamSwitcherDevice.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxPrimaryStreamSwitcher\DmNvxPrimaryStreamSwitcherSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\NvxEndpointInfo.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxSecondaryStreamSwitcher\DmNvxSecondaryStreamSwitcherDevice.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxSecondaryStreamSwitcher\DmNvxSecondaryStreamSwitcherDeviceSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\IDmNvxStreamSwitcherDevice.cs" />
+    <Compile Include="DigitalMedia\DmNvx\IDmNvxStreamSwitcherSettings.cs" />
     <Compile Include="DigitalMedia\DmXio\DmXioDirector160\DmXioDirector160Adapter.cs" />
     <Compile Include="DigitalMedia\DmXio\DmXioDirector160\DmXioDirector160AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmXio\DmXioDirector80\DmXioDirector80Adapter.cs" />
