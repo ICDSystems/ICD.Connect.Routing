@@ -354,6 +354,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			int input = info.LocalInput;
 			int output = info.LocalOutput;
 
+			if (!ContainsInput(input))
+				throw new InvalidOperationException("No input at address");
+
 			if (!ContainsOutput(output))
 				throw new InvalidOperationException("No output at address");
 
