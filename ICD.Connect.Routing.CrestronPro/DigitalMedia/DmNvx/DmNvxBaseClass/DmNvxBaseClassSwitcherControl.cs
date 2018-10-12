@@ -32,13 +32,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		private const int INPUT_HDMI_1 = 1;
 		private const int INPUT_HDMI_2 = 2;
 		private const int INPUT_ANALOG_AUDIO = 3;
-		private const int INPUT_STREAM = 4;
-		private const int INPUT_SECONDARY_AUDIO_STREAM = 5;
+		public const int INPUT_STREAM = 4;
+		public const int INPUT_SECONDARY_AUDIO_STREAM = 5;
 
 		private const int OUTPUT_HDMI = 1;
 		private const int OUTPUT_ANALOG_AUDIO = 2;
-		private const int OUTPUT_STREAM = 3;
-		private const int OUTPUT_SECONDARY_AUDIO_STREAM = 4;
+		public const int OUTPUT_STREAM = 3;
+		public const int OUTPUT_SECONDARY_AUDIO_STREAM = 4;
 
 		private static readonly IcdOrderedDictionary<int, ConnectorInfo> s_InputConnectors =
 			new IcdOrderedDictionary<int, ConnectorInfo>
