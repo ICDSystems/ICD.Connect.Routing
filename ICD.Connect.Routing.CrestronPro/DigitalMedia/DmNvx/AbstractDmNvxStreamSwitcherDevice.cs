@@ -443,7 +443,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 				}
 
 				NvxEndpointInfo info = new NvxEndpointInfo(inputConnection, switcher);
-				if (info.IsPrimaryStream != IsPrimaryStream)
+				if ((IsPrimaryStream && !info.IsPrimaryStream) ||
+				    (!IsPrimaryStream && !info.IsSecondaryStream))
 				{
 					Log(eSeverity.Error, "Unable to support stream type from {0}", sourceEndpoint);
 					continue;
@@ -472,7 +473,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 				}
 
 				NvxEndpointInfo info = new NvxEndpointInfo(outputConnection, switcher);
-				if (info.IsPrimaryStream != IsPrimaryStream)
+				if ((IsPrimaryStream && !info.IsPrimaryStream) ||
+				    (!IsPrimaryStream && !info.IsSecondaryStream))
 				{
 					Log(eSeverity.Error, "Unable to support stream type to {0}", destinationEndpoint);
 					continue;

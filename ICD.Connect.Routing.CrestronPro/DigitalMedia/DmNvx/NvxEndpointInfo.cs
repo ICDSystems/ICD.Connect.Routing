@@ -52,6 +52,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 			}
 		}
 
+		public bool IsSecondaryStream
+		{
+			get
+			{
+				return Tx
+						   ? RemoteStreamAddress == DmNvxBaseClassSwitcherControl.OUTPUT_SECONDARY_AUDIO_STREAM
+						   : RemoteStreamAddress == DmNvxBaseClassSwitcherControl.INPUT_SECONDARY_AUDIO_STREAM;
+			}
+		}
+
 		public ConnectorInfo LocalConnector { get { return new ConnectorInfo(LocalStreamAddress, StreamType); } }
 
 		#endregion
