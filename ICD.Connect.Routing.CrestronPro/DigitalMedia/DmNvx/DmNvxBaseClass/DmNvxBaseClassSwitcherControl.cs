@@ -1,11 +1,13 @@
-﻿#if SIMPLSHARP
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Streaming;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
+#endif
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.EventArguments;
@@ -14,7 +16,6 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
@@ -59,6 +60,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				{OUTPUT_SECONDARY_AUDIO_STREAM, new ConnectorInfo(OUTPUT_SECONDARY_AUDIO_STREAM, eConnectionType.Audio)}
 			};
 
+#if SIMPLSHARP
 		private static readonly BiDictionary<int, DmNvxControl.eAudioSource> s_AudioSources =
 			new BiDictionary<int, DmNvxControl.eAudioSource>
 			{
@@ -76,6 +78,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				{INPUT_HDMI_2, eSfpVideoSourceTypes.Hdmi2},
 				{INPUT_STREAM, eSfpVideoSourceTypes.Stream}
 			};
+#endif
 
 		/// <summary>
 		/// Raised when an input source status changes.
@@ -114,25 +117,57 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 		private readonly SwitcherCache m_Cache;
 
+#if SIMPLSHARP
 		private Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass m_Streamer;
 		private DmNvxControl m_NvxControl;
+#endif
 
 		#region Properties
 
 		/// <summary>
 		/// Gets the URL for the stream.
 		/// </summary>
-		public string ServerUrl { get { return m_NvxControl == null ? null : m_NvxControl.ServerUrlFeedback.StringValue; } }
+		public string ServerUrl
+		{
+			get
+			{
+#if SIMPLSHARP
+				return m_NvxControl == null ? null : m_NvxControl.ServerUrlFeedback.StringValue;
+#else
+				return null;
+#endif
+			}
+		}
 
 		/// <summary>
 		/// Gets the multicast address for the stream.
 		/// </summary>
-		public string MulticastAddress { get { return m_NvxControl == null ? null : m_NvxControl.MulticastAddressFeedback.StringValue; } }
+		public string MulticastAddress
+		{
+			get
+			{
+#if SIMPLSHARP
+				return m_NvxControl == null ? null : m_NvxControl.MulticastAddressFeedback.StringValue;
+#else
+				return null;
+#endif
+			}
+		}
 
 		/// <summary>
 		/// Gets the multicast address for the secondary audio stream.
 		/// </summary>
-		public string SecondaryAudioMulticastAddress { get { return m_Streamer == null ? null : m_Streamer.SecondaryAudio.MulticastAddressFeedback.StringValue; } }
+		public string SecondaryAudioMulticastAddress
+		{
+			get
+			{
+#if SIMPLSHARP
+				return m_Streamer == null ? null : m_Streamer.SecondaryAudio.MulticastAddressFeedback.StringValue;
+#else
+				return null;
+#endif
+			}
+		}
 
 		#endregion
 
@@ -151,9 +186,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			m_Cache.OnRouteChange += CacheOnRouteChange;
 			m_Cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
 
+#if SIMPLSHARP
 			parent.OnStreamerChanged += ParentOnStreamerChanged;
 
 			SetStreamer(parent.Streamer as Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass);
+#endif
 		}
 
 		/// <summary>
@@ -172,9 +209,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			base.DisposeFinal(disposing);
 
+#if SIMPLSHARP
 			Parent.OnStreamerChanged -= ParentOnStreamerChanged;
 
 			SetStreamer(null);
+#endif
 		}
 
 		#region Methods
@@ -185,10 +224,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <param name="url"></param>
 		public void SetServerUrl(string url)
 		{
+#if SIMPLSHARP
 			if (m_NvxControl == null)
 				throw new InvalidOperationException("Wrapped streamer is null");
 
 			m_NvxControl.ServerUrl.StringValue = url;
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		/// <summary>
@@ -197,10 +240,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <param name="address"></param>
 		public void SetMulticastAddress(string address)
 		{
+#if SIMPLSHARP
 			if (m_NvxControl == null)
 				throw new InvalidOperationException("Wrapped streamer is null");
 
 			m_NvxControl.MulticastAddress.StringValue = address;
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		/// <summary>
@@ -209,12 +256,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <param name="address"></param>
 		public void SetSecondaryAudioMulticastAddress(string address)
 		{
+#if SIMPLSHARP
 			if (m_Streamer == null)
 				throw new InvalidOperationException("Wrapped streamer is null");
 
 			m_Streamer.SecondaryAudio.SecondaryAudioMode =
 				Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass.DmNvx35xSecondaryAudio.eSecondaryAudioMode.Manual;
 			m_Streamer.SecondaryAudio.MulticastAddress.StringValue = address;
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		/// <summary>
@@ -344,6 +395,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <returns></returns>
 		public override bool Route(RouteOperation info)
 		{
+#if SIMPLSHARP
 			if (info == null)
 				throw new ArgumentNullException("info");
 
@@ -383,6 +435,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					// ReSharper disable once NotResolvedInText
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		/// <summary>
@@ -393,6 +448,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <returns>True if successfully cleared.</returns>
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
+#if SIMPLSHARP
 			if (m_Streamer == null)
 				throw new InvalidOperationException("Wrapped streamer is null");
 
@@ -418,6 +474,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				default:
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		/// <summary>
@@ -432,13 +491,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				throw new ArgumentOutOfRangeException("flag");
 
 			return GetOutputs().Where(c => c.ConnectionType.HasFlag(flag))
-							   .Select(c => m_Cache.SetInputForOutput(c.Address, input, flag))
+			                   .Select(c => m_Cache.SetInputForOutput(c.Address, input, flag))
 			                   .ToArray()
 			                   .Any(result => result);
 		}
 
 		#endregion
 
+#if SIMPLSHARP
 		#region Streamer Callbacks
 
 		/// <summary>
@@ -584,6 +644,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		}
 
 		#endregion
+#endif
 
 		#region SwitcherCache Callbacks
 
@@ -635,8 +696,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				yield return command;
 
 			yield return new GenericConsoleCommand<string>("SetServerUrl", "SetServerUrl <URL>", url => SetServerUrl(url));
-			yield return new GenericConsoleCommand<string>("SetMulticastAddress", "SetMulticastAddress <ADDRESS>", address => SetMulticastAddress(address));
-			yield return new GenericConsoleCommand<string>("SetSecondaryAudioMulticastAddress", "SetSecondaryAudioMulticastAddress <ADDRESS>", adress => SetSecondaryAudioMulticastAddress(adress));
+			yield return new GenericConsoleCommand<string>("SetMulticastAddress", "SetMulticastAddress <ADDRESS>",
+			                                               address => SetMulticastAddress(address));
+			yield return new GenericConsoleCommand<string>("SetSecondaryAudioMulticastAddress",
+			                                               "SetSecondaryAudioMulticastAddress <ADDRESS>",
+			                                               adress => SetSecondaryAudioMulticastAddress(adress));
 		}
 
 		/// <summary>
@@ -651,4 +715,3 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		#endregion
 	}
 }
-#endif
