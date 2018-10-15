@@ -465,6 +465,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 					}
 
 					m_InputEndpoints.Add(info.LocalStreamAddress, info);
+					m_SwitcherToEndpoint.Add(switcher, info);
 				}
 			}
 			finally
@@ -502,6 +503,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 					}
 
 					m_OutputEndpoints.Add(info.LocalStreamAddress, info);
+					m_SwitcherToEndpoint.Add(switcher, info);
 				}
 			}
 			finally
@@ -618,12 +620,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 			try
 			{
 				// Update the cache
-				m_MulticastAddressToTx.Remove(oldAddress);
-				m_MulticastAddressToTx[newAddress] = endpointInfo.Switcher;
+				if (oldAddress != null)
+					m_MulticastAddressToTx.Remove(oldAddress);
+				if (newAddress != null)
+					m_MulticastAddressToTx[newAddress] = endpointInfo.Switcher;
 
 				// Unroute all of the RXs pointing at the old address
 				IcdHashSet<DmNvxBaseClassSwitcherControl> rxs;
-				if (m_MulticastAddressToRx.TryGetValue(oldAddress, out rxs))
+				if (oldAddress != null && m_MulticastAddressToRx.TryGetValue(oldAddress, out rxs))
 				{
 					foreach (DmNvxBaseClassSwitcherControl rx in rxs)
 					{
@@ -640,7 +644,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 				}
 
 				// Route all of the RXs pointing at the new address
-				if (m_MulticastAddressToRx.TryGetValue(newAddress, out rxs))
+				if (newAddress != null && m_MulticastAddressToRx.TryGetValue(newAddress, out rxs))
 				{
 					foreach (DmNvxBaseClassSwitcherControl rx in rxs)
 					{
@@ -682,16 +686,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 			{
 				// Update the cache
 				IcdHashSet<DmNvxBaseClassSwitcherControl> switchers;
-				if (m_MulticastAddressToRx.TryGetValue(oldAddress, out switchers))
+				if (oldAddress != null && m_MulticastAddressToRx.TryGetValue(oldAddress, out switchers))
 					switchers.Remove(endpointInfo.Switcher);
 
-				if (!m_MulticastAddressToRx.TryGetValue(newAddress, out switchers))
+				if (newAddress != null)
 				{
-					switchers = new IcdHashSet<DmNvxBaseClassSwitcherControl>();
-					m_MulticastAddressToRx.Add(newAddress, switchers);
-				}
+					if (!m_MulticastAddressToRx.TryGetValue(newAddress, out switchers))
+					{
+						switchers = new IcdHashSet<DmNvxBaseClassSwitcherControl>();
+						m_MulticastAddressToRx.Add(newAddress, switchers);
+					}
 
-				switchers.Add(endpointInfo.Switcher);
+					switchers.Add(endpointInfo.Switcher);
+				}
 
 				// Get the RX address
 				int outputAddress = endpointInfo.LocalStreamAddress;
