@@ -19,7 +19,8 @@ using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 {
-	public abstract class AbstractDmNvxStreamSwitcherDevice<TSettings> : AbstractRouteSwitcherDevice<TSettings>, IDmNvxStreamSwitcherDevice
+	public abstract class AbstractDmNvxStreamSwitcherDevice<TSettings> : AbstractRouteSwitcherDevice<TSettings>,
+	                                                                     IDmNvxStreamSwitcherDevice
 		where TSettings : IDmNvxStreamSwitcherSettings, new()
 	{
 		/// <summary>
@@ -227,7 +228,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 			{
 				return m_OutputEndpoints.Values
 				                        .Select(e => e.LocalConnector)
-										.ToArray(m_OutputEndpoints.Count);
+				                        .ToArray(m_OutputEndpoints.Count);
 			}
 			finally
 			{
@@ -552,8 +553,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		private DmNvxBaseClassSwitcherControl GetDestinationControl(Connection outputConnection)
 		{
 			return Core.Originators
-					   .GetChild<IDeviceBase>(outputConnection.Destination.Device)
-					   .Controls.GetControl<DmNvxBaseClassSwitcherControl>(0);
+			           .GetChild<IDeviceBase>(outputConnection.Destination.Device)
+			           .Controls.GetControl<DmNvxBaseClassSwitcherControl>(0);
 		}
 
 		/// <summary>
