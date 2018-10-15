@@ -64,6 +64,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 
 		public ConnectorInfo LocalConnector { get { return new ConnectorInfo(LocalStreamAddress, StreamType); } }
 
+		public string MulticastAddress
+		{
+			get { return IsPrimaryStream ? m_Switcher.MulticastAddress : m_Switcher.SecondaryAudioMulticastAddress; }
+		}
+
 		#endregion
 
 		/// <summary>

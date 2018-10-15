@@ -1,4 +1,8 @@
-﻿namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxPrimaryStreamSwitcher
+﻿using System;
+using ICD.Common.Utils.EventArguments;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass;
+
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxPrimaryStreamSwitcher
 {
 	public sealed class DmNvxPrimaryStreamSwitcherDevice :
 		AbstractDmNvxStreamSwitcherDevice<DmNvxPrimaryStreamSwitcherSettings>
@@ -38,5 +42,51 @@
 
 			return true;
 		}
+
+		#region Switcher Callbacks
+
+		/// <summary>
+		/// Subscribe to the switcher events.
+		/// </summary>
+		/// <param name="switcher"></param>
+		protected override void Subscribe(DmNvxBaseClassSwitcherControl switcher)
+		{
+			base.Subscribe(switcher);
+
+			if (switcher == null)
+				return;
+
+			switcher.OnMulticastAddressChange += SwitcherOnMulticastAddressChange;
+		}
+
+		/// <summary>
+		/// Unsubscribe from the switcher events.
+		/// </summary>
+		/// <param name="switcher"></param>
+		protected override void Unsubscribe(DmNvxBaseClassSwitcherControl switcher)
+		{
+			base.Unsubscribe(switcher);
+
+			if (switcher == null)
+				return;
+
+			switcher.OnMulticastAddressChange -= SwitcherOnMulticastAddressChange;
+		}
+
+		/// <summary>
+		/// Called when the switcher multicast address changes.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="stringEventArgs"></param>
+		private void SwitcherOnMulticastAddressChange(object sender, StringEventArgs stringEventArgs)
+		{
+			DmNvxBaseClassSwitcherControl switcher = sender as DmNvxBaseClassSwitcherControl;
+			if (switcher == null)
+				return;
+
+			UpdateRouting(switcher);
+		}
+
+		#endregion
 	}
 }
