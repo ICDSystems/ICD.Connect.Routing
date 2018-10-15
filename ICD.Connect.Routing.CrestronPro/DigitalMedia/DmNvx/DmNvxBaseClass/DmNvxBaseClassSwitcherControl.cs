@@ -526,20 +526,23 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					OnMulticastAddressChange.Raise(this, new StringEventArgs(MulticastAddress));
 					break;
 
+				case DMInputEventIds.AudioSourceEventId:
 				case DMInputEventIds.ActiveAudioSourceEventId:
 					UpdateAudioRouting();
 					break;
 
+				case DMInputEventIds.VideoSourceEventId:
 				case DMInputEventIds.ActiveVideoSourceEventId:
 					UpdateVideoRouting();
 					break;
-
+				/*
 				case DMInputEventIds.ElapsedSecEventId:
 					break;
 
 				default:
 					IcdConsole.PrintLine(eConsoleColor.Magenta, "{0} - {1}", this, args.EventId);
 					break;
+				 */
 			}
 		}
 
