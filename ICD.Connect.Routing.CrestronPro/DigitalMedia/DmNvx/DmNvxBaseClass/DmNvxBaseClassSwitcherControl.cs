@@ -415,9 +415,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(f => this.Route(input, output, f))
-								.ToArray()
-								.Unanimous(false);
+				                .Select(f => this.Route(input, output, f))
+				                .ToArray()
+				                .Unanimous(false);
 			}
 
 			switch (type)
@@ -455,9 +455,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(f => ClearOutput(output, f))
-								.ToArray()
-								.Unanimous(false);
+				                .Select(f => ClearOutput(output, f))
+				                .ToArray()
+				                .Unanimous(false);
 			}
 
 			switch (type)
@@ -506,7 +506,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="streamer"></param>
-		private void ParentOnStreamerChanged(IDm100XStrBaseAdapter sender, Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase streamer)
+		private void ParentOnStreamerChanged(IDm100XStrBaseAdapter sender,
+		                                     Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase streamer)
 		{
 			SetStreamer(streamer as Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass);
 		}
@@ -644,6 +645,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		}
 
 		#endregion
+
 #endif
 
 		#region SwitcherCache Callbacks
