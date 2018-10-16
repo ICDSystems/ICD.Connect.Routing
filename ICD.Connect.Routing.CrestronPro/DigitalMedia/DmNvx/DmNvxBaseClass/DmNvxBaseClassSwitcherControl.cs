@@ -527,6 +527,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			m_NvxControl = m_Streamer == null ? null : m_Streamer.Control;
 
 			Subscribe(m_Streamer);
+
+			UpdateAudioRouting();
+			UpdateVideoRouting();
 		}
 
 		/// <summary>
