@@ -361,8 +361,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			return s_InputConnectors.Where(kvp => ContainsInput(kvp.Key))
-			                        .Select(kvp => kvp.Value);
+			return s_OutputConnectors.Where(kvp => ContainsOutput(kvp.Key))
+			                         .Select(kvp => kvp.Value);
 		}
 
 		/// <summary>
