@@ -17,7 +17,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 				string type = XmlUtils.GetAttributeAsString(controlElement, "type");
 				string name = XmlUtils.TryReadChildElementContentAsString(controlElement, "Name");
 
-				AbstractVolumeLevelDeviceControl<IDtpCrosspointDevice> control = null;
+				AbstractVolumeLevelDeviceControl<IDtpCrosspointDevice> control;
+
 				switch (type)
 				{
 					case "Volume":
