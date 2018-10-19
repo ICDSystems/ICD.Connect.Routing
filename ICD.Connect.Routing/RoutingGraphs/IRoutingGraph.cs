@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.ConnectionUsage;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
@@ -51,11 +50,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// Gets the connections collection.
 		/// </summary>
 		IConnectionsCollection Connections { get; }
-
-		/// <summary>
-		/// Gets the connection usages collection.
-		/// </summary>
-		IConnectionUsageCollection ConnectionUsages { get; }
 
 		/// <summary>
 		/// Gets the static routes collection.

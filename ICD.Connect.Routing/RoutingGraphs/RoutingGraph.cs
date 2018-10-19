@@ -10,7 +10,6 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.ConnectionUsage;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
@@ -64,7 +63,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private readonly ConnectionsCollection m_Connections;
 		private readonly StaticRoutesCollection m_StaticRoutes;
-		private readonly ConnectionUsageCollection m_ConnectionUsages;
 		private readonly CoreSourceCollection m_Sources;
 		private readonly CoreDestinationCollection m_Destinations;
 		private readonly CoreDestinationGroupCollection m_DestinationGroups;
@@ -89,11 +87,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// Gets the static routes collection.
 		/// </summary>
 		public override IOriginatorCollection<StaticRoute> StaticRoutes { get { return m_StaticRoutes; } }
-
-		/// <summary>
-		/// Gets the connection usages collection.
-		/// </summary>
-		public override IConnectionUsageCollection ConnectionUsages { get { return m_ConnectionUsages; } }
 
 		/// <summary>
 		/// Gets the sources collection.
@@ -129,7 +122,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_SubscribedSources = new IcdHashSet<IRouteSourceControl>();
 
 			m_StaticRoutes = new StaticRoutesCollection(this);
-			m_ConnectionUsages = new ConnectionUsageCollection(this);
 			m_Connections = new ConnectionsCollection(this);
 			m_Sources = new CoreSourceCollection();
 			m_Destinations = new CoreDestinationCollection();

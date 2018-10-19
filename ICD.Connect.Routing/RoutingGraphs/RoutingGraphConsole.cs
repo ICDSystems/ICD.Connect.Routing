@@ -5,8 +5,6 @@ using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.ConnectionUsage;
-using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
 using ICD.Connect.Routing.Endpoints.Groups;
 using ICD.Connect.Routing.Endpoints.Sources;
@@ -63,8 +61,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			yield return
 				new ConsoleCommand("PrintPathable", "Prints a table of sources to routable destinations",
 				                   () => PrintPathable(instance));
-			yield return
-				new ConsoleCommand("PrintUsages", "Prints a table of the connection usages.", () => PrintUsages(instance));
 
 			yield return new GenericConsoleCommand<int, int, eConnectionType, int>("Route",
 			                                                                       "Routes source to destination. Usage: Route <sourceId> <destId> <connType> <roomId>",
@@ -174,43 +170,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				// Put a separator between the sources
 				if (!writeSource && index < sources.Length - 1)
-					builder.AddSeparator();
-			}
-
-			return builder.ToString();
-		}
-
-		/// <summary>
-		/// Loop over the connections and build a table of usages.
-		/// </summary>
-		private static string PrintUsages(IRoutingGraph instance)
-		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-
-			TableBuilder builder = new TableBuilder("Connection", "Type", "Source", "Rooms");
-
-			Connection[] connections = instance.Connections.ToArray();
-
-			for (int index = 0; index < connections.Length; index++)
-			{
-				Connection connection = connections[index];
-				ConnectionUsageInfo info = instance.ConnectionUsages.GetConnectionUsageInfo(connection);
-				int row = 0;
-
-				foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(connection.ConnectionType))
-				{
-					string connectionString = row == 0 ? string.Format("{0} - {1}", connection.Id, connection.Name) : string.Empty;
-					EndpointInfo? source = info.GetSource(type);
-					int[] rooms = info.GetRooms(type).ToArray();
-					string roomsString = rooms.Length == 0 ? string.Empty : StringUtils.ArrayFormat(rooms);
-
-					builder.AddRow(connectionString, type, source, roomsString);
-
-					row++;
-				}
-
-				if (index < connections.Length - 1)
 					builder.AddSeparator();
 			}
 
