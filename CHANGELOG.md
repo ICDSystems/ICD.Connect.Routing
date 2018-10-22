@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+ - Fixed StackOverflow when getting active source and there is a loop in the path
 
 ## [10.2.0] - 2018-10-18
 ### Added

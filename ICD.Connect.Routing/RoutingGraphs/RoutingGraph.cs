@@ -231,14 +231,18 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <returns>The source</returns>
 		public override EndpointInfo? GetActiveSourceEndpoint(IRouteDestinationControl destination, int input, eConnectionType flag, bool signalDetected, bool inputActive)
 		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("Connection type must be a single flag", "flag");
+
+			// Prevent stack overflow
+			IcdHashSet<KeyValuePair<IRouteSourceControl, int>> visited =
+				new IcdHashSet<KeyValuePair<IRouteSourceControl, int>>();
+
 			while (true)
 			{
-				if (destination == null)
-					throw new ArgumentNullException("destination");
-
-				if (EnumUtils.HasMultipleFlags(flag))
-					throw new ArgumentException("Connection type must be a single flag", "flag");
-
 				if (signalDetected && !destination.GetSignalDetectedState(input, flag))
 					return null;
 
@@ -254,14 +258,21 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					return null;
 
 				IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
+				int sourceAddress = inputConnection.Source.Address;
 
+				// Prevent stack overflow
+				if (!visited.Add(new KeyValuePair<IRouteSourceControl, int>(sourceControl, sourceAddress)))
+					return sourceControl.GetOutputEndpointInfo(sourceAddress);
+
+				// The source has no inputs
 				IRouteMidpointControl sourceAsMidpoint = sourceControl as IRouteMidpointControl;
 				if (sourceAsMidpoint == null)
-					return sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
+					return sourceControl.GetOutputEndpointInfo(sourceAddress);
 
-				ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, flag);
+				// No active path through the midpoint
+				ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(sourceAddress, flag);
 				if (!sourceConnector.HasValue)
-					return sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
+					return sourceControl.GetOutputEndpointInfo(sourceAddress);
 
 				destination = sourceAsMidpoint;
 				input = sourceConnector.Value.Address;
