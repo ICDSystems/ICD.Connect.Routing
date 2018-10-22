@@ -254,8 +254,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					return null;
 
 				IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
-				if (sourceControl == null)
-					return null;
 
 				IRouteMidpointControl sourceAsMidpoint = sourceControl as IRouteMidpointControl;
 				if (sourceAsMidpoint == null)
@@ -449,8 +447,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					break;
 
 				IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
-				if (sourceControl == null)
-					break;
 
 				// Ensure the source output even supports the given type.
 				ConnectorInfo output = sourceControl.GetOutput(inputConnection.Source.Address);
@@ -594,12 +590,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			}
 
 			IRouteDestinationControl destination = this.GetDestinationControl(outputConnection);
-			if (destination == null)
-			{
-				if (visited.Count > 0)
-					yield return visited.ToArray(visited.Count);
-				yield break;
-			}
 
 			// Ensure the destination input even supports the given type.
 			ConnectorInfo input = destination.GetInput(outputConnection.Destination.Address);
@@ -1516,9 +1506,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			yield return inputConnection.Source;
 
 			IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
-			if (sourceControl == null)
-				yield break;
-
 			IRouteMidpointControl sourceAsMidpoint = sourceControl as IRouteMidpointControl;
 			if (sourceAsMidpoint == null)
 				yield break;

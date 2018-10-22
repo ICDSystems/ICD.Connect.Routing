@@ -338,6 +338,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="extends"></param>
 		/// <param name="endpoint"></param>
 		/// <returns></returns>
+		[NotNull]
 		public static T GetControl<T>(this IRoutingGraph extends, EndpointInfo endpoint)
 			where T : class, IRouteControl
 		{
@@ -353,6 +354,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="extends"></param>
 		/// <param name="destination"></param>
 		/// <returns></returns>
+		[NotNull]
 		public static IRouteDestinationControl GetDestinationControl(this IRoutingGraph extends, IDestination destination)
 		{
 			if (extends == null)
@@ -370,6 +372,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="extends"></param>
 		/// <param name="connection"></param>
 		/// <returns></returns>
+		[NotNull]
 		public static IRouteDestinationControl GetDestinationControl(this IRoutingGraph extends, Connection connection)
 		{
 			if (extends == null)
@@ -381,6 +384,13 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			return extends.GetDestinationControl(connection.Destination);
 		}
 
+		/// <summary>
+		/// Gets the destination device for the given output endpoint info.
+		/// </summary>
+		/// <param name="extends"></param>
+		/// <param name="endpoint"></param>
+		/// <returns></returns>
+		[NotNull]
 		public static IRouteDestinationControl GetDestinationControl(this IRoutingGraph extends, EndpointInfo endpoint)
 		{
 			if (extends == null)
@@ -395,6 +405,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="extends"></param>
 		/// <param name="source"></param>
 		/// <returns></returns>
+		[NotNull]
 		public static IRouteSourceControl GetSourceControl(this IRoutingGraph extends, ISource source)
 		{
 			if (extends == null)
@@ -412,6 +423,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="extends"></param>
 		/// <param name="connection"></param>
 		/// <returns></returns>
+		[NotNull]
 		public static IRouteSourceControl GetSourceControl(this IRoutingGraph extends, Connection connection)
 		{
 			if (extends == null)
@@ -429,6 +441,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="extends"></param>
 		/// <param name="endpoint"></param>
 		/// <returns></returns>
+		[NotNull]
 		public static IRouteSourceControl GetSourceControl(this IRoutingGraph extends, EndpointInfo endpoint)
 		{
 			if (extends == null)
