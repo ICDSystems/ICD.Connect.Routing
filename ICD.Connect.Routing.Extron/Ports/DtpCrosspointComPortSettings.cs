@@ -11,6 +11,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 	{
 		private const string PARENT_ELEMENT = "Parent";
 
+		[ControlPortParentSettingsProperty]
 		[OriginatorIdSettingsProperty(typeof(IDtpHdmiDevice))]
 		public int Parent { get; set; }
 
