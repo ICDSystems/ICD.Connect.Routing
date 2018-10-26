@@ -17,7 +17,7 @@ namespace ICD.Connect.Routing.Extron.Controls
 	{
 		// gets the number of inputs formatted into {0}
 		private const string SOURCE_DETECTION_REGEX_FORMAT = "^(?:Frq00 )?([01]){{{0}}}$";
-		private const string ROUTE_REGEX_FORMAT = @"^Out(\d\d?) In(\d\d?) (All|Aud|Vid)$";
+		private const string ROUTE_REGEX_FORMAT = @"^(?:Out(?'output'\d\d?) )?In(?'input'\d\d?) (?'type'All|Aud|Vid)$";
 
 		/// <summary>
 		/// Raised when an input source status changes.
@@ -342,10 +342,12 @@ namespace ICD.Connect.Routing.Extron.Controls
 			Match routeMatch = RouteRegex.Match(data);
 			if (routeMatch.Success)
 			{
-				int output = int.Parse(routeMatch.Groups[1].Value);
-				int? input = int.Parse(routeMatch.Groups[2].Value);
+				string outputString = routeMatch.Groups["output"].Value;
+
+				int output = string.IsNullOrEmpty(outputString) ? 1 : int.Parse(outputString);
+				int? input = int.Parse(routeMatch.Groups["input"].Value);
 				eConnectionType type = eConnectionType.None;
-				switch (routeMatch.Groups[3].Value)
+				switch (routeMatch.Groups["type"].Value)
 				{
 					case "All":
 						type = eConnectionType.Audio | eConnectionType.Video;
