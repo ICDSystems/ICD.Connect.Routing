@@ -10,7 +10,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.Extron.Devices.Switchers
+namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 {
 	public sealed class DtpCrosspointSwitcherControl : AbstractRouteSwitcherControl<IDtpCrosspointDevice>, IDtpCrosspointSwitcherControl
 	{

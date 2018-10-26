@@ -3,16 +3,13 @@ using System.Collections.Generic;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Devices;
-using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
-namespace ICD.Connect.Routing.Extron.Devices.Switchers
+namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 {
-	public abstract class AbstractDtpCrosspointSettings : AbstractDeviceSettings, IDtpCrosspointSettings
+	public abstract class AbstractDtpCrosspointSettings : AbstractExtronSwitcherDeviceSettings, IDtpCrosspointSettings
 	{
 		private const string ELEMENT_PORT = "Port";
-		private const string ELEMENT_PASSWORD = "Password";
 		private const string ELEMENT_ADDRESS = "Address";
 		private const string ELEMENT_CONFIG = "Config";
 
@@ -22,14 +19,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		private const string ELEMENT_DTP_OUTPUT_PORTS = ELEMENT_DTP_OUTPUT_PORT + "s";
 		private const string ELEMENT_INPUT = "Input";
 		private const string ELEMENT_OUTPUT = "Output";
-
-		/// <summary>
-		/// The port id.
-		/// </summary>
-		[OriginatorIdSettingsProperty(typeof(ISerialPort))]
-		public int? Port { get; set; }
-
-		public string Password { get; set; }
 
 		[IpAddressSettingsProperty]
 		public string Address { get; set; }
@@ -114,8 +103,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		{
 			base.WriteElements(writer);
 
-			writer.WriteElementString(ELEMENT_PORT, IcdXmlConvert.ToString(Port));
-			writer.WriteElementString(ELEMENT_PASSWORD, Password);
 			writer.WriteElementString(ELEMENT_ADDRESS, Address);
 			writer.WriteElementString(ELEMENT_CONFIG, Config);
 
@@ -135,8 +122,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		{
 			base.ParseXml(xml);
 
-			Port = XmlUtils.TryReadChildElementContentAsInt(xml, ELEMENT_PORT);
-			Password = XmlUtils.TryReadChildElementContentAsString(xml, ELEMENT_PASSWORD);
 			Address = XmlUtils.TryReadChildElementContentAsString(xml, ELEMENT_ADDRESS);
 			Config = XmlUtils.TryReadChildElementContentAsString(xml, ELEMENT_CONFIG);
 

@@ -5,7 +5,7 @@ using ICD.Connect.Audio.Controls;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Extron.Controls.Volume;
 
-namespace ICD.Connect.Routing.Extron.Devices.Switchers
+namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 {
 	public static class ExtronXmlUtils
 	{

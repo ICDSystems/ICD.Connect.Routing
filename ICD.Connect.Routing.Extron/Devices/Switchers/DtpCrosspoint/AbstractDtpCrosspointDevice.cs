@@ -3,43 +3,25 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Common.Utils.Timers;
-using ICD.Connect.Devices;
 using ICD.Connect.Devices.Controls;
-using ICD.Connect.Protocol;
-using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Protocol.Utils;
-using ICD.Connect.Routing.Extron.SerialBuffers;
 using ICD.Connect.Settings.Core;
 
-namespace ICD.Connect.Routing.Extron.Devices.Switchers
+namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 {
-	public abstract class AbstractDtpCrosspointDevice<TSettings> : AbstractDevice<TSettings>, IDtpCrosspointDevice
-		where TSettings : AbstractDtpCrosspointSettings, new()
+	public abstract class AbstractDtpCrosspointDevice<TSettings> : AbstractExtronSwitcherDevice<TSettings>, IDtpCrosspointDevice
+		where TSettings : IDtpCrosspointSettings, new()
 	{
-
 		private const string PORT_INITIALIZED_REGEX = @"Lrpt(I|O)(\d{1,2})\*((?:0|1){1,2})";
-
-		/// <summary>
-		/// The device likes to drop connection if there's no activity for 5 mins,
-		/// so lets occasionally send something to keep connection from dropping.
-		/// </summary>
-		private const long KEEPALIVE_INTERVAL = 2 * 60 * 1000;
-
-		/// <summary>
-		/// Raised when the class initializes.
-		/// </summary>
-		public event EventHandler<BoolEventArgs> OnInitializedChanged;
 
 		/// <summary>
 		/// Raised when an input serial port is initialized.
@@ -51,18 +33,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// </summary>
 		public event EventHandler<IntEventArgs> OnOutputPortInitialized;
 
-		/// <summary>
-		/// Raised when the device sends a response.
-		/// </summary>
-		public event EventHandler<StringEventArgs> OnResponseReceived;
-
-		private readonly DtpCrosspointSerialBuffer m_SerialBuffer;
-		private readonly SafeTimer m_KeepAliveTimer;
-		private readonly ConnectionStateManager m_ConnectionStateManager;
-
-		private bool m_Initialized;
-		private string m_ConfigPath;
-		private ushort m_StartingComPort = 2000;
 		private readonly Dictionary<int, int> m_DtpInputPorts;
 		private readonly SafeCriticalSection m_DtpInputPortsSection;
 		private readonly Dictionary<int, int> m_DtpOutputPorts;
@@ -70,39 +40,12 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		private readonly List<IDeviceControl> m_LoadedControls;
 
+		private string m_ConfigPath;
+		private ushort m_StartingComPort = 2000;
+
 		#region Properties
 
 		public string Address { get; private set; }
-
-		/// <summary>
-		/// Gets/sets the password for logging into the device.
-		/// </summary>
-		public string Password { get; set; }
-
-		/// <summary>
-		/// Returns true when the codec is connected.
-		/// </summary>
-		public bool IsConnected
-		{
-			get { return m_ConnectionStateManager.IsConnected; }
-		}
-
-		/// <summary>
-		/// Device Initialized Status.
-		/// </summary>
-		public bool Initialized
-		{
-			get { return m_Initialized; }
-			private set
-			{
-				if (value == m_Initialized)
-					return;
-
-				m_Initialized = value;
-
-				OnInitializedChanged.Raise(this, new BoolEventArgs(m_Initialized));
-			}
-		}
 
 		protected abstract int NumberOfDtpInputPorts { get; }
 
@@ -120,15 +63,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			m_DtpInputPortsSection = new SafeCriticalSection();
 			m_DtpOutputPortsSection = new SafeCriticalSection();
 
-			m_SerialBuffer = new DtpCrosspointSerialBuffer();
-			Subscribe(m_SerialBuffer);
-
-			m_ConnectionStateManager = new ConnectionStateManager(this) { ConfigurePort = ConfigurePort };
-			Subscribe(m_ConnectionStateManager);
-
-			m_KeepAliveTimer = SafeTimer.Stopped(KeepAliveCallback);
-			m_KeepAliveTimer.Reset(KEEPALIVE_INTERVAL, KEEPALIVE_INTERVAL);
-
 			m_LoadedControls = new List<IDeviceControl>();
 		}
 
@@ -137,15 +71,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
-			OnInitializedChanged = null;
-			OnResponseReceived = null;
-
-			Unsubscribe(m_ConnectionStateManager);
-			m_ConnectionStateManager.Dispose();
-
-			m_KeepAliveTimer.Dispose();
-
-			Unsubscribe(m_SerialBuffer);
+			OnInputPortInitialized = null;
+			OnOutputPortInitialized = null;
 
 			DisposeLoadedControls();
 
@@ -153,49 +80,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		}
 
 		#region Methods
-
-		/// <summary>
-		/// Send command.
-		/// </summary>
-		/// <param name="command"></param>
-		/// <param name="args"></param>
-		public void SendCommand(string command, params object[] args)
-		{
-			if (args != null)
-				command = string.Format(command, args);
-
-			m_ConnectionStateManager.Send(command + '\r');
-		}
-
-		/// <summary>
-		/// Sets the port for communicating with the device.
-		/// </summary>
-		/// <param name="port"></param>
-		[PublicAPI]
-		public void ConfigurePort(ISerialPort port)
-		{
-			var comPort = port as IComPort;
-			if (comPort != null)
-				ConfigureComPort(comPort);
-		}
-
-		[PublicAPI]
-		public static void ConfigureComPort(IComPort port)
-		{
-			port.SetComPortSpec(eComBaudRates.ComspecBaudRate9600,
-								eComDataBits.ComspecDataBits8,
-								eComParityType.ComspecParityNone,
-								eComStopBits.ComspecStopBits1,
-								eComProtocolType.ComspecProtocolRS232,
-								eComHardwareHandshakeType.ComspecHardwareHandshakeNone,
-								eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
-								false);
-		}
-
-		protected override bool GetIsOnlineStatus()
-		{
-			return m_ConnectionStateManager != null && m_ConnectionStateManager.IsOnline;
-		}
 
 		public ISerialPort GetInputSerialInsertionPort(int input)
 		{
@@ -328,8 +212,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 				case eComParityType.ComspecParityZeroStick:
 					return 's';
 				case eComParityType.ComspecParityNone:
-				default:
 					return 'n';
+
+				default:
+					throw new ArgumentOutOfRangeException("parityType");
 			}
 		}
 
@@ -355,8 +241,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// <returns></returns>
 		private int? GetPortOffsetFromOutput(int output)
 		{
-
-
 			int portOffset = output - GetNumberOfOutputs() + (NumberOfDtpInputPorts + NumberOfDtpOutputPorts);
 			if (portOffset <= NumberOfDtpInputPorts)
 				return null;
@@ -365,13 +249,13 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		private int GetNumberOfInputs()
 		{
-			var switcherControl = Controls.GetControl<IDtpCrosspointSwitcherControl>();
+			var switcherControl = Controls.GetControl<IDtpCrosspointSwitcherControl>(0);
 			return switcherControl.NumberOfInputs;
 		}
 
 		private int GetNumberOfOutputs()
 		{
-			var switcherControl = Controls.GetControl<IDtpCrosspointSwitcherControl>();
+			var switcherControl = Controls.GetControl<IDtpCrosspointSwitcherControl>(0);
 			return switcherControl.NumberOfOutputs;
 		}
 
@@ -387,9 +271,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			};
 		}
 
-		private void Initialize()
+		protected override void Initialize()
 		{
-			SetVerboseMode(eExtronVerbosity.All);
+			base.Initialize();
+
 			GetStartingComPort();
 
 			var inputs = GetNumberOfInputs();
@@ -420,65 +305,22 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			SendCommand("WMD");
 		}
 
-		private void KeepAliveCallback()
-		{
-			if (Initialized)
-				SetVerboseMode(eExtronVerbosity.All);
-		}
-
-		private void SetVerboseMode(eExtronVerbosity verbosity)
-		{
-			SendCommand("W{0}CV", (ushort)verbosity);
-		}
-
 		#endregion
 
 		#region Buffer Callbacks
 
-		private void Subscribe(DtpCrosspointSerialBuffer buffer)
+		/// <summary>
+		/// Called when we receive a complete response from the device.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="args"></param>
+		protected override void BufferOnCompletedSerial(object sender, StringEventArgs args)
 		{
-			buffer.OnPasswordPrompt += BufferOnOnPasswordPrompt;
-			buffer.OnEmptyPrompt += BufferOnOnEmptyPrompt;
-			buffer.OnCompletedSerial += BufferOnOnCompletedSerial;
-		}
-
-		private void Unsubscribe(DtpCrosspointSerialBuffer buffer)
-		{
-			buffer.OnPasswordPrompt -= BufferOnOnPasswordPrompt;
-			buffer.OnEmptyPrompt -= BufferOnOnEmptyPrompt;
-			buffer.OnCompletedSerial -= BufferOnOnCompletedSerial;
-		}
-
-		private void BufferOnOnPasswordPrompt(object sender, EventArgs eventArgs)
-		{
-			SendCommand(Password);
-		}
-
-		private void BufferOnOnEmptyPrompt(object sender, EventArgs eventArgs)
-		{
-			if (!Initialized)
-				Initialize();
-		}
-
-		private void BufferOnOnCompletedSerial(object sender, StringEventArgs args)
-		{
-			OnResponseReceived.Raise(this, new StringEventArgs(args.Data));
+			base.BufferOnCompletedSerial(sender, args);
 
 			if (args.Data.StartsWith("Pmd"))
 			{
 				m_StartingComPort = ushort.Parse(args.Data.Substring(3));
-			}
-
-			if (args.Data.StartsWith("Vrb"))
-			{
-				var verbosity = (eExtronVerbosity)ushort.Parse(args.Data.Substring(3));
-				if (verbosity == eExtronVerbosity.All)
-					Initialized = true;
-				else
-				{
-					Initialized = false;
-					SetVerboseMode(eExtronVerbosity.All);
-				}
 			}
 
 			Match match = Regex.Match(args.Data, PORT_INITIALIZED_REGEX);
@@ -494,63 +336,39 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		#endregion
 
-		#region Port Callbacks
-
-		private void Subscribe(ConnectionStateManager connectionStateManager)
-		{
-			connectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
-			connectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
-			connectionStateManager.OnSerialDataReceived += PortOnSerialDataReceived;
-		}
-
-		private void Unsubscribe(ConnectionStateManager connectionStateManager)
-		{
-			connectionStateManager.OnConnectedStateChanged -= PortOnConnectionStatusChanged;
-			connectionStateManager.OnIsOnlineStateChanged -= PortOnIsOnlineStateChanged;
-			connectionStateManager.OnSerialDataReceived -= PortOnSerialDataReceived;
-		}
-
-		private void PortOnIsOnlineStateChanged(object sender, BoolEventArgs e)
-		{
-			UpdateCachedOnlineStatus();
-		}
-
-		private void PortOnConnectionStatusChanged(object sender, BoolEventArgs e)
-		{
-			m_SerialBuffer.Clear();
-		}
-
-		private void PortOnSerialDataReceived(object sender, StringEventArgs e)
-		{
-			m_SerialBuffer.Enqueue(e.Data);
-		}
-
-		#endregion
-
 		#region Settings
+
+		protected override void ClearSettingsFinal()
+		{
+			base.ClearSettingsFinal();
+
+			Address = null;
+			m_ConfigPath = null;
+
+			m_DtpInputPortsSection.Execute(() => m_DtpInputPorts.Clear());
+			m_DtpOutputPortsSection.Execute(() => m_DtpOutputPorts.Clear());
+		}
+
+		protected override void CopySettingsFinal(TSettings settings)
+		{
+			base.CopySettingsFinal(settings);
+
+			settings.Address = Address;
+			settings.Config = m_ConfigPath;
+
+			m_DtpInputPortsSection.Execute(() =>
+			                               settings.DtpInputPorts = m_DtpInputPorts
+				                                                        .Select(pair => new KeyValuePair<int, int>(pair.Key, pair.Value)));
+			m_DtpOutputPortsSection.Execute(() =>
+			                                settings.DtpOutputPorts = m_DtpOutputPorts
+				                                                          .Select(pair => new KeyValuePair<int, int>(pair.Key, pair.Value)));
+		}
 
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			Password = settings.Password;
 			Address = settings.Address;
-
-			ISerialPort port = null;
-
-			if (settings.Port != null)
-			{
-				try
-				{
-					port = factory.GetPortById((int)settings.Port) as ISerialPort;
-				}
-				catch (KeyNotFoundException)
-				{
-					Log(eSeverity.Error, "No serial port with id {0}", settings.Port);
-				}
-			}
-
-			m_ConnectionStateManager.SetPort(port);
 
 			if (!string.IsNullOrEmpty(settings.Config))
 				LoadControls(settings.Config);
@@ -594,33 +412,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			{
 				m_DtpOutputPortsSection.Leave();
 			}
-		}
-
-		protected override void CopySettingsFinal(TSettings settings)
-		{
-			base.CopySettingsFinal(settings);
-
-			settings.Password = Password;
-			settings.Address = Address;
-			settings.Port = m_ConnectionStateManager.PortNumber;
-
-			m_DtpInputPortsSection.Execute(() =>
-				settings.DtpInputPorts = m_DtpInputPorts
-					.Select(pair => new KeyValuePair<int, int>(pair.Key, pair.Value)));
-			m_DtpOutputPortsSection.Execute(() =>
-				settings.DtpOutputPorts = m_DtpOutputPorts
-					.Select(pair => new KeyValuePair<int, int>(pair.Key, pair.Value)));
-		}
-
-		protected override void ClearSettingsFinal()
-		{
-			base.ClearSettingsFinal();
-
-			Address = null;
-			Password = null;
-			m_ConnectionStateManager.SetPort(null);
-			m_DtpInputPortsSection.Execute(() => m_DtpInputPorts.Clear());
-			m_DtpOutputPortsSection.Execute(() => m_DtpOutputPorts.Clear());
 		}
 
 		#endregion
