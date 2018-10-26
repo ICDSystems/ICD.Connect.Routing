@@ -42,6 +42,7 @@ namespace ICD.Connect.Routing.Extron.Controls
 		private readonly SwitcherCache m_Cache;
 		private readonly int m_NumberOfInputs;
 		private readonly int m_NumberOfOutputs;
+		private readonly bool m_Breakaway;
 
 		#region Properties
 
@@ -86,12 +87,14 @@ namespace ICD.Connect.Routing.Extron.Controls
 		/// <param name="id"></param>
 		/// <param name="numInputs"></param>
 		/// <param name="numOutputs"></param>
-		public ExtronSwitcherControl(IExtronSwitcherDevice parent, int id, int numInputs, int numOutputs)
+		/// <param name="breakaway"></param>
+		public ExtronSwitcherControl(IExtronSwitcherDevice parent, int id, int numInputs, int numOutputs, bool breakaway)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
 			m_NumberOfInputs = numInputs;
 			m_NumberOfOutputs = numOutputs;
+			m_Breakaway = breakaway;
 
 			Subscribe(parent);
 			Subscribe(m_Cache);
@@ -253,7 +256,10 @@ namespace ICD.Connect.Routing.Extron.Controls
 		{
 			output = output % 1000;
 
-			Parent.SendCommand("{0}*{1}{2}", input, output, GetConnectionTypeCharacter(type));
+			char connectionTypeCharacter = m_Breakaway ? GetConnectionTypeCharacter(type) : '!';
+			string outputString = m_NumberOfOutputs == 1 ? string.Empty : string.Format("*{0}", output);
+
+			Parent.SendCommand("{0}{1}{2}", input, outputString, connectionTypeCharacter);
 		}
 
 		/// <summary>

@@ -10,7 +10,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint.DtpCrosspoi
 
 		public DtpCrosspoint84Device()
 		{
-			Controls.Add(new ExtronSwitcherControl(this, 0, 8, 4));
+			Controls.Add(new ExtronSwitcherControl(this, 0, 8, 4, true));
 		}
 	}
 }

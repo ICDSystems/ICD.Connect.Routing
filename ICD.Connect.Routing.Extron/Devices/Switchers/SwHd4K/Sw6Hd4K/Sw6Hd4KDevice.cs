@@ -9,7 +9,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.SwHd4K.Sw6Hd4K
 		/// </summary>
 		public Sw6Hd4KDevice()
 		{
-			Controls.Add(new ExtronSwitcherControl(this, 0, 6, 1));
+			Controls.Add(new ExtronSwitcherControl(this, 0, 6, 1, false));
 		}
 	}
 }
