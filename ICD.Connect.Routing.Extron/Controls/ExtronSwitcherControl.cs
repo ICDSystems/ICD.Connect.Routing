@@ -8,15 +8,16 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.Extron.Devices.Switchers;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.Extron.Devices.Switchers
+namespace ICD.Connect.Routing.Extron.Controls
 {
-	public sealed class DtpCrosspointSwitcherControl : AbstractRouteSwitcherControl<IDtpCrosspointDevice>, IDtpCrosspointSwitcherControl
+	public sealed class ExtronSwitcherControl : AbstractRouteSwitcherControl<IExtronSwitcherDevice>, IExtronSwitcherControl
 	{
 		// gets the number of inputs formatted into {0}
 		private const string SOURCE_DETECTION_REGEX_FORMAT = "^(?:Frq00 )?([01]){{{0}}}$";
-		private const string ROUTE_REGEX_FORMAT = @"^Out(\d\d?) In(\d\d?) (All|Aud|Vid)$";
+		private const string ROUTE_REGEX_FORMAT = @"^(?:Out(?'output'\d\d?) )?In(?'input'\d\d?) (?'type'All|Aud|Vid)$";
 
 		/// <summary>
 		/// Raised when an input source status changes.
@@ -41,6 +42,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		private readonly SwitcherCache m_Cache;
 		private readonly int m_NumberOfInputs;
 		private readonly int m_NumberOfOutputs;
+		private readonly bool m_Breakaway;
 
 		#region Properties
 
@@ -60,12 +62,17 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			get { return m_RouteRegex ?? (m_RouteRegex = new Regex(ROUTE_REGEX_FORMAT)); }
 		}
 
-
+		/// <summary>
+		/// Gets the number of inputs.
+		/// </summary>
 		public int NumberOfInputs
 		{
 			get { return m_NumberOfInputs; }
 		}
 
+		/// <summary>
+		/// Gets the number of outputs.
+		/// </summary>
 		public int NumberOfOutputs
 		{
 			get { return m_NumberOfOutputs; }
@@ -80,22 +87,29 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// <param name="id"></param>
 		/// <param name="numInputs"></param>
 		/// <param name="numOutputs"></param>
-		public DtpCrosspointSwitcherControl(IDtpCrosspointDevice parent, int id, int numInputs, int numOutputs)
+		/// <param name="breakaway"></param>
+		public ExtronSwitcherControl(IExtronSwitcherDevice parent, int id, int numInputs, int numOutputs, bool breakaway)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
 			m_NumberOfInputs = numInputs;
 			m_NumberOfOutputs = numOutputs;
+			m_Breakaway = breakaway;
 
 			Subscribe(parent);
 			Subscribe(m_Cache);
 		}
 
+		/// <summary>
+		/// Override to release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
 			OnSourceDetectionStateChange = null;
 			OnActiveInputsChanged = null;
 			OnActiveTransmissionStateChanged = null;
+			OnRouteChange = null;
 
 			base.DisposeFinal(disposing);
 
@@ -242,7 +256,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		{
 			output = output % 1000;
 
-			Parent.SendCommand("{0}*{1}{2}", input, output, GetConnectionTypeCharacter(type));
+			char connectionTypeCharacter = m_Breakaway ? GetConnectionTypeCharacter(type) : '!';
+			string outputString = m_NumberOfOutputs == 1 ? string.Empty : string.Format("*{0}", output);
+
+			Parent.SendCommand("{0}{1}{2}", input, outputString, connectionTypeCharacter);
 		}
 
 		/// <summary>
@@ -287,13 +304,13 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 		#region Parent Callbacks
 
-		private void Subscribe(IDtpCrosspointDevice parent)
+		private void Subscribe(IExtronSwitcherDevice parent)
 		{
 			parent.OnInitializedChanged += ParentOnOnInitializedChanged;
 			parent.OnResponseReceived += ParentOnOnResponseReceived;
 		}
 
-		private void Unsubscribe(IDtpCrosspointDevice parent)
+		private void Unsubscribe(IExtronSwitcherDevice parent)
 		{
 			parent.OnInitializedChanged -= ParentOnOnInitializedChanged;
 			parent.OnResponseReceived -= ParentOnOnResponseReceived;
@@ -331,10 +348,12 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			Match routeMatch = RouteRegex.Match(data);
 			if (routeMatch.Success)
 			{
-				int output = int.Parse(routeMatch.Groups[1].Value);
-				int? input = int.Parse(routeMatch.Groups[2].Value);
+				string outputString = routeMatch.Groups["output"].Value;
+
+				int output = string.IsNullOrEmpty(outputString) ? 1 : int.Parse(outputString);
+				int? input = int.Parse(routeMatch.Groups["input"].Value);
 				eConnectionType type = eConnectionType.None;
-				switch (routeMatch.Groups[3].Value)
+				switch (routeMatch.Groups["type"].Value)
 				{
 					case "All":
 						type = eConnectionType.Audio | eConnectionType.Video;
