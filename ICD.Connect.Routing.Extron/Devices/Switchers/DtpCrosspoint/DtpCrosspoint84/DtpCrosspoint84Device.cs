@@ -1,4 +1,6 @@
-﻿namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint.DtpCrosspoint84
+﻿using ICD.Connect.Routing.Extron.Controls;
+
+namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint.DtpCrosspoint84
 {
 	public sealed class DtpCrosspoint84Device : AbstractDtpCrosspointDevice<DtpCrosspoint84Settings>
 	{
@@ -8,7 +10,7 @@
 
 		public DtpCrosspoint84Device()
 		{
-			Controls.Add(new DtpCrosspointSwitcherControl(this, 0, 8, 4));
+			Controls.Add(new ExtronSwitcherControl(this, 0, 8, 4));
 		}
 	}
 }

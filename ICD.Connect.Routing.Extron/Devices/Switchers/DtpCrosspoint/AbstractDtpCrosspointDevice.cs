@@ -14,6 +14,7 @@ using ICD.Connect.Protocol.Network.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Protocol.Utils;
+using ICD.Connect.Routing.Extron.Controls;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
@@ -249,13 +250,13 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 
 		private int GetNumberOfInputs()
 		{
-			var switcherControl = Controls.GetControl<IDtpCrosspointSwitcherControl>(0);
+			var switcherControl = Controls.GetControl<IExtronSwitcherControl>(0);
 			return switcherControl.NumberOfInputs;
 		}
 
 		private int GetNumberOfOutputs()
 		{
-			var switcherControl = Controls.GetControl<IDtpCrosspointSwitcherControl>(0);
+			var switcherControl = Controls.GetControl<IExtronSwitcherControl>(0);
 			return switcherControl.NumberOfOutputs;
 		}
 

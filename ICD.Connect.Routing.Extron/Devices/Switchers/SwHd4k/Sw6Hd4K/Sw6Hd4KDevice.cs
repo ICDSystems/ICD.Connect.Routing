@@ -1,4 +1,4 @@
-﻿namespace ICD.Connect.Routing.Extron.Devices.Switchers.SwHd4k.Sw6Hd4k
+﻿namespace ICD.Connect.Routing.Extron.Devices.Switchers.SwHd4K.Sw6Hd4K
 {
 	public sealed class Sw6Hd4KDevice : AbstractSwHd4KDevice<Sw6Hd4KSettings>
 	{

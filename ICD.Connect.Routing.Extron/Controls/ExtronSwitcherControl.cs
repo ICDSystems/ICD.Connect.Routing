@@ -8,11 +8,12 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.Extron.Devices.Switchers;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
+namespace ICD.Connect.Routing.Extron.Controls
 {
-	public sealed class DtpCrosspointSwitcherControl : AbstractRouteSwitcherControl<IDtpCrosspointDevice>, IDtpCrosspointSwitcherControl
+	public sealed class ExtronSwitcherControl : AbstractRouteSwitcherControl<IExtronSwitcherDevice>, IExtronSwitcherControl
 	{
 		// gets the number of inputs formatted into {0}
 		private const string SOURCE_DETECTION_REGEX_FORMAT = "^(?:Frq00 )?([01]){{{0}}}$";
@@ -60,12 +61,17 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			get { return m_RouteRegex ?? (m_RouteRegex = new Regex(ROUTE_REGEX_FORMAT)); }
 		}
 
-
+		/// <summary>
+		/// Gets the number of inputs.
+		/// </summary>
 		public int NumberOfInputs
 		{
 			get { return m_NumberOfInputs; }
 		}
 
+		/// <summary>
+		/// Gets the number of outputs.
+		/// </summary>
 		public int NumberOfOutputs
 		{
 			get { return m_NumberOfOutputs; }
@@ -80,7 +86,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 		/// <param name="id"></param>
 		/// <param name="numInputs"></param>
 		/// <param name="numOutputs"></param>
-		public DtpCrosspointSwitcherControl(IDtpCrosspointDevice parent, int id, int numInputs, int numOutputs)
+		public ExtronSwitcherControl(IExtronSwitcherDevice parent, int id, int numInputs, int numOutputs)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
@@ -91,11 +97,16 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			Subscribe(m_Cache);
 		}
 
+		/// <summary>
+		/// Override to release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
 			OnSourceDetectionStateChange = null;
 			OnActiveInputsChanged = null;
 			OnActiveTransmissionStateChanged = null;
+			OnRouteChange = null;
 
 			base.DisposeFinal(disposing);
 
@@ -287,13 +298,13 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 
 		#region Parent Callbacks
 
-		private void Subscribe(IDtpCrosspointDevice parent)
+		private void Subscribe(IExtronSwitcherDevice parent)
 		{
 			parent.OnInitializedChanged += ParentOnOnInitializedChanged;
 			parent.OnResponseReceived += ParentOnOnResponseReceived;
 		}
 
-		private void Unsubscribe(IDtpCrosspointDevice parent)
+		private void Unsubscribe(IExtronSwitcherDevice parent)
 		{
 			parent.OnInitializedChanged -= ParentOnOnInitializedChanged;
 			parent.OnResponseReceived -= ParentOnOnResponseReceived;
