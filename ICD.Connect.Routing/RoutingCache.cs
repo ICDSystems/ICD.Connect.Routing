@@ -1222,9 +1222,25 @@ namespace ICD.Connect.Routing
 
 		private void RoutingGraphOnRouteChanged(object sender, SwitcherRouteChangeEventArgs args)
 		{
-			IcdHashSet<EndpointInfo> oldSourceEndpoints = args.OldSourceEndpoints.ToIcdHashSet();
-			IcdHashSet<EndpointInfo> newSourceEndpoints = args.NewSourceEndpoints.ToIcdHashSet();
-			IcdHashSet<EndpointInfo> destinationEndpoints = args.DestinationEndpoints.ToIcdHashSet();
+			if (args == null)
+				throw new ArgumentNullException("args");
+
+			IcdHashSet<EndpointInfo> oldSourceEndpoints =
+				args.OldSourceEndpoints as IcdHashSet<EndpointInfo> ?? args.OldSourceEndpoints.ToIcdHashSet();
+			IcdHashSet<EndpointInfo> newSourceEndpoints =
+				args.NewSourceEndpoints as IcdHashSet<EndpointInfo> ?? args.NewSourceEndpoints.ToIcdHashSet();
+			IcdHashSet<EndpointInfo> destinationEndpoints =
+				args.DestinationEndpoints as IcdHashSet<EndpointInfo> ?? args.DestinationEndpoints.ToIcdHashSet();
+
+			// No change
+			if (destinationEndpoints.Count == 0)
+				return;
+
+			// No change
+			if (oldSourceEndpoints.SetEquals(newSourceEndpoints))
+				return;
+
+			eConnectionType typeChange = eConnectionType.None;
 
 			m_CacheSection.Enter();
 
@@ -1232,27 +1248,37 @@ namespace ICD.Connect.Routing
 			{
 				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(args.Type))
 				{
-					RemoveOldValuesFromSourceCache(oldSourceEndpoints, destinationEndpoints, flag);
-					AddNewValuesToSourceCache(newSourceEndpoints, destinationEndpoints, flag);
+					bool change = false;
 
-					if (oldSourceEndpoints.SetEquals(newSourceEndpoints))
-						continue;
+					if (oldSourceEndpoints.Count > 0)
+					{
+						change |= RemoveOldValuesFromSourceCache(oldSourceEndpoints, destinationEndpoints, flag);
+						change |= RemoveOldValuesFromDestinationCache(oldSourceEndpoints, destinationEndpoints, flag);
+					}
 
-					RemoveOldValuesFromDestinationCache(oldSourceEndpoints, destinationEndpoints, flag);
-					AddNewValuesToDestinationCache(newSourceEndpoints, destinationEndpoints, flag);
+					if (newSourceEndpoints.Count > 0)
+					{
+						change |= AddNewValuesToSourceCache(newSourceEndpoints, destinationEndpoints, flag);
+						change |= AddNewValuesToDestinationCache(newSourceEndpoints, destinationEndpoints, flag);
+					}
 
 					if (m_DebugEnabled)
 						PrintRouteMaps();
 
-					OnEndpointRouteChanged.Raise(this, new EndpointRouteChangedEventArgs());
-
-					OnSourceDestinationRouteChanged.Raise(this, new SourceDestinationRouteChangedEventArgs(flag));
+					if (change)
+						typeChange |= flag;
 				}
 			}
 			finally
 			{
 				m_CacheSection.Leave();
 			}
+
+			if (typeChange == eConnectionType.None)
+				return;
+
+			OnEndpointRouteChanged.Raise(this, new EndpointRouteChangedEventArgs());
+			OnSourceDestinationRouteChanged.Raise(this, new SourceDestinationRouteChangedEventArgs(typeChange));
 		}
 
 		private void RoutingGraphOnSourceTransmissionStateChanged(object sender, EndpointStateEventArgs args)
