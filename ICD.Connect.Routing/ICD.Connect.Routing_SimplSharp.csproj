@@ -132,7 +132,6 @@
     <Compile Include="Extensions\CoreExtensions.cs" />
     <Compile Include="Extensions\DeviceFactoryExtensions.cs" />
     <Compile Include="RoutingGraphs\ConnectionsCollection.cs" />
-    <Compile Include="RoutingGraphs\ConnectionUsageCollection.cs" />
     <Compile Include="RoutingGraphs\FilteredConnectionLookupKey.cs" />
     <Compile Include="RoutingGraphs\IRoutingGraph.cs" />
     <None Include="ObfuscationSettings.cs" />
@@ -149,8 +148,6 @@
     <Compile Include="Connections\Connection.cs" />
     <Compile Include="Connections\ConnectionSettings.cs" />
     <Compile Include="Connections\IConnectionsCollection.cs" />
-    <Compile Include="ConnectionUsage\ConnectionUsageInfo.cs" />
-    <Compile Include="ConnectionUsage\IConnectionUsageCollection.cs" />
     <Compile Include="ConnectorInfo.cs" />
     <Compile Include="Endpoints\AbstractSourceDestinationBase.cs" />
     <Compile Include="Endpoints\AbstractSourceDestinationBaseSettings.cs" />

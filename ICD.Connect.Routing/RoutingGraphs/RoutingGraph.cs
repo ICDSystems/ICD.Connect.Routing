@@ -11,7 +11,6 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.ConnectionUsage;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
@@ -65,7 +64,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private readonly ConnectionsCollection m_Connections;
 		private readonly StaticRoutesCollection m_StaticRoutes;
-		private readonly ConnectionUsageCollection m_ConnectionUsages;
 		private readonly CoreSourceCollection m_Sources;
 		private readonly CoreDestinationCollection m_Destinations;
 		private readonly CoreDestinationGroupCollection m_DestinationGroups;
@@ -90,11 +88,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// Gets the static routes collection.
 		/// </summary>
 		public override IOriginatorCollection<StaticRoute> StaticRoutes { get { return m_StaticRoutes; } }
-
-		/// <summary>
-		/// Gets the connection usages collection.
-		/// </summary>
-		public override IConnectionUsageCollection ConnectionUsages { get { return m_ConnectionUsages; } }
 
 		/// <summary>
 		/// Gets the sources collection.
@@ -130,7 +123,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_SubscribedSources = new IcdHashSet<IRouteSourceControl>();
 
 			m_StaticRoutes = new StaticRoutesCollection(this);
-			m_ConnectionUsages = new ConnectionUsageCollection(this);
 			m_Connections = new ConnectionsCollection(this);
 			m_Sources = new CoreSourceCollection();
 			m_Destinations = new CoreDestinationCollection();
@@ -263,8 +255,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					return null;
 
 				IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
-				if (sourceControl == null)
-					return null;
 
 				IRouteMidpointControl sourceAsMidpoint = sourceControl as IRouteMidpointControl;
 				if (sourceAsMidpoint == null)
@@ -458,8 +448,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					break;
 
 				IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
-				if (sourceControl == null)
-					break;
 
 				// Ensure the source output even supports the given type.
 				ConnectorInfo output = sourceControl.GetOutput(inputConnection.Source.Address);
@@ -603,12 +591,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			}
 
 			IRouteDestinationControl destination = this.GetDestinationControl(outputConnection);
-			if (destination == null)
-			{
-				if (visited.Count > 0)
-					yield return visited.ToArray(visited.Count);
-				yield break;
-			}
 
 			// Ensure the destination input even supports the given type.
 			ConnectorInfo input = destination.GetInput(outputConnection.Destination.Address);
@@ -1190,16 +1172,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="sourceOutput"></param>
 		/// <returns></returns>
 		public override IRouteSourceControl GetSourceControl(IRouteDestinationControl destination, int address,
-		                                                     eConnectionType type,
-		                                                     out int sourceOutput)
+		                                                     eConnectionType type, out int sourceOutput)
 		{
-			sourceOutput = 0;
-
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			Connection connection = m_Connections.GetInputConnections(destination.Parent.Id, destination.Id, type)
-			                                     .FirstOrDefault(c => c.Destination.Address == address);
+			sourceOutput = 0;
+
+			Connection connection = m_Connections.GetInputConnection(destination.GetInputEndpointInfo(address), type);
 			if (connection == null)
 				return null;
 
@@ -1278,6 +1258,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			EndpointInfo endpoint = destination.GetInputEndpointInfo(args.Input);
 
+			// If there's no connection to the input we don't care about it
+			if (Connections.GetInputConnection(endpoint, args.Type) == null)
+				return;
+
 			OnDestinationInputActiveStateChanged.Raise(this, new EndpointStateEventArgs(endpoint, args.Type, args.Active));
 		}
 
@@ -1297,6 +1281,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			int output;
 			IRouteSourceControl source = GetSourceControl(destination, args.Input, args.Type, out output);
+
+			// No source to detect
 			if (source == null)
 				return;
 
@@ -1372,6 +1358,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			EndpointInfo endpoint = source.GetOutputEndpointInfo(args.Output);
+
+			// If there's no connection from the output we don't care about it
+			if (Connections.GetOutputConnection(endpoint, args.Type) == null)
+				return;
+
 			OnSourceTransmissionStateChanged.Raise(this, new EndpointStateEventArgs(endpoint, args.Type, args.State));
 		}
 
@@ -1440,6 +1431,15 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (switcher == null)
 				return;
 
+			IcdHashSet<EndpointInfo> destinations =
+				GetDestinationEndpoints(switcher.GetOutputEndpointInfo(args.Output), args.Type)
+					.Where(e => switcher.Parent.Id != e.Device)
+					.ToIcdHashSet();
+
+			// Don't care about a route change if there are no destinations
+			if (destinations.Count == 0)
+				return;
+
 			IcdHashSet<EndpointInfo> oldSources = new IcdHashSet<EndpointInfo>();
 			IcdHashSet<EndpointInfo> newSources = new IcdHashSet<EndpointInfo>();
 
@@ -1459,10 +1459,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				newSources.AddRange(sources);
 			}
 
-			IcdHashSet<EndpointInfo> destinations =
-				GetDestinationEndpoints(switcher.GetOutputEndpointInfo(args.Output), args.Type)
-				.Where(e => switcher.Parent.Id != e.Device )
-					.ToIcdHashSet();
+			// No change
+			if (oldSources.SetEquals(newSources))
+				return;
 
 			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args, oldSources, newSources, destinations));
 
@@ -1486,7 +1485,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				// Grab the immediate destination for this source and add it to the hashset
 				Connection connection = m_Connections.GetOutputConnection(current);
-				if(connection == null || !connection.ConnectionType.HasFlag(type))
+				if (connection == null || !connection.ConnectionType.HasFlag(type))
 					continue;
 
 				destinations.Add(connection.Destination);
@@ -1525,9 +1524,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			yield return inputConnection.Source;
 
 			IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
-			if (sourceControl == null)
-				yield break;
-
 			IRouteMidpointControl sourceAsMidpoint = sourceControl as IRouteMidpointControl;
 			if (sourceAsMidpoint == null)
 				yield break;

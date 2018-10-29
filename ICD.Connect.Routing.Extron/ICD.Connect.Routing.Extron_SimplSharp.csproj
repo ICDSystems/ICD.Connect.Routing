@@ -66,16 +66,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\Volume\AbstractExtronVolumeDeviceControl.cs" />
-    <Compile Include="Devices\Switchers\DtpCrosspoint84\DtpCrosspoint84.cs" />
-    <Compile Include="Devices\Switchers\DtpCrosspoint84\DtpCrosspoint84Settings.cs" />
-    <Compile Include="Devices\Switchers\AbstractDtpCrosspointDevice.cs" />
-    <Compile Include="Devices\Switchers\AbstractDtpCrosspointSettings.cs" />
-    <Compile Include="Devices\Switchers\DtpCrosspointSwitcherControl.cs" />
-    <Compile Include="Devices\Switchers\ExtronXmlUtils.cs" />
-    <Compile Include="Devices\Switchers\IDtpCrosspointSettings.cs" />
-    <Compile Include="Devices\Switchers\IDtpCrosspointSwitcherControl.cs" />
+    <Compile Include="Devices\Switchers\AbstractExtronSwitcherDevice.cs" />
+    <Compile Include="Devices\Switchers\AbstractExtronSwitcherDeviceSettings.cs" />
+    <Compile Include="Devices\Switchers\DtpCrosspoint\DtpCrosspoint84\DtpCrosspoint84Device.cs" />
+    <Compile Include="Devices\Switchers\DtpCrosspoint\DtpCrosspoint84\DtpCrosspoint84Settings.cs" />
+    <Compile Include="Devices\Switchers\DtpCrosspoint\AbstractDtpCrosspointDevice.cs" />
+    <Compile Include="Devices\Switchers\DtpCrosspoint\AbstractDtpCrosspointSettings.cs" />
+    <Compile Include="Controls\ExtronSwitcherControl.cs" />
+    <Compile Include="Devices\Switchers\DtpCrosspoint\ExtronXmlUtils.cs" />
+    <Compile Include="Devices\Switchers\DtpCrosspoint\IDtpCrosspointSettings.cs" />
+    <Compile Include="Controls\IExtronSwitcherControl.cs" />
     <Compile Include="Devices\Endpoints\AbstractDtpHdmiDevice.cs" />
-    <Compile Include="Devices\Switchers\IDtpCrosspointDevice.cs" />
+    <Compile Include="Devices\Switchers\DtpCrosspoint\IDtpCrosspointDevice.cs" />
     <Compile Include="Devices\Endpoints\DtpHdmiMidpointControl.cs" />
     <Compile Include="Devices\Endpoints\IDtpHdmiDevice.cs" />
     <Compile Include="Devices\Endpoints\IDtpHdmiDeviceSettings.cs" />
@@ -91,7 +93,22 @@
     <Compile Include="Controls\Volume\ExtronVolumeUtils.cs" />
     <Compile Include="Controls\Volume\ExtronVolumeDeviceControl.cs" />
     <Compile Include="Controls\Volume\ExtronGroupVolumeDeviceControl.cs" />
+    <None Include="DTPCrossPoint84.pdf" />
     <None Include="ObfuscationSettings.cs" />
+    <Compile Include="Devices\Switchers\IExtronSwitcherDevice.cs" />
+    <Compile Include="Devices\Switchers\IExtronSwitcherDeviceSettings.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\AbstractSwHd4KDevice.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\AbstractSwHd4KSettings.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\ISwHd4KDevice.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\ISwHd4KSettings.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\Sw2Hd4K\Sw2Hd4KDevice.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\Sw2Hd4K\Sw2Hd4KSettings.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\Sw4Hd4K\Sw4Hd4KDevice.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\Sw4Hd4K\Sw4Hd4KSettings.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\Sw6Hd4K\Sw6Hd4KDevice.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\Sw6Hd4K\Sw6Hd4KSettings.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\Sw8Hd4K\Sw8Hd4KDevice.cs" />
+    <Compile Include="Devices\Switchers\SwHd4K\Sw8Hd4K\Sw8Hd4KSettings.cs" />
     <Compile Include="eExtronVerbosity.cs" />
     <Compile Include="SerialBuffers\DtpCrosspointSerialBuffer.cs" />
     <Compile Include="KrangPlugin.cs" />
@@ -99,6 +116,7 @@
     <Compile Include="Ports\DtpCrosspointComPortSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\ControlSystem.cfg" />
+    <None Include="SWHD4KSeries.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ICD.Common.Utils\ICD.Common.Utils\ICD.Common.Utils_SimplSharp.csproj">

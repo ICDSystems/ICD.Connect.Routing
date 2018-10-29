@@ -6,11 +6,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+ - Added Extron SWHD4K devices
+
+## [10.2.0] - 2018-10-18
+### Added
  - Added console command to 2 series dmps for logging when the dmps makes a route
  - Added DmNvx 350 and 351 streaming devices
  - Added DmNvx 350C and 351C streaming cards
  - Added DmXioDirector 80, 160 and Enterprise devices
  - Added DmNvx Primary and Secondary stream switchers
+
+### Changed
+ - Pathfinding optimizations
 
 ## [10.1.0] - 2018-10-04
 ### Added

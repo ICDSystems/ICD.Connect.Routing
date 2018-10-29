@@ -4,7 +4,6 @@ using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.ConnectionUsage;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
@@ -50,11 +49,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// Gets the connections collection.
 		/// </summary>
 		public abstract IConnectionsCollection Connections { get; }
-
-		/// <summary>
-		/// Gets the connection usages collection.
-		/// </summary>
-		public abstract IConnectionUsageCollection ConnectionUsages { get; }
 
 		/// <summary>
 		/// Gets the static routes collection.
