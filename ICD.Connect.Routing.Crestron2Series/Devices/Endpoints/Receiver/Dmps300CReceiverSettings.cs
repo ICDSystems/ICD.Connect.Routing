@@ -1,27 +1,14 @@
-﻿using System;
-using ICD.Common.Utils.Xml;
+﻿using ICD.Common.Utils.Xml;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Receiver
 {
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("Dmps300CReceiver", typeof(Dmps300CReceiver))]
 	public sealed class Dmps300CReceiverSettings : AbstractDmps300CEndpointDeviceSettings
 	{
-		private const string FACTORY_NAME = "Dmps300CReceiver";
-
 		private const string DM_OUTPUT_ELEMENT = "DmOutput";
 
 		public int DmOutput { get; set; }
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(Dmps300CReceiver); } }
 
 		/// <summary>
 		/// Writes property elements to xml.

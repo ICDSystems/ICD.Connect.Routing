@@ -8,6 +8,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Devices;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
@@ -1558,9 +1559,27 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
 		}
 
+		protected override void CopySettingsFinal(RoutingGraphSettings settings)
+		{
+			base.CopySettingsFinal(settings);
+
+			settings.ConnectionSettings.SetRange(Connections.Where(c => c.Serialize)
+			                                                .Select(r => r.CopySettings())
+			                                                .Cast<ISettings>());
+			settings.StaticRouteSettings.SetRange(StaticRoutes.Where(c => c.Serialize)
+			                                                  .Select(r => r.CopySettings())
+			                                                  .Cast<ISettings>());
+			settings.SourceSettings.SetRange(Sources.Where(c => c.Serialize).Select(r => r.CopySettings()));
+			settings.DestinationSettings.SetRange(Destinations.Where(c => c.Serialize).Select(r => r.CopySettings()));
+			settings.DestinationGroupSettings.SetRange(DestinationGroups.Where(c => c.Serialize).Select(r => r.CopySettings()));
+		}
+
 		protected override void ApplySettingsFinal(RoutingGraphSettings settings, IDeviceFactory factory)
 		{
 			m_Connections.OnChildrenChanged -= ConnectionsOnConnectionsChanged;
+
+			// First locad in all of the devices
+			factory.LoadOriginators<IDeviceBase>();
 
 			base.ApplySettingsFinal(settings, factory);
 
@@ -1630,21 +1649,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				yield return output;
 			}
-		}
-
-		protected override void CopySettingsFinal(RoutingGraphSettings settings)
-		{
-			base.CopySettingsFinal(settings);
-
-			settings.ConnectionSettings.SetRange(Connections.Where(c => c.Serialize)
-			                                                .Select(r => r.CopySettings())
-			                                                .Cast<ISettings>());
-			settings.StaticRouteSettings.SetRange(StaticRoutes.Where(c => c.Serialize)
-			                                                  .Select(r => r.CopySettings())
-			                                                  .Cast<ISettings>());
-			settings.SourceSettings.SetRange(Sources.Where(c => c.Serialize).Select(r => r.CopySettings()));
-			settings.DestinationSettings.SetRange(Destinations.Where(c => c.Serialize).Select(r => r.CopySettings()));
-			settings.DestinationGroupSettings.SetRange(DestinationGroups.Where(c => c.Serialize).Select(r => r.CopySettings()));
 		}
 
 		#endregion
