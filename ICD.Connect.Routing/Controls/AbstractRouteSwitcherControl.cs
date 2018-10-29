@@ -12,7 +12,7 @@ namespace ICD.Connect.Routing.Controls
 		where T : IDeviceBase
 	{
 		/// <summary>
-		/// Called when a route changes.
+		/// Raised when a route changes.
 		/// </summary>
 		public abstract event EventHandler<RouteChangeEventArgs> OnRouteChange;
 

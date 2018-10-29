@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Common.Utils.Xml;
+﻿using ICD.Common.Utils.Xml;
 using ICD.Connect.Protocol.Ports.RelayPort;
 using ICD.Connect.Routing.Crestron2Series.Devices;
 using ICD.Connect.Settings.Attributes;
@@ -7,11 +6,9 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 {
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("Dmps300CRelayPort", typeof(IDmps300CRelayPortDevice))]
 	public sealed class Dmps300CRelayPortSettings : AbstractRelayPortSettings
 	{
-		private const string FACTORY_NAME = "Dmps300CRelayPort";
-
 		private const string DEVICE_ELEMENT = "Device";
 		private const string ADDRESS_ELEMENT = "Address";
 
@@ -19,16 +16,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 		public int Device { get; set; }
 
 		public int Address { get; set; }
-
-		/// <summary>
-		/// Gets the originator factory name.
-		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
-
-		/// <summary>
-		/// Gets the type of the originator for this settings instance.
-		/// </summary>
-		public override Type OriginatorType { get { return typeof(Dmps300CRelayPort); } }
 
 		/// <summary>
 		/// Writes property elements to xml.

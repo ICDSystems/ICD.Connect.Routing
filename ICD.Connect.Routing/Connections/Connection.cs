@@ -4,8 +4,6 @@ using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Devices;
-using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Core;
@@ -250,22 +248,13 @@ namespace ICD.Connect.Routing.Connections
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			IDeviceBase source = factory.GetOriginatorById<IDeviceBase>(settings.SourceDeviceId);
-			IDeviceBase destination = factory.GetOriginatorById<IDeviceBase>(settings.DestinationDeviceId);
+			Source = new EndpointInfo(settings.SourceDeviceId,
+			                          settings.SourceControlId,
+			                          settings.SourceAddress);
 
-			// Validate the source and destination controls
-			source.Controls.GetControl<IRouteSourceControl>(settings.SourceControlId);
-			destination.Controls.GetControl<IRouteDestinationControl>(settings.DestinationControlId);
-	
-			Source = new EndpointInfo(
-				settings.SourceDeviceId,
-				settings.SourceControlId,
-				settings.SourceAddress);
-
-			Destination = new EndpointInfo(
-				settings.DestinationDeviceId,
-				settings.DestinationControlId,
-				settings.DestinationAddress);
+			Destination = new EndpointInfo(settings.DestinationDeviceId,
+			                               settings.DestinationControlId,
+			                               settings.DestinationAddress);
 
 			ConnectionType = settings.ConnectionType;
 

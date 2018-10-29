@@ -8,6 +8,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Devices;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
@@ -1182,16 +1183,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="sourceOutput"></param>
 		/// <returns></returns>
 		public override IRouteSourceControl GetSourceControl(IRouteDestinationControl destination, int address,
-		                                                     eConnectionType type,
-		                                                     out int sourceOutput)
+		                                                     eConnectionType type, out int sourceOutput)
 		{
-			sourceOutput = 0;
-
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			Connection connection = m_Connections.GetInputConnections(destination.Parent.Id, destination.Id, type)
-			                                     .FirstOrDefault(c => c.Destination.Address == address);
+			sourceOutput = 0;
+
+			Connection connection = m_Connections.GetInputConnection(destination.GetInputEndpointInfo(address), type);
 			if (connection == null)
 				return null;
 
@@ -1270,6 +1269,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			EndpointInfo endpoint = destination.GetInputEndpointInfo(args.Input);
 
+			// If there's no connection to the input we don't care about it
+			if (Connections.GetInputConnection(endpoint, args.Type) == null)
+				return;
+
 			OnDestinationInputActiveStateChanged.Raise(this, new EndpointStateEventArgs(endpoint, args.Type, args.Active));
 		}
 
@@ -1289,6 +1292,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			int output;
 			IRouteSourceControl source = GetSourceControl(destination, args.Input, args.Type, out output);
+
+			// No source to detect
 			if (source == null)
 				return;
 
@@ -1364,6 +1369,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			EndpointInfo endpoint = source.GetOutputEndpointInfo(args.Output);
+
+			// If there's no connection from the output we don't care about it
+			if (Connections.GetOutputConnection(endpoint, args.Type) == null)
+				return;
+
 			OnSourceTransmissionStateChanged.Raise(this, new EndpointStateEventArgs(endpoint, args.Type, args.State));
 		}
 
@@ -1432,6 +1442,15 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (switcher == null)
 				return;
 
+			IcdHashSet<EndpointInfo> destinations =
+				GetDestinationEndpoints(switcher.GetOutputEndpointInfo(args.Output), args.Type)
+					.Where(e => switcher.Parent.Id != e.Device)
+					.ToIcdHashSet();
+
+			// Don't care about a route change if there are no destinations
+			if (destinations.Count == 0)
+				return;
+
 			IcdHashSet<EndpointInfo> oldSources = new IcdHashSet<EndpointInfo>();
 			IcdHashSet<EndpointInfo> newSources = new IcdHashSet<EndpointInfo>();
 
@@ -1451,10 +1470,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				newSources.AddRange(sources);
 			}
 
-			IcdHashSet<EndpointInfo> destinations =
-				GetDestinationEndpoints(switcher.GetOutputEndpointInfo(args.Output), args.Type)
-				.Where(e => switcher.Parent.Id != e.Device )
-					.ToIcdHashSet();
+			// No change
+			if (oldSources.SetEquals(newSources))
+				return;
 
 			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args, oldSources, newSources, destinations));
 
@@ -1478,7 +1496,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				// Grab the immediate destination for this source and add it to the hashset
 				Connection connection = m_Connections.GetOutputConnection(current);
-				if(connection == null || !connection.ConnectionType.HasFlag(type))
+				if (connection == null || !connection.ConnectionType.HasFlag(type))
 					continue;
 
 				destinations.Add(connection.Destination);
@@ -1552,9 +1570,27 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
 		}
 
+		protected override void CopySettingsFinal(RoutingGraphSettings settings)
+		{
+			base.CopySettingsFinal(settings);
+
+			settings.ConnectionSettings.SetRange(Connections.Where(c => c.Serialize)
+			                                                .Select(r => r.CopySettings())
+			                                                .Cast<ISettings>());
+			settings.StaticRouteSettings.SetRange(StaticRoutes.Where(c => c.Serialize)
+			                                                  .Select(r => r.CopySettings())
+			                                                  .Cast<ISettings>());
+			settings.SourceSettings.SetRange(Sources.Where(c => c.Serialize).Select(r => r.CopySettings()));
+			settings.DestinationSettings.SetRange(Destinations.Where(c => c.Serialize).Select(r => r.CopySettings()));
+			settings.DestinationGroupSettings.SetRange(DestinationGroups.Where(c => c.Serialize).Select(r => r.CopySettings()));
+		}
+
 		protected override void ApplySettingsFinal(RoutingGraphSettings settings, IDeviceFactory factory)
 		{
 			m_Connections.OnChildrenChanged -= ConnectionsOnConnectionsChanged;
+
+			// First locad in all of the devices
+			factory.LoadOriginators<IDeviceBase>();
 
 			base.ApplySettingsFinal(settings, factory);
 
@@ -1624,21 +1660,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				yield return output;
 			}
-		}
-
-		protected override void CopySettingsFinal(RoutingGraphSettings settings)
-		{
-			base.CopySettingsFinal(settings);
-
-			settings.ConnectionSettings.SetRange(Connections.Where(c => c.Serialize)
-			                                                .Select(r => r.CopySettings())
-			                                                .Cast<ISettings>());
-			settings.StaticRouteSettings.SetRange(StaticRoutes.Where(c => c.Serialize)
-			                                                  .Select(r => r.CopySettings())
-			                                                  .Cast<ISettings>());
-			settings.SourceSettings.SetRange(Sources.Where(c => c.Serialize).Select(r => r.CopySettings()));
-			settings.DestinationSettings.SetRange(Destinations.Where(c => c.Serialize).Select(r => r.CopySettings()));
-			settings.DestinationGroupSettings.SetRange(DestinationGroups.Where(c => c.Serialize).Select(r => r.CopySettings()));
 		}
 
 		#endregion

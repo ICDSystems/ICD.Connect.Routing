@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+ - Added Extron SWHD4K devices
+ - Added DmNvx 350 and 351 streaming devices
+ - Added DmNvx 350C and 351C streaming cards
+ - Added DmXioDirector 80, 160 and Enterprise devices
+ - Added DmNvx Primary and Secondary stream switchers
+
 ### Changed
  - Fixed StackOverflow when getting active source and there is a loop in the path
 

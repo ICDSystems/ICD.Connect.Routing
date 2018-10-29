@@ -143,7 +143,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 			eDeviceRegistrationUnRegistrationResponse result = switcher.Register();
 			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-				Logger.AddEntry(eSeverity.Error, "{0} unable to register {1} - {2}", this, switcher.GetType().Name, result);
+				Log(eSeverity.Error, "Unable to register {0} - {1}", switcher.GetType().Name, result);
 		}
 
 		/// <summary>
