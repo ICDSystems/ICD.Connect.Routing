@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Added DmXioDirector 80, 160 and Enterprise devices
  - Added DmNvx Primary and Secondary stream switchers
 
+### Changed
+ - Fixed StackOverflow when getting active source and there is a loop in the path
+
 ## [10.2.0] - 2018-10-18
 ### Added
  - Added console command to 2 series dmps for logging when the dmps makes a route
