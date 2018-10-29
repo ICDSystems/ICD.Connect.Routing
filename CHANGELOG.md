@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
  - Fixed StackOverflow when getting active source and there is a loop in the path
+ - Significant optimizations to RoutingCache feedback
 
 ## [10.2.0] - 2018-10-18
 ### Added
