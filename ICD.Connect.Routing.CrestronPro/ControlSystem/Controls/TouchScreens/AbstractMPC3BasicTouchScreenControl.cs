@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
@@ -727,6 +728,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		public void SetVolumeBargraph(ushort percent)
 		{
 #if SIMPLSHARP
+			// Hack - Bargraph only starts showing values at 15%, should at least show something for 1%.
+			if (percent > 0)
+				percent = (ushort)MathUtils.MapRange(0, ushort.MaxValue, 0.2f * ushort.MaxValue, ushort.MaxValue, percent);
+
 			TouchScreen.VolumeBargraph.UShortValue = percent;
 #else
 			throw new NotSupportedException();
