@@ -1,6 +1,7 @@
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 {
@@ -11,7 +12,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 		private const string DIRECTOR_ID_ELEMENT = "DirectorId";
 		private const string DOMAIN_ID_ELEMENT = "DomainId";
 
-		public uint? EthernetId { get; set; }
+		[CrestronByteSettingsProperty]
+		public byte? EthernetId { get; set; }
 
 		public uint? EndpointId { get; set; }
 

@@ -6,7 +6,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 {
 	public interface IDm100XStrBaseAdapterSettings : IDeviceSettings
 	{
-		uint? EthernetId { get; set; }
+		byte? EthernetId { get; set; }
 
 		uint? EndpointId { get; set; }
 
