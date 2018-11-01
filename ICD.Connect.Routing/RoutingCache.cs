@@ -894,9 +894,10 @@ namespace ICD.Connect.Routing
 
 				m_SourceEndpointTransmitting[endpoint] = newFlags;
 
-				if (m_EndpointToSources.ContainsKey(endpoint))
+				IcdHashSet<ISource> sources;
+				if (m_EndpointToSources.TryGetValue(endpoint, out sources))
 				{
-					foreach (ISource source in m_EndpointToSources[endpoint])
+					foreach (ISource source in sources)
 						UpdateSourceTransmissionState(source);
 				}
 
