@@ -114,10 +114,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 
-			TableBuilder builder = new TableBuilder("Source", "Output", "Destination", "Input", "Type");
+			TableBuilder builder = new TableBuilder("Source", "Destination", "Type");
 
 			foreach (Connection con in instance.Connections.GetChildren().OrderBy(c => c.Source.Device).ThenBy(c => c.Source.Address))
-				builder.AddRow(con.Source, con.Source.Address, con.Destination, con.Destination.Address, con.ConnectionType);
+				builder.AddRow(con.Source, con.Destination, con.ConnectionType);
 
 			return builder.ToString();
 		}
