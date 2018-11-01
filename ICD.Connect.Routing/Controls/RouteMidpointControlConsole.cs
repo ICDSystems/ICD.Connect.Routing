@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
-using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
@@ -53,22 +52,23 @@ namespace ICD.Connect.Routing.Controls
 
 		private static string PrintRouteStatusTable(IRouteMidpointControl instance)
 		{
-			TableBuilder builder = new TableBuilder("Input", "Type", "Detected", "Outputs");
+			TableBuilder builder = new TableBuilder("Output", "Type", "Input");
 
-			foreach (ConnectorInfo input in instance.GetInputs().OrderBy(c => c.Address))
+			foreach (ConnectorInfo output in instance.GetOutputs().OrderBy(c => c.Address))
 			{
 				bool first = true;
 
-				foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(input.ConnectionType))
+				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(output.ConnectionType))
 				{
-					string inputString = first ? input.Address.ToString() : string.Empty;
+					string outputString = first ? output.Address.ToString() : string.Empty;
 					first = false;
 
-					string typeString = type.ToString();
-					string detectedString = instance.GetSignalDetectedState(input.Address, type) ? "True" : string.Empty;
-					string outputsString = StringUtils.ArrayFormat(instance.GetOutputs(input.Address, type).Order());
+					string typeString = flag.ToString();
 
-					builder.AddRow(inputString, typeString, detectedString, outputsString);
+					ConnectorInfo? input = instance.GetInput(output.Address, flag);
+					string inputString = input.HasValue ? input.Value.Address.ToString() : null;
+
+					builder.AddRow(outputString, typeString, inputString);
 				}
 			}
 
