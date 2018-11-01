@@ -289,7 +289,7 @@ namespace ICD.Connect.Routing.Utils
 				m_OutputInputMapSection.Leave();
 			}
 
-			UpdateInputOutputMap(oldInput, input, output, flag);
+			SetActiveInputForOutput(oldInput, input, output, flag);
 			SetActiveTransmissionState(output, flag, input.HasValue);
 
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(oldInput, input, output, flag));
@@ -340,7 +340,7 @@ namespace ICD.Connect.Routing.Utils
 		/// <param name="newInput"></param>
 		/// <param name="output"></param>
 		/// <param name="type"></param>
-		private void UpdateInputOutputMap(int? oldInput, int? newInput, int output, eConnectionType type)
+		private void SetActiveInputForOutput(int? oldInput, int? newInput, int output, eConnectionType type)
 		{
 			// No change
 			if (oldInput == newInput)

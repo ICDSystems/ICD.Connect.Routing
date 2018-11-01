@@ -1443,9 +1443,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			IcdHashSet<EndpointInfo> destinations =
-				GetDestinationEndpoints(switcher.GetOutputEndpointInfo(args.Output), args.Type)
-					.Where(e => switcher.Parent.Id != e.Device)
-					.ToIcdHashSet();
+				GetDestinationEndpoints(switcher.GetOutputEndpointInfo(args.Output), args.Type).ToIcdHashSet();
 
 			// Don't care about a route change if there are no destinations
 			if (destinations.Count == 0)
@@ -1480,6 +1478,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_StaticRoutes.ReApplyStaticRoutesForSwitcher(switcher);
 		}
 
+		/// <summary>
+		/// Walks forward from the given output endpoint and returns all of the input endpoints.
+		/// </summary>
+		/// <param name="outputEndpointInfo"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
 		private IEnumerable<EndpointInfo> GetDestinationEndpoints(EndpointInfo outputEndpointInfo, eConnectionType type)
 		{
 			if (EnumUtils.HasMultipleFlags(type))
@@ -1503,20 +1507,17 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				// If destination represents a midpoint device, find the outputs on that device and
 				// push onto the end of the queue
-				IRouteControl destinationControl = GetControl<IRouteControl>(connection.Destination.Device,
-				                                                             connection.Destination.Control);
-
-				if (!(destinationControl is IRouteMidpointControl))
+				IRouteMidpointControl destinationControl =
+					GetControl<IRouteDestinationControl>(connection.Destination.Device,
+					                                     connection.Destination.Control) as IRouteMidpointControl;
+				if (destinationControl == null)
 					continue;
 
-				IRouteMidpointControl midpointControl = destinationControl as IRouteMidpointControl;
-
-				process.EnqueueRange(midpointControl.GetOutputs(connection.Destination.Address, type)
-													.Where(c => c.ConnectionType.HasFlag(type))
-				                                    .Select(c =>
-				                                            new EndpointInfo(connection.Destination.Device,
-				                                                             connection.Destination.Control, 
-																			 c.Address)));
+				process.EnqueueRange(destinationControl.GetOutputs(connection.Destination.Address, type)
+				                                       .Where(c => c.ConnectionType.HasFlag(type))
+				                                       .Select(c => new EndpointInfo(connection.Destination.Device,
+				                                                                     connection.Destination.Control,
+				                                                                     c.Address)));
 			}
 
 			return destinations;
@@ -1524,27 +1525,30 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private IEnumerable<EndpointInfo> GetSourceEndpointsRecursive(EndpointInfo inputEndpointInfo, eConnectionType flag)
 		{
-			Connection inputConnection = m_Connections.GetInputConnection(inputEndpointInfo);
-			if (inputConnection == null)
-				yield break;
+			while (true)
+			{
+				Connection connection = m_Connections.GetInputConnection(inputEndpointInfo);
+				if (connection == null)
+					yield break;
 
-			// Narrow the type by what the connection supports
-			if (!inputConnection.ConnectionType.HasFlag(flag))
-				yield break;
+				// Narrow the type by what the connection supports
+				if (!connection.ConnectionType.HasFlag(flag))
+					yield break;
 
-			yield return inputConnection.Source;
+				yield return connection.Source;
 
-			IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
-			IRouteMidpointControl sourceAsMidpoint = sourceControl as IRouteMidpointControl;
-			if (sourceAsMidpoint == null)
-				yield break;
+				IRouteMidpointControl sourceAsMidpoint =
+					GetControl<IRouteSourceControl>(connection.Destination.Device,
+					                                connection.Destination.Control) as IRouteMidpointControl;
+				if (sourceAsMidpoint == null)
+					yield break;
 
-			ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, flag);
-			if (sourceConnector == null)
-				yield break;
+				ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(connection.Source.Address, flag);
+				if (sourceConnector == null)
+					yield break;
 
-			foreach (EndpointInfo endpoint in GetSourceEndpointsRecursive(sourceAsMidpoint.GetInputEndpointInfo(sourceConnector.Value.Address), flag))
-				yield return endpoint;
+				inputEndpointInfo = sourceAsMidpoint.GetInputEndpointInfo(sourceConnector.Value.Address);
+			}
 		}
 
 		#endregion
