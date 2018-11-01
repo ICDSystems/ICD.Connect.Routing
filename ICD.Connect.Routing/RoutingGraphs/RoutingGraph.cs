@@ -1538,8 +1538,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				yield return connection.Source;
 
 				IRouteMidpointControl sourceAsMidpoint =
-					GetControl<IRouteSourceControl>(connection.Destination.Device,
-					                                connection.Destination.Control) as IRouteMidpointControl;
+					GetControl<IRouteSourceControl>(connection.Source.Device,
+					                                connection.Source.Control) as IRouteMidpointControl;
 				if (sourceAsMidpoint == null)
 					yield break;
 
