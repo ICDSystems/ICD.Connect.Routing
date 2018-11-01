@@ -1311,15 +1311,11 @@ namespace ICD.Connect.Routing
 
 			try
 			{
-				bool endpointChanged = false;
+				// We don't care about transmission state changes unless it's a source
 				if (!m_EndpointToSources.ContainsKey(args.Endpoint))
-				{
-					UpdateSourceEndpoint(args.Endpoint);
-					endpointChanged = true;
-				}
+					return;
 
-				endpointChanged |= UpdateSourceEndpointTransmissionState(args.Endpoint, args.Type, args.State);
-
+				bool endpointChanged = UpdateSourceEndpointTransmissionState(args.Endpoint, args.Type, args.State);
 				if (endpointChanged)
 					OnTransmissionStateChanged.Raise(this, new CacheStateChangedEventArgs(new[] { args.Endpoint },
 																						  args.Type,
@@ -1337,15 +1333,11 @@ namespace ICD.Connect.Routing
 
 			try
 			{
-				bool endpointChanged = false;
+				// We don't care about detection state changes unless it's a source
 				if (!m_EndpointToSources.ContainsKey(args.Endpoint))
-				{
-					UpdateSourceEndpoint(args.Endpoint);
-					endpointChanged = true;
-				}
+					return;
 
-				endpointChanged |= UpdateSourceEndpointDetectionState(args.Endpoint, args.Type, args.State);
-
+				bool endpointChanged = UpdateSourceEndpointDetectionState(args.Endpoint, args.Type, args.State);
 				if (endpointChanged)
 					OnDetectionStateChanged.Raise(this, new CacheStateChangedEventArgs(new[] { args.Endpoint },
 																					   args.Type,
@@ -1363,15 +1355,11 @@ namespace ICD.Connect.Routing
 
 			try
 			{
-				bool endpointChanged = false;
+				// We don't care about active state changes unless it's a destination
 				if (!m_EndpointToDestinations.ContainsKey(args.Endpoint))
-				{
-					UpdateDestinationEndpoint(args.Endpoint);
-					endpointChanged = true;
-				}
+					return;
 
-				endpointChanged |= UpdateDestinationEndpointInputActiveState(args.Endpoint, args.Type, args.State);
-
+				bool endpointChanged = UpdateDestinationEndpointInputActiveState(args.Endpoint, args.Type, args.State);
 				if (endpointChanged)
 					OnDestinationEndpointActiveChanged.Raise(this, new CacheStateChangedEventArgs(new[] { args.Endpoint },
 																								  args.Type,
