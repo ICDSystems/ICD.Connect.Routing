@@ -2,6 +2,7 @@
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.RoutingGraphs;
@@ -33,23 +34,28 @@ namespace ICD.Connect.Routing.Utils
 			TableBuilder builder = new TableBuilder("Device", "Address", "Type", "Signal Detected", "Input Active",
 			                                        "Output Active Transmission", "Connected Device");
 
-			IRouteControl[] devices = m_RoutingGraph == null
-				                          ? new IRouteControl[0]
-				                          : m_RoutingGraph.Connections
-				                                          .SelectMany(c => m_RoutingGraph.GetControls(c))
-				                                          .Except((IRouteControl)null)
-				                                          .Distinct()
-				                                          .OrderBy(d => d.Id)
-				                                          .ToArray();
+			IRouteControl[] controls = m_RoutingGraph == null
+				                           ? new IRouteControl[0]
+				                           : m_RoutingGraph.Connections
+				                                           .SelectMany(c => m_RoutingGraph.GetControls(c))
+				                                           .Except((IRouteControl)null)
+				                                           .Distinct()
+				                                           .OrderBy(d => d.Parent.Id)
+				                                           .ToArray();
 
-			for (int index = 0; index < devices.Length; index++)
+			for (int index = 0; index < controls.Length; index++)
 			{
 				if (index != 0)
 					builder.AddSeparator();
 
-				string deviceName = devices[index].ToString();
+				IRouteControl control = controls[index];
+				IDeviceBase parent = control.Parent;
 
-				List<string[]> rows = GetDeviceRows(devices[index]);
+				string deviceName = parent.ToString();
+				if (control.Id != 0)
+					deviceName = string.Format("{0} - Control={1}", deviceName, control.Id);
+
+				List<string[]> rows = GetDeviceRows(controls[index]);
 
 				// Edge case - Sometimes we have mock devices with no inputs or outputs
 				if (rows.Count == 0)
@@ -109,7 +115,13 @@ namespace ICD.Connect.Routing.Utils
 
 				int outputAddress;
 				IRouteSourceControl source = m_RoutingGraph.GetSourceControl(destination, info.Address, flag, out outputAddress);
-				string connectedDevice = source == null ? null : string.Format("{0} - Output {1}", source, outputAddress);
+				IDeviceBase parent = source == null ? null : source.Parent;
+
+				string deviceName = parent == null ? null : parent.ToString();
+				if (source != null && source.Id != 0)
+					deviceName = string.Format("{0} - Control={1}", deviceName, source.Id);
+
+				string connectedDevice = source == null ? null : string.Format("{0} - Output {1}", deviceName, outputAddress);
 
 				string[] row =
 				{
