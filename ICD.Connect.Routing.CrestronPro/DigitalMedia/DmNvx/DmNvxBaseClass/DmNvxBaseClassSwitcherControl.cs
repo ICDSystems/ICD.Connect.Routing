@@ -326,8 +326,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			{
 				switch (input)
 				{
-					case OUTPUT_STREAM:
-					case OUTPUT_SECONDARY_AUDIO_STREAM:
+					case INPUT_STREAM:
+					case INPUT_SECONDARY_AUDIO_STREAM:
 						return false;
 				}
 			}
@@ -346,8 +346,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			{
 				switch (output)
 				{
-					case INPUT_STREAM:
-					case INPUT_SECONDARY_AUDIO_STREAM:
+					case OUTPUT_STREAM:
+					case OUTPUT_SECONDARY_AUDIO_STREAM:
 						return false;
 				}
 			}
