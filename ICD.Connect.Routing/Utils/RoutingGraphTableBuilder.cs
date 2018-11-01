@@ -151,9 +151,15 @@ namespace ICD.Connect.Routing.Utils
 			{
 				string outputActiveString = GetOutputActiveString(source, info, flag);
 
-				int input;
-				IRouteDestinationControl destination = m_RoutingGraph.GetDestinationControl(source, info.Address, flag, out input);
-				string connectedDevice = destination == null ? null : string.Format("{0} - Input {1}", destination, input);
+				int inputAddress;
+				IRouteDestinationControl destination = m_RoutingGraph.GetDestinationControl(source, info.Address, flag, out inputAddress);
+				IDeviceBase parent = destination == null ? null : destination.Parent;
+
+				string deviceName = parent == null ? null : parent.ToString();
+				if (destination != null && destination.Id != 0)
+					deviceName = string.Format("{0} - Control={1}", deviceName, destination.Id);
+
+				string connectedDevice = destination == null ? null : string.Format("{0} - Input {1}", deviceName, inputAddress);
 
 				string[] row =
 				{
