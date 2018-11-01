@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Properties;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -118,7 +119,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		private readonly SwitcherCache m_Cache;
 
 #if SIMPLSHARP
+		[CanBeNull]
 		private Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass m_Streamer;
+		[CanBeNull]
 		private DmNvxControl m_NvxControl;
 #endif
 
@@ -402,6 +405,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			if (m_Streamer == null)
 				throw new InvalidOperationException("Wrapped streamer is null");
 
+			if (m_NvxControl == null)
+				throw new InvalidOperationException("Wrapped control is null");
+
 			eConnectionType type = info.ConnectionType;
 			int input = info.LocalInput;
 			int output = info.LocalOutput;
@@ -451,6 +457,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 #if SIMPLSHARP
 			if (m_Streamer == null)
 				throw new InvalidOperationException("Wrapped streamer is null");
+
+			if (m_NvxControl == null)
+				throw new InvalidOperationException("Wrapped control is null");
 
 			if (EnumUtils.HasMultipleFlags(type))
 			{
@@ -615,8 +624,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// </summary>
 		private void UpdateAudioRouting()
 		{
-			DmNvxControl.eAudioSource audioSource = m_NvxControl.AudioSourceFeedback;
+			DmNvxControl.eAudioSource audioSource =
+				m_NvxControl == null
+					? DmNvxControl.eAudioSource.NoAudioSelected
+					: m_NvxControl.AudioSourceFeedback;
+
 			bool secondaryAudioEnabled =
+				m_Streamer != null &&
 				m_Streamer.SecondaryAudio.StatusFeedback !=
 				Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass.DmNvx35xSecondaryAudio.eDeviceStatus.StreamStopped;
 
@@ -638,7 +652,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// </summary>
 		private void UpdateVideoRouting()
 		{
-			eSfpVideoSourceTypes videoSource = m_NvxControl.VideoSourceFeedback;
+			eSfpVideoSourceTypes videoSource =
+				m_NvxControl == null
+					? eSfpVideoSourceTypes.Disable
+					: m_NvxControl.VideoSourceFeedback;
 
 			int videoInput;
 			if (s_VideoSources.TryGetKey(videoSource, out videoInput))
