@@ -171,15 +171,15 @@ namespace ICD.Connect.Routing.Utils
 		private static string GetOutputActiveString(IRouteSourceControl source, ConnectorInfo info, eConnectionType flag)
 		{
 			bool outputActive = source.GetActiveTransmissionState(info.Address, flag);
-			IRouteMidpointControl switcher = source as IRouteMidpointControl;
+			IRouteMidpointControl midpoint = source as IRouteMidpointControl;
 
-			if (switcher == null)
+			if (midpoint == null)
 				return outputActive.ToString();
 
-			ConnectorInfo? input = switcher.GetInput(info.Address, flag);
+			ConnectorInfo? input = midpoint.GetInput(info.Address, flag);
 
 			return input.HasValue
-				? string.Format("{0} (input={1})", outputActive, input == input.Value)
+				? string.Format("{0} (input={1})", outputActive, input.Value.Address)
 				: string.Format("{0}", outputActive);
 		}
 	}
