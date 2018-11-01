@@ -913,6 +913,9 @@ namespace ICD.Connect.Routing
 
 		private void UpdateSourceTransmissionState(ISource source)
 		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
 			m_CacheSection.Enter();
 
 			try
@@ -977,6 +980,9 @@ namespace ICD.Connect.Routing
 
 		private void UpdateSourceDetectionState(ISource source)
 		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
 			m_CacheSection.Enter();
 
 			try
