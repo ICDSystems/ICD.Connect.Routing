@@ -693,6 +693,7 @@ namespace ICD.Connect.Routing
 					{
 						IcdHashSet<EndpointInfo> activeRouteSourceEndpoints = new IcdHashSet<EndpointInfo>();
 						IcdHashSet<EndpointInfo> activeRouteDestinationEndpoints = new IcdHashSet<EndpointInfo>();
+
 						Queue<EndpointInfo> process = new Queue<EndpointInfo>();
 						process.Enqueue(destinationEndpoint);
 
@@ -724,8 +725,8 @@ namespace ICD.Connect.Routing
 							}
 						}
 
-						if (!activeRouteSourceEndpoints.Any() || !activeRouteDestinationEndpoints.Any())
-							return;
+						if (activeRouteSourceEndpoints.Count == 0 || activeRouteDestinationEndpoints.Count == 0)
+							continue;
 
 						if (!m_DestinationEndpointToSourceEndpointCache[destinationEndpoint].ContainsKey(flag))
 							m_DestinationEndpointToSourceEndpointCache[destinationEndpoint].Add(flag, new IcdHashSet<EndpointInfo>());
