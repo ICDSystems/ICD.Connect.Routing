@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Common.Utils.EventArguments;
+﻿using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxPrimaryStreamSwitcher

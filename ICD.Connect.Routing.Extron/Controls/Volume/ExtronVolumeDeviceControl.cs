@@ -1,6 +1,5 @@
 ﻿using System.Text.RegularExpressions;
 using ICD.Common.Utils.EventArguments;
-using ICD.Connect.Routing.Extron.Devices.Switchers;
 using ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint;
 
 namespace ICD.Connect.Routing.Extron.Controls.Volume

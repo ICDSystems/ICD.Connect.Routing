@@ -93,18 +93,6 @@ namespace ICD.Connect.Routing.Endpoints
 	public static class SourceDestinationBaseExtensions
 	{
 		/// <summary>
-		/// Gets the DeviceControlInfo for the source/destination.
-		/// </summary>
-		/// <returns></returns>
-		public static DeviceControlInfo GetDeviceControlInfo(this ISourceDestinationBase extends)
-		{
-			if (extends == null)
-				throw new ArgumentNullException("extends");
-
-			return new DeviceControlInfo(extends.Device, extends.Control);
-		}
-
-		/// <summary>
 		/// Gets the name of the source. If no name specified, returns the name of the device
 		/// with the specified id.
 		/// </summary>
