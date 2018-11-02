@@ -5,7 +5,6 @@ using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
-using ICD.Connect.Routing.Endpoints.Groups;
 using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.StaticRoutes;
@@ -65,11 +64,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// Gets the destinations collection.
 		/// </summary>
 		IDestinationCollection Destinations { get; }
-
-		/// <summary>
-		/// Gets the destination groups collection.
-		/// </summary>
-		IOriginatorCollection<IDestinationGroup> DestinationGroups { get; }
 
 		/// <summary>
 		/// Gets the Routing Cache.

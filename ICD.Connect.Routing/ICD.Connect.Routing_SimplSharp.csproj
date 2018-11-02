@@ -99,7 +99,6 @@
     <Compile Include="Endpoints\Sources\ISourceCollection.cs" />
     <Compile Include="Endpoints\Sources\CoreSourceCollection.cs" />
     <Compile Include="Endpoints\Destinations\CoreDestinationCollection.cs" />
-    <Compile Include="Endpoints\Groups\CoreDestinationGroupCollection.cs" />
     <Compile Include="EventArguments\SwitcherRouteChangeEventArgs.cs" />
     <Compile Include="PathFinding\AbstractPathFinder.cs" />
     <Compile Include="PathFinding\DefaultPathFinder.cs" />
@@ -130,7 +129,6 @@
     <Compile Include="EventArguments\ActiveInputStateChangeEventArgs.cs" />
     <Compile Include="EventArguments\EndpointStateEventArgs.cs" />
     <Compile Include="Extensions\CoreExtensions.cs" />
-    <Compile Include="Extensions\DeviceFactoryExtensions.cs" />
     <Compile Include="RoutingGraphs\ConnectionsCollection.cs" />
     <Compile Include="RoutingGraphs\FilteredConnectionLookupKey.cs" />
     <Compile Include="RoutingGraphs\IRoutingGraph.cs" />
@@ -157,11 +155,6 @@
     <Compile Include="Endpoints\Destinations\DestinationSettings.cs" />
     <Compile Include="Endpoints\Destinations\IDestination.cs" />
     <Compile Include="Endpoints\EndpointInfo.cs" />
-    <Compile Include="Endpoints\Groups\AbstractDestinationGroup.cs" />
-    <Compile Include="Endpoints\Groups\AbstractDestinationGroupSettings.cs" />
-    <Compile Include="Endpoints\Groups\DestinationGroup.cs" />
-    <Compile Include="Endpoints\Groups\DestinationGroupSettings.cs" />
-    <Compile Include="Endpoints\Groups\IDestinationGroup.cs" />
     <Compile Include="Endpoints\ISourceDestinationBase.cs" />
     <Compile Include="Endpoints\Sources\AbstractSource.cs" />
     <Compile Include="Endpoints\Sources\AbstractSourceSettings.cs" />

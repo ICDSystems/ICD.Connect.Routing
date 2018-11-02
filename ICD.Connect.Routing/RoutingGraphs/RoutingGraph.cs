@@ -14,7 +14,6 @@ using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
-using ICD.Connect.Routing.Endpoints.Groups;
 using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.StaticRoutes;
@@ -66,7 +65,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private readonly StaticRoutesCollection m_StaticRoutes;
 		private readonly CoreSourceCollection m_Sources;
 		private readonly CoreDestinationCollection m_Destinations;
-		private readonly CoreDestinationGroupCollection m_DestinationGroups;
 
 		private readonly SafeCriticalSection m_PendingRoutesSection;
 		private readonly Dictionary<Guid, int> m_PendingRoutes;
@@ -100,11 +98,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public override IDestinationCollection Destinations { get { return m_Destinations; } }
 
 		/// <summary>
-		/// Gets the destination groups collection.
-		/// </summary>
-		public override IOriginatorCollection<IDestinationGroup> DestinationGroups { get { return m_DestinationGroups; } }
-
-		/// <summary>
 		/// Gets the Routing Cache.
 		/// </summary>
 		public override RoutingCache RoutingCache { get { return m_Cache; } }
@@ -126,7 +119,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_Connections = new ConnectionsCollection(this);
 			m_Sources = new CoreSourceCollection();
 			m_Destinations = new CoreDestinationCollection();
-			m_DestinationGroups = new CoreDestinationGroupCollection();
 
 			m_PendingRoutes = new Dictionary<Guid, int>();
 			m_PendingRoutesSection = new SafeCriticalSection();
@@ -1565,7 +1557,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_StaticRoutes.SetChildren(Enumerable.Empty<StaticRoute>());
 			m_Sources.SetChildren(Enumerable.Empty<ISource>());
 			m_Destinations.SetChildren(Enumerable.Empty<IDestination>());
-			m_DestinationGroups.SetChildren(Enumerable.Empty<IDestinationGroup>());
 
 			SubscribeSwitchers();
 			SubscribeDestinations();
@@ -1586,7 +1577,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			                                                  .Cast<ISettings>());
 			settings.SourceSettings.SetRange(Sources.Where(c => c.Serialize).Select(r => r.CopySettings()));
 			settings.DestinationSettings.SetRange(Destinations.Where(c => c.Serialize).Select(r => r.CopySettings()));
-			settings.DestinationGroupSettings.SetRange(DestinationGroups.Where(c => c.Serialize).Select(r => r.CopySettings()));
 		}
 
 		protected override void ApplySettingsFinal(RoutingGraphSettings settings, IDeviceFactory factory)
@@ -1602,13 +1592,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			IEnumerable<StaticRoute> staticRoutes = GetStaticRoutes(settings, factory);
 			IEnumerable<ISource> sources = GetSources(settings, factory);
 			IEnumerable<IDestination> destinations = GetDestinations(settings, factory);
-			IEnumerable<IDestinationGroup> destinationGroups = GetDestinationGroups(settings, factory);
 
 			m_Connections.SetChildren(connections);
 			m_StaticRoutes.SetChildren(staticRoutes);
 			m_Sources.SetChildren(sources);
 			m_Destinations.SetChildren(destinations);
-			m_DestinationGroups.SetChildren(destinationGroups);
 
 			SubscribeSwitchers();
 			SubscribeDestinations();
@@ -1632,11 +1620,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private IEnumerable<IDestination> GetDestinations(RoutingGraphSettings settings, IDeviceFactory factory)
 		{
 			return GetOriginatorsSkipExceptions<IDestination>(settings.DestinationSettings, factory);
-		}
-
-		private IEnumerable<IDestinationGroup> GetDestinationGroups(RoutingGraphSettings settings, IDeviceFactory factory)
-		{
-			return GetOriginatorsSkipExceptions<IDestinationGroup>(settings.DestinationGroupSettings, factory);
 		}
 
 		private IEnumerable<Connection> GetConnections(RoutingGraphSettings settings, IDeviceFactory factory)

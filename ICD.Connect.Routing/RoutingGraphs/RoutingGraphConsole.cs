@@ -6,7 +6,6 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints.Destinations;
-using ICD.Connect.Routing.Endpoints.Groups;
 using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Routing.PathFinding;
 using ICD.Connect.Routing.Utils;
@@ -66,10 +65,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			                                                                       "Routes source to destination. Usage: Route <sourceId> <destId> <connType> <roomId>",
 			                                                                       (a, b, c, d) =>
 			                                                                       RouteConsoleCommand(instance, a, b, c, d));
-			yield return new GenericConsoleCommand<int, int, eConnectionType, int>("RouteGroup",
-			                                                                       "Routes source to destination group. Usage: Route <sourceId> <destGrpId> <connType> <roomId>",
-			                                                                       (a, b, c, d) =>
-			                                                                       RouteGroupConsoleCommand(instance, a, b, c, d));
 		}
 
 		private static string PrintSources(IRoutingGraph instance)
@@ -196,47 +191,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			instance.RoutePaths(paths, roomId);
 
 			return "Sucessfully executed route command";
-		}
-
-		private static string RouteGroupConsoleCommand(IRoutingGraph instance, int source, int destinationGroup, eConnectionType connectionType, int roomId)
-		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-
-			if (!instance.Sources.ContainsChild(source) || !instance.DestinationGroups.ContainsChild(destinationGroup))
-				return "There is no source or destination group with that id";
-
-			Route(instance, instance.Sources.GetChild(source), instance.DestinationGroups.GetChild(destinationGroup), connectionType, roomId);
-
-			return "Sucessfully executed route command";
-		}
-
-		private static void Route(IRoutingGraph instance, ISource source, IDestinationGroup destinationGroup, eConnectionType connectionType, int roomId)
-		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-
-			if (source == null)
-				throw new ArgumentNullException("source");
-
-			if (destinationGroup == null)
-				throw new ArgumentNullException("destinationGroup");
-
-			IEnumerable<IDestination> destinations =
-				destinationGroup.Destinations
-				                .Where(instance.Destinations.ContainsChild)
-				                .Select(d => instance.Destinations.GetChild(d));
-
-			IPathFinder pathFinder = new DefaultPathFinder(instance, roomId);
-
-			IEnumerable<ConnectionPath> paths =
-				PathBuilder.FindPaths()
-				           .From(source)
-				           .To(destinations)
-				           .OfType(connectionType)
-				           .With(pathFinder);
-
-			instance.RoutePaths(paths, roomId);
 		}
 	}
 }

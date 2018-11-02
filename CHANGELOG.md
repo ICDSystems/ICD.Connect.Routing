@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
  - Improved clarity in console readouts
 
+### Removed
+ - Removed DestinationGroups
+
 ## [11.0.0] - 2018-10-30
 ### Added
  - Added Extron SWHD4K devices
