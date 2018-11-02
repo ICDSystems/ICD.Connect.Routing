@@ -701,9 +701,6 @@ namespace ICD.Connect.Routing
 						{
 							EndpointInfo currentDestinationEndpoint = process.Dequeue();
 
-							if (!m_RoutingGraph.InputActive(currentDestinationEndpoint, flag))
-								continue;
-
 							Connection connection = m_RoutingGraph.Connections.GetInputConnection(currentDestinationEndpoint, flag);
 							if (connection == null)
 								continue;
@@ -733,16 +730,17 @@ namespace ICD.Connect.Routing
 
 						m_DestinationEndpointToSourceEndpointCache[destinationEndpoint][flag].AddRange(activeRouteSourceEndpoints);
 
-						EndpointInfo sourceKey = activeRouteSourceEndpoints.Last();
+						foreach (EndpointInfo sourceKey in activeRouteSourceEndpoints)
+						{
+							if (!m_SourceEndpointToDestinationEndpointCache.ContainsKey(sourceKey))
+								m_SourceEndpointToDestinationEndpointCache[sourceKey] =
+									new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
 
-						if (!m_SourceEndpointToDestinationEndpointCache.ContainsKey(sourceKey))
-							m_SourceEndpointToDestinationEndpointCache[sourceKey] =
-								new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+							if (!m_SourceEndpointToDestinationEndpointCache[sourceKey].ContainsKey(flag))
+								m_SourceEndpointToDestinationEndpointCache[sourceKey].Add(flag, new IcdHashSet<EndpointInfo>());
 
-						if (!m_SourceEndpointToDestinationEndpointCache[sourceKey].ContainsKey(flag))
-							m_SourceEndpointToDestinationEndpointCache[sourceKey].Add(flag, new IcdHashSet<EndpointInfo>());
-
-						m_SourceEndpointToDestinationEndpointCache[sourceKey][flag].AddRange(activeRouteDestinationEndpoints);
+							m_SourceEndpointToDestinationEndpointCache[sourceKey][flag].AddRange(activeRouteDestinationEndpoints);
+						}
 					}
 				}
 			}
