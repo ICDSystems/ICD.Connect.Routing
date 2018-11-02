@@ -39,6 +39,7 @@ namespace ICD.Connect.Routing.Utils
 				                           : m_RoutingGraph.Connections
 				                                           .SelectMany(c => m_RoutingGraph.GetControls(c))
 				                                           .Except((IRouteControl)null)
+				                                           .Distinct()
 				                                           .OrderBy(d => d.Parent.Id)
 				                                           .ToArray();
 
