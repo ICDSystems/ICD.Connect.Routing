@@ -13,6 +13,7 @@ using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
 using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.RoutingCaches;
 using ICD.Connect.Routing.RoutingGraphs;
 
 namespace ICD.Connect.Routing
@@ -48,6 +49,8 @@ namespace ICD.Connect.Routing
 		private readonly Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> m_DestinationEndpointToSourceEndpointCache;
 		private readonly Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>> m_SourceEndpointToDestinationEndpointCache;
 
+		private readonly RoutingCacheMidpointCache m_MidpointCache;
+
 		private readonly SafeCriticalSection m_CacheSection;
 
 		private bool m_DebugEnabled;
@@ -74,6 +77,8 @@ namespace ICD.Connect.Routing
 
 			m_DestinationEndpointToSourceEndpointCache = new Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>>();
 			m_SourceEndpointToDestinationEndpointCache = new Dictionary<EndpointInfo, Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>>();
+
+			m_MidpointCache = new RoutingCacheMidpointCache();
 
 			m_CacheSection = new SafeCriticalSection();
 
@@ -112,6 +117,7 @@ namespace ICD.Connect.Routing
 			{
 				ClearCache();
 
+				InitializeMidpointCaches();
 				InitializeSourceCaches();
 				InitializeDestinationCaches();
 				InitializeRoutes();
@@ -148,6 +154,8 @@ namespace ICD.Connect.Routing
 
 				m_DestinationEndpointToSourceEndpointCache.Clear();
 				m_SourceEndpointToDestinationEndpointCache.Clear();
+
+				m_MidpointCache.Clear();
 			}
 			finally
 			{
@@ -596,6 +604,43 @@ namespace ICD.Connect.Routing
 		#endregion
 
 		#region Private Methods
+
+		/// <summary>
+		/// Initializes the midpoint caches.
+		/// </summary>
+		private void InitializeMidpointCaches()
+		{
+			m_CacheSection.Enter();
+
+			try
+			{
+				m_MidpointCache.Clear();
+
+				IEnumerable<IRouteMidpointControl> midpoints =
+					m_RoutingGraph.Connections
+					              .SelectMany(c => m_RoutingGraph.GetControls(c))
+					              .OfType<IRouteMidpointControl>()
+					              .Distinct();
+
+				foreach (IRouteMidpointControl midpoint in midpoints)
+				{
+					foreach (ConnectorInfo outputConnector in midpoint.GetOutputs())
+					{
+						foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(outputConnector.ConnectionType))
+						{
+							ConnectorInfo? inputConnector = midpoint.GetInput(outputConnector.Address, flag);
+							int? inputAddress = inputConnector.HasValue ? inputConnector.Value.Address : (int?)null;
+
+							m_MidpointCache.SetCachedInputForOutput(midpoint, null, inputAddress, outputConnector.Address, flag);
+						}
+					}
+				}
+			}
+			finally
+			{
+				m_CacheSection.Leave();
+			}
+		}
 
 		/// <summary>
 		/// Initializes the source caches.
@@ -1175,19 +1220,24 @@ namespace ICD.Connect.Routing
 			if (args == null)
 				throw new ArgumentNullException("args");
 
-			IcdHashSet<EndpointInfo> oldSourceEndpoints =
-				args.OldSourceEndpoints as IcdHashSet<EndpointInfo> ?? args.OldSourceEndpoints.ToIcdHashSet();
-			IcdHashSet<EndpointInfo> newSourceEndpoints =
-				args.NewSourceEndpoints as IcdHashSet<EndpointInfo> ?? args.NewSourceEndpoints.ToIcdHashSet();
-			IcdHashSet<EndpointInfo> destinationEndpoints =
-				args.DestinationEndpoints as IcdHashSet<EndpointInfo> ?? args.DestinationEndpoints.ToIcdHashSet();
+			UpdateInputForOutput(args.Control, args.OldInput, args.NewInput, args.Output, args.Type);
+		}
+
+		/// <summary>
+		/// Updates the routing cache to match the new state for the given switcher.
+		/// </summary>
+		/// <param name="control"></param>
+		/// <param name="oldInput"></param>
+		/// <param name="newInput"></param>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		private void UpdateInputForOutput(IRouteMidpointControl control, int? oldInput, int? newInput, int output, eConnectionType type)
+		{
+			if (control == null)
+				throw new ArgumentNullException("control");
 
 			// No change
-			if (destinationEndpoints.Count == 0)
-				return;
-
-			// No change
-			if (oldSourceEndpoints.SetEquals(newSourceEndpoints))
+			if (oldInput == newInput)
 				return;
 
 			eConnectionType typeChange = eConnectionType.None;
@@ -1196,20 +1246,54 @@ namespace ICD.Connect.Routing
 
 			try
 			{
-				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(args.Type))
+				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 				{
-					bool change = false;
+					// Update the midpoint input/output mapping
+					if (!m_MidpointCache.SetCachedInputForOutput(control, oldInput, newInput, output, flag))
+						continue;
 
-					if (oldSourceEndpoints.Count > 0)
+					IcdHashSet<EndpointInfo> destinations =
+						GetDestinationEndpoints(control.GetOutputEndpointInfo(output), flag).ToIcdHashSet();
+
+					// Don't care about a route change if there are no destinations
+					if (destinations.Count == 0)
+						continue;
+
+					IcdHashSet<EndpointInfo> oldSources = new IcdHashSet<EndpointInfo>();
+					IcdHashSet<EndpointInfo> newSources = new IcdHashSet<EndpointInfo>();
+
+					if (oldInput.HasValue)
 					{
-						change |= RemoveOldValuesFromSourceCache(oldSourceEndpoints, destinationEndpoints, flag);
-						change |= RemoveOldValuesFromDestinationCache(oldSourceEndpoints, destinationEndpoints, flag);
+						IEnumerable<EndpointInfo> sources =
+							GetSourceEndpointsRecursive(control.GetInputEndpointInfo(oldInput.Value), flag)
+								.Where(e => control.Parent.Id != e.Device);
+						oldSources.AddRange(sources);
 					}
 
-					if (newSourceEndpoints.Count > 0)
+					if (newInput.HasValue)
 					{
-						change |= AddNewValuesToSourceCache(newSourceEndpoints, destinationEndpoints, flag);
-						change |= AddNewValuesToDestinationCache(newSourceEndpoints, destinationEndpoints, flag);
+						IEnumerable<EndpointInfo> sources =
+							GetSourceEndpointsRecursive(control.GetInputEndpointInfo(newInput.Value), flag)
+								.Where(e => control.Parent.Id != e.Device);
+						newSources.AddRange(sources);
+					}
+
+					// No change
+					if (oldSources.SetEquals(newSources))
+						continue;
+
+					bool change = false;
+
+					if (oldSources.Count > 0)
+					{
+						change |= RemoveOldValuesFromSourceCache(oldSources, destinations, flag);
+						change |= RemoveOldValuesFromDestinationCache(oldSources, destinations, flag);
+					}
+
+					if (newSources.Count > 0)
+					{
+						change |= AddNewValuesToSourceCache(newSources, destinations, flag);
+						change |= AddNewValuesToDestinationCache(newSources, destinations, flag);
 					}
 
 					if (m_DebugEnabled)
@@ -1229,6 +1313,79 @@ namespace ICD.Connect.Routing
 
 			OnEndpointRouteChanged.Raise(this, new EndpointRouteChangedEventArgs());
 			OnSourceDestinationRouteChanged.Raise(this, new SourceDestinationRouteChangedEventArgs(typeChange));
+		}
+
+		/// <summary>
+		/// Walks forward from the given output endpoint and returns all of the input endpoints.
+		/// </summary>
+		/// <param name="outputEndpointInfo"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		private IEnumerable<EndpointInfo> GetDestinationEndpoints(EndpointInfo outputEndpointInfo, eConnectionType flag)
+		{
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("Connection type must be a single flag", "flag");
+
+			m_CacheSection.Enter();
+
+			try
+			{
+				IcdHashSet<EndpointInfo> destinations = new IcdHashSet<EndpointInfo>();
+
+				Queue<EndpointInfo> process = new Queue<EndpointInfo>();
+				process.Enqueue(outputEndpointInfo);
+
+				while (process.Count > 0)
+				{
+					EndpointInfo current = process.Dequeue();
+
+					// Grab the immediate destination for this source and add it to the hashset
+					Connection connection = m_RoutingGraph.Connections.GetOutputConnection(current, flag);
+					if (connection == null)
+						continue;
+
+					destinations.Add(connection.Destination);
+
+					IEnumerable<EndpointInfo> outputs = m_MidpointCache.GetCachedOutputsForInput(connection.Destination, flag);
+					process.EnqueueRange(outputs);
+				}
+
+				return destinations;
+			}
+			finally
+			{
+				m_CacheSection.Leave();
+			}
+		}
+
+		private IEnumerable<EndpointInfo> GetSourceEndpointsRecursive(EndpointInfo inputEndpointInfo, eConnectionType flag)
+		{
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("Connection type must be a single flag", "flag");
+
+			m_CacheSection.Enter();
+
+			try
+			{
+				while (true)
+				{
+					Connection connection = m_RoutingGraph.Connections.GetInputConnection(inputEndpointInfo, flag);
+					if (connection == null)
+						yield break;
+
+					yield return connection.Source;
+
+					EndpointInfo? inputForOutput = m_MidpointCache.GetCachedInputForOutput(connection.Source, flag);
+					if (inputForOutput == null)
+						yield break;
+
+					inputEndpointInfo = inputForOutput.Value;
+				}
+			}
+			finally
+			{
+				m_CacheSection.Leave();
+			}
 		}
 
 		private void RoutingGraphOnSourceTransmissionStateChanged(object sender, EndpointStateEventArgs args)

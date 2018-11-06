@@ -119,7 +119,8 @@
     <Compile Include="Proxies\ProxyRouteSourceControl.cs" />
     <Compile Include="Proxies\ProxyRouteSwitcherControl.cs" />
     <Compile Include="RouteOperationAggregator.cs" />
-    <Compile Include="RoutingCache.cs" />
+    <Compile Include="RoutingCaches\RoutingCache.cs" />
+    <Compile Include="RoutingCaches\RoutingCacheMidpointCache.cs" />
     <Compile Include="RoutingGraphs\AbstractRoutingGraph.cs" />
     <Compile Include="RoutingGraphs\AbstractRoutingGraphSettings.cs" />
     <Compile Include="Connections\ConnectionPath.cs" />

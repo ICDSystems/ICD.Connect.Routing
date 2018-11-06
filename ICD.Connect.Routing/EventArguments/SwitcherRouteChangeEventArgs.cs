@@ -8,17 +8,17 @@ namespace ICD.Connect.Routing.EventArguments
 {
 	public sealed class SwitcherRouteChangeEventArgs : EventArgs
 	{
-		private readonly IRouteSwitcherControl m_Control;
+		private readonly IRouteMidpointControl m_Control;
 		private readonly int? m_OldInput;
 		private readonly int? m_NewInput;
 		private readonly int m_Output;
 		private readonly eConnectionType m_Type;
 
 		/// <summary>
-		/// The switcher control.
+		/// The midpoint control.
 		/// </summary>
 		[PublicAPI]
-		public IRouteSwitcherControl Control { get { return m_Control; } }
+		public IRouteMidpointControl Control { get { return m_Control; } }
 
 		/// <summary>
 		/// The old input address.
@@ -50,7 +50,7 @@ namespace ICD.Connect.Routing.EventArguments
 		/// <param name="newInput"></param>
 		/// <param name="output"></param>
 		/// <param name="type"></param>
-		public SwitcherRouteChangeEventArgs(IRouteSwitcherControl control, int? oldInput, int? newInput, int output, eConnectionType type)
+		public SwitcherRouteChangeEventArgs(IRouteMidpointControl control, int? oldInput, int? newInput, int output, eConnectionType type)
 		{
 			m_Control = control;
 			m_OldInput = oldInput;
@@ -73,7 +73,7 @@ namespace ICD.Connect.Routing.EventArguments
 		/// </summary>
 		/// <param name="control"></param>
 		/// <param name="args"></param>
-		public SwitcherRouteChangeEventArgs(IRouteSwitcherControl control, RouteChangeEventArgs args)
+		public SwitcherRouteChangeEventArgs(IRouteMidpointControl control, RouteChangeEventArgs args)
 			: this(control, args.OldInput, args.NewInput, args.Output, args.Type)
 		{
 		}
