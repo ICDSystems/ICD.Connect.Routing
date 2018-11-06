@@ -55,7 +55,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxSecondaryStrea
 			if (switcher == null)
 				return;
 
-			switcher.OnSecondaryAudioMulticastAddressChange += SwitcherOnSecondaryAudioMulticastAddressChange;
+			switcher.OnLastKnownSecondaryAudioMulticastAddressChange += SwitcherOnLastKnownSecondaryAudioMulticastAddressChange;
 		}
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxSecondaryStrea
 			if (switcher == null)
 				return;
 
-			switcher.OnSecondaryAudioMulticastAddressChange -= SwitcherOnSecondaryAudioMulticastAddressChange;
+			switcher.OnLastKnownSecondaryAudioMulticastAddressChange -= SwitcherOnLastKnownSecondaryAudioMulticastAddressChange;
 		}
 
 		/// <summary>
@@ -77,7 +77,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxSecondaryStrea
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="stringEventArgs"></param>
-		private void SwitcherOnSecondaryAudioMulticastAddressChange(object sender, StringEventArgs stringEventArgs)
+		private void SwitcherOnLastKnownSecondaryAudioMulticastAddressChange(object sender, StringEventArgs stringEventArgs)
 		{
 			DmNvxBaseClassSwitcherControl switcher = sender as DmNvxBaseClassSwitcherControl;
 			if (switcher == null)

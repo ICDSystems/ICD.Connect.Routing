@@ -584,7 +584,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 					return;
 
 				string oldAddress = m_SwitcherToCachedMulticastAddress.GetDefault(switcher);
-				string newAddress = endpointInfo.MulticastAddress;
+				string newAddress = endpointInfo.LastKnownMulticastAddress;
 				if (oldAddress == newAddress)
 					return;
 
@@ -767,7 +767,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// <param name="switcher"></param>
 		protected virtual void Subscribe(DmNvxBaseClassSwitcherControl switcher)
 		{
-			switcher.OnServerUrlChange += SwitcherOnServerUrlChange;
 		}
 
 		/// <summary>
@@ -776,19 +775,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// <param name="switcher"></param>
 		protected virtual void Unsubscribe(DmNvxBaseClassSwitcherControl switcher)
 		{
-			switcher.OnServerUrlChange -= SwitcherOnServerUrlChange;
-		}
-
-		/// <summary>
-		/// Called when an endpoint url changes.
-		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="stringEventArgs"></param>
-		private void SwitcherOnServerUrlChange(object sender, StringEventArgs stringEventArgs)
-		{
-			DmNvxBaseClassSwitcherControl switcher = sender as DmNvxBaseClassSwitcherControl;
-			if (switcher != null)
-				UpdateRouting(switcher);
 		}
 
 		#endregion

@@ -55,7 +55,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxPrimaryStreamS
 			if (switcher == null)
 				return;
 
-			switcher.OnMulticastAddressChange += SwitcherOnMulticastAddressChange;
+			switcher.OnLastKnownMulticastAddressChange += SwitcherOnLastKnownMulticastAddressChange;
 		}
 
 		/// <summary>
@@ -69,7 +69,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxPrimaryStreamS
 			if (switcher == null)
 				return;
 
-			switcher.OnMulticastAddressChange -= SwitcherOnMulticastAddressChange;
+			switcher.OnLastKnownMulticastAddressChange -= SwitcherOnLastKnownMulticastAddressChange;
 		}
 
 		/// <summary>
@@ -77,7 +77,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxPrimaryStreamS
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="stringEventArgs"></param>
-		private void SwitcherOnMulticastAddressChange(object sender, StringEventArgs stringEventArgs)
+		private void SwitcherOnLastKnownMulticastAddressChange(object sender, StringEventArgs stringEventArgs)
 		{
 			DmNvxBaseClassSwitcherControl switcher = sender as DmNvxBaseClassSwitcherControl;
 			if (switcher == null)

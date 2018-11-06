@@ -116,6 +116,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// </summary>
 		public event EventHandler<StringEventArgs> OnSecondaryAudioMulticastAddressChange;
 
+		/// <summary>
+		/// Raised when the last known multicast address changes.
+		/// </summary>
+		public event EventHandler<StringEventArgs> OnLastKnownMulticastAddressChange;
+
+		/// <summary>
+		/// Raised when the last known secondary audio multicast address changes.
+		/// </summary>
+		public event EventHandler<StringEventArgs> OnLastKnownSecondaryAudioMulticastAddressChange;
+
 		private readonly SwitcherCache m_Cache;
 
 #if SIMPLSHARP
@@ -125,6 +135,12 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		private DmNvxControl m_NvxControl;
 #endif
 
+		private string m_ServerUrl;
+		private string m_MulticastAddress;
+		private string m_SecondaryAudioMulticastAddress;
+		private string m_LastKnownMulticastAddress;
+		private string m_LastKnownSecondaryAudioMulticastAddress;
+
 		#region Properties
 
 		/// <summary>
@@ -132,13 +148,15 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// </summary>
 		public string ServerUrl
 		{
-			get
+			get { return m_ServerUrl; }
+			private set
 			{
-#if SIMPLSHARP
-				return m_NvxControl == null ? null : m_NvxControl.ServerUrlFeedback.StringValue;
-#else
-				return null;
-#endif
+				if (value == m_ServerUrl)
+					return;
+
+				m_ServerUrl = value;
+
+				OnServerUrlChange.Raise(this, new StringEventArgs(m_ServerUrl));
 			}
 		}
 
@@ -147,13 +165,18 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// </summary>
 		public string MulticastAddress
 		{
-			get
+			get { return m_MulticastAddress; }
+			private set
 			{
-#if SIMPLSHARP
-				return m_NvxControl == null ? null : m_NvxControl.MulticastAddressFeedback.StringValue;
-#else
-				return null;
-#endif
+				if (value == m_MulticastAddress)
+					return;
+
+				m_MulticastAddress = value;
+
+				if (!string.IsNullOrEmpty(m_MulticastAddress))
+					LastKnownMulticastAddress = m_MulticastAddress;
+
+				OnMulticastAddressChange.Raise(this, new StringEventArgs(m_MulticastAddress));
 			}
 		}
 
@@ -162,13 +185,52 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// </summary>
 		public string SecondaryAudioMulticastAddress
 		{
-			get
+			get { return m_SecondaryAudioMulticastAddress; }
+			private set
 			{
-#if SIMPLSHARP
-				return m_Streamer == null ? null : m_Streamer.SecondaryAudio.MulticastAddressFeedback.StringValue;
-#else
-				return null;
-#endif
+				if (value == m_SecondaryAudioMulticastAddress)
+					return;
+
+				m_SecondaryAudioMulticastAddress = value;
+
+				if (!string.IsNullOrEmpty(m_SecondaryAudioMulticastAddress))
+					LastKnownSecondaryAudioMulticastAddress = m_SecondaryAudioMulticastAddress;
+
+				OnSecondaryAudioMulticastAddressChange.Raise(this, new StringEventArgs(m_SecondaryAudioMulticastAddress));
+			}
+		}
+
+		/// <summary>
+		/// Gets the last known multicast address for the stream.
+		/// </summary>
+		public string LastKnownMulticastAddress
+		{
+			get { return m_LastKnownMulticastAddress; }
+			private set
+			{
+				if (value == m_LastKnownMulticastAddress)
+					return;
+
+				m_LastKnownMulticastAddress = value;
+
+				OnLastKnownMulticastAddressChange.Raise(this, new StringEventArgs(m_LastKnownMulticastAddress));
+			}
+		}
+
+		/// <summary>
+		/// Gets the last known multicast address for the secondary audio stream.
+		/// </summary>
+		public string LastKnownSecondaryAudioMulticastAddress
+		{
+			get { return m_LastKnownSecondaryAudioMulticastAddress; }
+			private set
+			{
+				if (value == m_LastKnownSecondaryAudioMulticastAddress)
+					return;
+
+				m_LastKnownSecondaryAudioMulticastAddress = value;
+
+				OnLastKnownSecondaryAudioMulticastAddressChange.Raise(this, new StringEventArgs(m_LastKnownSecondaryAudioMulticastAddress));
 			}
 		}
 
@@ -209,6 +271,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			OnServerUrlChange = null;
 			OnMulticastAddressChange = null;
 			OnSecondaryAudioMulticastAddressChange = null;
+			OnLastKnownMulticastAddressChange = null;
+			OnLastKnownSecondaryAudioMulticastAddressChange = null;
 
 			base.DisposeFinal(disposing);
 
@@ -577,7 +641,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			switch (args.EventId)
 			{
 				case DMInputEventIds.MulticastAddressEventId:
-					OnSecondaryAudioMulticastAddressChange.Raise(this, new StringEventArgs(SecondaryAudioMulticastAddress));
+					SecondaryAudioMulticastAddress =
+						m_Streamer == null
+							? null
+							: m_Streamer.SecondaryAudio.MulticastAddressFeedback.StringValue;
 					break;
 			}
 		}
@@ -592,11 +659,17 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			switch (args.EventId)
 			{
 				case DMInputEventIds.ServerUrlEventId:
-					OnServerUrlChange.Raise(this, new StringEventArgs(ServerUrl));
+					ServerUrl =
+						m_NvxControl == null
+							? null
+							: m_NvxControl.ServerUrlFeedback.StringValue;
 					break;
 
 				case DMInputEventIds.MulticastAddressEventId:
-					OnMulticastAddressChange.Raise(this, new StringEventArgs(MulticastAddress));
+					MulticastAddress =
+						m_NvxControl == null
+							? null
+							: m_NvxControl.MulticastAddressFeedback.StringValue;
 					break;
 
 				case DMInputEventIds.AudioSourceEventId:
@@ -705,7 +778,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			addRow("Device Mode", Parent.DeviceMode);
 			addRow("Server URL", ServerUrl);
 			addRow("Multicast Address", MulticastAddress);
+			addRow("Last Known Multicast Address", LastKnownMulticastAddress);
 			addRow("Secondary Audio Multicast Address", SecondaryAudioMulticastAddress);
+			addRow("Last Known Secondary Audio Multicast Address", SecondaryAudioMulticastAddress);
 		}
 
 		/// <summary>
