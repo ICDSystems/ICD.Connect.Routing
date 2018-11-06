@@ -64,6 +64,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 		{
 			if (routingGraph == null)
 				throw new ArgumentNullException("routingGraph");
+
 			m_SourceToEndpoints = new Dictionary<ISource, IcdHashSet<EndpointInfo>>();
 			m_EndpointToSources = new Dictionary<EndpointInfo, IcdHashSet<ISource>>();
 
@@ -679,8 +680,12 @@ namespace ICD.Connect.Routing.RoutingCaches
 				m_SourceToEndpoints.Clear();
 				m_EndpointToSources.Clear();
 
+				eConnectionType all = EnumUtils.GetFlagsAllValue<eConnectionType>();
+
 				IcdHashSet<ISource> sources = m_RoutingGraph.Sources.ToIcdHashSet();
-				IcdHashSet<EndpointInfo> sourceEndpoints = sources.SelectMany(s => s.GetEndpoints()).ToIcdHashSet();
+				IcdHashSet<EndpointInfo> sourceEndpoints =
+					sources.SelectMany(s => m_RoutingGraph.Connections.FilterEndpointsAny(s, all))
+					       .ToIcdHashSet();
 
 				foreach (EndpointInfo endpoint in sourceEndpoints)
 				{
@@ -712,8 +717,12 @@ namespace ICD.Connect.Routing.RoutingCaches
 				m_EndpointToDestinations.Clear();
 				m_DestinationToEndpoints.Clear();
 
+				eConnectionType all = EnumUtils.GetFlagsAllValue<eConnectionType>();
+
 				IcdHashSet<IDestination> destinations = m_RoutingGraph.Destinations.ToIcdHashSet();
-				IcdHashSet<EndpointInfo> destinationEndpoints = destinations.SelectMany(s => s.GetEndpoints()).ToIcdHashSet();
+				IcdHashSet<EndpointInfo> destinationEndpoints =
+					destinations.SelectMany(d => m_RoutingGraph.Connections.FilterEndpointsAny(d, all))
+					            .ToIcdHashSet();
 
 				foreach (EndpointInfo endpoint in destinationEndpoints)
 				{
@@ -908,7 +917,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 			}
 		}
 
-		private void UpdateSourceTransmissionState(ISource source)
+		private bool UpdateSourceTransmissionState(ISource source)
 		{
 			if (source == null)
 				throw new ArgumentNullException("source");
@@ -926,12 +935,14 @@ namespace ICD.Connect.Routing.RoutingCaches
 				eConnectionType oldFlags = m_SourceTransmitting.GetDefault(source);
 
 				if (flags == oldFlags)
-					return;
+					return false;
 
 				m_SourceTransmitting[source] = flags;
 
 				if (m_DebugEnabled)
 					PrintSourceTransmitting();
+
+				return true;
 			}
 			finally
 			{
@@ -975,7 +986,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 			}
 		}
 
-		private void UpdateSourceDetectionState(ISource source)
+		private bool UpdateSourceDetectionState(ISource source)
 		{
 			if (source == null)
 				throw new ArgumentNullException("source");
@@ -993,12 +1004,14 @@ namespace ICD.Connect.Routing.RoutingCaches
 				eConnectionType oldFlags = m_SourceDetected.GetDefault(source);
 
 				if (flags == oldFlags)
-					return;
+					return false;
 
 				m_SourceDetected[source] = flags;
 
 				if (m_DebugEnabled)
 					PrintSourceDetectedMap();
+
+				return true;
 			}
 			finally
 			{
