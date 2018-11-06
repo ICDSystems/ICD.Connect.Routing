@@ -13,10 +13,9 @@ using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
 using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Routing.EventArguments;
-using ICD.Connect.Routing.RoutingCaches;
 using ICD.Connect.Routing.RoutingGraphs;
 
-namespace ICD.Connect.Routing
+namespace ICD.Connect.Routing.RoutingCaches
 {
 	public sealed class RoutingCache : IDisposable, IConsoleNode
 	{
