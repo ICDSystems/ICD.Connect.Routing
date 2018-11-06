@@ -722,7 +722,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				RouteOperation opCopy = op;
 				int pendingRoutes = m_PendingRoutesSection.Execute(() => m_PendingRoutes.GetDefault(opCopy.Id, 0));
 				if (pendingRoutes > 0)
-					return;
+					continue;
 
 				OnRouteFinished.Raise(this, new RouteFinishedEventArgs(op, true));
 			}
