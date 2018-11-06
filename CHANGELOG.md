@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Changed
  - Improved clarity in console readouts
+ - Improved routing feedback in systems with multiple async switchers
 
 ### Removed
  - Removed DestinationGroups
