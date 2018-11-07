@@ -1377,7 +1377,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 			if (typeChange == eConnectionType.None)
 				return;
 
-			OnEndpointRouteChanged.Raise(this, new EndpointRouteChangedEventArgs());
+			OnEndpointRouteChanged.Raise(this, new EndpointRouteChangedEventArgs(typeChange));
 			OnSourceDestinationRouteChanged.Raise(this, new SourceDestinationRouteChangedEventArgs(typeChange));
 		}
 

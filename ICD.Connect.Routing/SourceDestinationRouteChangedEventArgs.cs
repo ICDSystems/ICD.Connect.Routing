@@ -5,7 +5,9 @@ namespace ICD.Connect.Routing
 {
 	public sealed class SourceDestinationRouteChangedEventArgs : EventArgs
 	{
-		public eConnectionType Type { get; private set; }
+		private readonly eConnectionType m_Type;
+
+		public eConnectionType Type { get { return m_Type; } }
 
 		/// <summary>
 		/// Constructor.
@@ -13,7 +15,7 @@ namespace ICD.Connect.Routing
 		/// <param name="type"></param>
 		public SourceDestinationRouteChangedEventArgs(eConnectionType type)
 		{
-			Type = type;
+			m_Type = type;
 		}
 	}
 }
