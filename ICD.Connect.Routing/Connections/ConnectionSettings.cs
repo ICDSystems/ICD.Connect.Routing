@@ -174,33 +174,6 @@ namespace ICD.Connect.Routing.Connections
 			SetSourceDeviceRestrictions(deviceRestictions);
 		}
 
-		/// <summary>
-		/// Returns true if the settings depend on a device with the given ID.
-		/// For example, to instantiate an IR Port from settings, the device the physical port
-		/// belongs to will need to be instantiated first.
-		/// </summary>
-		/// <returns></returns>
-		public override bool HasDeviceDependency(int id)
-		{
-			return id != 0 && (id == SourceDeviceId || id == DestinationDeviceId);
-		}
-
-		/// <summary>
-		/// Returns the count from the collection of ids that the settings depends on.
-		/// </summary>
-		public override int DependencyCount
-		{
-			get
-			{
-				int count = 0;
-				if (SourceDeviceId != 0)
-					count++;
-				if (DestinationDeviceId != 0)
-					count++;
-				return count;
-			}
-		}
-
 		private static IEnumerable<int> GetRestrictionsFromXml(string xml, string parentElement, string childElement)
 		{
 			Func<string, int> callback = XmlUtils.ReadElementContentAsInt;
