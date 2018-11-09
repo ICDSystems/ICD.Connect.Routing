@@ -1,4 +1,8 @@
-﻿#if SIMPLSHARP
+﻿using System.Collections.Generic;
+using ICD.Common.Utils;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM.Streaming;
 #endif
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
@@ -81,6 +85,44 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			base.ApplySettingsFinal(settings, factory);
 
 			SetDeviceMode(settings.DeviceMode);
+		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			addRow("DeviceMode", DeviceMode);
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+			string deviceModeHelp = string.Format("SetDeviceMode <{0}>", StringUtils.ArrayFormat(EnumUtils.GetValues<eDeviceMode>()));
+
+			yield return new GenericConsoleCommand<eDeviceMode>("SetDeviceMode", deviceModeHelp, m => SetDeviceMode(m));
+		}
+
+		/// <summary>
+		/// Workaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
 		}
 
 		#endregion
