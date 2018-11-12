@@ -1,10 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 using ICD.Common.Properties;
+using ICD.Common.Utils;
+using ICD.Common.Utils.IO;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens;
+using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume;
+using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -25,6 +33,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public CrestronControlSystem ControlSystem { get; private set; }
 #endif
 
+		private readonly List<IDeviceControl> m_LoadedControls;
+
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -39,6 +49,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			if (touchScreen != null)
 				Controls.Add(touchScreen);
 #endif
+			m_LoadedControls = new List<IDeviceControl>();
 		}
 
 #if SIMPLSHARP
@@ -81,6 +92,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		protected override void DisposeFinal(bool disposing)
 		{
 			base.DisposeFinal(disposing);
+			DisposeLoadedControls();
 
 #if SIMPLSHARP
 			SetControlSystem(null);
@@ -125,6 +137,24 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			UpdateCachedOnlineStatus();
 		}
 #endif
+
+
+		public void LoadControls(string path)
+		{
+			string fullPath = PathUtils.GetDefaultConfigPath("Dmps3Volume", path);
+
+			try
+			{
+				string xml = IcdFile.ReadToEnd(fullPath, new UTF8Encoding(false));
+				xml = EncodingUtils.StripUtf8Bom(xml);
+
+				ParseXml(xml);
+			}
+			catch (Exception e)
+			{
+				Log(eSeverity.Error, "Failed to load integration config {0} - {1}", fullPath, e.Message);
+			}
+		}
 
 		#region IO
 
@@ -259,6 +289,39 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 #else
             return false;
 #endif
+		}
+
+
+		private void ParseXml(string xml)
+		{
+			DisposeLoadedControls();
+
+			// Load and add the new controls
+			foreach (IDeviceControl control in Dmps3VolumeXmlUtils.GetControlsFromXml(xml, this))
+			{
+				Controls.Add(control);
+				m_LoadedControls.Add(control);
+			}
+		}
+
+		private void DisposeLoadedControls()
+		{
+			foreach (var control in m_LoadedControls)
+				control.Dispose();
+
+			m_LoadedControls.Clear();
+		}
+
+		#endregion
+
+		#region Settings
+
+		protected override void ApplySettingsFinal(ControlSystemDeviceSettings settings, IDeviceFactory factory)
+		{
+			base.ApplySettingsFinal(settings, factory);
+
+			if (!string.IsNullOrEmpty(settings.Config))
+				LoadControls(settings.Config);
 		}
 
 		#endregion

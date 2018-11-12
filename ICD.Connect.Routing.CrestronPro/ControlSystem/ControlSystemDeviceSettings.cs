@@ -1,22 +1,37 @@
 using System;
+using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 {
-	[KrangSettings(FACTORY_NAME)]
+	[KrangSettings("ControlSystem", typeof(ControlSystemDevice))]
 	public sealed class ControlSystemDeviceSettings : AbstractDeviceSettings
 	{
-		private const string FACTORY_NAME = "ControlSystem";
+		private const string ELEMENT_CONFIG = "Config";
+
+		public string Config { get; set; }
 
 		/// <summary>
-		/// Gets the originator factory name.
+		/// Writes property elements to xml.
 		/// </summary>
-		public override string FactoryName { get { return FACTORY_NAME; } }
+		/// <param name="writer"></param>
+		protected override void WriteElements(IcdXmlTextWriter writer)
+		{
+			base.WriteElements(writer);
+
+			writer.WriteElementString(ELEMENT_CONFIG, Config);
+		}
 
 		/// <summary>
-		/// Gets the type of the originator for this settings instance.
+		/// Updates the settings from xml.
 		/// </summary>
-		public override Type OriginatorType { get { return typeof(ControlSystemDevice); } }
+		/// <param name="xml"></param>
+		public override void ParseXml(string xml)
+		{
+			base.ParseXml(xml);
+
+			Config = XmlUtils.TryReadChildElementContentAsString(xml, ELEMENT_CONFIG);
+		}
 	}
 }
