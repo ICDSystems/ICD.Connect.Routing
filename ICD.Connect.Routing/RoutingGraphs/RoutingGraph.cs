@@ -8,14 +8,15 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Devices;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
-using ICD.Connect.Routing.Endpoints.Groups;
 using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.RoutingCaches;
 using ICD.Connect.Routing.StaticRoutes;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Core;
@@ -65,7 +66,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private readonly StaticRoutesCollection m_StaticRoutes;
 		private readonly CoreSourceCollection m_Sources;
 		private readonly CoreDestinationCollection m_Destinations;
-		private readonly CoreDestinationGroupCollection m_DestinationGroups;
 
 		private readonly SafeCriticalSection m_PendingRoutesSection;
 		private readonly Dictionary<Guid, int> m_PendingRoutes;
@@ -99,11 +99,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public override IDestinationCollection Destinations { get { return m_Destinations; } }
 
 		/// <summary>
-		/// Gets the destination groups collection.
-		/// </summary>
-		public override IOriginatorCollection<IDestinationGroup> DestinationGroups { get { return m_DestinationGroups; } }
-
-		/// <summary>
 		/// Gets the Routing Cache.
 		/// </summary>
 		public override RoutingCache RoutingCache { get { return m_Cache; } }
@@ -125,7 +120,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_Connections = new ConnectionsCollection(this);
 			m_Sources = new CoreSourceCollection();
 			m_Destinations = new CoreDestinationCollection();
-			m_DestinationGroups = new CoreDestinationGroupCollection();
 
 			m_PendingRoutes = new Dictionary<Guid, int>();
 			m_PendingRoutesSection = new SafeCriticalSection();
@@ -231,14 +225,18 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <returns>The source</returns>
 		public override EndpointInfo? GetActiveSourceEndpoint(IRouteDestinationControl destination, int input, eConnectionType flag, bool signalDetected, bool inputActive)
 		{
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
+			if (EnumUtils.HasMultipleFlags(flag))
+				throw new ArgumentException("Connection type must be a single flag", "flag");
+
+			// Prevent stack overflow
+			IcdHashSet<KeyValuePair<IRouteSourceControl, int>> visited =
+				new IcdHashSet<KeyValuePair<IRouteSourceControl, int>>();
+
 			while (true)
 			{
-				if (destination == null)
-					throw new ArgumentNullException("destination");
-
-				if (EnumUtils.HasMultipleFlags(flag))
-					throw new ArgumentException("Connection type must be a single flag", "flag");
-
 				if (signalDetected && !destination.GetSignalDetectedState(input, flag))
 					return null;
 
@@ -254,14 +252,21 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					return null;
 
 				IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
+				int sourceAddress = inputConnection.Source.Address;
 
+				// Prevent stack overflow
+				if (!visited.Add(new KeyValuePair<IRouteSourceControl, int>(sourceControl, sourceAddress)))
+					return sourceControl.GetOutputEndpointInfo(sourceAddress);
+
+				// The source has no inputs
 				IRouteMidpointControl sourceAsMidpoint = sourceControl as IRouteMidpointControl;
 				if (sourceAsMidpoint == null)
-					return sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
+					return sourceControl.GetOutputEndpointInfo(sourceAddress);
 
-				ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, flag);
+				// No active path through the midpoint
+				ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(sourceAddress, flag);
 				if (!sourceConnector.HasValue)
-					return sourceControl.GetOutputEndpointInfo(inputConnection.Source.Address);
+					return sourceControl.GetOutputEndpointInfo(sourceAddress);
 
 				destination = sourceAsMidpoint;
 				input = sourceConnector.Value.Address;
@@ -717,7 +722,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				RouteOperation opCopy = op;
 				int pendingRoutes = m_PendingRoutesSection.Execute(() => m_PendingRoutes.GetDefault(opCopy.Id, 0));
 				if (pendingRoutes > 0)
-					return;
+					continue;
 
 				OnRouteFinished.Raise(this, new RouteFinishedEventArgs(op, true));
 			}
@@ -1171,16 +1176,14 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="sourceOutput"></param>
 		/// <returns></returns>
 		public override IRouteSourceControl GetSourceControl(IRouteDestinationControl destination, int address,
-		                                                     eConnectionType type,
-		                                                     out int sourceOutput)
+		                                                     eConnectionType type, out int sourceOutput)
 		{
-			sourceOutput = 0;
-
 			if (destination == null)
 				throw new ArgumentNullException("destination");
 
-			Connection connection = m_Connections.GetInputConnections(destination.Parent.Id, destination.Id, type)
-			                                     .FirstOrDefault(c => c.Destination.Address == address);
+			sourceOutput = 0;
+
+			Connection connection = m_Connections.GetInputConnection(destination.GetInputEndpointInfo(address), type);
 			if (connection == null)
 				return null;
 
@@ -1259,6 +1262,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			EndpointInfo endpoint = destination.GetInputEndpointInfo(args.Input);
 
+			// If there's no connection to the input we don't care about it
+			if (Connections.GetInputConnection(endpoint, args.Type) == null)
+				return;
+
 			OnDestinationInputActiveStateChanged.Raise(this, new EndpointStateEventArgs(endpoint, args.Type, args.Active));
 		}
 
@@ -1278,6 +1285,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			int output;
 			IRouteSourceControl source = GetSourceControl(destination, args.Input, args.Type, out output);
+
+			// No source to detect
 			if (source == null)
 				return;
 
@@ -1353,6 +1362,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				return;
 
 			EndpointInfo endpoint = source.GetOutputEndpointInfo(args.Output);
+
+			// If there's no connection from the output we don't care about it
+			if (Connections.GetOutputConnection(endpoint, args.Type) == null)
+				return;
+
 			OnSourceTransmissionStateChanged.Raise(this, new EndpointStateEventArgs(endpoint, args.Type, args.State));
 		}
 
@@ -1421,101 +1435,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (switcher == null)
 				return;
 
-			IcdHashSet<EndpointInfo> oldSources = new IcdHashSet<EndpointInfo>();
-			IcdHashSet<EndpointInfo> newSources = new IcdHashSet<EndpointInfo>();
-
-			if (args.OldInput.HasValue)
-			{
-				IEnumerable<EndpointInfo> sources =
-					GetSourceEndpointsRecursive(switcher.GetInputEndpointInfo(args.OldInput.Value), args.Type)
-					.Where(e => switcher.Parent.Id != e.Device);
-				oldSources.AddRange(sources);
-			}
-
-			if (args.NewInput.HasValue)
-			{
-				IEnumerable<EndpointInfo> sources =
-					GetSourceEndpointsRecursive(switcher.GetInputEndpointInfo(args.NewInput.Value), args.Type)
-					.Where(e => switcher.Parent.Id != e.Device);
-				newSources.AddRange(sources);
-			}
-
-			IcdHashSet<EndpointInfo> destinations =
-				GetDestinationEndpoints(switcher.GetOutputEndpointInfo(args.Output), args.Type)
-				.Where(e => switcher.Parent.Id != e.Device )
-					.ToIcdHashSet();
-
-			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args, oldSources, newSources, destinations));
+			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args));
 
 			// Re-enforce static routes
 			m_StaticRoutes.ReApplyStaticRoutesForSwitcher(switcher);
-		}
-
-		private IEnumerable<EndpointInfo> GetDestinationEndpoints(EndpointInfo outputEndpointInfo, eConnectionType type)
-		{
-			if (EnumUtils.HasMultipleFlags(type))
-				throw new ArgumentException("Connection type must be a single flag", "type");
-
-			IcdHashSet<EndpointInfo> destinations = new IcdHashSet<EndpointInfo>();
-
-			Queue<EndpointInfo> process = new Queue<EndpointInfo>();
-			process.Enqueue(outputEndpointInfo);
-
-			while (process.Count > 0)
-			{
-				EndpointInfo current = process.Dequeue();
-
-				// Grab the immediate destination for this source and add it to the hashset
-				Connection connection = m_Connections.GetOutputConnection(current);
-				if(connection == null || !connection.ConnectionType.HasFlag(type))
-					continue;
-
-				destinations.Add(connection.Destination);
-
-				// If destination represents a midpoint device, find the outputs on that device and
-				// push onto the end of the queue
-				IRouteControl destinationControl = GetControl<IRouteControl>(connection.Destination.Device,
-				                                                             connection.Destination.Control);
-
-				if (!(destinationControl is IRouteMidpointControl))
-					continue;
-
-				IRouteMidpointControl midpointControl = destinationControl as IRouteMidpointControl;
-
-				process.EnqueueRange(midpointControl.GetOutputs(connection.Destination.Address, type)
-													.Where(c => c.ConnectionType.HasFlag(type))
-				                                    .Select(c =>
-				                                            new EndpointInfo(connection.Destination.Device,
-				                                                             connection.Destination.Control, 
-																			 c.Address)));
-			}
-
-			return destinations;
-		}
-
-		private IEnumerable<EndpointInfo> GetSourceEndpointsRecursive(EndpointInfo inputEndpointInfo, eConnectionType flag)
-		{
-			Connection inputConnection = m_Connections.GetInputConnection(inputEndpointInfo);
-			if (inputConnection == null)
-				yield break;
-
-			// Narrow the type by what the connection supports
-			if (!inputConnection.ConnectionType.HasFlag(flag))
-				yield break;
-
-			yield return inputConnection.Source;
-
-			IRouteSourceControl sourceControl = this.GetSourceControl(inputConnection);
-			IRouteMidpointControl sourceAsMidpoint = sourceControl as IRouteMidpointControl;
-			if (sourceAsMidpoint == null)
-				yield break;
-
-			ConnectorInfo? sourceConnector = sourceAsMidpoint.GetInput(inputConnection.Source.Address, flag);
-			if (sourceConnector == null)
-				yield break;
-
-			foreach (EndpointInfo endpoint in GetSourceEndpointsRecursive(sourceAsMidpoint.GetInputEndpointInfo(sourceConnector.Value.Address), flag))
-				yield return endpoint;
 		}
 
 		#endregion
@@ -1532,7 +1455,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_StaticRoutes.SetChildren(Enumerable.Empty<StaticRoute>());
 			m_Sources.SetChildren(Enumerable.Empty<ISource>());
 			m_Destinations.SetChildren(Enumerable.Empty<IDestination>());
-			m_DestinationGroups.SetChildren(Enumerable.Empty<IDestinationGroup>());
 
 			SubscribeSwitchers();
 			SubscribeDestinations();
@@ -1541,9 +1463,26 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
 		}
 
+		protected override void CopySettingsFinal(RoutingGraphSettings settings)
+		{
+			base.CopySettingsFinal(settings);
+
+			settings.ConnectionSettings.SetRange(Connections.Where(c => c.Serialize)
+			                                                .Select(r => r.CopySettings())
+			                                                .Cast<ISettings>());
+			settings.StaticRouteSettings.SetRange(StaticRoutes.Where(c => c.Serialize)
+			                                                  .Select(r => r.CopySettings())
+			                                                  .Cast<ISettings>());
+			settings.SourceSettings.SetRange(Sources.Where(c => c.Serialize).Select(r => r.CopySettings()));
+			settings.DestinationSettings.SetRange(Destinations.Where(c => c.Serialize).Select(r => r.CopySettings()));
+		}
+
 		protected override void ApplySettingsFinal(RoutingGraphSettings settings, IDeviceFactory factory)
 		{
 			m_Connections.OnChildrenChanged -= ConnectionsOnConnectionsChanged;
+
+			// First locad in all of the devices
+			factory.LoadOriginators<IDeviceBase>();
 
 			base.ApplySettingsFinal(settings, factory);
 
@@ -1551,13 +1490,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			IEnumerable<StaticRoute> staticRoutes = GetStaticRoutes(settings, factory);
 			IEnumerable<ISource> sources = GetSources(settings, factory);
 			IEnumerable<IDestination> destinations = GetDestinations(settings, factory);
-			IEnumerable<IDestinationGroup> destinationGroups = GetDestinationGroups(settings, factory);
 
 			m_Connections.SetChildren(connections);
 			m_StaticRoutes.SetChildren(staticRoutes);
 			m_Sources.SetChildren(sources);
 			m_Destinations.SetChildren(destinations);
-			m_DestinationGroups.SetChildren(destinationGroups);
 
 			SubscribeSwitchers();
 			SubscribeDestinations();
@@ -1581,11 +1518,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private IEnumerable<IDestination> GetDestinations(RoutingGraphSettings settings, IDeviceFactory factory)
 		{
 			return GetOriginatorsSkipExceptions<IDestination>(settings.DestinationSettings, factory);
-		}
-
-		private IEnumerable<IDestinationGroup> GetDestinationGroups(RoutingGraphSettings settings, IDeviceFactory factory)
-		{
-			return GetOriginatorsSkipExceptions<IDestinationGroup>(settings.DestinationGroupSettings, factory);
 		}
 
 		private IEnumerable<Connection> GetConnections(RoutingGraphSettings settings, IDeviceFactory factory)
@@ -1613,21 +1545,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				yield return output;
 			}
-		}
-
-		protected override void CopySettingsFinal(RoutingGraphSettings settings)
-		{
-			base.CopySettingsFinal(settings);
-
-			settings.ConnectionSettings.SetRange(Connections.Where(c => c.Serialize)
-			                                                .Select(r => r.CopySettings())
-			                                                .Cast<ISettings>());
-			settings.StaticRouteSettings.SetRange(StaticRoutes.Where(c => c.Serialize)
-			                                                  .Select(r => r.CopySettings())
-			                                                  .Cast<ISettings>());
-			settings.SourceSettings.SetRange(Sources.Where(c => c.Serialize).Select(r => r.CopySettings()));
-			settings.DestinationSettings.SetRange(Destinations.Where(c => c.Serialize).Select(r => r.CopySettings()));
-			settings.DestinationGroupSettings.SetRange(DestinationGroups.Where(c => c.Serialize).Select(r => r.CopySettings()));
 		}
 
 		#endregion

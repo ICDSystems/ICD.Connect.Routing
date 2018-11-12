@@ -5,7 +5,7 @@ using ICD.Connect.Devices;
 using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
-using ICD.Connect.Routing.Extron.Devices.Switchers;
+using ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint;
 using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.Extron.Devices.Endpoints

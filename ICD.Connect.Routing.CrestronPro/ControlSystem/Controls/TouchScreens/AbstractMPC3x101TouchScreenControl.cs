@@ -29,6 +29,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public event EventHandler<BoolEventArgs> OnProximityDetectedStateChange;
 
+		private bool? m_CachedVolumeUpButtonEnabled;
+		private bool? m_CachedVolumeDownButtonEnabled;
+
 		private bool m_ProximityDetected;
 
 		#region Properties
@@ -206,6 +209,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		public void SetVolumeDownButtonEnabled(bool enable)
 		{
 #if SIMPLSHARP
+			if (enable == m_CachedVolumeDownButtonEnabled)
+				return;
+
+			m_CachedVolumeDownButtonEnabled = enable;
+
 			if (enable)
 				TouchScreen.EnableVolumeDownButton();
 			else
@@ -221,6 +229,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		public void SetVolumeUpButtonEnabled(bool enable)
 		{
 #if SIMPLSHARP
+			if (enable == m_CachedVolumeUpButtonEnabled)
+				return;
+
+			m_CachedVolumeUpButtonEnabled = enable;
+
 			if (enable)
 				TouchScreen.EnableVolumeUpButton();
 			else

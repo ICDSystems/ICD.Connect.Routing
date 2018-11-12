@@ -6,6 +6,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [12.0.0] - 2018-11-08
+### Changed
+ - Improved clarity in console readouts
+ - Improved routing feedback in systems with multiple async switchers
+ - Performance improvements
+ - Fixed null refs in NVX switchers
+
+### Removed
+ - Removed DestinationGroups
+
+## [11.0.0] - 2018-10-30
+### Added
+ - Added Extron SWHD4K devices
+ - Added DmNvx 350 and 351 streaming devices
+ - Added DmNvx 350C and 351C streaming cards
+ - Added DmXioDirector 80, 160 and Enterprise devices
+ - Added DmNvx Primary and Secondary stream switchers
+
+### Changed
+ - Fixed StackOverflow when getting active source and there is a loop in the path
+ - Significant optimizations to RoutingCache feedback
+
 ## [10.2.0] - 2018-10-18
 ### Added
  - Added console command to 2 series dmps for logging when the dmps makes a route

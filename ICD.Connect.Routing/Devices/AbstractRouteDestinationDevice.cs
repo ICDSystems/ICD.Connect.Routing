@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
@@ -40,24 +39,14 @@ namespace ICD.Connect.Routing.Devices
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		public ConnectorInfo GetInput(int input)
-		{
-			if (ContainsInput(input))
-				return GetInputs().First(c => c.Address == input);
-
-			string message = string.Format("{0} has no input at address {1}", this, input);
-			throw new ArgumentOutOfRangeException("input", message);
-		}
+		public abstract ConnectorInfo GetInput(int input);
 
 		/// <summary>
 		/// Returns true if the destination contains an input at the given address.
 		/// </summary>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		public bool ContainsInput(int input)
-		{
-			return GetInputs().Any(i => i.Address == input);
-		}
+		public abstract bool ContainsInput(int input);
 
 		/// <summary>
 		/// Returns the inputs.
