@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Common.Utils.Services.Logging;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -96,8 +97,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(t => this.Route(input, output, t))
-				                .Unanimous(false);
+								.Select(t => this.Route(input, output, t))
+								.ToArray()
+								.Unanimous(false);
 			}
 
 			DMOutput switcherOutput = Parent.GetDmOutput(output);
@@ -106,7 +108,24 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			switch (type)
 			{
 				case eConnectionType.Audio:
-					switcherOutput.AudioOut = switcherInput;
+					try
+					{
+						switcherOutput.AudioOut = switcherInput;
+					}
+					catch (NotSupportedException)
+					{
+						try
+						{
+							// DMPS 4K
+							switcherOutput.AudioOutSource = GetAudioSourceForInput(input);
+						}
+						catch (Exception e)
+						{
+							Log(eSeverity.Error, "Failed to route audio input {0} to output {1} - {2}", input, output, e.Message);
+							return false;
+						}
+					}
+
 					break;
 
 				case eConnectionType.Video:
@@ -118,7 +137,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 					break;
 
 				default:
-// ReSharper disable once NotResolvedInText
+					// ReSharper disable once NotResolvedInText
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 
@@ -136,8 +155,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(t => ClearOutput(output, t))
-				                .Unanimous(false);
+								.Select(t => ClearOutput(output, t))
+								.ToArray()
+								.Unanimous(false);
 			}
 
 			DMOutput switcherOutput = Parent.GetDmOutput(output);
@@ -149,7 +169,24 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 					break;
 
 				case eConnectionType.Audio:
-					switcherOutput.AudioOut = null;
+					try
+					{
+						switcherOutput.AudioOut = null;
+					}
+					catch (NotSupportedException)
+					{
+						try
+						{
+							// DMPS 4K
+							switcherOutput.AudioOutSource = GetAudioSourceForInput(null);
+						}
+						catch (Exception e)
+						{
+							Log(eSeverity.Error, "Failed to clear audio output {0} - {1}", output, e.Message);
+							return false;
+						}
+					}
+
 					break;
 
 				case eConnectionType.Usb:
@@ -319,6 +356,41 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 					continue;
 
 				yield return new ConnectorInfo((int)input.Number, flag);
+			}
+		}
+
+		/// <summary>
+		/// Gets the AudioOutSource value for the given input.
+		/// 
+		/// TODO - This does not support analog inputs
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		private eDmps34KAudioOutSource GetAudioSourceForInput(int? input)
+		{
+			switch (input)
+			{
+				case null:
+					return eDmps34KAudioOutSource.NoRoute;
+				case 1:
+					return eDmps34KAudioOutSource.Hdmi1;
+				case 2:
+					return eDmps34KAudioOutSource.Hdmi2;
+				case 3:
+					return eDmps34KAudioOutSource.Hdmi3;
+				case 4:
+					return eDmps34KAudioOutSource.Hdmi4;
+				case 5:
+					return eDmps34KAudioOutSource.Hdmi5;
+				case 6:
+					return eDmps34KAudioOutSource.Hdmi6;
+				case 7:
+					return eDmps34KAudioOutSource.Dm7;
+				case 8:
+					return eDmps34KAudioOutSource.Dm8;
+
+				default:
+					throw new ArgumentOutOfRangeException("input");
 			}
 		}
 
