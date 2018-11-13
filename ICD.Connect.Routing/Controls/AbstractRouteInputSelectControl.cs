@@ -26,6 +26,9 @@ namespace ICD.Connect.Routing.Controls
 				if (value == m_ActiveInput)
 					return;
 
+				if (value.HasValue && !ContainsInput(value.Value))
+					return;
+
 				int? old = m_ActiveInput;
 
 				m_ActiveInput = value;
