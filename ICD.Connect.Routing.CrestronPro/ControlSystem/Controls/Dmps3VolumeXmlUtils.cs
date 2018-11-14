@@ -1,17 +1,14 @@
 ﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro.DM.Cards;
 #endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Crestron.SimplSharpPro.DM;
-using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices.Controls;
-#if SIMPLSHARP
-#endif
-using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphone;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume;
 
@@ -135,7 +132,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 						if (defaultValueType == "Mute")
 							control.SetSourceMute(bool.Parse(defaultValue));
 						break;
-
+#if SIMPLSHARP
 					case "Codec1":
 						if (defaultValueType == "Level")
 						{
@@ -173,7 +170,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 								((Dmps3AuxOut1VolumeDeviceControl)control).SetCodec2Mute(bool.Parse(defaultValue));
 						}
 						break;
-
+#endif
 					case "VolMaster":
 						if (defaultValueType == "Level")
 							control.SetVolumeLevel(short.Parse(defaultValue));

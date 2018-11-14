@@ -1,8 +1,8 @@
 ﻿#if SIMPLSHARP
+using Crestron.SimplSharpPro.DM;
 #endif
 using System;
 using System.Collections.Generic;
-using Crestron.SimplSharpPro.DM;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
