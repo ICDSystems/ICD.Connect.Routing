@@ -1,6 +1,7 @@
 ﻿using System;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices;
+using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Controls
@@ -26,9 +27,6 @@ namespace ICD.Connect.Routing.Controls
 				if (value == m_ActiveInput)
 					return;
 
-				if (value.HasValue && !ContainsInput(value.Value))
-					return;
-
 				int? old = m_ActiveInput;
 
 				m_ActiveInput = value;
@@ -36,18 +34,25 @@ namespace ICD.Connect.Routing.Controls
 				// Stopped using the old input
 				if (old.HasValue)
 				{
-					ConnectorInfo oldInfo = GetInput(old.Value);
+					ConnectorInfo oldInfo = GetDefaultInput(old.Value);
 					OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(old.Value, oldInfo.ConnectionType, false));
 				}
 
 				// Started using the new input
 				if (m_ActiveInput.HasValue)
 				{
-					ConnectorInfo newInfo = GetInput(m_ActiveInput.Value);
+					ConnectorInfo newInfo = GetDefaultInput(m_ActiveInput.Value);
 					OnActiveInputsChanged.Raise(this,
 					                            new ActiveInputStateChangeEventArgs(m_ActiveInput.Value, newInfo.ConnectionType, true));
 				}
 			}
+		}
+
+		private ConnectorInfo GetDefaultInput(int value)
+		{
+			return ContainsInput(value)
+				       ? GetInput(value)
+				       : new ConnectorInfo(value, eConnectionType.Audio | eConnectionType.Video);
 		}
 
 		/// <summary>
