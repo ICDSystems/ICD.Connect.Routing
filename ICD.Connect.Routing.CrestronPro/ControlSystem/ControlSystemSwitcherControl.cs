@@ -121,7 +121,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 						}
 						catch (Exception e)
 						{
-							Log(eSeverity.Error, "Failed to route audio input {0} to output {1} - {2}", input, output, e.Message);
+							Logger.AddEntry(eSeverity.Error, "{0} - Failed to route audio input {1} to output {2} - {3}", this, input, output, e.Message);
 							return false;
 						}
 					}
@@ -182,7 +182,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 						}
 						catch (Exception e)
 						{
-							Log(eSeverity.Error, "Failed to clear audio output {0} - {1}", output, e.Message);
+							Logger.AddEntry(eSeverity.Error, "{0} - Failed to clear audio output {1} - {2}", this, output, e.Message);
 							return false;
 						}
 					}
