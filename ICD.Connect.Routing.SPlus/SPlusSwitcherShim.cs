@@ -13,11 +13,11 @@ namespace ICD.Connect.Routing.SPlus
 
 	public delegate ushort SPlusSwitcherShimGetOutputCount();
 
-	public delegate ushort SPlusSwitcherShimGetInputForOutput(ushort output);
+	public delegate ushort SPlusSwitcherShimGetInputForOutput(ushort output, ushort connectionType);
 
-	public delegate ushort SPlusSwitcherShimRoute(ushort input, ushort output);
+	public delegate ushort SPlusSwitcherShimRoute(ushort input, ushort output, ushort connectionType);
 
-	public delegate ushort SPlusSwitcherShimClearOutput(ushort output);
+	//public delegate ushort SPlusSwitcherShimClearOutput(ushort output);
 
 	[PublicAPI("S+")]
 	public sealed class SPlusSwitcherShim : AbstractSPlusDeviceShim<SPlusSwitcher>
@@ -39,8 +39,8 @@ namespace ICD.Connect.Routing.SPlus
 		[PublicAPI("S+")]
 		public SPlusSwitcherShimRoute RouteCallback { get; set; }
 
-		[PublicAPI("S+")]
-		public SPlusSwitcherShimClearOutput ClearOutputCallback { get; set; }
+		//[PublicAPI("S+")]
+		//public SPlusSwitcherShimClearOutput ClearOutputCallback { get; set; }
 
 		#endregion
 
@@ -69,20 +69,29 @@ namespace ICD.Connect.Routing.SPlus
 		/// Triggers an input routing check for the given output.
 		/// </summary>
 		/// <param name="output"></param>
+		/// <param name="connectionType"></param>
 		[PublicAPI("S+")]
-		public void UpdateSwitcherOutput(ushort output)
+		public void UpdateSwitcherOutput(ushort output, ushort connectionType)
 		{
 			if (m_Control == null)
 				return;
 
-			ushort? input = GetInputForOutputCallback == null ? (ushort?)null : GetInputForOutputCallback(output);
+			eConnectionType connectionTypes = (eConnectionType)connectionType;
 
-			if (input == null)
-				m_Control.ClearOutput(output, eConnectionType.Video | eConnectionType.Audio);
-			else
-				m_Control.SetInputForOutput(output, (int)input, eConnectionType.Video | eConnectionType.Audio);
+			foreach (eConnectionType connectionTypeSingle in EnumUtils.GetFlagsExceptNone(connectionTypes))
+			{
+
+				ushort? input = GetInputForOutputCallback == null
+					                ? (ushort?)null
+					                : GetInputForOutputCallback(output, (ushort)connectionTypeSingle);
+
+				if (input == null)
+					m_Control.ClearOutput(output, connectionTypeSingle);
+				else
+					m_Control.SetInputForOutput(output, (int)input, connectionTypeSingle);
+			}
 		}
-         
+
 		#endregion
 
 		#region Protected / Private Methods
@@ -157,12 +166,22 @@ namespace ICD.Connect.Routing.SPlus
 
 		private bool SwitcherControlClearOutputCallback(int output, eConnectionType type)
 		{
-			return (ClearOutputCallback((ushort)output) != 0);
+			var callback = RouteCallback;
+
+			if (callback == null)
+				return false;
+
+			return (RouteCallback(0, (ushort)output, (ushort)type) != 0);
 		}
 
 		private bool SwitcherControlRouteCallback(RouteOperation info)
 		{
-			return RouteCallback != null && (RouteCallback((ushort)info.LocalInput, (ushort)info.LocalOutput) != 0);
+			var callback = RouteCallback;
+
+			if (callback == null)
+				return false;
+
+			return (RouteCallback((ushort)info.LocalInput, (ushort)info.LocalOutput, (ushort)info.ConnectionType) != 0);
 		}
 
 		private IEnumerable<ConnectorInfo> SwitcherControlGetOutputsCallback()
