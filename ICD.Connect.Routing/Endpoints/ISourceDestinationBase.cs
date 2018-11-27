@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Services;
-using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Originators;
@@ -63,6 +61,12 @@ namespace ICD.Connect.Routing.Endpoints
 		IEnumerable<int> GetAddresses();
 
 		/// <summary>
+		/// Gets all of the addresses as endpoint info.
+		/// </summary>
+		/// <returns></returns>
+		IEnumerable<EndpointInfo> GetEndpoints();
+
+		/// <summary>
 		/// Sets the addresses used by this source/destination.
 		/// </summary>
 		/// <param name="addresses"></param>
@@ -75,37 +79,18 @@ namespace ICD.Connect.Routing.Endpoints
 		/// <returns></returns>
 		bool Contains(EndpointInfo endpoint);
 
+		/// <summary>
+		/// Filters the endpoints by the endpoints contained in this source/destination.
+		/// </summary>
+		/// <param name="endpoints"></param>
+		/// <returns></returns>
+		IEnumerable<EndpointInfo> FilterEndpoints(IEnumerable<EndpointInfo> endpoints);
+
 		#endregion
 	}
 
 	public static class SourceDestinationBaseExtensions
 	{
-		/// <summary>
-		/// Gets all of the addresses as endpoint info.
-		/// </summary>
-		/// <param name="extends"></param>
-		/// <returns></returns>
-		public static IEnumerable<EndpointInfo> GetEndpoints(this ISourceDestinationBase extends)
-		{
-			if (extends == null)
-				throw new ArgumentNullException("extends");
-
-			return extends.GetAddresses()
-			              .Select(a => new EndpointInfo(extends.Device, extends.Control, a));
-		}
-
-		/// <summary>
-		/// Gets the DeviceControlInfo for the source/destination.
-		/// </summary>
-		/// <returns></returns>
-		public static DeviceControlInfo GetDeviceControlInfo(this ISourceDestinationBase extends)
-		{
-			if (extends == null)
-				throw new ArgumentNullException("extends");
-
-			return new DeviceControlInfo(extends.Device, extends.Control);
-		}
-
 		/// <summary>
 		/// Gets the name of the source. If no name specified, returns the name of the device
 		/// with the specified id.

@@ -38,8 +38,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 
 			m_DmInput = settings.DmInput;
 			Port = (ushort)(START_PORT + PORT_INCREMENT * (m_DmInput - START_DM_INPUT));
-
-			Connect();
 		}
 	}
 }

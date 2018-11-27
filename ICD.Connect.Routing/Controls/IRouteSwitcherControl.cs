@@ -15,7 +15,7 @@ namespace ICD.Connect.Routing.Controls
 	public interface IRouteSwitcherControl : IRouteMidpointControl
 	{
 		/// <summary>
-		/// Called when a route changes.
+		/// Raised when a route changes.
 		/// </summary>
 		event EventHandler<RouteChangeEventArgs> OnRouteChange;
 

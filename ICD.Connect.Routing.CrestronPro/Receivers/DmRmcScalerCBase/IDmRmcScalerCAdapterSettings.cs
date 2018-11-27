@@ -1,13 +1,6 @@
-﻿using ICD.Connect.Devices;
-
-namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
+﻿namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
 {
-	public interface IDmRmcScalerCAdapterSettings : IDeviceSettings
+	public interface IDmRmcScalerCAdapterSettings : IEndpointReceiverBaseAdapterSettings
 	{
-		byte? Ipid { get; set; }
-
-		int? DmSwitch { get; set; }
-
-		int? DmOutputAddress { get; set; }
 	}
 }

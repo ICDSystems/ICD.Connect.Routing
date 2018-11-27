@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
@@ -14,9 +15,12 @@ namespace ICD.Connect.Routing.Connections
 	/// <summary>
 	/// Settings for a Connection.
 	/// </summary>
-	[KrangSettings("Connection", typeof(Connection))]
+	[KrangSettings(FACTORY_NAME, typeof(Connection))]
 	public sealed class ConnectionSettings : AbstractSettings
 	{
+		[PublicAPI("MetLife settings pages")]
+		public const string FACTORY_NAME = "Connection";
+
 		private const string SOURCE_DEVICE_ELEMENT = "SourceDevice";
 		private const string SOURCE_CONTROL_ELEMENT = "SourceControl";
 		private const string SOURCEADDRESS_ELEMENT = "SourceAddress";
@@ -38,9 +42,6 @@ namespace ICD.Connect.Routing.Connections
 		private readonly IcdHashSet<int> m_RoomRestrictions;
 		private readonly SafeCriticalSection m_RoomRestrictionsSection;
 
-		private int m_SourceAddress = 1;
-		private int m_DestinationAddress = 1;
-
 		#region Properties
 
 		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
@@ -48,14 +49,14 @@ namespace ICD.Connect.Routing.Connections
 
 		public int SourceControlId { get; set; }
 
-		public int SourceAddress { get { return m_SourceAddress; } set { m_SourceAddress = value; } }
+		public int SourceAddress { get; set; }
 
 		[OriginatorIdSettingsProperty(typeof(IDeviceBase))]
 		public int DestinationDeviceId { get; set; }
 
 		public int DestinationControlId { get; set; }
 
-		public int DestinationAddress { get { return m_DestinationAddress; } set { m_DestinationAddress = value; } }
+		public int DestinationAddress { get; set; }
 
 		public eConnectionType ConnectionType { get; set; }
 
@@ -66,6 +67,9 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		public ConnectionSettings()
 		{
+			DestinationAddress = 1;
+			SourceAddress = 1;
+
 			m_RoomRestrictions = new IcdHashSet<int>();
 			m_RoomRestrictionsSection = new SafeCriticalSection();
 
@@ -172,33 +176,6 @@ namespace ICD.Connect.Routing.Connections
 			
 			SetRoomRestrictions(roomRestrictions);
 			SetSourceDeviceRestrictions(deviceRestictions);
-		}
-
-		/// <summary>
-		/// Returns true if the settings depend on a device with the given ID.
-		/// For example, to instantiate an IR Port from settings, the device the physical port
-		/// belongs to will need to be instantiated first.
-		/// </summary>
-		/// <returns></returns>
-		public override bool HasDeviceDependency(int id)
-		{
-			return id != 0 && (id == SourceDeviceId || id == DestinationDeviceId);
-		}
-
-		/// <summary>
-		/// Returns the count from the collection of ids that the settings depends on.
-		/// </summary>
-		public override int DependencyCount
-		{
-			get
-			{
-				int count = 0;
-				if (SourceDeviceId != 0)
-					count++;
-				if (DestinationDeviceId != 0)
-					count++;
-				return count;
-			}
 		}
 
 		private static IEnumerable<int> GetRestrictionsFromXml(string xml, string parentElement, string childElement)

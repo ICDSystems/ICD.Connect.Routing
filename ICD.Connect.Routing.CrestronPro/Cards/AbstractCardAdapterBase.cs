@@ -3,6 +3,7 @@ using ICD.Common.Utils.Services;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia;
 using ICD.Connect.Settings.Cores;
+using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards
 {
@@ -64,14 +65,22 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		/// Returns the Switcher
 		/// </summary>
 		[PublicAPI]
+		[CanBeNull]
 		public ICrestronSwitchAdapter Switcher
 		{
 			get
 			{
 				if (SwitcherId == null)
 					return null;
-				ICore core = ServiceProvider.GetService<ICore>();
-				return core.Originators.GetChild<ICrestronSwitchAdapter>((int)SwitcherId);
+
+				ICore core = ServiceProvider.TryGetService<ICore>();
+				if (core == null)
+					return null;
+
+				IOriginator switcher;
+				return core.Originators.TryGetChild((int)SwitcherId, out switcher)
+					? switcher as ICrestronSwitchAdapter
+					: null;
 			}
 		}
 

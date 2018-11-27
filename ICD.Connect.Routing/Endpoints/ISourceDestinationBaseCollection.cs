@@ -5,8 +5,15 @@ using ICD.Connect.Settings.Originators;
 namespace ICD.Connect.Routing.Endpoints
 {
 	public interface ISourceDestinationBaseCollection<T> : IOriginatorCollection<T>
-		where T : ISourceDestinationBase
+		where T : class, ISourceDestinationBase
 	{
+		/// <summary>
+		/// Gets the child with the given endpoint info.
+		/// </summary>
+		/// <param name="endpoint"></param>
+		/// <returns></returns>
+		IEnumerable<T> GetChildren(EndpointInfo endpoint);
+
 		/// <summary>
 		/// Gets the child with the given endpoint info.
 		/// </summary>

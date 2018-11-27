@@ -143,7 +143,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 			eDeviceRegistrationUnRegistrationResponse result = switcher.Register();
 			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-				Logger.AddEntry(eSeverity.Error, "{0} unable to register {1} - {2}", this, switcher.GetType().Name, result);
+				Log(eSeverity.Error, "Unable to register {0} - {1}", switcher.GetType().Name, result);
 		}
 
 		/// <summary>
@@ -170,7 +170,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		public DMInput GetDmInput(int address)
 		{
 			if (address < 0 || !m_Switcher.Inputs.Contains((uint)address))
-				throw new IndexOutOfRangeException(string.Format("{0} has no input at address {1}", this, address));
+				throw new ArgumentOutOfRangeException("address", string.Format("{0} has no input at address {1}", this, address));
 
 			return m_Switcher.Inputs[(uint)address];
 		}
@@ -183,7 +183,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		public DMOutput GetDmOutput(int address)
 		{
 			if (address < 0 || !m_Switcher.Outputs.Contains((uint)address))
-				throw new IndexOutOfRangeException(string.Format("{0} has no output at address {1}", this, address));
+				throw new ArgumentOutOfRangeException("address", string.Format("{0} has no output at address {1}", this, address));
 
 			return m_Switcher.Outputs[(uint)address];
 		}

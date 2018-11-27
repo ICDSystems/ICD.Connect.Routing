@@ -11,6 +11,9 @@ namespace ICD.Connect.Routing.Controls
 	public abstract class AbstractRouteSwitcherControl<T> : AbstractRouteMidpointControl<T>, IRouteSwitcherControl
 		where T : IDeviceBase
 	{
+		/// <summary>
+		/// Raised when a route changes.
+		/// </summary>
 		public abstract event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		/// <summary>
@@ -25,6 +28,11 @@ namespace ICD.Connect.Routing.Controls
 
 		#region Methods
 
+		/// <summary>
+		/// Performs the given route operation.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <returns></returns>
 		public abstract bool Route(RouteOperation info);
 
 		/// <summary>

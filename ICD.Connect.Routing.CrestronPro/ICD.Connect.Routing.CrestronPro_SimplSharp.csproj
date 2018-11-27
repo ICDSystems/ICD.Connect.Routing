@@ -133,99 +133,182 @@
     <Compile Include="Cards\ICardSettings.cs" />
     <Compile Include="ControlSystem\ControlSystemDevice.cs" />
     <Compile Include="ControlSystem\ControlSystemDeviceSettings.cs" />
-    <Compile Include="ControlSystem\ControlSystemSwitcherControl.cs" />
-    <Compile Include="DigitalMedia\BladeSwitch\AbstractCrestronBladeSwitchAdapter.cs" />
-    <Compile Include="DigitalMedia\BladeSwitch\AbstractCrestronBladeSwitchAdapterSettings.cs" />
+    <Compile Include="ControlSystem\Controls\TouchScreens\AbstractControlSystemTouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\TouchScreens\AbstractMPC3BasicTouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\TouchScreens\AbstractMPC3x101TouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\TouchScreens\AbstractMPC3x3XXBaseTouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\ControlSystemSwitcherControl.cs" />
+    <Compile Include="ControlSystem\Controls\TouchScreens\FTTouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\TouchScreens\MPC3x201TouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\TouchScreens\MPC3x30xTouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\TouchScreens\TPCSTouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\TouchScreens\TSCW730TouchScreenControl.cs" />
+    <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\BladeSwitch\BladeSwitchSwitcherControl.cs" />
-    <Compile Include="DigitalMedia\DmMd128X128\DmMd128X128Adapter.cs" />
-    <Compile Include="DigitalMedia\DmMd128X128\DmMd128X128AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32Adapter.cs" />
-    <Compile Include="DigitalMedia\DmMd32X32\DmMd32X32AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMd6X6\DmMd6X6Adapter.cs" />
-    <Compile Include="DigitalMedia\DmMd6X6\DmMd6X6AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMd6X4\DmMd6X4Adapter.cs" />
-    <Compile Include="DigitalMedia\DmMd6X4\DmMd6X4AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMd6X1\DmMd6X1Adapter.cs" />
-    <Compile Include="DigitalMedia\DmMd6X1\DmMd6X1AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMd6XN\AbstractDmMd6XNAdapter.cs" />
-    <Compile Include="DigitalMedia\DmMd6XN\AbstractDmMd6XNAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMd6XN\DmMd6XNSwitcherControl.cs" />
-    <Compile Include="DigitalMedia\DmMd6XN\IDmMd6XNAdapter.cs" />
-    <Compile Include="DigitalMedia\DmMd6XN\IDmMd6XNAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMd8X14kC\DmMd8X14kCAdapter.cs" />
-    <Compile Include="DigitalMedia\DmMd8X14kC\DmMd8X14kCAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\HdMd8X14k\HdMd8X14kAdapter.cs" />
-    <Compile Include="DigitalMedia\HdMd8X14k\HdMd8X14kAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\HdMd8X1\HdMd8X1Adapter.cs" />
-    <Compile Include="DigitalMedia\HdMd8X1\HdMd8X1AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\HdMd8XN\AbstractHdMd8XNAdapter.cs" />
-    <Compile Include="DigitalMedia\HdMd8XN\AbstractHdMd8XNAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\HdMd8XN\HdMd8XNSwitcherControl.cs" />
-    <Compile Include="DigitalMedia\HdMd6X24kE\HdMd6X24kEAdapter.cs" />
-    <Compile Include="DigitalMedia\HdMd6X24kE\HdMd6X24kEAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\HdMd4X14kE\HdMd4X14kEAdapter.cs" />
-    <Compile Include="DigitalMedia\HdMd4X14kE\HdMd4X14kEAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\HdMd8XN\IHdMd8XNAdapter.cs" />
-    <Compile Include="DigitalMedia\HdMd8XN\IHdMd8XNAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\HdMdNXM\AbstractHdMdNXMAdapter.cs" />
-    <Compile Include="DigitalMedia\HdMdNXM\AbstractHdMdNXMAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\HdMdNXM\HdMdNXMSwitcherControl.cs" />
-    <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16Adapter.cs" />
-    <Compile Include="DigitalMedia\DmMd16X16\DmMd16X16AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMd64X64\DmMd64X64Adapter.cs" />
-    <Compile Include="DigitalMedia\DmMd64X64\DmMd64X64AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMd8X8\DmMd8X8Adapter.cs" />
-    <Compile Include="DigitalMedia\DmMd8X8\DmMd8X8AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMdMNXN\AbstractDmMdMNXNAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\DmMdMNXN\DmMdMNXNSwitcherControl.cs" />
-    <Compile Include="DigitalMedia\DmMdMNXN\AbstractDmMdMNXNAdapter.cs" />
-    <Compile Include="DigitalMedia\DmMdMNXN\IDmMdMNXNAdapter.cs" />
-    <Compile Include="DigitalMedia\DmMdMNXN\IDmMdNXNAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2Adapter.cs" />
-    <Compile Include="DigitalMedia\HdMd8X2\HdMd8X2AdapterSettings.cs" />
-    <Compile Include="DigitalMedia\HdMdNXM\IHdMdNXMAdapterSettings.cs" />
-    <Compile Include="DigitalMedia\HdMdNXM\IHdMdNXMAdapter.cs" />
-    <Compile Include="DigitalMedia\BladeSwitch\ICrestronBladeSwitchAdapter.cs" />
-    <Compile Include="DigitalMedia\BladeSwitch\ICrestronBladeSwitchAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\AbstractDmNvxStreamSwitcherDevice.cs" />
+    <Compile Include="DigitalMedia\DmNvx\AbstractDmNvxStreamSwitcherSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\Dm100xStrBase\AbstractDm100XStrBaseAdapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx\Dm100xStrBase\AbstractDm100XStrBaseAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\Dm100xStrBase\IDm100XStrBaseAdapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx\Dm100xStrBase\IDm100XStrBaseAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx350C\DmNvx350CAdapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx350C\DmNvx350CAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx350\DmNvx350Adapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx350\DmNvx350AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx351C\DmNvx351CAdapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx351C\DmNvx351CAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx351\DmNvx351Adapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx351\DmNvx351AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx35X\AbstractDmNvx35xAdapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx35X\AbstractDmNvx35XAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx35X\IDmNvx35XAdapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvx35X\IDmNvx35XAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxBaseClass\AbstractDmNvxBaseClassAdapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxBaseClass\AbstractDmNvxBaseClassAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxBaseClass\DmNvxBaseClassSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxBaseClass\DmNvxBaseClassVolumeControl.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxBaseClass\eDeviceMode.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxBaseClass\IDmNvxBaseClassAdapter.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxBaseClass\IDmNvxBaseClassAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\BladeSwitch\BladeSwitchSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd128X128\DmMd128X128Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd128X128\DmMd128X128AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd32X32\DmMd32X32Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd32X32\DmMd32X32AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd6X6\DmMd6X6Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd6X6\DmMd6X6AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd6X4\DmMd6X4Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd6X4\DmMd6X4AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd6X1\DmMd6X1Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd6X1\DmMd6X1AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd6XN\AbstractDmMd6XNAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd6XN\AbstractDmMd6XNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd6XN\DmMd6XNSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd6XN\IDmMd6XNAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd6XN\IDmMd6XNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd8X14kC\DmMd8X14kCAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd8X14kC\DmMd8X14kCAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxPrimaryStreamSwitcher\DmNvxPrimaryStreamSwitcherDevice.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxPrimaryStreamSwitcher\DmNvxPrimaryStreamSwitcherSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\NvxEndpointInfo.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxSecondaryStreamSwitcher\DmNvxSecondaryStreamSwitcherDevice.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxSecondaryStreamSwitcher\DmNvxSecondaryStreamSwitcherDeviceSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\IDmNvxStreamSwitcherDevice.cs" />
+    <Compile Include="DigitalMedia\DmNvx\IDmNvxStreamSwitcherSettings.cs" />
+    <Compile Include="DigitalMedia\DmXio\DmXioDirector160\DmXioDirector160Adapter.cs" />
+    <Compile Include="DigitalMedia\DmXio\DmXioDirector160\DmXioDirector160AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmXio\DmXioDirector80\DmXioDirector80Adapter.cs" />
+    <Compile Include="DigitalMedia\DmXio\DmXioDirector80\DmXioDirector80AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmXio\DmXioDirectorBase\AbstractDmXioDirectorBaseAdapter.cs" />
+    <Compile Include="DigitalMedia\DmXio\DmXioDirectorBase\AbstractDmXioDirectorBaseAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmXio\DmXioDirectorBase\IDmXioDirectorBaseAdapter.cs" />
+    <Compile Include="DigitalMedia\DmXio\DmXioDirectorBase\IDmXioDirectorBaseAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmXio\DmXioDirectorEnterprise\DmXioDirectorEnterpriseAdapter.cs" />
+    <Compile Include="DigitalMedia\DmXio\DmXioDirectorEnterprise\DmXioDirectorEnterpriseAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd300Ce\HdMd300CeAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd300Ce\HdMd300CeAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd400Ce\HdMd400CeAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd400Ce\HdMd400CeAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8X14k\HdMd8X14kAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8X14k\HdMd8X14kAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8X1\HdMd8X1Adapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8X1\HdMd8X1AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8XN\AbstractHdMd8XNAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8XN\AbstractHdMd8XNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8XN\HdMd8XNSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd6X24kE\HdMd6X24kEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd6X24kE\HdMd6X24kEAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4X14kE\HdMd4X14kEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4X14kE\HdMd4X14kEAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8XN\IHdMd8XNAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8XN\IHdMd8XNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdNXM\AbstractHdMdNXMAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdNXM\AbstractHdMdNXMAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdNXM\HdMdNXMSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd16X16\DmMd16X16Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd16X16\DmMd16X16AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd64X64\DmMd64X64Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd64X64\DmMd64X64AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd8X8\DmMd8X8Adapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMd8X8\DmMd8X8AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMdMNXN\AbstractDmMdMNXNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMdMNXN\DmMdMNXNSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMdMNXN\AbstractDmMdMNXNAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMdMNXN\IDmMdMNXNAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\DmMdMNXN\IDmMdNXNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8X2\HdMd8X2Adapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8X2\HdMd8X2AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdNXM\IHdMdNXMAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdNXM\IHdMdNXMAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\BladeSwitch\ICrestronBladeSwitchAdapter.cs" />
+    <Compile Include="DigitalMedia\DmMd\BladeSwitch\ICrestronBladeSwitchAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdxxxCe\AbstractHdMdxxxCeAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdxxxCe\AbstractHdMdxxxCeAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdxxxCe\HdMdxxxCeSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdxxxCe\IHdMdxxxCeAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdxxxCe\IHdMdxxxCeAdapterSettings.cs" />
     <Compile Include="DigitalMedia\ICrestronSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\ICrestronSwitchAdapterSettings.cs" />
     <Compile Include="IDmParent.cs" />
     <Compile Include="KrangPlugin.cs" />
+    <Compile Include="Receivers\AbstractEndpointReceiverBaseAdapter.cs" />
+    <Compile Include="Receivers\AbstractEndpointReceiverBaseAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc100F\DmRmc100FAdapter.cs" />
+    <Compile Include="Receivers\DmRmc100F\DmRmc100FAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc100S\DmRmc100SAdapter.cs" />
+    <Compile Include="Receivers\DmRmc100S\DmRmc100SAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc150S\DmRmc150SAdapter.cs" />
+    <Compile Include="Receivers\DmRmc150S\DmRmc150SAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc200C\DmRmc200CAdapter.cs" />
+    <Compile Include="Receivers\DmRmc200C\DmRmc200CAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc4k100C\DmRmc4k100CAdapter.cs" />
+    <Compile Include="Receivers\DmRmc4k100C\DmRmc4k100CAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc4kz100C\DmRmc4kz100CAdapter.cs" />
+    <Compile Include="Receivers\DmRmc4kz100C\DmRmc4kz100CAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc100CBase\AbstractDmRmc100CBaseAdapter.cs" />
+    <Compile Include="Receivers\DmRmc100CBase\AbstractDmRmc100CBaseAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc100CBase\IDmRmc100CBaseAdapter.cs" />
+    <Compile Include="Receivers\DmRmc100CBase\IDmRmc100CBaseAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc100C\DmRmc100CAdapter.cs" />
+    <Compile Include="Receivers\DmRmc100C\DmRmc100CAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc4kScalerCDsp\DmRmc4kScalerCDspAdapter.cs" />
     <Compile Include="Receivers\DmRmc4kScalerCDsp\DmRmc4kScalerCDspAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc4kScalerC\DmRmc4kScalerCAdapter.cs" />
     <Compile Include="Receivers\DmRmc4kScalerC\DmRmc4kScalerCAdapterSettings.cs" />
-    <Compile Include="Receivers\DmRmcScalerCBase\AbstractDmRmcScalerCAdapter.cs" />
-    <Compile Include="Receivers\DmRmcScalerCBase\AbstractDmRmcScalerCAdapterSettings.cs" />
-    <Compile Include="Receivers\DmRmcScalerCBase\DmRmcScalerCBaseRouteControl.cs" />
+    <Compile Include="Receivers\DmRmcScalerCBase\AbstractDmRmcScalerCBaseAdapter.cs" />
+    <Compile Include="Receivers\DmRmcScalerCBase\AbstractDmRmcScalerCBaseAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapter.cs" />
+    <Compile Include="Receivers\IEndpointReceiverBaseAdapter.cs" />
+    <Compile Include="Receivers\IEndpointReceiverBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4K202C\DmTx4K202CAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4K202C\DmTx4K202CAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapter.cs" />
     <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx200Base\AbstractDmTx200BaseAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx200Base\IDmTx200BaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx200Base\IDmTx200BaseAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GAdapter.cs" />
     <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GAdapterSettings.cs" />
-    <Compile Include="Transmitters\DmTx200C2G\DmTx200C2GSourceControl.cs" />
-    <Compile Include="Transmitters\DmTx201S\AbstractDmTx201SSourceControl.cs" />
-    <Compile Include="Transmitters\DmTx201S\DmTx201CSourceControl.cs" />
-    <Compile Include="Transmitters\DmTx201S\DmTx201S2SourceControl.cs" />
     <Compile Include="Transmitters\DmTx201S\DmTx201CAdapter.cs" />
     <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCAdapter.cs" />
-    <Compile Include="DigitalMedia\HdMd4X24kE\HdMd4X24kEAdapter.cs" />
-    <Compile Include="DigitalMedia\HdMd4X24kE\HdMd4X24kEAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4X24kE\HdMd4X24kEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4X24kE\HdMd4X24kEAdapterSettings.cs" />
     <None Include="ObfuscationSettings.cs" />
-    <Compile Include="Transmitters\DmTx200Base\AbstractDmTxBaseSourceControl.cs" />
-    <Compile Include="Transmitters\DmTx201S\DmTx201SSourceControl.cs" />
     <Compile Include="Transmitters\DmTx201S\AbstractDmTx201SAdapter.cs" />
     <Compile Include="Transmitters\DmTx201S\DmTx201S2Adapter.cs" />
     <Compile Include="Transmitters\DmTx201S\DmTx201SAdapter.cs" />
     <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CAdapter.cs" />
     <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CAdapterSettings.cs" />
-    <Compile Include="Transmitters\DmTx4K302C\DmTx4K302CSourceControl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\AbstractDmTx4kX02CBaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\AbstractDmTx4kX02CBaseAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\IDmTx4kX02CBaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4kX02CBase\IDmTx4kX02CBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\IEndpointTransmitterBaseAdapter.cs" />
     <Compile Include="Transmitters\IEndpointTransmitterBaseAdapterSettings.cs" />
     <Compile Include="Utils\DmEndpointFactoryUtils.cs" />
@@ -240,6 +323,10 @@
       <Project>{727F5820-5A61-440D-8899-E454FE8238D7}</Project>
       <Name>ICD.Connect.API_SimplSharp</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Audio\ICD.Connect.Audio\ICD.Connect.Audio_SimplSharp.csproj">
+      <Project>{8ED25D96-E9A5-4E9A-A890-B4EF3AB62041}</Project>
+      <Name>ICD.Connect.Audio_SimplSharp</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\ICD.Connect.Devices\ICD.Connect.Devices\ICD.Connect.Devices_SimplSharp.csproj">
       <Project>{FD46A717-5836-4B73-ADD0-2706639DA8ED}</Project>
       <Name>ICD.Connect.Devices_SimplSharp</Name>
@@ -247,6 +334,26 @@
     <ProjectReference Include="..\..\ICD.Connect.Misc\ICD.Connect.Misc.CrestronPro\ICD.Connect.Misc.CrestronPro_SimplSharp.csproj">
       <Project>{46CD87DE-F3EF-41D4-8783-9ECF21183765}</Project>
       <Name>ICD.Connect.Misc.CrestronPro_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Misc\ICD.Connect.Misc\ICD.Connect.Misc_SimplSharp.csproj">
+      <Project>{3BAE6352-77B5-499A-9DA5-2AB198F53183}</Project>
+      <Name>ICD.Connect.Misc_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Panels\ICD.Connect.Panels.CrestronPro\ICD.Connect.Panels.CrestronPro_SimplSharp.csproj">
+      <Project>{8B2F1E99-BB66-4120-8B2C-EB4A2222AF5B}</Project>
+      <Name>ICD.Connect.Panels.CrestronPro_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Panels\ICD.Connect.Panels.Crestron\ICD.Connect.Panels.Crestron_SimplSharp.csproj">
+      <Project>{EF71F157-ED75-4B30-ABC9-1E7811615528}</Project>
+      <Name>ICD.Connect.Panels.Crestron_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Panels\ICD.Connect.Panels\ICD.Connect.Panels_SimplSharp.csproj">
+      <Project>{A441FE98-6A8E-4EF3-98F0-D17041D2E118}</Project>
+      <Name>ICD.Connect.Panels_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Protocol\ICD.Connect.Protocol\ICD.Connect.Protocol_SimplSharp.csproj">
+      <Project>{2E4E01B8-D4EA-4FB1-9FCE-0A0DC8D83C8A}</Project>
+      <Name>ICD.Connect.Protocol_SimplSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ICD.Connect.Settings\ICD.Connect.Settings\ICD.Connect.Settings_SimplSharp.csproj">
       <Project>{5B84EB3C-1C3A-4C4D-98C2-69F67CF51D5A}</Project>

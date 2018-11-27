@@ -1,11 +1,12 @@
-﻿using ICD.Common.Utils;
+﻿using System;
+using ICD.Common.Utils;
 using ICD.Connect.Routing.Connections;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
 namespace ICD.Connect.Routing
 {
-	public struct ConnectorInfo
+	public struct ConnectorInfo : IComparable<ConnectorInfo>, IEquatable<ConnectorInfo>
 	{
 		private readonly int m_Address;
 		private readonly eConnectionType m_ConnectionType;
@@ -76,7 +77,7 @@ namespace ICD.Connect.Routing
 		/// <returns></returns>
 		public static bool operator !=(ConnectorInfo a1, ConnectorInfo a2)
 		{
-			return !(a1 == a2);
+			return !a1.Equals(a2);
 		}
 
 		/// <summary>
@@ -86,10 +87,13 @@ namespace ICD.Connect.Routing
 		/// <returns></returns>
 		public override bool Equals(object other)
 		{
-			if (other == null || GetType() != other.GetType())
-				return false;
+			return other is ConnectorInfo && Equals((ConnectorInfo)other);
+		}
 
-			return GetHashCode() == ((ConnectorInfo)other).GetHashCode();
+		public bool Equals(ConnectorInfo other)
+		{
+			return m_Address == other.m_Address &&
+			       m_ConnectionType == other.m_ConnectionType;
 		}
 
 		/// <summary>
@@ -105,6 +109,17 @@ namespace ICD.Connect.Routing
 				hash = hash * 23 + (int)m_ConnectionType;
 				return hash;
 			}
+		}
+
+		public int CompareTo(ConnectorInfo other)
+		{
+// ReSharper disable ImpureMethodCallOnReadonlyValueField
+			int delta = m_Address.CompareTo(other.m_Address);
+			if (delta != 0)
+				return delta;
+
+			return m_ConnectionType.CompareTo(other.m_ConnectionType);
+// ReSharper restore ImpureMethodCallOnReadonlyValueField
 		}
 
 		#endregion

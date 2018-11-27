@@ -1,18 +1,20 @@
 ﻿using System;
-using ICD.Common.Properties;
-using ICD.Common.Utils;
-using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.API.Nodes;
-using ICD.Connect.Devices;
+using ICD.Common.Utils.Extensions;
+using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Settings;
+using ICD.Connect.Routing.Devices;
+using ICD.Connect.Routing.EventArguments;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
+using ICD.Common.Properties;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.CrestronPro.Utils;
-#else
-using System;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters
@@ -20,17 +22,22 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 	/// <summary>
 	/// Base class for EndpointTransmitterBase device adapters.
 	/// </summary>
-	/// <typeparam name="TTransmitter"></typeparam>
 	/// <typeparam name="TSettings"></typeparam>
 #if SIMPLSHARP
-	public abstract class AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings> : AbstractDevice<TSettings>,
-	                                                                                        IEndpointTransmitterBaseAdapter
+	/// <typeparam name="TTransmitter"></typeparam>
+	public abstract class AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings> : AbstractRouteSourceDevice<TSettings>,
+	                                                                                        IEndpointTransmitterBaseAdapter<TTransmitter>
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.EndpointTransmitterBase
 #else
-    public abstract class AbstractEndpointTransmitterBaseAdapter<TSettings> : AbstractDevice<TSettings>, IEndpointTransmitterBaseAdapter
+	public abstract class AbstractEndpointTransmitterBaseAdapter<TSettings> : AbstractRouteSourceDevice<TSettings>, IEndpointTransmitterBaseAdapter
 #endif
 		where TSettings : IEndpointTransmitterBaseAdapterSettings, new()
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
+		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
 #if SIMPLSHARP
 		/// <summary>
 		/// Raised when the wrapped transmitter changes.
@@ -38,8 +45,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		public event TransmitterChangeCallback OnTransmitterChanged;
 
 		private TTransmitter m_Transmitter;
-#endif
 		private int? m_ParentId;
+#endif
 
 		#region Properties
 
@@ -62,7 +69,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 					handler(this, m_Transmitter);
 			}
 		}
-
+		
 		/// <summary>
 		/// Gets the wrapped transmitter instance.
 		/// </summary>
@@ -74,7 +81,13 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 		#endregion
 
-		#region Methods
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		protected AbstractEndpointTransmitterBaseAdapter()
+		{
+			Controls.Add(new RouteSourceControl(this, 0));
+		}
 
 		/// <summary>
 		/// Release resources.
@@ -92,6 +105,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			SetTransmitter(null, null);
 #endif
 		}
+
+		#region Methods
 
 #if SIMPLSHARP
 		/// <summary>
@@ -115,7 +130,36 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 			UpdateCachedOnlineStatus();
 		}
+#endif
 
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int output)
+		{
+			if (output != 1)
+				throw new ArgumentOutOfRangeException("output");
+
+			return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return output == 1;
+		}
+
+		#endregion
+
+		#region Private Methods 
+
+#if SIMPLSHARP
 		/// <summary>
 		/// Called when the wrapped transmitter is assigned.
 		/// </summary>
@@ -159,7 +203,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			eDeviceRegistrationUnRegistrationResponse result = transmitter.Register();
 			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to register {1} - {2}", this, transmitter.GetType().Name, result);
+				Log(eSeverity.Error, "Unable to register {0} - {1}", transmitter.GetType().Name, result);
 				return;
 			}
 
@@ -170,9 +214,69 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
 			if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to register parent {1} - {2}", this, parent.GetType().Name,
-				                parentResult);
+				Log(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
 			}
+		}
+#endif
+
+		#endregion
+
+		#region IO
+
+#if SIMPLSHARP
+		/// <summary>
+		/// Gets the port at the given addres.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public virtual ComPort GetComPort(int address)
+		{
+			string message = string.Format("{0} has no {1} with address {2}", this, typeof(ComPort).Name, address);
+			throw new ArgumentOutOfRangeException("address", message);
+		}
+
+		/// <summary>
+		/// Gets the port at the given addres.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public virtual IROutputPort GetIrOutputPort(int address)
+		{
+			string message = string.Format("{0} has no {1} with address {2}", this, typeof(IROutputPort).Name, address);
+			throw new ArgumentOutOfRangeException("address", message);
+		}
+
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public virtual Relay GetRelayPort(int address)
+		{
+			string message = string.Format("{0} has no {1}", this, typeof(Relay).Name);
+			throw new ArgumentOutOfRangeException("address", message);
+		}
+
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public virtual Versiport GetIoPort(int address)
+		{
+			string message = string.Format("{0} has no {1}", this, typeof(Versiport).Name);
+			throw new ArgumentOutOfRangeException("address", message);
+		}
+
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public DigitalInput GetDigitalInputPort(int address)
+		{
+			string message = string.Format("{0} has no {1}", this, typeof(DigitalInput).Name);
+			throw new ArgumentOutOfRangeException("address", message);
 		}
 #endif
 
@@ -196,7 +300,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			settings.DmInputAddress = input == null ? (int?)null : (int)input.Number;
 #else
             settings.Ipid = null;
-            settings.DmSwitch = m_ParentId;
             settings.DmInputAddress = null;
 #endif
 		}
@@ -229,36 +332,45 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 			try
 			{
-				transmitter =
-					DmEndpointFactoryUtils.InstantiateEndpoint<TTransmitter>(settings.Ipid, settings.DmInputAddress,
-					                                                         settings.DmSwitch, factory,
-					                                                         InstantiateTransmitter,
-					                                                         InstantiateTransmitter,
-					                                                         InstantiateTransmitter);
+				transmitter = DmEndpointFactoryUtils.InstantiateTransmitter(settings, factory, this);
 			}
 			catch (Exception e)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} failed to instantiate internal {1} - {2}",
-				                this, typeof(TTransmitter).Name, e.Message);
+				Log(eSeverity.Error, "Failed to instantiate internal {0} - {1}", typeof(TTransmitter).Name, e.Message);
 			}
 
 			SetTransmitter(transmitter, settings.DmSwitch);
-#else
-            throw new NotImplementedException();
 #endif
 		}
 
 #if SIMPLSHARP
-		protected abstract TTransmitter InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem);
+		/// <summary>
+		/// Instantiates the transmitter with the given IPID against the control system.
+		/// </summary>
+		/// <param name="ipid"></param>
+		/// <param name="controlSystem"></param>
+		/// <returns></returns>
+		public abstract TTransmitter InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem);
 
-		protected abstract TTransmitter InstantiateTransmitter(byte ipid, DMInput input);
+		/// <summary>
+		/// Instantiates the transmitter against the given DM Input and configures it with the given IPID.
+		/// </summary>
+		/// <param name="ipid"></param>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public abstract TTransmitter InstantiateTransmitter(byte ipid, DMInput input);
 
-		protected abstract TTransmitter InstantiateTransmitter(DMInput input);
+		/// <summary>
+		/// Instantiates the transmitter against the given DM Input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public abstract TTransmitter InstantiateTransmitter(DMInput input);
 #endif
 
 		#endregion
 
-		#region Private Methods
+		#region Protected / Private Methods
 
 		/// <summary>
 		/// Gets the current online status of the device.
@@ -282,7 +394,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// Subscribes to the transmitter events.
 		/// </summary>
 		/// <param name="transmitter"></param>
-		private void Subscribe(TTransmitter transmitter)
+		protected virtual void Subscribe(TTransmitter transmitter)
 		{
 			if (transmitter == null)
 				return;
@@ -294,7 +406,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// Unsubscribes from the transmitter events.
 		/// </summary>
 		/// <param name="transmitter"></param>
-		private void Unsubscribe(TTransmitter transmitter)
+		protected virtual void Unsubscribe(TTransmitter transmitter)
 		{
 			if (transmitter == null)
 				return;
@@ -312,6 +424,17 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			UpdateCachedOnlineStatus();
 		}
 #endif
+
+		/// <summary>
+		/// Raises the OnActiveTransmissionStateChanged event.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <param name="transmitting"></param>
+		protected void RaiseOnActiveTransmissionStateChanged(int output, eConnectionType type, bool transmitting)
+		{
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, type, transmitting));
+		}
 
 		#endregion
 

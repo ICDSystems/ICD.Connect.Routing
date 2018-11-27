@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using ICD.Common.Properties;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Settings.Originators;
+using ICD.Connect.Routing.Endpoints.Destinations;
+using ICD.Connect.Routing.Endpoints.Sources;
 
 namespace ICD.Connect.Routing.Connections
 {
@@ -17,6 +20,15 @@ namespace ICD.Connect.Routing.Connections
 		/// <returns></returns>
 		[CanBeNull]
 		Connection GetInputConnection(EndpointInfo destination);
+
+		/// <summary>
+		/// Gets the connection for the given endpoint.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		Connection GetInputConnection(EndpointInfo destination, eConnectionType type);
 
 		/// <summary>
 		/// Gets the connection for the given endpoint.
@@ -38,14 +50,12 @@ namespace ICD.Connect.Routing.Connections
 		                                            eConnectionType type);
 
 		/// <summary>
-		/// Gets the input connections for the device matching any of the given type flags.
+		/// Gets the input connections for the device.
 		/// </summary>
 		/// <param name="destinationDeviceId"></param>
 		/// <param name="destinationControlId"></param>
-		/// <param name="type"></param>
 		/// <returns></returns>
-		IEnumerable<Connection> GetInputConnectionsAny(int destinationDeviceId, int destinationControlId,
-		                                               eConnectionType type);
+		IEnumerable<Connection> GetInputConnections(int destinationDeviceId, int destinationControlId);
 
 		/// <summary>
 		/// Gets the connection for the given endpoint.
@@ -65,6 +75,25 @@ namespace ICD.Connect.Routing.Connections
 		Connection GetOutputConnection(IRouteSourceControl sourceControl, int output);
 
 		/// <summary>
+		/// Gets the connection for the given endpoint.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		Connection GetOutputConnection(EndpointInfo sourceEndpoint, eConnectionType type);
+
+		/// <summary>
+		/// Given a source endpoint and a final destination endpoint,
+		/// returns the possible output connection from the source to reach the destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="finalDestination"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		[CanBeNull]
+		Connection GetOutputConnection(EndpointInfo source, EndpointInfo finalDestination, eConnectionType flag);
+
+		/// <summary>
 		/// Gets the output connections for the given source device.
 		/// </summary>
 		/// <param name="sourceDeviceId"></param>
@@ -77,18 +106,51 @@ namespace ICD.Connect.Routing.Connections
 		/// </summary>
 		/// <param name="sourceDeviceId"></param>
 		/// <param name="sourceControlId"></param>
-		/// <param name="type"></param>
+		/// <param name="flag"></param>
 		/// <returns></returns>
-		IEnumerable<Connection> GetOutputConnections(int sourceDeviceId, int sourceControlId, eConnectionType type);
+		IEnumerable<Connection> GetOutputConnections(int sourceDeviceId, int sourceControlId, eConnectionType flag);
 
 		/// <summary>
-		/// Gets the output connections for the given source device matching any of the given type flags.
+		/// Gets the output connections from the given source control in order to reach the given destination endpoints.
 		/// </summary>
-		/// <param name="sourceDeviceId"></param>
-		/// <param name="sourceControlId"></param>
+		/// <param name="sourceControl"></param>
+		/// <param name="finalDestinations"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		IEnumerable<Connection> GetOutputConnections(DeviceControlInfo sourceControl,
+		                                             IEnumerable<EndpointInfo> finalDestinations, eConnectionType flag);
+
+		/// <summary>
+		/// Gets filtered endpoints for the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		IEnumerable<EndpointInfo> FilterEndpoints(IDestination destination, eConnectionType flag);
+
+		/// <summary>
+		/// Gets filtered endpoints for the given source.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		IEnumerable<EndpointInfo> FilterEndpoints(ISource source, eConnectionType flag);
+
+		/// <summary>
+		/// Gets filtered endpoints matching any of the given connection flags for the given destination.
+		/// </summary>
+		/// <param name="destination"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		IEnumerable<Connection> GetOutputConnectionsAny(int sourceDeviceId, int sourceControlId, eConnectionType type);
+		IEnumerable<EndpointInfo> FilterEndpointsAny(IDestination destination, eConnectionType type);
+
+		/// <summary>
+		/// Gets filtered endpoints matching any of the given connection flags for the given source.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		IEnumerable<EndpointInfo> FilterEndpointsAny(ISource source, eConnectionType type);
 
 		#endregion
 

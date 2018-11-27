@@ -8,6 +8,9 @@ namespace ICD.Connect.Routing.Proxies
 {
 	public abstract class AbstractProxyRouteSourceControl : AbstractProxyRouteControl, IProxyRouteSourceControl
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 		/// <summary>
@@ -40,6 +43,28 @@ namespace ICD.Connect.Routing.Proxies
 		/// <param name="type"></param>
 		/// <returns></returns>
 		public bool GetActiveTransmissionState(int output, eConnectionType type)
+		{
+			// TODO
+			return false;
+		}
+
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public ConnectorInfo GetOutput(int output)
+		{
+			// TODO
+			throw new ArgumentOutOfRangeException("output");
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public bool ContainsOutput(int output)
 		{
 			// TODO
 			return false;

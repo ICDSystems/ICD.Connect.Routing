@@ -13,6 +13,9 @@ namespace ICD.Connect.Routing.Controls
 	public abstract class AbstractRouteMidpointControl<T> : AbstractRouteDestinationControl<T>, IRouteMidpointControl
 		where T : IDeviceBase
 	{
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
 		public abstract event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 		/// <summary>
@@ -46,10 +49,14 @@ namespace ICD.Connect.Routing.Controls
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public virtual ConnectorInfo GetOutput(int address)
-		{
-			return GetOutputs().First(c => c.Address == address);
-		}
+		public abstract ConnectorInfo GetOutput(int address);
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public abstract bool ContainsOutput(int output);
 
 		/// <summary>
 		/// Returns the outputs.
@@ -96,6 +103,7 @@ namespace ICD.Connect.Routing.Controls
 		{
 			base.BuildConsoleStatus(addRow);
 
+			RouteSourceControlConsole.BuildConsoleStatus(this, addRow);
 			RouteMidpointControlConsole.BuildConsoleStatus(this, addRow);
 		}
 
@@ -106,6 +114,9 @@ namespace ICD.Connect.Routing.Controls
 		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
 		{
 			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+			foreach (IConsoleCommand command in RouteSourceControlConsole.GetConsoleCommands(this))
 				yield return command;
 
 			foreach (IConsoleCommand command in RouteMidpointControlConsole.GetConsoleCommands(this))
@@ -128,6 +139,9 @@ namespace ICD.Connect.Routing.Controls
 		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
 		{
 			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
+
+			foreach (IConsoleNodeBase node in RouteSourceControlConsole.GetConsoleNodes(this))
 				yield return node;
 
 			foreach (IConsoleNodeBase node in RouteMidpointControlConsole.GetConsoleNodes(this))
