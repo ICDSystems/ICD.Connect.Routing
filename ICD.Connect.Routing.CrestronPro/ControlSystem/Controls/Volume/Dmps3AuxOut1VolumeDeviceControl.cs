@@ -21,20 +21,21 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 #if SIMPLSHARP
 		protected new readonly Card.Dmps3Aux1Output VolumeObject;
 #endif
-		public Dmps3AuxOut1VolumeDeviceControl(ControlSystemDevice parent, int id, string name, uint outputAddress)
-			: base(parent, id, name, outputAddress)
+		public Dmps3AuxOut1VolumeDeviceControl(ControlSystemDevice parent, int id, string name, Card.Dmps3Aux1Output output, string xml)
+			: base(parent, id, name, output)
 		{
-			VolumeObject = Parent.ControlSystem.SwitcherOutputs[outputAddress] as Card.Dmps3Aux1Output;
+			VolumeObject = output;
+			SetDefaultOnCrosspointsFromXml(xml);
 		}
 
 		#region Methods
 
-		public void SetCodec2Level(short gainLevel)
+		protected override void SetCodec2Level(short gainLevel)
 		{
 			VolumeObject.Codec2Level.ShortValue = (short)(gainLevel * 10);
 		}
 
-		public void SetCodec2Mute(bool mute)
+		protected override void SetCodec2Mute(bool mute)
 		{
 			if (VolumeObject.CodecMute2OnFeedback.BoolValue & !mute)
 			{

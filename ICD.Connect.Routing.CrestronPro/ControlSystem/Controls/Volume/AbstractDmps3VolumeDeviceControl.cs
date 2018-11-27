@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Audio.Console;
 #if SIMPLSHARP
@@ -37,10 +38,22 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 			VolumeObject = Parent.ControlSystem.SwitcherOutputs[outputAddress] as Card.Dmps3OutputBase;
 			VolumeOutputMixer = ((IOutputMixer)VolumeObject).OutputMixer as CrestronControlSystem.Dmps3OutputMixer;
 #endif
-
 			Subscribe(parent);
 		}
 
+#if SIMPLSHARP
+		protected AbstractDmps3VolumeDeviceControl(ControlSystemDevice parent, int id, string name, Card.Dmps3OutputBase output)
+			: base(parent, id)
+		{
+			m_Name = name;
+
+
+			VolumeObject = output;
+			VolumeOutputMixer = ((IOutputMixer)VolumeObject).OutputMixer as CrestronControlSystem.Dmps3OutputMixer;
+
+			Subscribe(parent);
+		}
+#endif
 		protected override void DisposeFinal(bool disposing)
 		{
 			base.DisposeFinal(disposing);
@@ -211,6 +224,26 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 #endif
 		}
 
+		protected virtual void SetCodec2Mute(bool parse)
+		{
+			throw new NotSupportedException();
+		}
+
+		protected virtual void SetCodec2Level(short parse)
+		{
+			throw new NotSupportedException();
+		}
+
+		protected virtual void SetCodec1Mute(bool parse)
+		{
+			throw new NotSupportedException();
+		}
+
+		protected virtual void SetCodec1Level(short parse)
+		{
+			throw new NotSupportedException();
+		}
+
 #endregion
 
 #region Private Methods
@@ -225,7 +258,68 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 			return false;
 		}
 
-#endregion
+		protected void SetDefaultOnCrosspointsFromXml(string controlElement)
+		{
+			if(controlElement == null) return;
+
+			string inputType = XmlUtils.TryReadChildElementContentAsString(controlElement, "InputType");
+			ushort? inputAddress = XmlUtils.TryReadChildElementContentAsUShort(controlElement, "InputAddress");
+			bool? defaultMute = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultMute");
+			short? defaultLevel = XmlUtils.TryReadChildElementContentAsShort(controlElement, "DefaultLevel");
+
+			if (inputType == null) return;
+
+			switch (inputType)
+			{
+				case "Microphone":
+					if (defaultLevel.HasValue && inputAddress.HasValue)
+						SetMicrophoneLevel(inputAddress.Value, (short)defaultLevel);
+					if (defaultMute.HasValue && inputAddress.HasValue)
+						SetMicrophoneMute(inputAddress.Value, defaultMute.Value);
+					break;
+
+				case "MicrophoneMaster":
+					if (defaultLevel.HasValue)
+						SetMicMasterLevel((short)defaultLevel);
+					if (defaultMute.HasValue)
+						SetMicMasterMute(defaultMute.Value);
+					break;
+
+				case "Source":
+					if (defaultLevel.HasValue)
+						SetSourceLevel((short)defaultLevel);
+					if (defaultMute.HasValue)
+						SetSourceMute(defaultMute.Value);
+					break;
+#if SIMPLSHARP
+				case "Codec1":
+					if (defaultLevel.HasValue)
+						SetCodec1Level((short)defaultLevel);
+					if (defaultMute.HasValue)
+						SetCodec1Mute(defaultMute.Value);
+					break;
+
+				case "Codec2":
+					if (defaultLevel.HasValue)
+						SetCodec2Level((short)defaultLevel);
+					if (defaultMute.HasValue)
+						SetCodec2Mute(defaultMute.Value);
+					break;
+#endif
+				case "VolumeMaster":
+					if (defaultLevel.HasValue)
+						SetVolumeLevel((short)defaultLevel);
+					if (defaultMute.HasValue)
+						SetVolumeMute(defaultMute.Value);
+					break;
+
+				default:
+					string message = string.Format("{0} is not a valid Dmps3 input for this crosspoint", inputType);
+					throw new FormatException(message);
+			}
+		}
+
+		#endregion
 
 #region Parent Callbacks
 

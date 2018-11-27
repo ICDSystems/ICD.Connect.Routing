@@ -1,4 +1,7 @@
-﻿#if SIMPLSHARP
+﻿using Crestron.SimplSharpPro.DeviceSupport;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Xml;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 #endif
 using System;
@@ -23,13 +26,14 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphon
 #if SIMPLSHARP
 		protected readonly Dmps3Microphone Microphone;
 #endif
-		protected AbstractDmps3MicrophoneDeviceControl(ControlSystemDevice parent, int id, string name, uint inputAddress)
+		protected AbstractDmps3MicrophoneDeviceControl(ControlSystemDevice parent, int id, string name, uint inputAddress, string xml)
 			: base(parent, id)
 		{
 			m_Name = name;
 #if SIMPLSHARP
-				Microphone = Parent.ControlSystem.Microphones[inputAddress] as Dmps3Microphone;
+			Microphone = Parent.ControlSystem.Microphones[inputAddress] as Dmps3Microphone;
 #endif
+			SetMicrophoneDefaultsFromXml(xml);
 			Subscribe(parent);
 		}
 
@@ -99,33 +103,41 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphon
 		public void SetMicrophoneMute(bool mute)
 		{
 #if SIMPLSHARP
-			if (Microphone.MuteOnFeedBack.BoolValue & !mute)
-			{
-				Microphone.MuteOff();
-				MicrophoneIsMuted = false;
-			}
-			else if (Microphone.MuteOffFeedBack.BoolValue & mute)
-			{
+			if (mute)
 				Microphone.MuteOn();
-				MicrophoneIsMuted = true;
-			}
+			else
+				Microphone.MuteOff();
 #endif
 		}
 
 		public void SetPhantomPower(bool power)
 		{
 #if SIMPLSHARP
-			if (Microphone.PhantomPowerOnFeedBack.BoolValue & !power)
-			{
-				Microphone.PhantomPowerOff();
-				MicrophoneIsPowered = false;
-			}
-			else if (Microphone.PhantomPowerOffFeedBack.BoolValue & power)
-			{
+			if (power)
 				Microphone.PhantomPowerOn();
-				MicrophoneIsPowered = true;
-			}
+			else
+				Microphone.PhantomPowerOff();
 #endif
+		}
+
+	#endregion
+
+	#region Private Methods
+
+		private void SetMicrophoneDefaultsFromXml(string controlElement)
+		{
+			bool? defaultMute = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultMute");
+			ushort? defaultGain = XmlUtils.TryReadChildElementContentAsUShort(controlElement, "DefaultGain");
+			bool? defaultPower = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultPower");
+
+			if(defaultMute.HasValue)
+				SetMicrophoneMute(defaultMute.Value);
+
+			if (defaultGain.HasValue)
+				SetGainLevel(defaultGain.Value);
+
+			if (defaultPower.HasValue)
+				SetPhantomPower(defaultPower.Value);
 		}
 
 	#endregion
@@ -134,23 +146,29 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphon
 
 		private void Subscribe(ControlSystemDevice parent)
 		{
-			parent.OnIsOnlineStateChanged += ParentOnIsOnlineStateChanged;
+			parent.ControlSystem.MicrophoneChange += ControlSystemOnMicrophoneChange;
 		}
 
 		private void Unsubscribe(ControlSystemDevice parent)
 		{
-			parent.OnIsOnlineStateChanged += ParentOnIsOnlineStateChanged;
+			parent.ControlSystem.MicrophoneChange -= ControlSystemOnMicrophoneChange;
 		}
 
-		private void ParentOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs e)
+		private void ControlSystemOnMicrophoneChange(MicrophoneBase device, GenericEventArgs args)
 		{
-#if SIMPLSHARP
-			MicrophoneIsMuted = Microphone.MuteOnFeedBack.BoolValue;
-			MicrophoneIsPowered = Microphone.PhantomPowerOffFeedBack.BoolValue;
-#endif
+			if (device != Microphone)
+				return;
+
+			switch (args.EventId)
+			{
+				default:
+					// TODO - Figure out the mute/phantom event ids
+					IcdConsole.PrintLine(eConsoleColor.Magenta, "{0} - {1}", this, args.EventId);
+					break;
+			}
 		}
 
-	#endregion
+		#endregion
 
 	#region Console
 

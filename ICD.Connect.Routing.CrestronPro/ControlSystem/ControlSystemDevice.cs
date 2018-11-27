@@ -11,7 +11,6 @@ using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens;
-using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -34,6 +33,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 #endif
 
 		private readonly List<IDeviceControl> m_LoadedControls;
+		private string m_ConfigPath;
 
 		/// <summary>
 		/// Constructor.
@@ -141,7 +141,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		public void LoadControls(string path)
 		{
-			string fullPath = PathUtils.GetDefaultConfigPath("Dmps3Volume", path);
+			m_ConfigPath = path;
+
+			string fullPath = PathUtils.GetDefaultConfigPath("DMPS3", path);
 
 			try
 			{
@@ -315,6 +317,20 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		#endregion
 
 		#region Settings
+
+		protected override void ClearSettingsFinal()
+		{
+			base.ClearSettingsFinal();
+
+			m_ConfigPath = null;
+		}
+
+		protected override void CopySettingsFinal(ControlSystemDeviceSettings settings)
+		{
+			base.CopySettingsFinal(settings);
+
+			settings.Config = m_ConfigPath;
+		}
 
 		protected override void ApplySettingsFinal(ControlSystemDeviceSettings settings, IDeviceFactory factory)
 		{

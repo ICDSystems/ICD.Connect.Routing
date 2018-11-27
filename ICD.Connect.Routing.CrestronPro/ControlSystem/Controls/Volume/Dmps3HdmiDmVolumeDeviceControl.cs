@@ -15,9 +15,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 {
 	public sealed class Dmps3HdmiDmVolumeDeviceControl : AbstractDmps3VolumeDeviceControl
 	{
-		public Dmps3HdmiDmVolumeDeviceControl(ControlSystemDevice parent, int id, string name, uint outputAddress)
+		public Dmps3HdmiDmVolumeDeviceControl(ControlSystemDevice parent, int id, string name, uint outputAddress, string xml)
 			: base(parent, id, name, outputAddress)
 		{
+			SetDefaultOnCrosspointsFromXml(xml);
 		}
 	}
 }

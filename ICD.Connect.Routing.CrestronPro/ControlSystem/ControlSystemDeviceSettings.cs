@@ -1,6 +1,7 @@
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
 using ICD.Connect.Settings.Attributes;
+using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 {
@@ -9,6 +10,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 	{
 		private const string ELEMENT_CONFIG = "Config";
 
+		[PathSettingsProperty("DMPS3", ".xml")]
 		public string Config { get; set; }
 
 		/// <summary>

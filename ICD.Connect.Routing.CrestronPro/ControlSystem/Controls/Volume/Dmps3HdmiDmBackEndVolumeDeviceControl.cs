@@ -18,10 +18,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 	{
 		private CrestronControlSystem.Dmps3AttachableOutputMixer m_AttachableVolumeOutputMixer;
 
-		public Dmps3HdmiDmBackEndVolumeDeviceControl(ControlSystemDevice parent, int id, string name, uint outputAddress)
+		public Dmps3HdmiDmBackEndVolumeDeviceControl(ControlSystemDevice parent, int id, string name, uint outputAddress, string xml)
 			: base(parent, id, name, outputAddress)
 		{
 			m_AttachableVolumeOutputMixer = ((IOutputMixer)VolumeObject).OutputMixer as CrestronControlSystem.Dmps3AttachableOutputMixer;
+			SetDefaultOnCrosspointsFromXml(xml);
 		}
 
 		#region Methods
