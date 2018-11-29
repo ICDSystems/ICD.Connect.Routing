@@ -90,11 +90,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 			return m_Client.Send(data);
 		}
 
-		public override void SetComPortSpec(eComBaudRates baudRate, eComDataBits numberOfDataBits, eComParityType parityType,
-		                                    eComStopBits numberOfStopBits, eComProtocolType protocolType,
-		                                    eComHardwareHandshakeType hardwareHandShake,
-		                                    eComSoftwareHandshakeType softwareHandshake,
-		                                    bool reportCtsChanges)
+		public override void SetComPortSpec(ComSpec comSpec)
 		{
 			if (m_Device == null)
 			{
@@ -102,9 +98,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 				return;
 			}
 
-			string spec = ComSpecUtils.AssembleComSpec(Address, baudRate, numberOfDataBits, parityType,
-			                                           numberOfStopBits, protocolType, hardwareHandShake,
-			                                           softwareHandshake, reportCtsChanges);
+			string spec = ComSpecUtils.AssembleComSpec(Address, comSpec);
 
 			m_Device.SendData(new SerialXSig(spec, m_Device.ComSpecJoin));
 		}

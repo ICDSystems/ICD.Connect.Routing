@@ -25,7 +25,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 		/// <summary>
 		/// Gets the Com Spec configuration properties.
 		/// </summary>
-		protected override IComSpecProperties ComSpecProperties { get { return m_ComSpecProperties; } }
+		public override IComSpecProperties ComSpecProperties { get { return m_ComSpecProperties; } }
 
 		#endregion
 
@@ -48,19 +48,13 @@ namespace ICD.Connect.Routing.Extron.Ports
 
 		#region Methods
 
-		public override void SetComPortSpec(eComBaudRates baudRate, eComDataBits numberOfDataBits, eComParityType parityType,
-			eComStopBits numberOfStopBits, eComProtocolType protocolType, eComHardwareHandshakeType hardwareHandShake,
-			eComSoftwareHandshakeType softwareHandshake, bool reportCtsChanges)
+		public override void SetComPortSpec(ComSpec comSpec)
 		{
-			m_Parent.InitializeComPort(baudRate, numberOfDataBits, parityType, numberOfStopBits);
+			m_Parent.InitializeComPort(comSpec.BaudRate, comSpec.NumberOfDataBits, comSpec.ParityType, comSpec.NumberOfStopBits);
 
 			var comPort = m_Port as IComPort;
 			if (comPort != null)
-				comPort.SetComPortSpec(
-					baudRate, numberOfDataBits,
-					parityType, numberOfStopBits,
-					protocolType, hardwareHandShake,
-					softwareHandshake, reportCtsChanges);
+				comPort.SetComPortSpec(comSpec);
 		}
 
 		protected override bool SendFinal(string data)
@@ -172,12 +166,25 @@ namespace ICD.Connect.Routing.Extron.Ports
 				yield return command;
 
 			yield return new GenericConsoleCommand<eComBaudRates, eComDataBits, eComParityType, eComStopBits>(
-				"SetComPortSpec", "Sets the ComPort spec",
-				(a, b, c, d) => SetComPortSpec(a, b, c, d,
-					eComProtocolType.ComspecProtocolRS232,
-					eComHardwareHandshakeType.ComspecHardwareHandshakeNone,
-					eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
-					false));
+				"SetComPortSpec", "Sets the ComPort spec", (a, b, c, d) => SetComPortSpec(a, b, c, d));
+		}
+
+		private void SetComPortSpec(eComBaudRates baudRate, eComDataBits comDataBits, eComParityType comParityType,
+		                            eComStopBits comStopBits)
+		{
+			ComSpec comSpec = new ComSpec
+			{
+				BaudRate = baudRate,
+				NumberOfDataBits = comDataBits,
+				ParityType = comParityType,
+				NumberOfStopBits = comStopBits,
+				ProtocolType = eComProtocolType.Rs232,
+				HardwareHandShake = eComHardwareHandshakeType.None,
+				SoftwareHandshake = eComSoftwareHandshakeType.None,
+				ReportCtsChanges = false
+			};
+
+			SetComPortSpec(comSpec);
 		}
 
 		/// <summary>
