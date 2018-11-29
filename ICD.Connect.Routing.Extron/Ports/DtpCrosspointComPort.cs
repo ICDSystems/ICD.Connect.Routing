@@ -179,7 +179,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 				ParityType = comParityType,
 				NumberOfStopBits = comStopBits,
 				ProtocolType = eComProtocolType.Rs232,
-				HardwareHandShake = eComHardwareHandshakeType.None,
+				HardwareHandshake = eComHardwareHandshakeType.None,
 				SoftwareHandshake = eComSoftwareHandshakeType.None,
 				ReportCtsChanges = false
 			};
