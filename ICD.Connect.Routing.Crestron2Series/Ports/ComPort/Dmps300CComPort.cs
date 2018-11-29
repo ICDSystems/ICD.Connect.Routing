@@ -13,8 +13,22 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 {
 	public sealed class Dmps300CComPort : AbstractComPort<Dmps300CComPortSettings>
 	{
+		private static readonly ComSpec s_DefaultComSpec = new ComSpec
+		{
+			BaudRate = eComBaudRates.BaudRate9600,
+			NumberOfDataBits = eComDataBits.DataBits8,
+			ParityType = eComParityType.None,
+			NumberOfStopBits = eComStopBits.StopBits1,
+			ProtocolType = eComProtocolType.Rs232,
+			HardwareHandshake = eComHardwareHandshakeType.None,
+			SoftwareHandshake = eComSoftwareHandshakeType.None,
+			ReportCtsChanges = false,
+		};
+
 		private readonly IComSpecProperties m_ComSpecProperties;
 		private readonly AsyncTcpClient m_Client;
+
+		private readonly ComSpec m_ComSpec;
 
 		private IDmps300CComPortDevice m_Device;
 
@@ -30,6 +44,46 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		/// </summary>
 		public override IComSpecProperties ComSpecProperties { get { return m_ComSpecProperties; } }
 
+		/// <summary>
+		/// Gets the baud rate.
+		/// </summary>
+		public override eComBaudRates BaudRate { get { return m_ComSpec.BaudRate; } }
+
+		/// <summary>
+		/// Gets the number of data bits.
+		/// </summary>
+		public override eComDataBits NumberOfDataBits { get { return m_ComSpec.NumberOfDataBits; } }
+
+		/// <summary>
+		/// Gets the parity type.
+		/// </summary>
+		public override eComParityType ParityType { get { return m_ComSpec.ParityType; } }
+
+		/// <summary>
+		/// Gets the number of stop bits.
+		/// </summary>
+		public override eComStopBits NumberOfStopBits { get { return m_ComSpec.NumberOfStopBits; } }
+
+		/// <summary>
+		/// Gets the protocol type.
+		/// </summary>
+		public override eComProtocolType ProtocolType { get { return m_ComSpec.ProtocolType; } }
+
+		/// <summary>
+		/// Gets the hardware handshake mode.
+		/// </summary>
+		public override eComHardwareHandshakeType HardwareHandshake { get { return m_ComSpec.HardwareHandshake; } }
+
+		/// <summary>
+		/// Gets the software handshake mode.
+		/// </summary>
+		public override eComSoftwareHandshakeType SoftwareHandshake { get { return m_ComSpec.SoftwareHandshake; } }
+
+		/// <summary>
+		/// Gets the report CTS changes mode.
+		/// </summary>
+		public override bool ReportCtsChanges { get { return m_ComSpec.ReportCtsChanges; } }
+
 		#endregion
 
 		/// <summary>
@@ -37,6 +91,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		/// </summary>
 		public Dmps300CComPort()
 		{
+			m_ComSpec = s_DefaultComSpec.Copy();
+
 			m_ComSpecProperties = new ComSpecProperties();
 			m_Client = new AsyncTcpClient();
 
@@ -90,6 +146,10 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 			return m_Client.Send(data);
 		}
 
+		/// <summary>
+		/// Configures the ComPort for communication.
+		/// </summary>
+		/// <param name="comSpec"></param>
 		public override void SetComPortSpec(ComSpec comSpec)
 		{
 			if (m_Device == null)
@@ -100,7 +160,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 
 			string spec = ComSpecUtils.AssembleComSpec(Address, comSpec);
 
-			m_Device.SendData(new SerialXSig(spec, m_Device.ComSpecJoin));
+			if (m_Device.SendData(new SerialXSig(spec, m_Device.ComSpecJoin)))
+				m_ComSpec.Copy(comSpec);
 		}
 
 		#endregion
@@ -140,6 +201,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		protected override void ClearSettingsFinal()
 		{
 			base.ClearSettingsFinal();
+
+			m_ComSpec.Copy(s_DefaultComSpec);
 
 			m_Device = null;
 			Address = 0;
