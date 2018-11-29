@@ -24,6 +24,20 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// </summary>
 		private const long KEEPALIVE_INTERVAL = 2 * 60 * 1000;
 
+		// ReSharper disable StaticFieldInGenericType
+		private static readonly ComSpec s_DefaultComSpec = new ComSpec
+		// ReSharper restore StaticFieldInGenericType
+		{
+			BaudRate = eComBaudRates.BaudRate9600,
+			NumberOfDataBits = eComDataBits.DataBits8,
+			ParityType = eComParityType.None,
+			NumberOfStopBits = eComStopBits.StopBits1,
+			ProtocolType = eComProtocolType.Rs232,
+			HardwareHandShake = eComHardwareHandshakeType.None,
+			SoftwareHandshake = eComSoftwareHandshakeType.None,
+			ReportCtsChanges = false
+		};
+
 		/// <summary>
 		/// Raised when the class initializes.
 		/// </summary>
@@ -141,14 +155,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		[PublicAPI]
 		public static void ConfigureComPort(IComPort port)
 		{
-			port.SetComPortSpec(eComBaudRates.ComspecBaudRate9600,
-								eComDataBits.ComspecDataBits8,
-								eComParityType.ComspecParityNone,
-								eComStopBits.ComspecStopBits1,
-								eComProtocolType.ComspecProtocolRS232,
-								eComHardwareHandshakeType.ComspecHardwareHandshakeNone,
-								eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
-								false);
+			port.SetComPortSpec(s_DefaultComSpec);
 		}
 
 		/// <summary>

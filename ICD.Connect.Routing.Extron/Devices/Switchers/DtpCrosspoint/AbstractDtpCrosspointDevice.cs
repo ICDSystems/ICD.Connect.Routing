@@ -207,13 +207,13 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 		{
 			switch (parityType)
 			{
-				case eComParityType.ComspecParityEven:
+				case eComParityType.Even:
 					return 'e';
-				case eComParityType.ComspecParityOdd:
+				case eComParityType.Odd:
 					return 'o';
-				case eComParityType.ComspecParityZeroStick:
+				case eComParityType.Mark:
 					return 's';
-				case eComParityType.ComspecParityNone:
+				case eComParityType.None:
 					return 'n';
 
 				default:
