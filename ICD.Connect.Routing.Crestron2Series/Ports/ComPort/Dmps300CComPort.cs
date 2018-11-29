@@ -13,6 +13,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 {
 	public sealed class Dmps300CComPort : AbstractComPort<Dmps300CComPortSettings>
 	{
+		private readonly IComSpecProperties m_ComSpecProperties;
 		private readonly AsyncTcpClient m_Client;
 
 		private IDmps300CComPortDevice m_Device;
@@ -24,6 +25,11 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		/// </summary>
 		public int Address { get; set; }
 
+		/// <summary>
+		/// Gets the Com Spec configuration properties.
+		/// </summary>
+		public override IComSpecProperties ComSpecProperties { get { return m_ComSpecProperties; } }
+
 		#endregion
 
 		/// <summary>
@@ -31,6 +37,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		/// </summary>
 		public Dmps300CComPort()
 		{
+			m_ComSpecProperties = new ComSpecProperties();
 			m_Client = new AsyncTcpClient();
 
 			Subscribe(m_Client);
@@ -48,18 +55,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		}
 
 		#region Methods
-
-		/// <summary>
-		/// Gets the Com Spec configuration properties.
-		/// </summary>
-		protected override IComSpecProperties ComSpecProperties
-		{
-			get
-			{
-				// TODO
-				return new ComSpecProperties();
-			}
-		}
 
 		/// <summary>
 		/// Sets IsConnected to true.
