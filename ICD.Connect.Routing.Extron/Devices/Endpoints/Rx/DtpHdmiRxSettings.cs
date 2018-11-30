@@ -4,11 +4,11 @@ using ICD.Connect.Settings.Attributes;
 namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Rx
 {
     [KrangSettings("DtpHdmiRx", typeof(DtpHdmiRx))]
-	public class DtpHdmiRxSettings : AbstractDtpHdmiDeviceSettings, IDtpHdmiRxDeviceSettings
+	public sealed class DtpHdmiRxSettings : AbstractDtpHdmiDeviceSettings, IDtpHdmiRxDeviceSettings
 	{
 		private const string DTP_OUTPUT_ELEMENT = "DtpOutput";
 
-		public int? DtpOutput { get; set; }
+		public int DtpOutput { get; set; }
 
 		protected override void WriteElements(IcdXmlTextWriter writer)
 		{
@@ -21,7 +21,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Rx
 		{
 			base.ParseXml(xml);
 
-			DtpOutput = XmlUtils.TryReadChildElementContentAsInt(xml, DTP_OUTPUT_ELEMENT);
+			DtpOutput = XmlUtils.TryReadChildElementContentAsInt(xml, DTP_OUTPUT_ELEMENT) ?? 1;
 		}
 	}
 }

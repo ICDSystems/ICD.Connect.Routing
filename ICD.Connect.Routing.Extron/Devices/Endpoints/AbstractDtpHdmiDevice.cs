@@ -15,11 +15,16 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 	{
 		public event EventHandler<BoolEventArgs> OnPortInitialized;
 
+		/// <summary>
+		/// Raised when the comspec changes for the port.
+		/// </summary>
+		public event EventHandler<GenericEventArgs<ComSpec>> OnPortComSpecChanged;
+
+		private bool m_PortInitialized;
+
 		#region Properties
 
 		public IDtpCrosspointDevice Parent { get; private set; }
-
-		private bool m_PortInitialized;
 
 		public bool PortInitialized
 		{
@@ -35,6 +40,16 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 			}
 		}
 
+		/// <summary>
+		/// Gets the address where this endpoint is connected to the switcher.
+		/// </summary>
+		public abstract int SwitcherAddress { get; }
+
+		/// <summary>
+		/// Returns Input for TX, Output for RX.
+		/// </summary>
+		public abstract eDtpInputOuput SwitcherInputOutput { get; }
+
 		#endregion
 
 		/// <summary>
@@ -45,17 +60,69 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 			Controls.Add(new DtpHdmiMidpointControl<AbstractDtpHdmiDevice<TSettings>>(this, 0));
 		}
 
+		/// <summary>
+		/// Release resources.
+		/// </summary>
+		protected override void DisposeFinal(bool disposing)
+		{
+			OnPortInitialized = null;
+			OnPortComSpecChanged = null;
+
+			base.DisposeFinal(disposing);
+		}
+
 		#region Methods
 
-		public abstract ISerialPort GetSerialInsertionPort();
+		public ISerialPort GetSerialInsertionPort()
+		{
+			return Parent.GetSerialInsertionPort(SwitcherAddress, SwitcherInputOutput);
+		}
 
-		public abstract void InitializeComPort(eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits);
+		public void InitializeComPort(eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits)
+		{
+			Parent.SetComPortSpec(SwitcherAddress, SwitcherInputOutput, baudRate, dataBits, parityType, stopBits);
+		}
 
 		protected override bool GetIsOnlineStatus()
 		{
 			if (Parent == null)
 				return false;
 			return Parent.IsOnline;
+		}
+
+		#endregion
+
+		#region Parent Callbacks
+
+		protected void Subscribe(IDtpCrosspointDevice parent)
+		{
+			parent.OnIsOnlineStateChanged += ParentOnOnIsOnlineStateChanged;
+			parent.OnPortInitialized += ParentOnOnInputPortInitialized;
+			parent.OnPortComSpecChanged += ParentOnPortComSpecChanged;
+		}
+
+		protected void Unsubscribe(IDtpCrosspointDevice parent)
+		{
+			parent.OnIsOnlineStateChanged -= ParentOnOnIsOnlineStateChanged;
+			parent.OnPortInitialized -= ParentOnOnInputPortInitialized;
+			parent.OnPortComSpecChanged -= ParentOnPortComSpecChanged;
+		}
+
+		private void ParentOnPortComSpecChanged(IDtpCrosspointDevice device, int address, eDtpInputOuput inputOutput, ComSpec comSpec)
+		{
+			if (address == SwitcherAddress && inputOutput == SwitcherInputOutput)
+				OnPortComSpecChanged.Raise(this, new GenericEventArgs<ComSpec>(comSpec));
+		}
+
+		private void ParentOnOnInputPortInitialized(IDtpCrosspointDevice device, int address, eDtpInputOuput inputOutput)
+		{
+			if (address == SwitcherAddress && inputOutput == SwitcherInputOutput)
+				PortInitialized = true;
+		}
+
+		private void ParentOnOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs e)
+		{
+			UpdateCachedOnlineStatus();
 		}
 
 		#endregion
@@ -86,25 +153,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 			if (Parent != null)
 				Unsubscribe(Parent);
 			Parent = null;
-		}
-
-		#endregion
-
-		#region Parent Callbacks
-
-		protected virtual void Subscribe(IDtpCrosspointDevice parent)
-		{
-			parent.OnIsOnlineStateChanged += ParentOnOnIsOnlineStateChanged;
-		}
-
-		protected virtual void Unsubscribe(IDtpCrosspointDevice parent)
-		{
-			parent.OnIsOnlineStateChanged -= ParentOnOnIsOnlineStateChanged;
-		}
-
-		private void ParentOnOnIsOnlineStateChanged(object sender, DeviceBaseOnlineStateApiEventArgs e)
-		{
-			UpdateCachedOnlineStatus();
 		}
 
 		#endregion

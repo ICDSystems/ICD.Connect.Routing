@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\Volume\AbstractExtronVolumeDeviceControl.cs" />
+    <Compile Include="Devices\Endpoints\eDtpInputOuput.cs" />
     <Compile Include="Devices\Switchers\AbstractExtronSwitcherDevice.cs" />
     <Compile Include="Devices\Switchers\AbstractExtronSwitcherDeviceSettings.cs" />
     <Compile Include="Devices\Switchers\DtpCrosspoint\DtpCrosspoint84\DtpCrosspoint84Device.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="Devices\Switchers\DtpCrosspoint\AbstractDtpCrosspointDevice.cs" />
     <Compile Include="Devices\Switchers\DtpCrosspoint\AbstractDtpCrosspointSettings.cs" />
     <Compile Include="Controls\ExtronSwitcherControl.cs" />
+    <Compile Include="Devices\Switchers\DtpCrosspoint\DtpUtils.cs" />
     <Compile Include="Devices\Switchers\DtpCrosspoint\ExtronXmlUtils.cs" />
     <Compile Include="Devices\Switchers\DtpCrosspoint\IDtpCrosspointSettings.cs" />
     <Compile Include="Controls\IExtronSwitcherControl.cs" />

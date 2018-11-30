@@ -1,56 +1,22 @@
-﻿using ICD.Common.Utils.EventArguments;
-using ICD.Connect.Protocol.Ports;
-using ICD.Connect.Protocol.Ports.ComPort;
-using ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint;
-using ICD.Connect.Settings;
+﻿using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Rx
 {
 	public sealed class DtpHdmiRx : AbstractDtpHdmiDevice<DtpHdmiRxSettings>
 	{
-		private int? m_DtpOutput;
+		private int m_DtpOutput;
 
-		#region Methods
+		#region Properties
 
-		public override ISerialPort GetSerialInsertionPort()
-		{
-			if (m_DtpOutput == null)
-				return null;
+		/// <summary>
+		/// Gets the address where this endpoint is connected to the switcher.
+		/// </summary>
+		public override int SwitcherAddress { get { return m_DtpOutput; } }
 
-			return Parent.GetOutputSerialInsertionPort(m_DtpOutput.Value);
-		}
-
-		public override void InitializeComPort(eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits)
-		{
-			if (m_DtpOutput == null)
-				return;
-
-			Parent.SetRxComPortSpec(m_DtpOutput.Value, baudRate, dataBits, parityType, stopBits);
-		}
-
-		#endregion
-
-		#region Parent Callbacks
-
-		protected override void Subscribe(IDtpCrosspointDevice parent)
-		{
-			base.Subscribe(parent);
-
-			parent.OnOutputPortInitialized += ParentOnOutputPortInitialized;
-		}
-
-		protected override void Unsubscribe(IDtpCrosspointDevice parent)
-		{
-			base.Unsubscribe(parent);
-
-			parent.OnOutputPortInitialized -= ParentOnOutputPortInitialized;
-		}
-
-		private void ParentOnOutputPortInitialized(object sender, IntEventArgs args)
-		{
-			if (args.Data == m_DtpOutput)
-				PortInitialized = true;
-		}
+		/// <summary>
+		/// Returns Input for TX, Output for RX.
+		/// </summary>
+		public override eDtpInputOuput SwitcherInputOutput { get { return eDtpInputOuput.Output; } }
 
 		#endregion
 
@@ -74,7 +40,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Rx
 		{
 			base.ClearSettingsFinal();
 
-			m_DtpOutput = null;
+			m_DtpOutput = 1;
 		}
 
 		#endregion

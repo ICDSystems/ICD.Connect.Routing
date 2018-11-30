@@ -1,56 +1,22 @@
-﻿using ICD.Common.Utils.EventArguments;
-using ICD.Connect.Protocol.Ports;
-using ICD.Connect.Protocol.Ports.ComPort;
-using ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint;
-using ICD.Connect.Settings;
+﻿using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Tx
 {
 	public sealed class DtpHdmiTx : AbstractDtpHdmiDevice<DtpHdmiTxSettings>
 	{
-		private int? m_DtpInput;
+		private int m_DtpInput;
 
-		#region Methods
+		#region Properties
 
-		public override ISerialPort GetSerialInsertionPort()
-		{
-			if (m_DtpInput == null)
-				return null;
+		/// <summary>
+		/// Gets the address where this endpoint is connected to the switcher.
+		/// </summary>
+		public override int SwitcherAddress { get { return m_DtpInput; } }
 
-			return Parent.GetInputSerialInsertionPort(m_DtpInput.Value);
-		}
-
-		public override void InitializeComPort(eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits)
-		{
-			if (m_DtpInput == null)
-				return;
-
-			Parent.SetTxComPortSpec(m_DtpInput.Value, baudRate, dataBits, parityType, stopBits);
-		}
-
-		#endregion
-
-		#region Parent Callbacks
-
-		protected override void Subscribe(IDtpCrosspointDevice parent)
-		{
-			base.Subscribe(parent);
-
-			parent.OnInputPortInitialized += ParentOnOnInputPortInitialized;
-		}
-
-		protected override void Unsubscribe(IDtpCrosspointDevice parent)
-		{
-			base.Unsubscribe(parent);
-
-			parent.OnInputPortInitialized -= ParentOnOnInputPortInitialized;
-		}
-
-		private void ParentOnOnInputPortInitialized(object sender, IntEventArgs args)
-		{
-			if (args.Data == m_DtpInput)
-				PortInitialized = true;
-		}
+		/// <summary>
+		/// Returns Input for TX, Output for RX.
+		/// </summary>
+		public override eDtpInputOuput SwitcherInputOutput { get { return eDtpInputOuput.Input; } }
 
 		#endregion
 
@@ -74,7 +40,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints.Tx
 		{
 			base.ClearSettingsFinal();
 
-			m_DtpInput = null;
+			m_DtpInput = 1;
 		}
 
 		#endregion
