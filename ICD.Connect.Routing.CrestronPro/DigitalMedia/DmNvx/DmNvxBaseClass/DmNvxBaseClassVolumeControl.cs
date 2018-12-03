@@ -1,4 +1,7 @@
-﻿using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
+﻿using ICD.Connect.Audio.Console.Mute;
+using ICD.Connect.Audio.Controls.Mute;
+using ICD.Connect.Audio.Controls.Volume;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
 #if SIMPLSHARP
 using System;
 using System.Collections.Generic;
@@ -9,8 +12,6 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Audio.Console;
-using ICD.Connect.Audio.Controls;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 {
