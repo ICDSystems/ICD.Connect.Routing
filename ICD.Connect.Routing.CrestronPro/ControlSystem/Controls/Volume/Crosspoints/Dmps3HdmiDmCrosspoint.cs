@@ -1,13 +1,13 @@
 ﻿#if SIMPLSHARP
-#endif
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
+#endif
 
-#if SIMPLSHARP
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints
 {
 	public sealed class Dmps3HdmiDmCrosspoint : AbstractDmps3Crosspoint
 	{
+#if SIMPLSHARP
 		public Dmps3HdmiDmCrosspoint(ControlSystemDevice parent, Card.Dmps3OutputBase output, eDmps3InputType inputType, uint inputAddress)
 			: base(parent, output, inputType, inputAddress)
 		{
@@ -28,6 +28,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 					break;
 			}
 		}
+#endif
 	}
 }
-#endif

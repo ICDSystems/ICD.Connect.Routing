@@ -1,17 +1,14 @@
-﻿using Crestron.SimplSharpPro.DeviceSupport;
-using ICD.Common.Utils;
-using ICD.Common.Utils.Xml;
+﻿using ICD.Common.Utils.Xml;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro.DeviceSupport;
 #endif
 using System;
 using System.Collections.Generic;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Devices.Controls;
-using ICD.Connect.Devices.EventArguments;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphone
 {
@@ -23,20 +20,35 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphon
 		private readonly string m_Name;
 		private bool m_IsMuted;
 		private bool m_IsPowered;
+
 #if SIMPLSHARP
-		protected readonly Dmps3Microphone Microphone;
+		private readonly Dmps3Microphone m_Microphone;
 #endif
-		protected AbstractDmps3MicrophoneDeviceControl(ControlSystemDevice parent, int id, string name, uint inputAddress, string xml)
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="parent"></param>
+		/// <param name="id"></param>
+		/// <param name="name"></param>
+		/// <param name="inputAddress"></param>
+		/// <param name="xml"></param>
+		protected AbstractDmps3MicrophoneDeviceControl(ControlSystemDevice parent, int id, string name, uint inputAddress,
+		                                               string xml)
 			: base(parent, id)
 		{
 			m_Name = name;
 #if SIMPLSHARP
-			Microphone = Parent.ControlSystem.Microphones[inputAddress] as Dmps3Microphone;
+			m_Microphone = Parent.ControlSystem.Microphones[inputAddress] as Dmps3Microphone;
 #endif
 			SetMicrophoneDefaultsFromXml(xml);
 			Subscribe(parent);
 		}
 
+		/// <summary>
+		/// Override to release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
 			base.DisposeFinal(disposing);
@@ -45,12 +57,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphon
 				Unsubscribe(Parent);
 		}
 
-	#region Properties
+		#region Properties
 
-		public override string Name
-		{
-			get { return string.IsNullOrEmpty(m_Name) ? base.Name : m_Name; }
-		}
+		public override string Name { get { return string.IsNullOrEmpty(m_Name) ? base.Name : m_Name; } }
 
 		public bool MicrophoneIsMuted
 		{
@@ -79,18 +88,19 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphon
 				OnPhantomPowerStateChanged.Raise(this, new BoolEventArgs(m_IsPowered));
 			}
 		}
-	#endregion
-			
-	#region Methods
+
+		#endregion
+
+		#region Methods
 
 		public void SetGainLevel(float volume)
 		{
 #if SIMPLSHARP
-			Microphone.Gain.ShortValue = (short)(volume * 10);
+			m_Microphone.Gain.ShortValue = (short)(volume * 10);
 #endif
 		}
 
-		public void VolumeMuteToggle()
+		public void MicrophoneMuteToggle()
 		{
 			SetMicrophoneMute(!MicrophoneIsMuted);
 		}
@@ -104,9 +114,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphon
 		{
 #if SIMPLSHARP
 			if (mute)
-				Microphone.MuteOn();
+				m_Microphone.MuteOn();
 			else
-				Microphone.MuteOff();
+				m_Microphone.MuteOff();
 #endif
 		}
 
@@ -114,23 +124,24 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphon
 		{
 #if SIMPLSHARP
 			if (power)
-				Microphone.PhantomPowerOn();
+				m_Microphone.PhantomPowerOn();
 			else
-				Microphone.PhantomPowerOff();
+				m_Microphone.PhantomPowerOff();
 #endif
 		}
 
-	#endregion
+		#endregion
 
-	#region Private Methods
+		#region Private Methods
 
+		// TODO - Move to DMPS3 xml utils
 		private void SetMicrophoneDefaultsFromXml(string controlElement)
 		{
 			bool? defaultMute = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultMute");
 			ushort? defaultGain = XmlUtils.TryReadChildElementContentAsUShort(controlElement, "DefaultGain");
 			bool? defaultPower = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultPower");
 
-			if(defaultMute.HasValue)
+			if (defaultMute.HasValue)
 				SetMicrophoneMute(defaultMute.Value);
 
 			if (defaultGain.HasValue)
@@ -140,51 +151,65 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphon
 				SetPhantomPower(defaultPower.Value);
 		}
 
-	#endregion
-
-	#region Parent Callbacks
-
-		private void Subscribe(ControlSystemDevice parent)
-		{
-			parent.ControlSystem.MicrophoneChange += ControlSystemOnMicrophoneChange;
-		}
-
-		private void Unsubscribe(ControlSystemDevice parent)
-		{
-			parent.ControlSystem.MicrophoneChange -= ControlSystemOnMicrophoneChange;
-		}
-
-		private void ControlSystemOnMicrophoneChange(MicrophoneBase device, GenericEventArgs args)
-		{
-			if (device != Microphone)
-				return;
-
-			switch (args.EventId)
-			{
-				default:
-					// TODO - Figure out the mute/phantom event ids
-					IcdConsole.PrintLine(eConsoleColor.Magenta, "{0} - {1}", this, args.EventId);
-					break;
-			}
-		}
-
 		#endregion
 
-	#region Console
+		#region Parent Callbacks
 
-			/// <summary>
-			/// Gets the child console commands.
-			/// </summary>
-			/// <returns></returns>
-			public override IEnumerable<IConsoleCommand> GetConsoleCommands()
-			{
-				yield return new GenericConsoleCommand<float>("SetGainLevel", "SetGainLevel <FLOAT>", (r) => SetGainLevel(r));
-				yield return new GenericConsoleCommand<bool>("SetMicrophoneMute", "SetMicrophoneMute <BOOL>", (r) => SetMicrophoneMute(r));
-				yield return new GenericConsoleCommand<bool>("SetPhantomPower", "SetPhantomPower <BOOL>", r => SetPhantomPower(r));
+		/// <summary>
+		/// Subscribe to the parent events.
+		/// </summary>
+		/// <param name="parent"></param>
+		private void Subscribe(ControlSystemDevice parent)
+		{
+#if SIMPLSHARP
+			parent.ControlSystem.MicrophoneChange += ControlSystemOnMicrophoneChange;
+#endif
+		}
 
-			}
+		/// <summary>
+		/// Unsubscribe from the parent events.
+		/// </summary>
+		/// <param name="parent"></param>
+		private void Unsubscribe(ControlSystemDevice parent)
+		{
+#if SIMPLSHARP
+			parent.ControlSystem.MicrophoneChange -= ControlSystemOnMicrophoneChange;
+#endif
+		}
 
-	#endregion
+#if SIMPLSHARP
+		/// <summary>
+		/// Called when an microphone change event is raised.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="args"></param>
+		private void ControlSystemOnMicrophoneChange(MicrophoneBase device, GenericEventArgs args)
+		{
+			if (device != m_Microphone)
+				return;
 
+			MicrophoneIsMuted = m_Microphone.MuteOnFeedBack.BoolValue;
+			MicrophoneIsPowered = m_Microphone.PhantomPowerOnFeedBack.BoolValue;
+		}
+#endif
+
+#endregion
+
+#region Console
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			yield return new GenericConsoleCommand<float>("SetGainLevel", "SetGainLevel <FLOAT>", r => SetGainLevel(r));
+			yield return
+				new GenericConsoleCommand<bool>("SetMicrophoneMute", "SetMicrophoneMute <BOOL>", r => SetMicrophoneMute(r));
+			yield return new GenericConsoleCommand<bool>("SetPhantomPower", "SetPhantomPower <BOOL>", r => SetPhantomPower(r));
+
+		}
+
+#endregion
 	}
 }

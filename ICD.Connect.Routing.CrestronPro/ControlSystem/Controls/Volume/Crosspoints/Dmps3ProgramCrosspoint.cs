@@ -1,52 +1,82 @@
 ﻿#if SIMPLSHARP
-#endif
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
+#else
+using System;
+#endif
 
-#if SIMPLSHARP
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints
 {
 	public sealed class Dmps3ProgramCrosspoint : AbstractDmps3Crosspoint
 	{
-
 #if SIMPLSHARP
 		private Card.Dmps3ProgramOutput ProgramOutputVolumeObject { get { return VolumeObject as Card.Dmps3ProgramOutput; } }
-#endif
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="parent"></param>
+		/// <param name="output"></param>
+		/// <param name="inputType"></param>
+		/// <param name="inputAddress"></param>
 		public Dmps3ProgramCrosspoint(ControlSystemDevice parent, Card.Dmps3ProgramOutput output, eDmps3InputType inputType, uint inputAddress)
 			: base(parent, output, inputType, inputAddress)
 		{
 		}
+#endif
 
-		#region Methods
+#region Methods
 
 		protected override void SetCodec1Level(short gainLevel)
 		{
+#if SIMPLSHARP
 			ProgramOutputVolumeObject.Codec1Level.ShortValue = gainLevel;
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		protected override void SetCodec2Level(short gainLevel)
 		{
+#if SIMPLSHARP
 			ProgramOutputVolumeObject.Codec2Level.ShortValue = gainLevel;
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		protected override void SetCodec1Mute(bool mute)
 		{
+#if SIMPLSHARP
 			if (mute)
 				ProgramOutputVolumeObject.Codec1MuteOn();
 			else
 				ProgramOutputVolumeObject.Codec1MuteOff();
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		protected override void SetCodec2Mute(bool mute)
 		{
+#if SIMPLSHARP
 			if (mute)
 				ProgramOutputVolumeObject.Codec2MuteOn();
 			else
 				ProgramOutputVolumeObject.Codec2MuteOff();
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		#endregion
 
+#if SIMPLSHARP
+		/// <summary>
+		/// Called when the control system raises a DM output change event.
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="args"></param>
 		protected override void ControlSystemOnDmOutputChange(Switch device, DMOutputEventArgs args)
 		{
 			base.ControlSystemOnDmOutputChange(device, args);
@@ -72,36 +102,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 					break;
 			}
 		}
-/*
-		#region Console
-
-		/// <summary>
-		/// Gets the child console commands.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
-		{
-			foreach (IConsoleCommand command in GetBaseConsoleCommands())
-				yield return command;
-
-			yield return new GenericConsoleCommand<bool>("SetCodec1Mute", "SetCodec1Mute <BOOL>", r => SetCodec1Mute(r));
-			yield return new GenericConsoleCommand<short>("SetCodec1Level", "SetCodec1Level <SHORT>", r => SetCodec1Level(r));
-
-			yield return new GenericConsoleCommand<bool>("SetCodec2Mute", "SetCodec2Mute <BOOL>", r => SetCodec2Mute(r));
-			yield return new GenericConsoleCommand<short>("SetCodec2Level", "SetCodec2Level <SHORT>", r => SetCodec2Level(r));
-		}
-
-		/// <summary>
-		/// Workaround for "unverifiable code" warning.
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
-		{
-			return base.GetConsoleCommands();
-		}
-
-		#endregion
-		*/
+#endif
 	}
 }
-#endif

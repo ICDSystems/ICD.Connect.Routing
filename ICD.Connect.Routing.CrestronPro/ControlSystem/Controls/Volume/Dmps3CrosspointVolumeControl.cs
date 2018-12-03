@@ -13,6 +13,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 {
 	public sealed class Dmps3CrosspointVolumeControl : AbstractVolumeLevelDeviceControl<ControlSystemDevice>, IVolumeMuteFeedbackDeviceControl
 	{
+		/// <summary>
+		/// Raised when the mute state changes.
+		/// </summary>
 		public event EventHandler<BoolEventArgs> OnMuteStateChanged;
 
 		private readonly string m_Name;
@@ -20,26 +23,43 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the human readable name for this control.
+		/// </summary>
 		public override string Name
 		{
 			get { return m_Name; }
 		}
 
+		/// <summary>
+		/// Gets the current volume, in the parent device's format
+		/// </summary>
 		public override float VolumeLevel
 		{
 			get { return m_Crosspoint.VolumeLevel / 10.0f; }
 		}
 
+		/// <summary>
+		/// Absolute Minimum the raw volume can be
+		/// Used as a last resort for position caculation
+		/// </summary>
 		protected override float VolumeRawMinAbsolute
 		{
-			get { return m_Crosspoint.VolumeRawMinAbsolute / 10.0f; }
+			get { return m_Crosspoint.VolumeLevelMin / 10.0f; }
 		}
 
+		/// <summary>
+		/// Absolute Maximum the raw volume can be
+		/// Used as a last resport for position caculation
+		/// </summary>
 		protected override float VolumeRawMaxAbsolute
 		{
-			get { return m_Crosspoint.VolumeRawMaxAbsolute / 10.0f; }
+			get { return m_Crosspoint.VolumeLevelMax / 10.0f; }
 		}
 
+		/// <summary>
+		/// Gets the muted state.
+		/// </summary>
 		public bool VolumeIsMuted { get { return m_Crosspoint.VolumeIsMuted; } }
 
 		#endregion
@@ -60,6 +80,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 			Subscribe(m_Crosspoint);
 		}
 
+		/// <summary>
+		/// Override to release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
 			OnMuteStateChanged = null;
@@ -71,16 +95,27 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 
 		#region Methods
 
+		/// <summary>
+		/// Sets the raw volume. This will be clamped to the min/max and safety min/max.
+		/// </summary>
+		/// <param name="volume"></param>
 		public override void SetVolumeLevel(float volume)
 		{
 			m_Crosspoint.SetVolumeLevel((short)(volume * 10));
 		}
 
+		/// <summary>
+		/// Toggles the current mute state.
+		/// </summary>
 		public void VolumeMuteToggle()
 		{
 			m_Crosspoint.VolumeMuteToggle();
 		}
 
+		/// <summary>
+		/// Sets the mute state.
+		/// </summary>
+		/// <param name="mute"></param>
 		public void SetVolumeMute(bool mute)
 		{
 			m_Crosspoint.SetVolumeMute(mute);
@@ -90,23 +125,41 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 
 		#region Crosspoint Callbacks
 
+		/// <summary>
+		/// Subscribe to the crosspoint events.
+		/// </summary>
+		/// <param name="crosspoint"></param>
 		private void Subscribe(IDmps3Crosspoint crosspoint)
 		{
 			crosspoint.OnVolumeLevelChanged += CrosspointOnVolumeLevelChanged;
 			crosspoint.OnMuteStateChanged += CrosspointOnMuteStateChanged;
 		}
 
+		/// <summary>
+		/// Unsubscribe from the crosspoint events.
+		/// </summary>
+		/// <param name="crosspoint"></param>
 		private void Unsubscribe(IDmps3Crosspoint crosspoint)
 		{
 			crosspoint.OnVolumeLevelChanged -= CrosspointOnVolumeLevelChanged;
 			crosspoint.OnMuteStateChanged -= CrosspointOnMuteStateChanged;
 		}
 
+		/// <summary>
+		/// Called when the crosspoint volume level changes.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void CrosspointOnVolumeLevelChanged(object sender, GenericEventArgs<short> e)
 		{
 			VolumeFeedback(VolumeLevel);
 		}
 
+		/// <summary>
+		/// Called when the crosspoint mute state changes.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
 		private void CrosspointOnMuteStateChanged(object sender, BoolEventArgs e)
 		{
 			Log(eSeverity.Informational, "Mute changed: Mute={0}", e.Data);
