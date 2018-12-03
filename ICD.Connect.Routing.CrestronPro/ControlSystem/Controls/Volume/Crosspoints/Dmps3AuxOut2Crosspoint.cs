@@ -64,14 +64,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 					VolumeLevel = Aux2OutputVolumeObject.Codec1LevelFeedback.ShortValue;
 					VolumeIsMuted = Aux2OutputVolumeObject.CodecMute1OnFeedback.BoolValue;
 					break;
-
-				case eDmps3InputType.Microphone:
-					if (VolumeOutputMixer != null)
-					{
-						VolumeLevel = VolumeOutputMixer.MicLevel[InputAddress].ShortValue;
-						VolumeIsMuted = VolumeOutputMixer.MicMuteOnFeedback[InputAddress].BoolValue;
-					}
-					break;
 			}
 		}
 #endif

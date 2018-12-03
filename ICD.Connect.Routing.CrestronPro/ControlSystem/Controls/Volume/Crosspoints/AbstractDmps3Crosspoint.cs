@@ -414,6 +414,14 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 					VolumeIsMuted = VolumeObject.MasterMuteOnFeedBack.BoolValue;
 					break;
 
+				case eDmps3InputType.Microphone:
+					if (VolumeOutputMixer != null)
+					{
+						VolumeLevel = VolumeOutputMixer.MicLevel[InputAddress].ShortValue;
+						VolumeIsMuted = VolumeOutputMixer.MicMuteOnFeedback[InputAddress].BoolValue;
+					}
+					break;
+
 				case eDmps3InputType.MicrophoneMaster:
 					VolumeLevel = VolumeObject.MicMasterLevelFeedBack.ShortValue;
 					VolumeIsMuted = VolumeObject.MicMasterMuteOnFeedBack.BoolValue;
@@ -422,9 +430,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 				case eDmps3InputType.Source:
 					VolumeLevel = VolumeObject.SourceLevelFeedBack.ShortValue;
 					VolumeIsMuted = VolumeObject.SourceMuteOnFeedBack.BoolValue;
-					break;
-				default:
-					IcdConsole.PrintLine(eConsoleColor.Magenta, "DMOutputEventArgs eventId={0}", args.EventId);
 					break;
 			}
 		}

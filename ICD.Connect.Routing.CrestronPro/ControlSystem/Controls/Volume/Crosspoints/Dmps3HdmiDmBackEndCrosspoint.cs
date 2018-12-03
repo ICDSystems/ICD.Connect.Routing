@@ -5,7 +5,6 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
 #endif
-using ICD.Common.Utils;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints
 {
@@ -190,10 +189,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		{
 			switch (InputType)
 			{
-				case eDmps3InputType.Microphone:
-					VolumeLevel = AttachableVolumeOutputMixer.MicLevel[InputAddress].ShortValue;
-					VolumeIsMuted = AttachableVolumeOutputMixer.MicMuteOnFeedback[InputAddress].BoolValue;
-					break;
 				case eDmps3InputType.Master:
 					VolumeLevel = AttachableVolumeOutputMixer.MasterVolumeFeedBack.ShortValue;
 					VolumeIsMuted = AttachableVolumeOutputMixer.MasterMuteOnFeedBack.BoolValue;
@@ -207,10 +202,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 				case eDmps3InputType.Source:
 					VolumeLevel = AttachableVolumeOutputMixer.SourceLevelFeedBack.ShortValue;
 					VolumeIsMuted = AttachableVolumeOutputMixer.SourceMuteOnFeedBack.BoolValue;
-					break;
-
-				default:
-					IcdConsole.PrintLine(eConsoleColor.Magenta, "DMOutputEventArgs eventId={0}", args.EventId);
 					break;
 			}
 		}
