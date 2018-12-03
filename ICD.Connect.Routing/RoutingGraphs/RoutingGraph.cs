@@ -1486,14 +1486,17 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			base.ApplySettingsFinal(settings, factory);
 
+			// Populate the collections before moving on to loading the next types of originators
 			IEnumerable<Connection> connections = GetConnections(settings, factory);
-			IEnumerable<StaticRoute> staticRoutes = GetStaticRoutes(settings, factory);
-			IEnumerable<ISource> sources = GetSources(settings, factory);
-			IEnumerable<IDestination> destinations = GetDestinations(settings, factory);
-
 			m_Connections.SetChildren(connections);
+
+			IEnumerable<StaticRoute> staticRoutes = GetStaticRoutes(settings, factory);
 			m_StaticRoutes.SetChildren(staticRoutes);
+
+			IEnumerable<ISource> sources = GetSources(settings, factory);
 			m_Sources.SetChildren(sources);
+
+			IEnumerable<IDestination> destinations = GetDestinations(settings, factory);
 			m_Destinations.SetChildren(destinations);
 
 			SubscribeSwitchers();
