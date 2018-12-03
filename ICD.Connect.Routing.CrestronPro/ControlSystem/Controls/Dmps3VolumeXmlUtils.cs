@@ -1,4 +1,6 @@
 ﻿using ICD.Common.Properties;
+using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
@@ -9,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices.Controls;
-using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Input.Microphone;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
@@ -42,12 +43,26 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 	{
 		public static IEnumerable<IDeviceControl> GetControlsFromXml(string xml, ControlSystemDevice parent)
 		{
-			return XmlUtils.GetChildElementsAsString(xml)
-				.Select(controlElement => InstantiateControlFromXml(controlElement, parent));
+			foreach (string childElement in XmlUtils.GetChildElementsAsString(xml))
+			{
+				IDeviceControl output;
+
+				try
+				{
+					output = InstantiateControlFromXml(childElement, parent);
+				}
+				catch (Exception e)
+				{
+					parent.Log(eSeverity.Error, "Failed to instantiate control from XML - {0}", e.Message);
+					continue;
+				}
+
+				yield return output;
+			}
 		}
 
 		[NotNull]
-		public static IDeviceControl InstantiateControlFromXml(string controlElement, ControlSystemDevice parent)
+		private static IDeviceControl InstantiateControlFromXml(string controlElement, ControlSystemDevice parent)
 		{
 			int id = XmlUtils.GetAttributeAsInt(controlElement, "id");
 			eDmps3ControlType type = XmlUtils.GetAttributeAsEnum<eDmps3ControlType>(controlElement, "type", true);
@@ -56,15 +71,21 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			switch (type)
 			{
 				case eDmps3ControlType.Volume:
+				{
 					IDmps3Crosspoint crosspoint = InstantiateCrosspointFromXml(controlElement, parent);
 					Dmps3CrosspointVolumeControl output = new Dmps3CrosspointVolumeControl(parent, id, name, crosspoint);
 					SetVolumeDefaultsFromXml(output, controlElement);
 					return output;
+				}
 
 				case eDmps3ControlType.Microphone:
+				{
 					uint micInputId = XmlUtils.ReadChildElementContentAsUint(controlElement, "Address");
-					return new Dmps3MicrophoneDeviceControl(parent, id, name, micInputId, controlElement);
-				
+					Dmps3MicrophoneDeviceControl output = new Dmps3MicrophoneDeviceControl(parent, id, name, micInputId);
+					SetMicrophoneDefaultsFromXml(output, controlElement);
+					return output;
+				}
+
 				default:
 				{
 					string message = string.Format("{0} is not a valid Dmps3 control type", type);
@@ -74,7 +95,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		}
 
 		[NotNull]
-		public static IDmps3Crosspoint InstantiateCrosspointFromXml(string controlElement, ControlSystemDevice parent)
+		private static IDmps3Crosspoint InstantiateCrosspointFromXml(string controlElement, ControlSystemDevice parent)
 		{
 			eDmps3OutputType outputType = XmlUtils.ReadChildElementContentAsEnum<eDmps3OutputType>(controlElement, "OutputType",
 				true);
@@ -122,7 +143,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			}
 		}
 
-		public static void SetVolumeDefaultsFromXml(Dmps3CrosspointVolumeControl control, string controlElement)
+		private static void SetVolumeDefaultsFromXml(Dmps3CrosspointVolumeControl control, string controlElement)
 		{
 			bool? defaultMute = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultMute");
 			short? defaultLevel = XmlUtils.TryReadChildElementContentAsShort(controlElement, "DefaultLevel");
@@ -132,6 +153,22 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 
 			if (defaultMute.HasValue)
 				control.SetVolumeMute(defaultMute.Value);
+		}
+
+		private static void SetMicrophoneDefaultsFromXml(Dmps3MicrophoneDeviceControl control, string controlElement)
+		{
+			bool? defaultMute = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultMute");
+			ushort? defaultGain = XmlUtils.TryReadChildElementContentAsUShort(controlElement, "DefaultGain");
+			bool? defaultPower = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultPower");
+
+			if (defaultMute.HasValue)
+				control.SetMuted(defaultMute.Value);
+
+			if (defaultGain.HasValue)
+				control.SetGainLevel(defaultGain.Value);
+
+			if (defaultPower.HasValue)
+				control.SetPhantomPower(defaultPower.Value);
 		}
 	}
 }

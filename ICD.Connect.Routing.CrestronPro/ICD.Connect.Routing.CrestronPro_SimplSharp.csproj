@@ -133,8 +133,7 @@
     <Compile Include="Cards\ICardSettings.cs" />
     <Compile Include="ControlSystem\ControlSystemDevice.cs" />
     <Compile Include="ControlSystem\ControlSystemDeviceSettings.cs" />
-    <Compile Include="ControlSystem\Controls\Input\Microphone\AbstractDmps3MicrophoneDeviceControl.cs" />
-    <Compile Include="ControlSystem\Controls\Input\Microphone\Dmps3MicrophoneDeviceControl.cs" />
+    <Compile Include="ControlSystem\Controls\Microphone\Dmps3MicrophoneDeviceControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\AbstractControlSystemTouchScreenControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\AbstractMPC3BasicTouchScreenControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\AbstractMPC3x101TouchScreenControl.cs" />
