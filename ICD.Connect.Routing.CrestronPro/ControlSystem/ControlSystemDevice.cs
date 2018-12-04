@@ -299,7 +299,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			DisposeLoadedControls();
 
 			// Load and add the new controls
-			foreach (IDeviceControl control in Dmps3VolumeXmlUtils.GetControlsFromXml(xml, this))
+			foreach (IDeviceControl control in Dmps3XmlUtils.GetControlsFromXml(xml, this))
 			{
 				Controls.Add(control);
 				m_LoadedControls.Add(control);

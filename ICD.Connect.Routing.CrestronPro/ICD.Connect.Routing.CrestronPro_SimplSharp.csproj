@@ -150,7 +150,7 @@
     <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3AuxOut1Crosspoint.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3ProgramCrosspoint.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3HdmiDmCrosspoint.cs" />
-    <Compile Include="ControlSystem\Controls\Dmps3VolumeXmlUtils.cs" />
+    <Compile Include="ControlSystem\Controls\Dmps3XmlUtils.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Crosspoints\IDmps3Crosspoint.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Dmps3CrosspointVolumeControl.cs" />
     <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapter.cs" />

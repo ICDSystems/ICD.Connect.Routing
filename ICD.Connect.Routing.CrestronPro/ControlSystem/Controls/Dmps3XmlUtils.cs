@@ -39,7 +39,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		Microphone
 	}
 
-	public static class Dmps3VolumeXmlUtils
+	public static class Dmps3XmlUtils
 	{
 		public static IEnumerable<IDeviceControl> GetControlsFromXml(string xml, ControlSystemDevice parent)
 		{
@@ -146,7 +146,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		private static void SetVolumeDefaultsFromXml(Dmps3CrosspointVolumeControl control, string controlElement)
 		{
 			bool? defaultMute = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultMute");
-			short? defaultLevel = XmlUtils.TryReadChildElementContentAsShort(controlElement, "DefaultLevel");
+			float? defaultLevel = XmlUtils.TryReadChildElementContentAsFloat(controlElement, "DefaultLevel");
 
 			if (defaultLevel.HasValue)
 				control.SetVolumeLevel(defaultLevel.Value);
@@ -158,7 +158,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		private static void SetMicrophoneDefaultsFromXml(Dmps3MicrophoneDeviceControl control, string controlElement)
 		{
 			bool? defaultMute = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultMute");
-			ushort? defaultGain = XmlUtils.TryReadChildElementContentAsUShort(controlElement, "DefaultGain");
+			float? defaultGain = XmlUtils.TryReadChildElementContentAsFloat(controlElement, "DefaultGain");
 			bool? defaultPower = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultPower");
 
 			if (defaultMute.HasValue)
