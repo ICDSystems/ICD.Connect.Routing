@@ -155,8 +155,6 @@ namespace ICD.Connect.Routing.Extron.Ports
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			m_ComSpecProperties.Copy(settings);
-
 			m_Parent = factory.GetOriginatorById<IDtpHdmiDevice>(settings.Parent);
 			if (m_Parent != null)
 				Subscribe(m_Parent);
@@ -172,7 +170,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 
 			settings.Parent = m_Parent.Id;
 
-			settings.Copy(m_ComSpecProperties);
+			ApplyConfiguration();
 		}
 
 		/// <summary>
@@ -183,8 +181,6 @@ namespace ICD.Connect.Routing.Extron.Ports
 			if (m_Parent != null)
 				Unsubscribe(m_Parent);
 			m_Parent = null;
-
-			m_ComSpecProperties.Clear();
 
 			base.ClearSettingsFinal();
 		}

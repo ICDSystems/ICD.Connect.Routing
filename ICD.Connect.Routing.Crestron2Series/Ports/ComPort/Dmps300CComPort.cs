@@ -231,6 +231,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 
 			m_Device = factory.GetOriginatorById<IDmps300CComPortDevice>(settings.Device);
 			Address = settings.Address;
+
+			ApplyConfiguration();
 		}
 
 		#endregion
