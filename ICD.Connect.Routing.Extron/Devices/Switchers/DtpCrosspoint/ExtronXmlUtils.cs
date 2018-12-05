@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Audio.Controls;
+using ICD.Connect.Audio.Controls.Volume;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Extron.Controls.Volume;
 
