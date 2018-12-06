@@ -66,7 +66,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		{
 			int id = XmlUtils.GetAttributeAsInt(controlElement, "id");
 			eDmps3ControlType type = XmlUtils.GetAttributeAsEnum<eDmps3ControlType>(controlElement, "type", true);
-			string name = XmlUtils.TryReadChildElementContentAsString(controlElement, "Name");
+			string name = XmlUtils.GetAttribute(controlElement, "name");
 
 			switch (type)
 			{
