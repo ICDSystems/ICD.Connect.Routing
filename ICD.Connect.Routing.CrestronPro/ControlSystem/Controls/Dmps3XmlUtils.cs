@@ -39,6 +39,20 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		Microphone
 	}
 
+	public enum eDmps3DefaultMute
+	{
+		NoChange,
+		Muted,
+		Unmuted
+	}
+
+	public enum eDmps3DefaultPower
+	{
+		NoChange,
+		On,
+		Off
+	}
+
 	public static class Dmps3XmlUtils
 	{
 		public static IEnumerable<IDeviceControl> GetControlsFromXml(string xml, ControlSystemDevice parent)
@@ -145,30 +159,75 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 
 		private static void SetVolumeDefaultsFromXml(Dmps3CrosspointVolumeControl control, string controlElement)
 		{
-			bool? defaultMute = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultMute");
 			float? defaultLevel = XmlUtils.TryReadChildElementContentAsFloat(controlElement, "DefaultLevel");
-
+			eDmps3DefaultMute defaultMute =
+				XmlUtils.TryReadChildElementContentAsEnum<eDmps3DefaultMute>(controlElement, "DefaultMute", true) ?? eDmps3DefaultMute.NoChange;
+			
 			if (defaultLevel.HasValue)
 				control.SetVolumeLevel(defaultLevel.Value);
 
-			if (defaultMute.HasValue)
-				control.SetVolumeMute(defaultMute.Value);
+			switch (defaultMute)
+			{
+				case eDmps3DefaultMute.NoChange:
+					break;
+
+				case eDmps3DefaultMute.Muted:
+					control.SetVolumeMute(true);
+					break;
+
+				case eDmps3DefaultMute.Unmuted:
+					control.SetVolumeMute(false);
+					break;
+
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 
 		private static void SetMicrophoneDefaultsFromXml(Dmps3MicrophoneDeviceControl control, string controlElement)
 		{
-			bool? defaultMute = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultMute");
 			float? defaultGain = XmlUtils.TryReadChildElementContentAsFloat(controlElement, "DefaultGain");
-			bool? defaultPower = XmlUtils.TryReadChildElementContentAsBoolean(controlElement, "DefaultPower");
-
-			if (defaultMute.HasValue)
-				control.SetMuted(defaultMute.Value);
+			eDmps3DefaultMute defaultMute =
+				XmlUtils.TryReadChildElementContentAsEnum<eDmps3DefaultMute>(controlElement, "DefaultMute", true) ?? eDmps3DefaultMute.NoChange;
+			eDmps3DefaultPower defaultPower =
+				XmlUtils.TryReadChildElementContentAsEnum<eDmps3DefaultPower>(controlElement, "DefaultPower", true) ?? eDmps3DefaultPower.NoChange;
 
 			if (defaultGain.HasValue)
 				control.SetGainLevel(defaultGain.Value);
 
-			if (defaultPower.HasValue)
-				control.SetPhantomPower(defaultPower.Value);
+			switch (defaultMute)
+			{
+				case eDmps3DefaultMute.NoChange:
+					break;
+
+				case eDmps3DefaultMute.Muted:
+					control.SetMuted(true);
+					break;
+
+				case eDmps3DefaultMute.Unmuted:
+					control.SetMuted(false);
+					break;
+
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+
+			switch (defaultPower)
+			{
+				case eDmps3DefaultPower.NoChange:
+					break;
+
+				case eDmps3DefaultPower.On:
+					control.SetPhantomPower(true);
+					break;
+
+				case eDmps3DefaultPower.Off:
+					control.SetPhantomPower(false);
+					break;
+
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 	}
 }
