@@ -133,6 +133,7 @@
     <Compile Include="Cards\ICardSettings.cs" />
     <Compile Include="ControlSystem\ControlSystemDevice.cs" />
     <Compile Include="ControlSystem\ControlSystemDeviceSettings.cs" />
+    <Compile Include="ControlSystem\Controls\Microphone\Dmps3MicrophoneDeviceControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\AbstractControlSystemTouchScreenControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\AbstractMPC3BasicTouchScreenControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\AbstractMPC3x101TouchScreenControl.cs" />
@@ -143,6 +144,15 @@
     <Compile Include="ControlSystem\Controls\TouchScreens\MPC3x30xTouchScreenControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\TPCSTouchScreenControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\TSCW730TouchScreenControl.cs" />
+    <Compile Include="ControlSystem\Controls\Volume\Crosspoints\AbstractDmps3Crosspoint.cs" />
+    <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3HdmiDmBackEndCrosspoint.cs" />
+    <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3AuxOut2Crosspoint.cs" />
+    <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3AuxOut1Crosspoint.cs" />
+    <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3ProgramCrosspoint.cs" />
+    <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3HdmiDmCrosspoint.cs" />
+    <Compile Include="ControlSystem\Controls\Dmps3XmlUtils.cs" />
+    <Compile Include="ControlSystem\Controls\Volume\Crosspoints\IDmps3Crosspoint.cs" />
+    <Compile Include="ControlSystem\Controls\Volume\Dmps3CrosspointVolumeControl.cs" />
     <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
