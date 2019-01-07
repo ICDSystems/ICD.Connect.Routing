@@ -106,6 +106,9 @@
     <Compile Include="Cards\Outputs\AbstractOutputCardAdapter.cs" />
     <Compile Include="Cards\Outputs\AbstractOutputCardSettings.cs" />
     <Compile Include="Cards\Outputs\AbstractOutputCardAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Outputs\DmcSoHd\DmcSoHdAdapter.cs" />
+    <Compile Include="Cards\Outputs\DmcSoHd\DmcSoHdAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Outputs\DmcSoHd\DmcSoHdAdapterSettings.cs" />
     <Compile Include="Cards\Outputs\DmcHdo\DmcHdoAdapter.cs" />
     <Compile Include="Cards\Outputs\DmcHdo\DmcHdoAdapterRoutingControl.cs" />
     <Compile Include="Cards\Outputs\DmcHdo\DmcHdoAdapterSettings.cs" />
@@ -255,6 +258,8 @@
     <Compile Include="KrangPlugin.cs" />
     <Compile Include="Receivers\AbstractEndpointReceiverBaseAdapter.cs" />
     <Compile Include="Receivers\AbstractEndpointReceiverBaseAdapterSettings.cs" />
+    <Compile Include="Receivers\DmRmc200S\DmRmc200SAdapter.cs" />
+    <Compile Include="Receivers\DmRmc200S\DmRmc200SAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc100F\DmRmc100FAdapter.cs" />
     <Compile Include="Receivers\DmRmc100F\DmRmc100FAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc100S\DmRmc100SAdapter.cs" />
