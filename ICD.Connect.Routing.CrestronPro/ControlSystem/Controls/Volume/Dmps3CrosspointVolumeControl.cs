@@ -1,75 +1,84 @@
-﻿using ICD.Connect.Audio.Console.Mute;
-using ICD.Connect.Audio.Controls.Mute;
-using ICD.Connect.Audio.Controls.Volume;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
-#if SIMPLSHARP
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Crestron.SimplSharpPro;
-using Crestron.SimplSharpPro.DM;
-using Crestron.SimplSharpPro.DM.Streaming;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Audio.Console.Mute;
+using ICD.Connect.Audio.Controls.Mute;
+using ICD.Connect.Audio.Controls.Volume;
+using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints;
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
+namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 {
-	public sealed class DmNvxBaseClassVolumeControl : AbstractVolumeLevelDeviceControl<IDmNvxBaseClassAdapter>, IVolumeMuteFeedbackDeviceControl
+	public sealed class Dmps3CrosspointVolumeControl : AbstractVolumeLevelDeviceControl<ControlSystemDevice>, IVolumeMuteFeedbackDeviceControl
 	{
-		private Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass m_Streamer;
-		private DmNvxControl m_NvxControl;
-
 		/// <summary>
 		/// Raised when the mute state changes.
 		/// </summary>
 		public event EventHandler<BoolEventArgs> OnMuteStateChanged;
 
-#region Properties
+		private readonly string m_Name;
+		private readonly IDmps3Crosspoint m_Crosspoint;
+
+		#region Properties
+
+		/// <summary>
+		/// Gets the human readable name for this control.
+		/// </summary>
+		public override string Name
+		{
+			get { return m_Name; }
+		}
 
 		/// <summary>
 		/// Gets the current volume, in the parent device's format
 		/// </summary>
 		public override float VolumeLevel
 		{
-			get
-			{
-				return m_NvxControl == null
-					       ? 0.0f
-					       : m_NvxControl.AnalogAudioOutputVolumeFeedback.ShortValue / 10.0f;
-			}
+			get { return m_Crosspoint.VolumeLevel / 10.0f; }
 		}
 
 		/// <summary>
 		/// Absolute Minimum the raw volume can be
 		/// Used as a last resort for position caculation
 		/// </summary>
-		protected override float VolumeRawMinAbsolute { get { return -80.0f; } }
+		protected override float VolumeRawMinAbsolute
+		{
+			get { return m_Crosspoint.VolumeLevelMin / 10.0f; }
+		}
 
 		/// <summary>
 		/// Absolute Maximum the raw volume can be
 		/// Used as a last resport for position caculation
 		/// </summary>
-		protected override float VolumeRawMaxAbsolute { get { return 24.0f; } }
+		protected override float VolumeRawMaxAbsolute
+		{
+			get { return m_Crosspoint.VolumeLevelMax / 10.0f; }
+		}
 
 		/// <summary>
 		/// Gets the muted state.
 		/// </summary>
-		public bool VolumeIsMuted { get { return m_NvxControl != null && m_NvxControl.AudioMutedFeedback.BoolValue; } }
+		public bool VolumeIsMuted { get { return m_Crosspoint.VolumeIsMuted; } }
 
-#endregion
+		#endregion
 
 		/// <summary>
-		/// Constructor
+		/// Constructor.
 		/// </summary>
-		/// <param name="parent">Device this control belongs to</param>
-		/// <param name="id">Id of this control in the device</param>
-		public DmNvxBaseClassVolumeControl(IDmNvxBaseClassAdapter parent, int id)
+		/// <param name="parent"></param>
+		/// <param name="id"></param>
+		/// <param name="name"></param>
+		/// <param name="crosspoint"></param>
+		public Dmps3CrosspointVolumeControl(ControlSystemDevice parent, int id, string name, IDmps3Crosspoint crosspoint)
 			: base(parent, id)
 		{
-			parent.OnStreamerChanged += ParentOnStreamerChanged;
+			m_Name = name;
+			m_Crosspoint = crosspoint;
 
-			SetStreamer(parent.Streamer as Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass);
+			Subscribe(m_Crosspoint);
 		}
 
 		/// <summary>
@@ -82,12 +91,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			base.DisposeFinal(disposing);
 
-			Parent.OnStreamerChanged -= ParentOnStreamerChanged;
-
-			SetStreamer(null);
+			Unsubscribe(m_Crosspoint);
 		}
 
-#region Methods
+		#region Methods
 
 		/// <summary>
 		/// Sets the raw volume. This will be clamped to the min/max and safety min/max.
@@ -95,10 +102,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <param name="volume"></param>
 		public override void SetVolumeLevel(float volume)
 		{
-			if (m_NvxControl == null)
-				throw new InvalidOperationException("Wrapped control is null");
-
-			m_NvxControl.AnalogAudioOutputVolume.ShortValue = (short)(volume * 10.0f);
+			m_Crosspoint.SetVolumeLevel((short)(volume * 10));
 		}
 
 		/// <summary>
@@ -106,8 +110,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// </summary>
 		public void VolumeMuteToggle()
 		{
-			bool mute = !VolumeIsMuted;
-			SetVolumeMute(mute);
+			m_Crosspoint.VolumeMuteToggle();
 		}
 
 		/// <summary>
@@ -116,92 +119,57 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <param name="mute"></param>
 		public void SetVolumeMute(bool mute)
 		{
-			if (m_NvxControl == null)
-				throw new InvalidOperationException("Wrapped control is null");
-
-			if (mute)
-				m_NvxControl.AudioMute();
-			else
-				m_NvxControl.AudioUnmute();
+			m_Crosspoint.SetVolumeMute(mute);
 		}
 
-#endregion
+		#endregion
 
-#region Streamer Callbacks
+		#region Crosspoint Callbacks
 
 		/// <summary>
-		/// Called when the parent wrapped streamer instance changes.
+		/// Subscribe to the crosspoint events.
+		/// </summary>
+		/// <param name="crosspoint"></param>
+		private void Subscribe(IDmps3Crosspoint crosspoint)
+		{
+			crosspoint.OnVolumeLevelChanged += CrosspointOnVolumeLevelChanged;
+			crosspoint.OnMuteStateChanged += CrosspointOnMuteStateChanged;
+		}
+
+		/// <summary>
+		/// Unsubscribe from the crosspoint events.
+		/// </summary>
+		/// <param name="crosspoint"></param>
+		private void Unsubscribe(IDmps3Crosspoint crosspoint)
+		{
+			crosspoint.OnVolumeLevelChanged -= CrosspointOnVolumeLevelChanged;
+			crosspoint.OnMuteStateChanged -= CrosspointOnMuteStateChanged;
+		}
+
+		/// <summary>
+		/// Called when the crosspoint volume level changes.
 		/// </summary>
 		/// <param name="sender"></param>
-		/// <param name="streamer"></param>
-		private void ParentOnStreamerChanged(IDm100XStrBaseAdapter sender, Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase streamer)
+		/// <param name="e"></param>
+		private void CrosspointOnVolumeLevelChanged(object sender, GenericEventArgs<short> e)
 		{
-			SetStreamer(streamer as Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass);
+			VolumeFeedback(VolumeLevel);
 		}
 
 		/// <summary>
-		/// Sets the wrapped streamer instance.
+		/// Called when the crosspoint mute state changes.
 		/// </summary>
-		/// <param name="streamer"></param>
-		private void SetStreamer(Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass streamer)
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void CrosspointOnMuteStateChanged(object sender, BoolEventArgs e)
 		{
-			if (streamer == m_Streamer)
-				return;
-
-			Unsubscribe(m_Streamer);
-
-			m_Streamer = streamer;
-			m_NvxControl = m_Streamer == null ? null : m_Streamer.Control;
-
-			Subscribe(m_Streamer);
+			Log(eSeverity.Informational, "Mute changed: Mute={0}", e.Data);
+			OnMuteStateChanged.Raise(this, new BoolEventArgs(e.Data));
 		}
 
-		/// <summary>
-		/// Subscribe to the streamer events.
-		/// </summary>
-		/// <param name="streamer"></param>
-		private void Subscribe(Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass streamer)
-		{
-			if (streamer == null)
-				return;
+		#endregion
 
-			streamer.BaseEvent += StreamerOnBaseEvent;
-		}
-
-		/// <summary>
-		/// Unsubscribe from the streamer events.
-		/// </summary>
-		/// <param name="streamer"></param>
-		private void Unsubscribe(Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass streamer)
-		{
-			if (streamer == null)
-				return;
-
-			streamer.BaseEvent -= StreamerOnBaseEvent;
-		}
-
-		/// <summary>
-		/// Called when the streamer raises a base event.
-		/// </summary>
-		/// <param name="device"></param>
-		/// <param name="args"></param>
-		private void StreamerOnBaseEvent(GenericBase device, BaseEventArgs args)
-		{
-			switch (args.EventId)
-			{
-				case DMInputEventIds.VolumeEventId:
-					VolumeFeedback(VolumeLevel);
-					break;
-
-				case DMInputEventIds.AudioMuteEventId:
-					OnMuteStateChanged.Raise(this, new BoolEventArgs(VolumeIsMuted));
-					break;
-			}
-		}
-
-#endregion
-
-#region Console
+		#region Console
 
 		/// <summary>
 		/// Calls the delegate for each console status item.
@@ -272,7 +240,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			return base.GetConsoleNodes();
 		}
 
-#endregion
+		#endregion
 	}
 }
-#endif

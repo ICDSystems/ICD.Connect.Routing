@@ -26,6 +26,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 		public event EventHandler<CacheStateChangedEventArgs> OnDestinationEndpointActiveChanged;
 		public event EventHandler<EndpointRouteChangedEventArgs> OnEndpointRouteChanged;
 		public event EventHandler<SourceDestinationRouteChangedEventArgs> OnSourceDestinationRouteChanged;
+		public event EventHandler<SourceEndpointActiveChangedEventArgs> OnSourceEndpointActiveChanged; 
 
 		#endregion
 
@@ -100,6 +101,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 			OnDestinationEndpointActiveChanged = null;
 			OnEndpointRouteChanged = null;
 			OnSourceDestinationRouteChanged = null;
+			OnSourceEndpointActiveChanged = null;
 
 			Unsubscribe(m_RoutingGraph);
 
@@ -1157,10 +1159,11 @@ namespace ICD.Connect.Routing.RoutingCaches
 		/// <param name="oldSourceEndpoints"></param>
 		/// <param name="destinations"></param>
 		/// <param name="type"></param>
+		/// <param name="inactiveSourceEndpoints"></param>
 		/// <returns></returns>
 		private bool RemoveOldValuesFromSourceCache(IEnumerable<EndpointInfo> oldSourceEndpoints,
 													IcdHashSet<EndpointInfo> destinations,
-													eConnectionType type)
+													eConnectionType type, out IcdHashSet<EndpointInfo> inactiveSourceEndpoints)
 		{
 			if (oldSourceEndpoints == null)
 				throw new ArgumentNullException("oldSourceEndpoints");
@@ -1176,6 +1179,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 			try
 			{
 				bool changed = false;
+				inactiveSourceEndpoints = new IcdHashSet<EndpointInfo>();
 
 				foreach (EndpointInfo source in oldSourceEndpoints)
 				{
@@ -1187,8 +1191,16 @@ namespace ICD.Connect.Routing.RoutingCaches
 					if (!sourceCache.TryGetValue(type, out typeCache))
 						continue;
 
+					bool sourceChanged = false;
+
 					foreach (EndpointInfo endpointToRemove in destinations)
-						changed |= typeCache.Remove(endpointToRemove);
+						sourceChanged |= typeCache.Remove(endpointToRemove);
+
+					changed |= sourceChanged;
+					
+					if (sourceChanged && typeCache.Count == 0)
+						inactiveSourceEndpoints.Add(source);
+
 				}
 
 				return changed;
@@ -1205,10 +1217,11 @@ namespace ICD.Connect.Routing.RoutingCaches
 		/// <param name="newSourceEndpoints"></param>
 		/// <param name="destinations"></param>
 		/// <param name="type"></param>
+		/// <param name="activeSourceEndpoints"></param>
 		/// <returns></returns>
 		private bool AddNewValuesToSourceCache(IEnumerable<EndpointInfo> newSourceEndpoints,
 											   IcdHashSet<EndpointInfo> destinations,
-											   eConnectionType type)
+											   eConnectionType type, out IcdHashSet<EndpointInfo> activeSourceEndpoints)
 		{
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type has multiple flags", "type");
@@ -1224,6 +1237,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 			try
 			{
 				bool changed = false;
+				activeSourceEndpoints = new IcdHashSet<EndpointInfo>();
 
 				foreach (EndpointInfo source in newSourceEndpoints)
 				{
@@ -1234,15 +1248,23 @@ namespace ICD.Connect.Routing.RoutingCaches
 						m_SourceEndpointToDestinationEndpointCache.Add(source, sourceCache);
 					}
 
+					bool sourceAdded;
+
 					IcdHashSet<EndpointInfo> typeCache;
 					if (!sourceCache.TryGetValue(type, out typeCache))
 					{
+						sourceAdded = true;
 						typeCache = new IcdHashSet<EndpointInfo>();
 						sourceCache.Add(type, typeCache);
 					}
+					else
+						sourceAdded = typeCache.Count == 0;
 
 					foreach (EndpointInfo endpointToAdd in destinations)
 						changed |= typeCache.Add(endpointToAdd);
+
+					if (sourceAdded)
+						activeSourceEndpoints.Add(source);
 				}
 
 				return changed;
@@ -1308,6 +1330,9 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 			eConnectionType typeChange = eConnectionType.None;
 
+			Dictionary<eConnectionType, IcdHashSet<EndpointInfo>> addedSources = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+			Dictionary<eConnectionType, IcdHashSet<EndpointInfo>> removedSources = new Dictionary<eConnectionType, IcdHashSet<EndpointInfo>>();
+
 			m_CacheSection.Enter();
 
 			try
@@ -1350,23 +1375,32 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 					bool change = false;
 
+					IcdHashSet<EndpointInfo> inactiveSourceEndpoints = null;
+					IcdHashSet<EndpointInfo> activeSourceEndpoints = null;
+
 					if (oldSources.Count > 0)
 					{
-						change |= RemoveOldValuesFromSourceCache(oldSources, destinations, flag);
+						change |= RemoveOldValuesFromSourceCache(oldSources, destinations, flag,out inactiveSourceEndpoints);
 						change |= RemoveOldValuesFromDestinationCache(oldSources, destinations, flag);
 					}
 
 					if (newSources.Count > 0)
 					{
-						change |= AddNewValuesToSourceCache(newSources, destinations, flag);
+						change |= AddNewValuesToSourceCache(newSources, destinations, flag, out activeSourceEndpoints);
 						change |= AddNewValuesToDestinationCache(newSources, destinations, flag);
 					}
 
 					if (m_DebugEnabled)
 						PrintRouteMaps();
 
-					if (change)
-						typeChange |= flag;
+					if (!change)
+						continue;
+
+					typeChange |= flag;
+					if (inactiveSourceEndpoints != null && inactiveSourceEndpoints.Count > 0)
+						removedSources.Add(flag, inactiveSourceEndpoints);
+					if (activeSourceEndpoints != null && activeSourceEndpoints.Count > 0)
+						addedSources.Add(flag, activeSourceEndpoints);
 				}
 			}
 			finally
@@ -1379,6 +1413,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 			OnEndpointRouteChanged.Raise(this, new EndpointRouteChangedEventArgs(typeChange));
 			OnSourceDestinationRouteChanged.Raise(this, new SourceDestinationRouteChangedEventArgs(typeChange));
+			OnSourceEndpointActiveChanged.Raise(this, new SourceEndpointActiveChangedEventArgs(addedSources, removedSources));
 		}
 
 		/// <summary>

@@ -6,6 +6,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [13.1.0] - 2019-01-02
+### Added
+ - Added Volume and Microphone controls for DMPS3 control systems
+ - Added XML configuration for DMPS3 volume and microphone controls
+
+## [13.0.0] - 2018-11-20
+### Added
+ - Added console features for configuring NVX device mode
+
+### Changed
+ - Fixed KeyNotFoundException on program stop when using cards
+ - Better support for input active state by connection type
+ - Routing graph populates each type of originator before loading the next batch
+
 ## [12.0.0] - 2018-11-08
 ### Changed
  - Improved clarity in console readouts

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
@@ -14,9 +15,12 @@ namespace ICD.Connect.Routing.Connections
 	/// <summary>
 	/// Settings for a Connection.
 	/// </summary>
-	[KrangSettings("Connection", typeof(Connection))]
+	[KrangSettings(FACTORY_NAME, typeof(Connection))]
 	public sealed class ConnectionSettings : AbstractSettings
 	{
+		[PublicAPI("MetLife settings pages")]
+		public const string FACTORY_NAME = "Connection";
+
 		private const string SOURCE_DEVICE_ELEMENT = "SourceDevice";
 		private const string SOURCE_CONTROL_ELEMENT = "SourceControl";
 		private const string SOURCEADDRESS_ELEMENT = "SourceAddress";

@@ -80,6 +80,7 @@
     <Compile Include="Controls\RouteSwitcherControl.cs" />
     <Compile Include="Controls\RouteSwitcherControlConsole.cs" />
     <Compile Include="Controls\RouteSourceControl.cs" />
+    <Compile Include="SourceEndpointActiveChangedEventArgs.cs" />
     <Compile Include="Devices\AbstractRouteDestinationDevice.cs" />
     <Compile Include="Devices\AbstractRouteDevice.cs" />
     <Compile Include="Devices\AbstractRouteMidpointDevice.cs" />
