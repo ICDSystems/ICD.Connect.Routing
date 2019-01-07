@@ -1158,10 +1158,11 @@ namespace ICD.Connect.Routing.RoutingCaches
 		/// <param name="oldSourceEndpoints"></param>
 		/// <param name="destinations"></param>
 		/// <param name="type"></param>
+		/// <param name="unusedSources"></param>
 		/// <returns></returns>
-		private IcdHashSet<EndpointInfo> RemoveOldValuesFromSourceCache(IEnumerable<EndpointInfo> oldSourceEndpoints,
+		private bool RemoveOldValuesFromSourceCache(IEnumerable<EndpointInfo> oldSourceEndpoints,
 													IcdHashSet<EndpointInfo> destinations,
-													eConnectionType type)
+													eConnectionType type, out IcdHashSet<EndpointInfo> unusedSources)
 		{
 			if (oldSourceEndpoints == null)
 				throw new ArgumentNullException("oldSourceEndpoints");
@@ -1176,7 +1177,8 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 			try
 			{
-				IcdHashSet<EndpointInfo> removedSources = new IcdHashSet<EndpointInfo>();
+				bool changed = false;
+				unusedSources = new IcdHashSet<EndpointInfo>();
 
 				foreach (EndpointInfo source in oldSourceEndpoints)
 				{
@@ -1188,17 +1190,19 @@ namespace ICD.Connect.Routing.RoutingCaches
 					if (!sourceCache.TryGetValue(type, out typeCache))
 						continue;
 
-					bool changed = false;
+					bool sourceChanged = false;
 
 					foreach (EndpointInfo endpointToRemove in destinations)
-						changed |= typeCache.Remove(endpointToRemove);
+						sourceChanged |= typeCache.Remove(endpointToRemove);
+
+					changed |= sourceChanged;
 					
-					if (changed && typeCache.Count == 0)
-						removedSources.Add(source);
+					if (sourceChanged && typeCache.Count == 0)
+						unusedSources.Add(source);
 
 				}
 
-				return removedSources;
+				return changed;
 			}
 			finally
 			{
@@ -1212,10 +1216,11 @@ namespace ICD.Connect.Routing.RoutingCaches
 		/// <param name="newSourceEndpoints"></param>
 		/// <param name="destinations"></param>
 		/// <param name="type"></param>
+		/// <param name="usedSources"></param>
 		/// <returns></returns>
-		private IcdHashSet<EndpointInfo> AddNewValuesToSourceCache(IEnumerable<EndpointInfo> newSourceEndpoints,
+		private bool AddNewValuesToSourceCache(IEnumerable<EndpointInfo> newSourceEndpoints,
 											   IcdHashSet<EndpointInfo> destinations,
-											   eConnectionType type)
+											   eConnectionType type, out IcdHashSet<EndpointInfo> usedSources)
 		{
 			if (!EnumUtils.HasSingleFlag(type))
 				throw new ArgumentException("Type has multiple flags", "type");
@@ -1230,7 +1235,8 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 			try
 			{
-				IcdHashSet<EndpointInfo> addedSources = new IcdHashSet<EndpointInfo>();
+				bool changed = false;
+				usedSources = new IcdHashSet<EndpointInfo>();
 
 				foreach (EndpointInfo source in newSourceEndpoints)
 				{
@@ -1241,23 +1247,26 @@ namespace ICD.Connect.Routing.RoutingCaches
 						m_SourceEndpointToDestinationEndpointCache.Add(source, sourceCache);
 					}
 
+					bool sourceAdded;
+
 					IcdHashSet<EndpointInfo> typeCache;
 					if (!sourceCache.TryGetValue(type, out typeCache))
 					{
+						sourceAdded = true;
 						typeCache = new IcdHashSet<EndpointInfo>();
 						sourceCache.Add(type, typeCache);
 					}
-
-					bool changed = false;
+					else
+						sourceAdded = typeCache.Count == 0;
 
 					foreach (EndpointInfo endpointToAdd in destinations)
 						changed |= typeCache.Add(endpointToAdd);
 
-					if (changed && typeCache.Count == 0)
-						addedSources.Add(source);
+					if (sourceAdded)
+						usedSources.Add(source);
 				}
 
-				return addedSources;
+				return changed;
 			}
 			finally
 			{
@@ -1370,13 +1379,13 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 					if (oldSources.Count > 0)
 					{
-						change |= (removedSourcesType = RemoveOldValuesFromSourceCache(oldSources, destinations, flag)).Count > 0;
+						change |= RemoveOldValuesFromSourceCache(oldSources, destinations, flag,out removedSourcesType);
 						change |= RemoveOldValuesFromDestinationCache(oldSources, destinations, flag);
 					}
 
 					if (newSources.Count > 0)
 					{
-						change |= (addedSourcesType = AddNewValuesToSourceCache(newSources, destinations, flag)).Count > 0;
+						change |= AddNewValuesToSourceCache(newSources, destinations, flag, out addedSourcesType);
 						change |= AddNewValuesToDestinationCache(newSources, destinations, flag);
 					}
 
