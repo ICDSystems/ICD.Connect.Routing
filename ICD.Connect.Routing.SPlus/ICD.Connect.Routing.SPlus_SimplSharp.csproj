@@ -72,10 +72,31 @@
     <Compile Include="KrangPlugin.cs" />
     <None Include="ObfuscationSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SPlusSwitcher.cs" />
-    <Compile Include="SPlusSwitcherControl.cs" />
-    <Compile Include="SPlusSwitcherSettings.cs" />
-    <Compile Include="SPlusSwitcherShim.cs" />
+    <Compile Include="SPlusDestinationDevice\Controls\SPlusDestinationPowerControl.cs" />
+    <Compile Include="SPlusDestinationDevice\Controls\SPlusDestinationRouteControl.cs" />
+    <Compile Include="SPlusDestinationDevice\Controls\SPlusDestinationVolumeControl.cs" />
+    <Compile Include="SPlusDestinationDevice\EventArgs\PowerControlApiEventArgs.cs" />
+    <Compile Include="SPlusDestinationDevice\EventArgs\SetActiveInputApiEventArgs.cs" />
+    <Compile Include="SPlusDestinationDevice\EventArgs\SetVolumeMuteStateApiEventArgs.cs" />
+    <Compile Include="SPlusDestinationDevice\EventArgs\SetVolumeLevelApiEventArgs.cs" />
+    <Compile Include="SPlusDestinationDevice\EventArgs\VolumeMuteToggleApiEventArgs.cs" />
+    <Compile Include="SPlusDestinationDevice\ISPlusDestinationDevice.cs" />
+    <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationDevice.cs" />
+    <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationDeviceSettings.cs" />
+    <Compile Include="SPlusDestinationDevice\Proxy\SPlusDestinationApi.cs" />
+    <Compile Include="SPlusDestinationDevice\Shim\SPlusDestinationShim.cs" />
+    <Compile Include="SPlusDestinationDevice\Device\SPlusDestinationDeviceSettings.cs" />
+    <Compile Include="SPlusDestinationDevice\Device\SPlusDestinationDevice.cs" />
+    <Compile Include="SPlusSwitcher\Device\SPlusSwitcherDevice.cs" />
+    <Compile Include="SPlusSwitcher\Controls\SPlusSwitcherControl.cs" />
+    <Compile Include="SPlusSwitcher\Device\SPlusSwitcherDeviceSettings.cs" />
+    <Compile Include="SPlusSwitcher\EventArgs\ClearRouteApiEventArgs.cs" />
+    <Compile Include="SPlusSwitcher\EventArgs\SetRouteApiEventArgs.cs" />
+    <Compile Include="SPlusSwitcher\ISPlusSwitcher.cs" />
+    <Compile Include="SPlusSwitcher\Proxy\ProxySPlusSwitcherDevice.cs" />
+    <Compile Include="SPlusSwitcher\Proxy\ProxySPlusSwitcherDeviceSettings.cs" />
+    <Compile Include="SPlusSwitcher\Proxy\SPlusSwitcherApi.cs" />
+    <Compile Include="SPlusSwitcher\Shim\SPlusSwitcherShim.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>
@@ -86,6 +107,10 @@
     <ProjectReference Include="..\..\ICD.Connect.API\ICD.Connect.API\ICD.Connect.API_SimplSharp.csproj">
       <Project>{727F5820-5A61-440D-8899-E454FE8238D7}</Project>
       <Name>ICD.Connect.API_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Audio\ICD.Connect.Audio\ICD.Connect.Audio_SimplSharp.csproj">
+      <Project>{8ED25D96-E9A5-4E9A-A890-B4EF3AB62041}</Project>
+      <Name>ICD.Connect.Audio_SimplSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\ICD.Connect.Devices\ICD.Connect.Devices\ICD.Connect.Devices_SimplSharp.csproj">
       <Project>{FD46A717-5836-4B73-ADD0-2706639DA8ED}</Project>
