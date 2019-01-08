@@ -55,9 +55,9 @@ namespace ICD.Connect.Routing.Atlona
 		/// <summary>
 		/// Clears the configured values.
 		/// </summary>
-		void INetworkProperties.Clear()
+		void INetworkProperties.ClearNetworkProperties()
 		{
-			m_NetworkProperties.Clear();
+			m_NetworkProperties.ClearNetworkProperties();
 		}
 
 		#endregion

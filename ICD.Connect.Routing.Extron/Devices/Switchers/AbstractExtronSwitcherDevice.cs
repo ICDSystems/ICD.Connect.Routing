@@ -312,8 +312,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 			Password = null;
 
-			m_ComSpecProperties.Clear();
-			m_NetworkProperties.Clear();
+			m_ComSpecProperties.ClearComSpecProperties();
+			m_NetworkProperties.ClearNetworkProperties();
 
 			m_ConnectionStateManager.SetPort(null);
 		}

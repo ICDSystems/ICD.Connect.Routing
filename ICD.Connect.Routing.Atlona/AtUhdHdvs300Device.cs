@@ -323,7 +323,7 @@ namespace ICD.Connect.Routing.Atlona
 		{
 			base.ClearSettingsFinal();
 
-			m_NetworkProperties.Clear();
+			m_NetworkProperties.ClearNetworkProperties();
 
 			Username = null;
 			Password = null;
