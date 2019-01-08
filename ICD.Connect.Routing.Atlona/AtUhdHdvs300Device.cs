@@ -11,8 +11,6 @@ using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.Ports;
 using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
-using ICD.Connect.Protocol.Ports.ComPort;
-using ICD.Connect.Protocol.Settings;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Atlona
@@ -40,8 +38,7 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		public event EventHandler<StringEventArgs> OnResponseReceived;
 
-		private readonly SecureNetworkProperties m_NetworkProperties;
-		private readonly ComSpecProperties m_ComSpecProperties;
+		private readonly NetworkProperties m_NetworkProperties;
 
 		private readonly AtUhdHdvs300DeviceSerialBuffer m_SerialBuffer;
 		private readonly SafeTimer m_KeepAliveTimer;
@@ -50,6 +47,16 @@ namespace ICD.Connect.Routing.Atlona
 		private bool m_Initialized;
 
 		#region Properties
+
+		/// <summary>
+		/// Gets/sets the username for logging into the device.
+		/// </summary>
+		public string Username { get; set; }
+
+		/// <summary>
+		/// Gets/sets the password for logging into the device.
+		/// </summary>
+		public string Password { get; set; }
 
 		/// <summary>
 		/// Returns true when the codec is connected.
@@ -83,8 +90,7 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		public AtUhdHdvs300Device()
 		{
-			m_NetworkProperties = new SecureNetworkProperties();
-			m_ComSpecProperties = new ComSpecProperties();
+			m_NetworkProperties = new NetworkProperties();
 
 			m_ConnectionStateManager = new ConnectionStateManager(this){ ConfigurePort = ConfigurePort };
 			m_ConnectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
@@ -156,14 +162,8 @@ namespace ICD.Connect.Routing.Atlona
 		/// <param name="port"></param>
 		private void ConfigurePort(ISerialPort port)
 		{
-			// Com
-			if (port is IComPort)
-				(port as IComPort).ApplyDeviceConfiguration(m_ComSpecProperties);
-
-			// Network (TCP, UDP, SSH)
-			if (port is ISecureNetworkPort)
-				(port as ISecureNetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
-			else if (port is INetworkPort)
+			// TCP
+			if (port is INetworkPort)
 				(port as INetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
 		}
 
@@ -276,12 +276,12 @@ namespace ICD.Connect.Routing.Atlona
 
 		private void BufferOnOnPasswordPrompt(object sender, EventArgs eventArgs)
 		{
-			SendCommand(m_NetworkProperties.NetworkPassword);
+			SendCommand(Password);
 		}
 
 		private void BufferOnOnLoginPrompt(object sender, EventArgs eventArgs)
 		{
-			SendCommand(m_NetworkProperties.NetworkUsername);
+			SendCommand(Username);
 		}
 
 		/// <summary>
@@ -310,9 +310,10 @@ namespace ICD.Connect.Routing.Atlona
 			base.CopySettingsFinal(settings);
 
 			settings.Port = m_ConnectionStateManager.PortNumber;
+			settings.Username = Username;
+			settings.Password = Password;
 
 			settings.Copy(m_NetworkProperties);
-			settings.Copy(m_ComSpecProperties);
 		}
 
 		/// <summary>
@@ -323,7 +324,9 @@ namespace ICD.Connect.Routing.Atlona
 			base.ClearSettingsFinal();
 
 			m_NetworkProperties.Clear();
-			m_ComSpecProperties.Clear();
+
+			Username = null;
+			Password = null;
 
 			SetPort(null);
 		}
@@ -337,8 +340,10 @@ namespace ICD.Connect.Routing.Atlona
 		{
 			base.ApplySettingsFinal(settings, factory);
 
+			Username = settings.Username;
+			Password = settings.Password;
+
 			m_NetworkProperties.Copy(settings);
-			m_ComSpecProperties.Copy(settings);
 
 			ISerialPort port = null;
 
