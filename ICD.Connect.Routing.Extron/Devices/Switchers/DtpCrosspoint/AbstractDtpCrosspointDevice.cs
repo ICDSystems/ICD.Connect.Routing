@@ -10,8 +10,10 @@ using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Protocol.Network.Ports.Tcp;
+using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
+using ICD.Connect.Protocol.Settings;
 using ICD.Connect.Protocol.Utils;
 using ICD.Connect.Routing.Extron.Devices.Endpoints;
 using ICD.Connect.Settings;
@@ -50,6 +52,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 
 		private readonly List<IDeviceControl> m_LoadedControls;
 
+		private readonly NetworkProperties m_NetworkProperties;
+		private readonly ComSpecProperties m_ComSpecProperties;
+
 		private string m_ConfigPath;
 		private ushort m_StartingComPort = 2000;
 
@@ -68,6 +73,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 		/// </summary>
 		protected AbstractDtpCrosspointDevice()
 		{
+			m_NetworkProperties = new NetworkProperties();
+			m_ComSpecProperties = new ComSpecProperties();
+
 			m_DtpInputPorts = new Dictionary<int, int>();
 			m_DtpOutputPorts = new Dictionary<int, int>();
 			m_DtpPortsSection = new SafeCriticalSection();

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
@@ -8,8 +7,11 @@ using ICD.Common.Utils.Timers;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
+using ICD.Connect.Protocol.Network.Ports;
+using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
+using ICD.Connect.Protocol.Settings;
 using ICD.Connect.Routing.Extron.SerialBuffers;
 using ICD.Connect.Settings;
 
@@ -24,20 +26,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// </summary>
 		private const long KEEPALIVE_INTERVAL = 2 * 60 * 1000;
 
-		// ReSharper disable StaticFieldInGenericType
-		private static readonly ComSpec s_DefaultComSpec = new ComSpec
-		// ReSharper restore StaticFieldInGenericType
-		{
-			BaudRate = eComBaudRates.BaudRate9600,
-			NumberOfDataBits = eComDataBits.DataBits8,
-			ParityType = eComParityType.None,
-			NumberOfStopBits = eComStopBits.StopBits1,
-			ProtocolType = eComProtocolType.Rs232,
-			HardwareHandshake = eComHardwareHandshakeType.None,
-			SoftwareHandshake = eComSoftwareHandshakeType.None,
-			ReportCtsChanges = false
-		};
-
 		/// <summary>
 		/// Raised when the class initializes.
 		/// </summary>
@@ -51,6 +39,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		private readonly DtpCrosspointSerialBuffer m_SerialBuffer;
 		private readonly SafeTimer m_KeepAliveTimer;
 		private readonly ConnectionStateManager m_ConnectionStateManager;
+
+		private readonly NetworkProperties m_NetworkProperties;
+		private readonly ComSpecProperties m_ComSpecProperties;
 
 		private bool m_Initialized;
 		
@@ -93,6 +84,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		/// </summary>
 		protected AbstractExtronSwitcherDevice()
 		{
+			m_NetworkProperties = new NetworkProperties();
+			m_ComSpecProperties = new ComSpecProperties();
+
 			m_SerialBuffer = new DtpCrosspointSerialBuffer();
 			Subscribe(m_SerialBuffer);
 
@@ -137,25 +131,18 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		}
 
 		/// <summary>
-		/// Configures the port for communicating with the device.
+		/// Configures the given port for communication with the device.
 		/// </summary>
 		/// <param name="port"></param>
-		[PublicAPI]
-		public void ConfigurePort(ISerialPort port)
+		private void ConfigurePort(ISerialPort port)
 		{
-			IComPort comPort = port as IComPort;
-			if (comPort != null)
-				ConfigureComPort(comPort);
-		}
+			// Com
+			if (port is IComPort)
+				(port as IComPort).ApplyDeviceConfiguration(m_ComSpecProperties);
 
-		/// <summary>
-		/// Configures the com port for communicating with the device.
-		/// </summary>
-		/// <param name="port"></param>
-		[PublicAPI]
-		public static void ConfigureComPort(IComPort port)
-		{
-			port.SetComPortSpec(s_DefaultComSpec);
+			// TCP
+			else if (port is INetworkPort)
+				(port as INetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
 		}
 
 		/// <summary>
@@ -324,6 +311,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			base.ClearSettingsFinal();
 
 			Password = null;
+
+			m_ComSpecProperties.Clear();
+			m_NetworkProperties.Clear();
+
 			m_ConnectionStateManager.SetPort(null);
 		}
 
@@ -337,6 +328,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 
 			settings.Password = Password;
 			settings.Port = m_ConnectionStateManager.PortNumber;
+
+			settings.Copy(m_ComSpecProperties);
+			settings.Copy(m_NetworkProperties);
 		}
 
 		/// <summary>
@@ -347,6 +341,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
+
+			m_ComSpecProperties.Copy(settings);
+			m_NetworkProperties.Copy(settings);
 
 			Password = settings.Password;
 
