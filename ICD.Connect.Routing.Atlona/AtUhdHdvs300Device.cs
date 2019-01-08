@@ -52,16 +52,6 @@ namespace ICD.Connect.Routing.Atlona
 		#region Properties
 
 		/// <summary>
-		/// Gets the com spec properties.
-		/// </summary>
-		public IComSpecProperties ComSpecProperties { get { return m_ComSpecProperties; } }
-
-		/// <summary>
-		/// Gets the network properties.
-		/// </summary>
-		public ISecureNetworkProperties NetworkProperties { get { return m_NetworkProperties; } }
-
-		/// <summary>
 		/// Returns true when the codec is connected.
 		/// </summary>
 		public bool IsConnected
