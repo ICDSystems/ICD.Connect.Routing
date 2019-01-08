@@ -96,7 +96,7 @@
     <Compile Include="Controls\Volume\ExtronVolumeUtils.cs" />
     <Compile Include="Controls\Volume\ExtronVolumeDeviceControl.cs" />
     <Compile Include="Controls\Volume\ExtronGroupVolumeDeviceControl.cs" />
-    <None Include="DTPCrossPoint84.pdf" />
+    <None Include="Devices\Switchers\DtpCrosspoint\DtpCrosspoint84\DTPCrossPoint84.pdf" />
     <None Include="ObfuscationSettings.cs" />
     <Compile Include="Devices\Switchers\IExtronSwitcherDevice.cs" />
     <Compile Include="Devices\Switchers\IExtronSwitcherDeviceSettings.cs" />
@@ -119,7 +119,7 @@
     <Compile Include="Ports\DtpCrosspointComPortSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\ControlSystem.cfg" />
-    <None Include="SWHD4KSeries.pdf" />
+    <None Include="Devices\Switchers\SwHd4K\SWHD4KSeries.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\ICD.Common.Utils\ICD.Common.Utils\ICD.Common.Utils_SimplSharp.csproj">
