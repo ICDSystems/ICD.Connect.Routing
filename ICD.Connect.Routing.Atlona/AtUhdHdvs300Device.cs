@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
@@ -9,9 +8,10 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
+using ICD.Connect.Protocol.Network.Ports;
+using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
-using ICD.Connect.Protocol.Ports.ComPort;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Atlona
 {
@@ -36,7 +36,9 @@ namespace ICD.Connect.Routing.Atlona
 		/// <summary>
 		/// Raised when the device sends a response.
 		/// </summary>
-		public event EventHandler<StringEventArgs> OnResponseReceived; 
+		public event EventHandler<StringEventArgs> OnResponseReceived;
+
+		private readonly NetworkProperties m_NetworkProperties;
 
 		private readonly AtUhdHdvs300DeviceSerialBuffer m_SerialBuffer;
 		private readonly SafeTimer m_KeepAliveTimer;
@@ -88,6 +90,8 @@ namespace ICD.Connect.Routing.Atlona
 		/// </summary>
 		public AtUhdHdvs300Device()
 		{
+			m_NetworkProperties = new NetworkProperties();
+
 			m_ConnectionStateManager = new ConnectionStateManager(this){ ConfigurePort = ConfigurePort };
 			m_ConnectionStateManager.OnConnectedStateChanged += PortOnConnectionStatusChanged;
 			m_ConnectionStateManager.OnIsOnlineStateChanged += PortOnIsOnlineStateChanged;
@@ -125,6 +129,11 @@ namespace ICD.Connect.Routing.Atlona
 
 		#region Methods
 
+		public void SetPort(ISerialPort port)
+		{
+			m_ConnectionStateManager.SetPort(port);
+		}
+
 		/// <summary>
 		/// Send command.
 		/// </summary>
@@ -148,31 +157,14 @@ namespace ICD.Connect.Routing.Atlona
 		}
 
 		/// <summary>
-		/// Sets the port for communicating with the device.
+		/// Configures the given port for communication with the device.
 		/// </summary>
 		/// <param name="port"></param>
-		[PublicAPI]
-		public void ConfigurePort(ISerialPort port)
+		private void ConfigurePort(ISerialPort port)
 		{
-			if (port is IComPort)
-				ConfigureComPort(port as IComPort);
-		}
-
-		/// <summary>
-		/// Configures a com port for communication with the hardware.
-		/// </summary>
-		/// <param name="port"></param>
-		[PublicAPI]
-		public static void ConfigureComPort(IComPort port)
-		{
-			port.SetComPortSpec(eComBaudRates.ComspecBaudRate115200,
-			                    eComDataBits.ComspecDataBits8,
-			                    eComParityType.ComspecParityNone,
-			                    eComStopBits.ComspecStopBits1,
-			                    eComProtocolType.ComspecProtocolRS232,
-			                    eComHardwareHandshakeType.ComspecHardwareHandshakeNone,
-			                    eComSoftwareHandshakeType.ComspecSoftwareHandshakeNone,
-			                    false);
+			// TCP
+			if (port is INetworkPort)
+				(port as INetworkPort).ApplyDeviceConfiguration(m_NetworkProperties);
 		}
 
 		/// <summary>
@@ -320,6 +312,8 @@ namespace ICD.Connect.Routing.Atlona
 			settings.Port = m_ConnectionStateManager.PortNumber;
 			settings.Username = Username;
 			settings.Password = Password;
+
+			settings.Copy(m_NetworkProperties);
 		}
 
 		/// <summary>
@@ -329,9 +323,12 @@ namespace ICD.Connect.Routing.Atlona
 		{
 			base.ClearSettingsFinal();
 
+			m_NetworkProperties.ClearNetworkProperties();
+
 			Username = null;
 			Password = null;
-			m_ConnectionStateManager.SetPort(null);
+
+			SetPort(null);
 		}
 
 		/// <summary>
@@ -346,6 +343,8 @@ namespace ICD.Connect.Routing.Atlona
 			Username = settings.Username;
 			Password = settings.Password;
 
+			m_NetworkProperties.Copy(settings);
+
 			ISerialPort port = null;
 
 			if (settings.Port != null)
@@ -357,10 +356,10 @@ namespace ICD.Connect.Routing.Atlona
 				catch (KeyNotFoundException)
 				{
 					Log(eSeverity.Error, "No serial port with id {0}", settings.Port);
-				}	
+				}
 			}
 
-			m_ConnectionStateManager.SetPort(port);
+			SetPort(port);
 		}
 
 		#endregion

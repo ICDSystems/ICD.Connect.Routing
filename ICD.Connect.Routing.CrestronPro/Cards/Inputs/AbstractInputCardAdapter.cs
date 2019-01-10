@@ -1,6 +1,6 @@
 ﻿using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;

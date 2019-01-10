@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.RoutingGraphs;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Cores;
 
 namespace ICD.Connect.Routing.Extensions
 {

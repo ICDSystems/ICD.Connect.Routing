@@ -14,7 +14,8 @@ using ICD.Connect.Routing.Devices;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
+using ICD.Connect.Settings.Cores;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 {

@@ -20,12 +20,17 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 		private const string ELEMENT_INPUT = "Input";
 		private const string ELEMENT_OUTPUT = "Output";
 
+		private readonly Dictionary<int, int> m_DtpInputPorts = new Dictionary<int, int>();
+
+		private readonly Dictionary<int, int> m_DtpOutputPorts = new Dictionary<int, int>();
+
+		#region Properties
+
 		[IpAddressSettingsProperty]
 		public string Address { get; set; }
 
 		public string Config { get; set; }
 
-		private readonly Dictionary<int, int> m_DtpInputPorts = new Dictionary<int, int>();
 		public IEnumerable<KeyValuePair<int, int>> DtpInputPorts
 		{
 			get { return m_DtpInputPorts.ToArray(m_DtpInputPorts.Count); }
@@ -60,7 +65,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			}
 		}
 
-		private readonly Dictionary<int, int> m_DtpOutputPorts = new Dictionary<int, int>();
 		public IEnumerable<KeyValuePair<int, int>> DtpOutputPorts
 		{
 			get { return m_DtpOutputPorts.ToArray(m_DtpOutputPorts.Count); }
@@ -94,6 +98,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 				}
 			}
 		}
+
+		#endregion
 
 		/// <summary>
 		/// Writes property elements to xml.
