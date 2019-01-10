@@ -12,9 +12,9 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 	{
 		#region Consts
 		
-		private const int ROUTE_CONTROL_ID = 1;
-		private const int POWER_CONTROL_ID = 2;
-		private const int VOLUME_CONTROL_ID = 3;
+		private const int ROUTE_CONTROL_ID = 0;
+		private const int POWER_CONTROL_ID = 1;
+		private const int VOLUME_CONTROL_ID = 2;
 		
 		#endregion
 

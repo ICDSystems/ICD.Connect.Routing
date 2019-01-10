@@ -10,7 +10,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 {
 	public sealed class SPlusSwitcherDevice : AbstractSimplDevice<SPlusSwitcherDeviceSettings>, ISPlusSwitcher
 	{
-		private const int SWITCHER_CONTROL_ID = 1;
+		private const int SWITCHER_CONTROL_ID = 0;
 
 		private SPlusSwitcherControl m_SwitcherControl;
 
