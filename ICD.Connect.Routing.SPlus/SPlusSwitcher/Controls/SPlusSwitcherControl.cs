@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
@@ -50,7 +52,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Controls
 			InputCount = inputCount;
 			OutputCount = outputCount;
 			SwitcherLayers = switcherLayers;
-			SupportsSourceDetection = SupportsSourceDetection;
+			SupportsSourceDetection = supportsSourceDetection;
 
 			m_SwitcherCache = new SwitcherCache();
 
@@ -291,6 +293,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Controls
 		/// </summary>
 		private void SetAllInputsDetected()
 		{
+			Log(eSeverity.Debug, "Switch doesn't support input detection, setting all inputs as detected");
 			foreach (var layer in EnumUtils.GetFlagsExceptNone(SwitcherLayers))
 				for (int input = 1; input <= InputCount; input++)
 					m_SwitcherCache.SetSourceDetectedState(input, layer, true);
@@ -341,6 +344,23 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Controls
 		}
 
 		#endregion
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			addRow("Input Count", InputCount);
+			addRow("Output Count", OutputCount);
+			addRow("Supports Detect", SupportsSourceDetection);
+		}
 
 		#endregion
 
