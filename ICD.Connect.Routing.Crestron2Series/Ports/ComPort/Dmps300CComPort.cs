@@ -1,18 +1,34 @@
 ﻿using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.Protocol.Network.Tcp;
+using ICD.Connect.Protocol.Network.Ports.Tcp;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
+using ICD.Connect.Protocol.Settings;
 using ICD.Connect.Protocol.Utils;
 using ICD.Connect.Protocol.XSig;
 using ICD.Connect.Routing.Crestron2Series.Devices;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 {
 	public sealed class Dmps300CComPort : AbstractComPort<Dmps300CComPortSettings>
 	{
+		private static readonly ComSpec s_DefaultComSpec = new ComSpec
+		{
+			BaudRate = eComBaudRates.BaudRate9600,
+			NumberOfDataBits = eComDataBits.DataBits8,
+			ParityType = eComParityType.None,
+			NumberOfStopBits = eComStopBits.StopBits1,
+			ProtocolType = eComProtocolType.Rs232,
+			HardwareHandshake = eComHardwareHandshakeType.None,
+			SoftwareHandshake = eComSoftwareHandshakeType.None,
+			ReportCtsChanges = false,
+		};
+
+		private readonly IComSpecProperties m_ComSpecProperties;
 		private readonly AsyncTcpClient m_Client;
+
+		private readonly ComSpec m_ComSpec;
 
 		private IDmps300CComPortDevice m_Device;
 
@@ -23,6 +39,51 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		/// </summary>
 		public int Address { get; set; }
 
+		/// <summary>
+		/// Gets the Com Spec configuration properties.
+		/// </summary>
+		public override IComSpecProperties ComSpecProperties { get { return m_ComSpecProperties; } }
+
+		/// <summary>
+		/// Gets the baud rate.
+		/// </summary>
+		public override eComBaudRates BaudRate { get { return m_ComSpec.BaudRate; } }
+
+		/// <summary>
+		/// Gets the number of data bits.
+		/// </summary>
+		public override eComDataBits NumberOfDataBits { get { return m_ComSpec.NumberOfDataBits; } }
+
+		/// <summary>
+		/// Gets the parity type.
+		/// </summary>
+		public override eComParityType ParityType { get { return m_ComSpec.ParityType; } }
+
+		/// <summary>
+		/// Gets the number of stop bits.
+		/// </summary>
+		public override eComStopBits NumberOfStopBits { get { return m_ComSpec.NumberOfStopBits; } }
+
+		/// <summary>
+		/// Gets the protocol type.
+		/// </summary>
+		public override eComProtocolType ProtocolType { get { return m_ComSpec.ProtocolType; } }
+
+		/// <summary>
+		/// Gets the hardware handshake mode.
+		/// </summary>
+		public override eComHardwareHandshakeType HardwareHandshake { get { return m_ComSpec.HardwareHandshake; } }
+
+		/// <summary>
+		/// Gets the software handshake mode.
+		/// </summary>
+		public override eComSoftwareHandshakeType SoftwareHandshake { get { return m_ComSpec.SoftwareHandshake; } }
+
+		/// <summary>
+		/// Gets the report CTS changes mode.
+		/// </summary>
+		public override bool ReportCtsChanges { get { return m_ComSpec.ReportCtsChanges; } }
+
 		#endregion
 
 		/// <summary>
@@ -30,6 +91,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		/// </summary>
 		public Dmps300CComPort()
 		{
+			m_ComSpec = s_DefaultComSpec.Copy();
+
+			m_ComSpecProperties = new ComSpecProperties();
 			m_Client = new AsyncTcpClient();
 
 			Subscribe(m_Client);
@@ -55,7 +119,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		{
 			if (m_Device == null)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to connect - parent device is null", this);
+				Log(eSeverity.Error, "Unable to connect - parent device is null");
 				return;
 			}
 
@@ -82,23 +146,22 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 			return m_Client.Send(data);
 		}
 
-		public override void SetComPortSpec(eComBaudRates baudRate, eComDataBits numberOfDataBits, eComParityType parityType,
-		                                    eComStopBits numberOfStopBits, eComProtocolType protocolType,
-		                                    eComHardwareHandshakeType hardwareHandShake,
-		                                    eComSoftwareHandshakeType softwareHandshake,
-		                                    bool reportCtsChanges)
+		/// <summary>
+		/// Configures the ComPort for communication.
+		/// </summary>
+		/// <param name="comSpec"></param>
+		public override void SetComPortSpec(ComSpec comSpec)
 		{
 			if (m_Device == null)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to set comspec - parent device is null", this);
+				Log(eSeverity.Error, "Unable to set comspec - parent device is null");
 				return;
 			}
 
-			string spec = ComSpecUtils.AssembleComSpec(Address, baudRate, numberOfDataBits, parityType,
-			                                           numberOfStopBits, protocolType, hardwareHandShake,
-			                                           softwareHandshake, reportCtsChanges);
+			string spec = ComSpecUtils.AssembleComSpec(Address, comSpec);
 
-			m_Device.SendData(new SerialXSig(spec, m_Device.ComSpecJoin));
+			if (m_Device.SendData(new SerialXSig(spec, m_Device.ComSpecJoin)))
+				m_ComSpec.Copy(comSpec);
 		}
 
 		#endregion
@@ -139,6 +202,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		{
 			base.ClearSettingsFinal();
 
+			m_ComSpec.Copy(s_DefaultComSpec);
+
 			m_Device = null;
 			Address = 0;
 		}
@@ -166,6 +231,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 
 			m_Device = factory.GetOriginatorById<IDmps300CComPortDevice>(settings.Device);
 			Address = settings.Address;
+
+			ApplyConfiguration();
 		}
 
 		#endregion

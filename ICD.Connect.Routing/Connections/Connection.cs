@@ -6,7 +6,7 @@ using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Settings;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Originators;
 using Newtonsoft.Json;
 
 namespace ICD.Connect.Routing.Connections

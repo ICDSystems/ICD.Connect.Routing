@@ -1,4 +1,4 @@
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 {

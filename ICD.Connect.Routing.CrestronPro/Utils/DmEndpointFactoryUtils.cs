@@ -1,20 +1,20 @@
+﻿#if SIMPLSHARP
+using ICD.Connect.Settings;
 ﻿using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase;
 using ICD.Connect.Routing.CrestronPro.Receivers;
 using ICD.Connect.Routing.CrestronPro.Transmitters;
 using System;
-#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Receivers;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 using Crestron.SimplSharpPro.DM.Streaming;
-#endif
 using ICD.Common.Properties;
 using ICD.Connect.Misc.CrestronPro;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia;
-using ICD.Connect.Settings.Core;
+#endif
 
 namespace ICD.Connect.Routing.CrestronPro.Utils
 {

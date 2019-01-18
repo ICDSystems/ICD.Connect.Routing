@@ -9,9 +9,9 @@ using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
+using ICD.Connect.Settings.Originators;
 using ICD.Connect.Routing.Endpoints.Destinations;
 using ICD.Connect.Routing.Endpoints.Sources;
-using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.RoutingGraphs
 {

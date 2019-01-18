@@ -1,22 +1,31 @@
-﻿using System;
-using ICD.Common.Utils.EventArguments;
-using ICD.Connect.Protocol.Ports;
+﻿using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
+using ICD.Connect.Routing.Extron.Devices.Endpoints;
 
 namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 {
+	public delegate void PortInitializedCallback(IDtpCrosspointDevice device, int address, eDtpInputOuput inputOutput);
+
+	public delegate void PortComSpecCallback(IDtpCrosspointDevice device, int address, eDtpInputOuput inputOutput, ComSpec comSpec);
+
 	public interface IDtpCrosspointDevice : IExtronSwitcherDevice
 	{
-		event EventHandler<IntEventArgs> OnInputPortInitialized;
-		event EventHandler<IntEventArgs> OnOutputPortInitialized;
+		/// <summary>
+		/// Raised when a serial port is initialized.
+		/// </summary>
+		event PortInitializedCallback OnPortInitialized;
 
-		ISerialPort GetInputSerialInsertionPort(int input);
-		ISerialPort GetOutputSerialInsertionPort(int output);
+		/// <summary>
+		/// Raised when a serial port comspec changes.
+		/// </summary>
+		event PortComSpecCallback OnPortComSpecChanged;
 
-		void SetTxComPortSpec(int input, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
-								 eComStopBits stopBits);
+		int NumberOfDtpInputPorts { get; }
+		int NumberOfDtpOutputPorts { get; }
 
-		void SetRxComPortSpec(int output, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
-								  eComStopBits stopBits);
+		ISerialPort GetSerialInsertionPort(int address, eDtpInputOuput inputOutput);
+
+		void SetComPortSpec(int address, eDtpInputOuput inputOutput, eComBaudRates baudRate, eComDataBits dataBits,
+		                    eComParityType parityType, eComStopBits stopBits);
 	}
 }

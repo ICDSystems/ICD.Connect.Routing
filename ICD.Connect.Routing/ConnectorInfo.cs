@@ -97,7 +97,7 @@ namespace ICD.Connect.Routing
 		}
 
 		/// <summary>
-		///     Gets the hashcode for this instance.
+		/// Gets the hashcode for this instance.
 		/// </summary>
 		/// <returns></returns>
 		public override int GetHashCode()

@@ -5,17 +5,19 @@ using System.Text;
 using System.Text.RegularExpressions;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
-using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices.Controls;
-using ICD.Connect.Protocol.Network.Tcp;
+using ICD.Connect.Protocol.Network.Ports.Tcp;
+using ICD.Connect.Protocol.Network.Settings;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
+using ICD.Connect.Protocol.Settings;
 using ICD.Connect.Protocol.Utils;
-using ICD.Connect.Routing.Extron.Controls;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Routing.Extron.Devices.Endpoints;
+using ICD.Connect.Settings;
+using ICD.Connect.Settings.Cores;
 
 namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 {
@@ -24,22 +26,34 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 	{
 		private const string PORT_INITIALIZED_REGEX = @"Lrpt(I|O)(\d{1,2})\*((?:0|1){1,2})";
 
-		/// <summary>
-		/// Raised when an input serial port is initialized.
-		/// </summary>
-		public event EventHandler<IntEventArgs> OnInputPortInitialized;
+		private const string PORT_COMSPEC_FEEDBACK_REGEX = @"Cpn(?'number'\d+) Ccp(?'baud'\d+),(?'parity'\w),(?'databits'\d),(?'stopbits'\d)";
 
 		/// <summary>
-		/// Raised when an output serial port is initialized.
+		/// Raised when a serial port is initialized.
 		/// </summary>
-		public event EventHandler<IntEventArgs> OnOutputPortInitialized;
+		public event PortInitializedCallback OnPortInitialized;
 
+		/// <summary>
+		/// Raised when a serial port comspec changes.
+		/// </summary>
+		public event PortComSpecCallback OnPortComSpecChanged;
+
+		/// <summary>
+		/// Maps input address to port originator id.
+		/// </summary>
 		private readonly Dictionary<int, int> m_DtpInputPorts;
-		private readonly SafeCriticalSection m_DtpInputPortsSection;
+
+		/// <summary>
+		/// Maps output address to port originator id.
+		/// </summary>
 		private readonly Dictionary<int, int> m_DtpOutputPorts;
-		private readonly SafeCriticalSection m_DtpOutputPortsSection;
+
+		private readonly SafeCriticalSection m_DtpPortsSection;
 
 		private readonly List<IDeviceControl> m_LoadedControls;
+
+		private readonly NetworkProperties m_NetworkProperties;
+		private readonly ComSpecProperties m_ComSpecProperties;
 
 		private string m_ConfigPath;
 		private ushort m_StartingComPort = 2000;
@@ -48,9 +62,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 
 		public string Address { get; private set; }
 
-		protected abstract int NumberOfDtpInputPorts { get; }
+		public abstract int NumberOfDtpInputPorts { get; }
 
-		protected abstract int NumberOfDtpOutputPorts { get; }
+		public abstract int NumberOfDtpOutputPorts { get; }
 
 		#endregion
 
@@ -59,10 +73,12 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 		/// </summary>
 		protected AbstractDtpCrosspointDevice()
 		{
+			m_NetworkProperties = new NetworkProperties();
+			m_ComSpecProperties = new ComSpecProperties();
+
 			m_DtpInputPorts = new Dictionary<int, int>();
 			m_DtpOutputPorts = new Dictionary<int, int>();
-			m_DtpInputPortsSection = new SafeCriticalSection();
-			m_DtpOutputPortsSection = new SafeCriticalSection();
+			m_DtpPortsSection = new SafeCriticalSection();
 
 			m_LoadedControls = new List<IDeviceControl>();
 		}
@@ -72,8 +88,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
-			OnInputPortInitialized = null;
-			OnOutputPortInitialized = null;
+			OnPortInitialized = null;
+			OnPortComSpecChanged = null;
 
 			DisposeLoadedControls();
 
@@ -82,69 +98,53 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 
 		#region Methods
 
-		public ISerialPort GetInputSerialInsertionPort(int input)
+		public ISerialPort GetSerialInsertionPort(int address, eDtpInputOuput inputOutput)
 		{
-			m_DtpInputPortsSection.Enter();
+			m_DtpPortsSection.Enter();
 			try
 			{
-				if (m_DtpInputPorts.ContainsKey(input))
-					return ServiceProvider
-						.GetService<ICore>()
-						.Originators
-						.GetChild<ISerialPort>(m_DtpInputPorts[input]);
+				switch (inputOutput)
+				{
+					case eDtpInputOuput.Input:
+						if (m_DtpInputPorts.ContainsKey(address))
+							return ServiceProvider
+								.GetService<ICore>()
+								.Originators
+								.GetChild<ISerialPort>(m_DtpInputPorts[address]);
+						break;
+
+					case eDtpInputOuput.Output:
+						if (m_DtpOutputPorts.ContainsKey(address))
+							return ServiceProvider
+								.GetService<ICore>()
+								.Originators
+								.GetChild<ISerialPort>(m_DtpOutputPorts[address]);
+						break;
+
+					default:
+						throw new ArgumentOutOfRangeException("inputOutput");
+				}
 			}
 			catch (Exception ex)
 			{
-				Log(eSeverity.Error, "Could not get input insertion port - {0}", ex.Message);
+				Log(eSeverity.Error, "Could not get insertion port - {0}", ex.Message);
 			}
 			finally
 			{
-				m_DtpInputPortsSection.Leave();
+				m_DtpPortsSection.Leave();
 			}
 
-			int? portOffset = GetPortOffsetFromInput(input);
+			int? portOffset = DtpUtils.GetPortOffsetFromSwitcher(this, address, inputOutput);
 			return GetTcpClientForPortOffset(portOffset);
 		}
 
-		public ISerialPort GetOutputSerialInsertionPort(int output)
+		public void SetComPortSpec(int address, eDtpInputOuput inputOutput, eComBaudRates baudRate, eComDataBits dataBits,
+		                           eComParityType parityType, eComStopBits stopBits)
 		{
-			m_DtpOutputPortsSection.Enter();
-			try
-			{
-				if (m_DtpOutputPorts.ContainsKey(output))
-					return ServiceProvider
-						.GetService<ICore>()
-						.Originators
-						.GetChild<ISerialPort>(m_DtpOutputPorts[output]);
-			}
-			catch (Exception ex)
-			{
-				Log(eSeverity.Error, "Could not get output insertion port - {0}", ex.Message);
-			}
-			finally
-			{
-				m_DtpOutputPortsSection.Leave();
-			}
-			int? portOffset = GetPortOffsetFromOutput(output);
-			return GetTcpClientForPortOffset(portOffset);
-		}
-
-		public void SetTxComPortSpec(int input, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
-									 eComStopBits stopBits)
-		{
-			int? portOffset = GetPortOffsetFromInput(input);
+			int? portOffset = DtpUtils.GetPortOffsetFromSwitcher(this, address, inputOutput);
 			if (portOffset == null)
 				return;
 
-			SetComPortSpec(portOffset.Value, baudRate, dataBits, parityType, stopBits);
-		}
-
-		public void SetRxComPortSpec(int output, eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType,
-									 eComStopBits stopBits)
-		{
-			int? portOffset = GetPortOffsetFromOutput(output);
-			if (portOffset == null)
-				return;
 			SetComPortSpec(portOffset.Value, baudRate, dataBits, parityType, stopBits);
 		}
 
@@ -195,69 +195,11 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			eComStopBits stopBits)
 		{
 			SendCommand("W{0}*{1},{2},{3},{4}CP",
-				portOffset + 1,
-				ComSpecUtils.BaudRateToRate(baudRate),
-				GetParityChar(parityType),
-				(ushort)dataBits,
-				(ushort)stopBits);
-		}
-
-		private char GetParityChar(eComParityType parityType)
-		{
-			switch (parityType)
-			{
-				case eComParityType.ComspecParityEven:
-					return 'e';
-				case eComParityType.ComspecParityOdd:
-					return 'o';
-				case eComParityType.ComspecParityZeroStick:
-					return 's';
-				case eComParityType.ComspecParityNone:
-					return 'n';
-
-				default:
-					throw new ArgumentOutOfRangeException("parityType");
-			}
-		}
-
-		/// <summary>
-		/// Get the ComPort offset based on switcher input.
-		/// Port offsets are 1 and 2 for the last two inputs respectively.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		private int? GetPortOffsetFromInput(int input)
-		{
-			int portOffset = input - GetNumberOfInputs() + NumberOfDtpInputPorts;
-			if (portOffset <= 0)
-				return null;
-			return portOffset;
-		}
-
-		/// <summary>
-		/// Get the ComPort offset based on switcher output.
-		/// Port offsets are 3 and 4 for the last two outputs respectively.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <returns></returns>
-		private int? GetPortOffsetFromOutput(int output)
-		{
-			int portOffset = output - GetNumberOfOutputs() + (NumberOfDtpInputPorts + NumberOfDtpOutputPorts);
-			if (portOffset <= NumberOfDtpInputPorts)
-				return null;
-			return portOffset;
-		}
-
-		private int GetNumberOfInputs()
-		{
-			var switcherControl = Controls.GetControl<IExtronSwitcherControl>(0);
-			return switcherControl.NumberOfInputs;
-		}
-
-		private int GetNumberOfOutputs()
-		{
-			var switcherControl = Controls.GetControl<IExtronSwitcherControl>(0);
-			return switcherControl.NumberOfOutputs;
+			            portOffset + 1,
+			            ComSpecUtils.BaudRateToRate(baudRate),
+						DtpUtils.GetParityChar(parityType),
+			            (ushort)dataBits,
+			            (ushort)stopBits);
 		}
 
 		private ISerialPort GetTcpClientForPortOffset(int? portOffset)
@@ -278,9 +220,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 
 			GetStartingComPort();
 
-			var inputs = GetNumberOfInputs();
+			// Enable ethernet passthrough on the input ComPorts
+			var inputs = DtpUtils.GetNumberOfSwitcherInputs(this);
 			var startingDtpInput = inputs - NumberOfDtpInputPorts + 1;
-			m_DtpInputPortsSection.Execute(() =>
+			m_DtpPortsSection.Execute(() =>
 			{
 				foreach (var input in Enumerable.Range(startingDtpInput, NumberOfDtpInputPorts))
 				{
@@ -289,9 +232,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 				}
 			});
 
-			var outputs = GetNumberOfOutputs();
+			// Enable ethernet passthrough on the output ComPorts
+			var outputs = DtpUtils.GetNumberOfSwitcherOutputs(this);
 			var startingDtpOutput = outputs - NumberOfDtpOutputPorts + 1;
-			m_DtpOutputPortsSection.Execute(() =>
+			m_DtpPortsSection.Execute(() =>
 			{
 				foreach (var output in Enumerable.Range(startingDtpOutput, NumberOfDtpOutputPorts))
 				{
@@ -320,18 +264,48 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			base.BufferOnCompletedSerial(sender, args);
 
 			if (args.Data.StartsWith("Pmd"))
-			{
 				m_StartingComPort = ushort.Parse(args.Data.Substring(3));
-			}
 
-			Match match = Regex.Match(args.Data, PORT_INITIALIZED_REGEX);
-			if (match.Success)
+			Match match;
+
+			if (RegexUtils.Matches(args.Data, PORT_INITIALIZED_REGEX, out match))
 			{
 				int address = int.Parse(match.Groups[2].Value);
-				if (match.Groups[1].Value == "I")
-					OnInputPortInitialized.Raise(this, new IntEventArgs(address));
-				if (match.Groups[1].Value == "O")
-					OnOutputPortInitialized.Raise(this, new IntEventArgs(address));
+				PortInitializedCallback handler = OnPortInitialized;
+
+				if (handler != null)
+				{
+					if (match.Groups[1].Value == "I")
+						handler(this, address, eDtpInputOuput.Input);
+					if (match.Groups[1].Value == "O")
+						handler(this, address, eDtpInputOuput.Output);
+				}
+			}
+			else if (RegexUtils.Matches(args.Data, PORT_COMSPEC_FEEDBACK_REGEX, out match))
+			{
+				int number = int.Parse(match.Groups["number"].Value);
+
+				eDtpInputOuput inputOutput;
+				int? address = DtpUtils.GetSwitcherAddressFromPortOffset(this, number, out inputOutput);
+				if (address == null)
+					return;
+				
+				int baud = int.Parse(match.Groups["baud"].Value);
+				char parity = char.ToLower(match.Groups["parity"].Value[0]);
+				int dataBits = int.Parse(match.Groups["databits"].Value);
+				int stopBits = int.Parse(match.Groups["stopbits"].Value);
+
+				ComSpec spec = new ComSpec
+				{
+					BaudRate = ComSpecUtils.BaudRateFromRate(baud),
+					ParityType = DtpUtils.FromParityChar(parity),
+					NumberOfDataBits = ComSpecUtils.DataBitsFromCount(dataBits),
+					NumberOfStopBits = ComSpecUtils.StopBitsFromCount(stopBits)
+				};
+
+				var handler = OnPortComSpecChanged;
+				if (handler != null)
+					handler(this, address.Value, inputOutput, spec);
 			}
 		}
 
@@ -346,8 +320,8 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			Address = null;
 			m_ConfigPath = null;
 
-			m_DtpInputPortsSection.Execute(() => m_DtpInputPorts.Clear());
-			m_DtpOutputPortsSection.Execute(() => m_DtpOutputPorts.Clear());
+			m_DtpPortsSection.Execute(() => m_DtpInputPorts.Clear());
+			m_DtpPortsSection.Execute(() => m_DtpOutputPorts.Clear());
 		}
 
 		protected override void CopySettingsFinal(TSettings settings)
@@ -357,12 +331,12 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			settings.Address = Address;
 			settings.Config = m_ConfigPath;
 
-			m_DtpInputPortsSection.Execute(() =>
-			                               settings.DtpInputPorts = m_DtpInputPorts
-				                                                        .Select(pair => new KeyValuePair<int, int>(pair.Key, pair.Value)));
-			m_DtpOutputPortsSection.Execute(() =>
-			                                settings.DtpOutputPorts = m_DtpOutputPorts
-				                                                          .Select(pair => new KeyValuePair<int, int>(pair.Key, pair.Value)));
+			m_DtpPortsSection.Execute(() =>
+			                          settings.DtpInputPorts = m_DtpInputPorts
+				                                                   .Select(pair => new KeyValuePair<int, int>(pair.Key, pair.Value)));
+			m_DtpPortsSection.Execute(() =>
+			                          settings.DtpOutputPorts = m_DtpOutputPorts
+				                                                    .Select(pair => new KeyValuePair<int, int>(pair.Key, pair.Value)));
 		}
 
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
@@ -374,13 +348,13 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			if (!string.IsNullOrEmpty(settings.Config))
 				LoadControls(settings.Config);
 
-			m_DtpInputPortsSection.Enter();
+			m_DtpPortsSection.Enter();
 			try
 			{
 				m_DtpInputPorts.Clear();
 				foreach (var pair in settings.DtpInputPorts)
 				{
-					if (GetPortOffsetFromInput(pair.Key) == null)
+					if (DtpUtils.GetPortOffsetFromSwitcher(this, pair.Key, eDtpInputOuput.Input) == null)
 					{
 						Log(eSeverity.Error, "{0} is not a valid DTP Input address", pair.Key);
 						continue;
@@ -391,16 +365,16 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			}
 			finally
 			{
-				m_DtpInputPortsSection.Leave();
+				m_DtpPortsSection.Leave();
 			}
 
-			m_DtpOutputPortsSection.Enter();
+			m_DtpPortsSection.Enter();
 			try
 			{
 				m_DtpOutputPorts.Clear();
 				foreach (var pair in settings.DtpOutputPorts)
 				{
-					if (GetPortOffsetFromOutput(pair.Key) == null)
+					if (DtpUtils.GetPortOffsetFromSwitcher(this, pair.Key, eDtpInputOuput.Output) == null)
 					{
 						Log(eSeverity.Error, "{0} is not a valid DTP Output address", pair.Key);
 						continue;
@@ -411,7 +385,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			}
 			finally
 			{
-				m_DtpOutputPortsSection.Leave();
+				m_DtpPortsSection.Leave();
 			}
 		}
 

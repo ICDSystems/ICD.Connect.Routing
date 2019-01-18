@@ -11,7 +11,7 @@ using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;

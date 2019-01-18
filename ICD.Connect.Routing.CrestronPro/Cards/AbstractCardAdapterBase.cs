@@ -2,8 +2,8 @@
 using ICD.Common.Utils.Services;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia;
-using ICD.Connect.Settings;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings.Cores;
+using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards
 {

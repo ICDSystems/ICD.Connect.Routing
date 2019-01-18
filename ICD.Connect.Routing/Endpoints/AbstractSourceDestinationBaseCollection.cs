@@ -5,7 +5,7 @@ using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Comparers;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Settings;
+using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Routing.Endpoints
 {

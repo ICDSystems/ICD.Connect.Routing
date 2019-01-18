@@ -4,10 +4,13 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint.DtpCrosspoi
 {
 	public sealed class DtpCrosspoint84Device : AbstractDtpCrosspointDevice<DtpCrosspoint84Settings>
 	{
-		protected override int NumberOfDtpInputPorts { get { return 2; } }
+		public override int NumberOfDtpInputPorts { get { return 2; } }
 
-		protected override int NumberOfDtpOutputPorts { get { return 2; } }
+		public override int NumberOfDtpOutputPorts { get { return 2; } }
 
+		/// <summary>
+		/// Constructor.
+		/// </summary>
 		public DtpCrosspoint84Device()
 		{
 			Controls.Add(new ExtronSwitcherControl(this, 0, 8, 4, true));

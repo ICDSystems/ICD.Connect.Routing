@@ -1,9 +1,9 @@
 ﻿using System;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
+using ICD.Connect.Settings;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Routing.Devices;
-using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;

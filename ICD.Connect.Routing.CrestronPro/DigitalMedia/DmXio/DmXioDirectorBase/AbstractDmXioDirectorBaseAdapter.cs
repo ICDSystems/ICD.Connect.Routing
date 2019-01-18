@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Settings;
+#if SIMPLSHARP
 using System;
 using Crestron.SimplSharpPro;
 using ICD.Common.Properties;
@@ -7,7 +8,6 @@ using ICD.Common.Utils.Services.Logging;
 #endif
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 {
