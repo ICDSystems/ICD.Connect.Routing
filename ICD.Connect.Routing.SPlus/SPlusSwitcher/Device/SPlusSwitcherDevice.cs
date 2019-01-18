@@ -4,7 +4,7 @@ using ICD.Connect.Devices.Simpl;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.Controls;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.EventArgs;
-using ICD.Connect.Settings.Core;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 {
