@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Connect.Misc.CrestronPro.Devices;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -204,6 +205,35 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 				return Transmitter.IROutputPorts[(uint)address];
 
 			return base.GetIrOutputPort(address);
+		}
+
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="io"></param>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override Cec GetCecPort(eInputOuptut io, int address)
+		{
+			if (Transmitter == null)
+				throw new InvalidOperationException("No DmTx instantiated");
+
+			if (io == eInputOuptut.Input)
+			{
+				switch (address)
+				{
+					case 1:
+						return Transmitter.HdmiInputs[1].StreamCec;
+					case 2:
+						return Transmitter.HdmiInputs[2].StreamCec;
+				}
+			}
+			if (io == eInputOuptut.Output && address == 1)
+				return Transmitter.HdmiOutput.StreamCec;
+
+
+			string message = string.Format("No CecPort at address {1}:{2} for device {0}", this, io, address);
+			throw new InvalidOperationException(message);
 		}
 
 		#endregion

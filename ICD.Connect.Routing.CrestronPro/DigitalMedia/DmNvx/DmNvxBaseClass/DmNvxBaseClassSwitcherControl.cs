@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
+using ICD.Common.Utils.Services.Logging;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -156,6 +157,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 				m_ServerUrl = value;
 
+				Log(eSeverity.Informational, "ServerUrl set to {0}", m_ServerUrl);
+
 				OnServerUrlChange.Raise(this, new StringEventArgs(m_ServerUrl));
 			}
 		}
@@ -213,6 +216,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 				m_LastKnownMulticastAddress = value;
 
+				Log(eSeverity.Informational, "Last-known MulticastAddress set to {0}", m_LastKnownMulticastAddress);
+
 				OnLastKnownMulticastAddressChange.Raise(this, new StringEventArgs(m_LastKnownMulticastAddress));
 			}
 		}
@@ -229,6 +234,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					return;
 
 				m_LastKnownSecondaryAudioMulticastAddress = value;
+
+				Log(eSeverity.Informational, "Last-known SecondaryAudio MulticastAddress set to {0}", m_LastKnownSecondaryAudioMulticastAddress);
 
 				OnLastKnownSecondaryAudioMulticastAddressChange.Raise(this, new StringEventArgs(m_LastKnownSecondaryAudioMulticastAddress));
 			}

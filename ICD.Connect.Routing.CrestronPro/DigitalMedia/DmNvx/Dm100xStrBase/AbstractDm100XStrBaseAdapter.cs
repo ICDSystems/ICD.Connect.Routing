@@ -1,7 +1,10 @@
 ﻿using System;
+using Crestron.SimplSharpPro.DM;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices;
+using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Misc.CrestronPro.Ports.CecPort;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Settings;
 #if SIMPLSHARP
@@ -180,6 +183,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 			string message = string.Format("{0} has no {1}", this, typeof(DigitalInput).Name);
 			throw new NotSupportedException(message);
 		}
+
+		public abstract Cec GetCecPort(eInputOuptut io, int address);
 #endif
 
 		#endregion
