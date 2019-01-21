@@ -1,5 +1,6 @@
 ﻿using System;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
@@ -276,6 +277,18 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		public DigitalInput GetDigitalInputPort(int address)
 		{
 			string message = string.Format("{0} has no {1}", this, typeof(DigitalInput).Name);
+			throw new ArgumentOutOfRangeException("address", message);
+		}
+
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="io"></param>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public virtual Cec GetCecPort(eInputOuptut io, int address)
+		{
+			string message = string.Format("{0} has no {1}", this, typeof(Cec).Name);
 			throw new ArgumentOutOfRangeException("address", message);
 		}
 #endif

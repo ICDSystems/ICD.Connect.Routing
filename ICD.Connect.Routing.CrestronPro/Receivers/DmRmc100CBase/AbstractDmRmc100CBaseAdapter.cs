@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DM;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100CBase
@@ -79,6 +81,24 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100CBase
 				return Receiver.IROutputPorts[(uint)address];
 
 			return base.GetIrOutputPort(address);
+		}
+
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="io"></param>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override Cec GetCecPort(eInputOuptut io, int address)
+		{
+			if (Receiver == null)
+				throw new InvalidOperationException("No DmRx instantiated");
+
+			if (io == eInputOuptut.Output && address == 1)
+				return Receiver.StreamCec;
+
+			string message = string.Format("No CecPort at address {1}:{2} for device {0}", this, io, address);
+			throw new InvalidOperationException(message);
 		}
 #endif
 
