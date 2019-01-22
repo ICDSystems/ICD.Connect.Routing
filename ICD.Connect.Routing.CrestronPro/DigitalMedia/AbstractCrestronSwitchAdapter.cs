@@ -154,6 +154,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			if (switcher == null)
 				return;
+
 			if (switcher.EnableUSBBreakaway.Supported)
 				switcher.EnableUSBBreakaway.BoolValue = true;
 			if (switcher.VideoEnter.Supported)

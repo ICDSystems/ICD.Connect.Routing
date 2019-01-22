@@ -5,4 +5,3 @@ using System.Reflection;
 [assembly: AssemblyProduct("ICD.Connect.Routing.Crestron2Series")]
 [assembly: AssemblyCopyright("Copyright © ICD Systems 2018")]
 [assembly: AssemblyVersion("14.0.0.0")]
-

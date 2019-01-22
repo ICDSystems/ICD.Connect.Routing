@@ -608,8 +608,22 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			Subscribe(m_Streamer);
 
+			ConfigureStreamer();
+
 			UpdateAudioRouting();
 			UpdateVideoRouting();
+		}
+
+		/// <summary>
+		/// Override to control how the assigned streamer behaves.
+		/// </summary>
+		private void ConfigureStreamer()
+		{
+			if (m_NvxControl == null)
+				return;
+
+			m_NvxControl.EnableAutomaticInitiation();
+			m_NvxControl.DisableAutomaticInputRouting();
 		}
 
 		/// <summary>
@@ -688,6 +702,12 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				case DMInputEventIds.ActiveVideoSourceEventId:
 					UpdateVideoRouting();
 					break;
+
+				case DMInputEventIds.AutomaticInitiationDisabledEventId:
+				case DMInputEventIds.AutomaticInputRoutingEnabledEventId:
+					ConfigureStreamer();
+					break;
+
 				/*
 				case DMInputEventIds.ElapsedSecEventId:
 					break;
