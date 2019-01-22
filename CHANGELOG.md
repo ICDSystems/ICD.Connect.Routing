@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Forcing NVX to use auto-initiation, disabling auto routing
+
 ## [13.1.0] - 2019-01-02
 ### Added
  - Added Volume and Microphone controls for DMPS3 control systems

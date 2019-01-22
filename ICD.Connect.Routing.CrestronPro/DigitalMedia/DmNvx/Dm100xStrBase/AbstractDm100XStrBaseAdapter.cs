@@ -114,7 +114,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 
 			UpdateCachedOnlineStatus();
 		}
-
 #endif
 
 		#endregion
