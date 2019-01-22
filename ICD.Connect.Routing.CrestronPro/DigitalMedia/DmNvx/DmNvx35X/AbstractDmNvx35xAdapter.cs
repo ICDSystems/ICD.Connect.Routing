@@ -16,6 +16,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvx35X
 #endif
 		where TSettings : IDmNvx35XAdapterSettings, new()
 	{
+#if SIMPLSHARP
 		/// <summary>
 		/// Gets the port at the given address.
 		/// </summary>
@@ -42,5 +43,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvx35X
 			string message = string.Format("No CecPort at address {1}:{2} for device {0}", this, io, address);
 			throw new InvalidOperationException(message);
 		}
+#endif
 	}
 }
