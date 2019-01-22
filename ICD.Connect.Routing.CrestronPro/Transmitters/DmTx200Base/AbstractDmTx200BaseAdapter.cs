@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Connect.Misc.CrestronPro.Devices;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -96,6 +97,24 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 				return;
 
 			transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
+		}
+
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="io"></param>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override Cec GetCecPort(eInputOuptut io, int address)
+		{
+			if (Transmitter == null)
+				throw new InvalidOperationException("No DmTx instantiated");
+
+			if (io == eInputOuptut.Input && address == 1)
+				return Transmitter.HdmiInput.StreamCec;
+
+			string message = string.Format("No CecPort at address {1}:{2} for device {0}", this, io, address);
+			throw new InvalidOperationException(message);
 		}
 #endif
 

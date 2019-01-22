@@ -226,6 +226,19 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		}
 
 		/// <summary>
+		/// Gets the port at the given address.
+		/// Todo: Implement this for DMPS control systems
+		/// </summary>
+		/// <param name="io"></param>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public Cec GetCecPort(eInputOuptut io, int address)
+		{
+			string message = string.Format("{0} has no {1}", this, typeof(Cec).Name);
+			throw new ArgumentOutOfRangeException("address", message);
+		}
+
+		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
 		/// <param name="address"></param>
@@ -272,6 +285,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 			return ControlSystem.SwitcherOutputs[(uint)address] as DMOutput;
 		}
+
 #endif
 
 		#endregion
