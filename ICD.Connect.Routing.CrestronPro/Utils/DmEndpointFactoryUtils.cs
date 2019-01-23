@@ -206,8 +206,8 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 				throw new ArgumentNullException("adapter");
 
 			// Simple case: instantiate as an ethernet endpoint.
-			if (settings.EthernetId.HasValue)
-				return adapter.InstantiateStreamer(settings.EthernetId.Value, ProgramInfo.ControlSystem);
+			if (settings.Ipid.HasValue)
+				return adapter.InstantiateStreamer(settings.Ipid.Value, ProgramInfo.ControlSystem);
 
 			// Harder case: instantiate as part of an XIO Director domain.
 			if (!settings.EndpointId.HasValue)

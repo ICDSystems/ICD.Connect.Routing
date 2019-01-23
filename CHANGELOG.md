@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - DM-RMC-200-S DM 8G Fiber Receiver
  - CEC Port support for all DM endpoints
 
+### Changed
+ - DM-NVX changed "EthernetId" to "IPID" in settings
+
 ## [14.0.0] - 2019-01-10
 ### Added
  - Added port configuration features to routing devices
