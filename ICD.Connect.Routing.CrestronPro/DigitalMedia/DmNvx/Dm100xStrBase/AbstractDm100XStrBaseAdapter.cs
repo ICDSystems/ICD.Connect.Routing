@@ -3,7 +3,6 @@ using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
-using ICD.Connect.Misc.CrestronPro.Ports.CecPort;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Settings;
 #if SIMPLSHARP
