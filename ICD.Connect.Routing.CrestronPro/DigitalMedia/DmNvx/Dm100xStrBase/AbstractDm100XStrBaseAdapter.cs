@@ -198,9 +198,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 			base.CopySettingsFinal(settings);
 
 #if SIMPLSHARP
-			settings.EthernetId = Streamer == null ? (byte)0 : (byte)Streamer.ID;
+			settings.Ipid = Streamer == null ? (byte)0 : (byte)Streamer.ID;
 #else
-            settings.EthernetId = 0;
+			settings.Ipid = 0;
 #endif
 		}
 
