@@ -1,3 +1,4 @@
+using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
@@ -8,12 +9,18 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 	public abstract class AbstractDm100XStrBaseAdapterSettings : AbstractDeviceSettings, IDm100XStrBaseAdapterSettings
 	{
 		private const string IPID_ELEMENT = "IPID";
+		private const string ETHERNET_ID_ELEMENT = "EthernetId"; // Backwards compatibility
 		private const string ENDPOINT_ID_ELEMENT = "EndpointId";
 		private const string DIRECTOR_ID_ELEMENT = "DirectorId";
 		private const string DOMAIN_ID_ELEMENT = "DomainId";
 
 		[CrestronByteSettingsProperty]
 		public byte? Ipid { get; set; }
+
+		[UsedImplicitly]
+		[HiddenSettingsProperty]
+		[CrestronByteSettingsProperty]
+		private byte? EthernetId { get { return Ipid; } set { Ipid = value; } }
 
 		public uint? EndpointId { get; set; }
 
@@ -48,7 +55,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 		{
 			base.ParseXml(xml);
 
-			Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT);
+			Ipid = XmlUtils.TryReadChildElementContentAsByte(xml, IPID_ELEMENT) ??
+			       XmlUtils.TryReadChildElementContentAsByte(xml, ETHERNET_ID_ELEMENT);
 			EndpointId = XmlUtils.TryReadChildElementContentAsUInt(xml, ENDPOINT_ID_ELEMENT);
 			DirectorId = XmlUtils.TryReadChildElementContentAsInt(xml, DIRECTOR_ID_ELEMENT);
 			DomainId = XmlUtils.TryReadChildElementContentAsUInt(xml, DOMAIN_ID_ELEMENT);
