@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - DMC-SO-HD DM 8G Fiber Output Card
  - DM-RMC-200-S DM 8G Fiber Receiver
  - CEC Port support for all DM endpoints
+ - CEC Port support for DMC-HDO
 
 ### Changed
  - DM-NVX changed "EthernetId" to "IPID" in settings
