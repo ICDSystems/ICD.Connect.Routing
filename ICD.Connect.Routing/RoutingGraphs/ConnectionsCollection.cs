@@ -22,17 +22,17 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Maps Control -> Address -> outgoing connections.
 		/// </summary>
-		private readonly IcdOrderedDictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> m_OutputConnectionLookup;
+		private readonly Dictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> m_OutputConnectionLookup;
 
 		/// <summary>
 		/// Maps Control -> Address -> incoming connections.
 		/// </summary>
-		private readonly IcdOrderedDictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> m_InputConnectionLookup;
+		private readonly Dictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> m_InputConnectionLookup;
 
 		/// <summary>
 		/// Maps Source + Final Destination + Type -> Connection.
 		/// </summary>
-		private readonly IcdOrderedDictionary<FilteredConnectionLookupKey, Connection> m_FilteredConnectionLookup;
+		private readonly Dictionary<FilteredConnectionLookupKey, Connection> m_FilteredConnectionLookup;
 
 		private readonly RoutingGraph m_RoutingGraph;
 
@@ -44,9 +44,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		{
 			m_RoutingGraph = routingGraph;
 
-			m_OutputConnectionLookup = new IcdOrderedDictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>>();
-			m_InputConnectionLookup = new IcdOrderedDictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>>();
-			m_FilteredConnectionLookup = new IcdOrderedDictionary<FilteredConnectionLookupKey, Connection>();
+			m_OutputConnectionLookup = new Dictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>>();
+			m_InputConnectionLookup = new Dictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>>();
+			m_FilteredConnectionLookup = new Dictionary<FilteredConnectionLookupKey, Connection>();
 
 			m_ConnectionsSection = new SafeCriticalSection();
 		}
@@ -650,19 +650,29 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				foreach (Connection child in GetChildren())
 				{
+					// Build the source cache
 					DeviceControlInfo sourceInfo = new DeviceControlInfo(child.Source.Device, child.Source.Control);
-					DeviceControlInfo destinationInfo = new DeviceControlInfo(child.Destination.Device,
-					                                                          child.Destination.Control);
 
-					// Add device controls to the maps
-					if (!m_OutputConnectionLookup.ContainsKey(sourceInfo))
-						m_OutputConnectionLookup.Add(sourceInfo, new IcdOrderedDictionary<int, Connection>());
-					if (!m_InputConnectionLookup.ContainsKey(destinationInfo))
-						m_InputConnectionLookup.Add(destinationInfo, new IcdOrderedDictionary<int, Connection>());
+					IcdOrderedDictionary<int, Connection> sourceAddressToConnection;
+					if (!m_OutputConnectionLookup.TryGetValue(sourceInfo, out sourceAddressToConnection))
+					{
+						sourceAddressToConnection = new IcdOrderedDictionary<int, Connection>();
+						m_OutputConnectionLookup.Add(sourceInfo, sourceAddressToConnection);
+					}
 
-					// Add connections to the maps
-					m_OutputConnectionLookup[sourceInfo][child.Source.Address] = child;
-					m_InputConnectionLookup[destinationInfo][child.Destination.Address] = child;
+					sourceAddressToConnection.Add(child.Source.Address, child);
+
+					// Build the destination cache
+					DeviceControlInfo destinationInfo = new DeviceControlInfo(child.Destination.Device, child.Destination.Control);
+
+					IcdOrderedDictionary<int, Connection> destinationAddressToConnection;
+					if (!m_InputConnectionLookup.TryGetValue(destinationInfo, out destinationAddressToConnection))
+					{
+						destinationAddressToConnection = new IcdOrderedDictionary<int, Connection>();
+						m_InputConnectionLookup.Add(destinationInfo, destinationAddressToConnection);
+					}
+
+					destinationAddressToConnection.Add(child.Destination.Address, child);
 				}
 
 				RebuildFilteredConnectionsMap();
@@ -686,30 +696,18 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				Connection[] connections = GetChildren().ToArray();
 
-				// Perform the pathfinding
-				foreach (EndpointInfo source in connections.Select(c => c.Source).Distinct())
+				foreach (Connection outputConnection in connections.Distinct(c => c.Source))
 				{
-					Connection outputConnection = GetOutputConnection(source);
-					if (outputConnection == null)
-						continue;
-
-					foreach (EndpointInfo destination in connections.Select(d => d.Destination).Distinct())
+					foreach (Connection inputConnection in connections.Distinct(d => d.Destination))
 					{
-						Connection inputConnection = GetInputConnection(destination);
-						if (inputConnection == null)
-							continue;
-
 						eConnectionType type =
 							EnumUtils.GetFlagsIntersection(outputConnection.ConnectionType, inputConnection.ConnectionType);
 
 						foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 						{
-							// TODO - This is extremely lazy and inefficient
-							if (!RebuildFilteredConnectionsMapHasAnyPath(source, destination, flag))
-								continue;
-
-							FilteredConnectionLookupKey key = new FilteredConnectionLookupKey(source, destination, flag);
-							m_FilteredConnectionLookup[key] = outputConnection;
+							bool canPath = RebuildFilteredConnectionsMapHasAnyPath(outputConnection, inputConnection, flag);
+							FilteredConnectionLookupKey key = new FilteredConnectionLookupKey(outputConnection.Source, inputConnection.Destination, flag);
+							m_FilteredConnectionLookup.Add(key, canPath ? outputConnection : null);
 						}
 					}
 				}
@@ -723,47 +721,38 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Returns true if there is a connection path from the given source to the given destination.
 		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
+		/// <param name="outputConnection"></param>
+		/// <param name="inputConnection"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		private bool RebuildFilteredConnectionsMapHasAnyPath(EndpointInfo source, EndpointInfo destination,
+		private bool RebuildFilteredConnectionsMapHasAnyPath(Connection outputConnection, Connection inputConnection,
 		                                                     eConnectionType flag)
 		{
-			if (EnumUtils.HasMultipleFlags(flag))
-				throw new ArgumentException("Connection type has multiple flags", "flag");
-
-			Connection outputConnection = GetOutputConnection(source);
-			if (outputConnection == null)
-				return false;
-
-			Connection inputConnection = GetInputConnection(destination);
-			if (inputConnection == null)
-				return false;
-
-			return RecursionUtils.BreadthFirstSearch(outputConnection, inputConnection, c => GetChildren(c, flag));
+			return RecursionUtils.BreadthFirstSearch(outputConnection, inputConnection,
+			                                         c => RebuildFilteredConnectionsMapGetChildren(c, inputConnection, flag));
 		}
 
 		/// <summary>
 		/// Given an input connection returns the connected output connections.
 		/// </summary>
 		/// <param name="inputConnection"></param>
+		/// <param name="finalInputConnection"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		private IEnumerable<Connection> GetChildren(Connection inputConnection, eConnectionType flag)
+		private IEnumerable<Connection> RebuildFilteredConnectionsMapGetChildren(Connection inputConnection, Connection finalInputConnection, eConnectionType flag)
 		{
-			if (inputConnection == null)
-				throw new ArgumentNullException("inputConnection");
-
-			if (EnumUtils.HasMultipleFlags(flag))
-				throw new ArgumentException("Connection type has multiple flags", "flag");
+			// Break early if we already know the result for this input connection to the final connection
+			FilteredConnectionLookupKey key = new FilteredConnectionLookupKey(inputConnection.Source, finalInputConnection.Destination, flag);
+			Connection pathableConnection;
+			if (m_FilteredConnectionLookup.TryGetValue(key, out pathableConnection))
+				return pathableConnection == null ? Enumerable.Empty<Connection>() : pathableConnection.Yield();
 
 			// Can only route through midpoints
-			IRouteMidpointControl midpoint = m_RoutingGraph.GetDestinationControl(inputConnection) as IRouteMidpointControl;
-			if (midpoint == null)
-				return Enumerable.Empty<Connection>();
-
-			return GetOutputConnections(inputConnection.Destination.Device, inputConnection.Destination.Control, flag);
+			IRouteMidpointControl midpoint =
+				m_RoutingGraph.GetDestinationControl(inputConnection) as IRouteMidpointControl;
+			return midpoint == null
+				? Enumerable.Empty<Connection>()
+				: GetOutputConnections(inputConnection.Destination.Device, inputConnection.Destination.Control, flag);
 		}
 
 		#endregion
