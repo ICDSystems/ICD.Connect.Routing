@@ -1482,7 +1482,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		{
 			m_Connections.OnChildrenChanged -= ConnectionsOnConnectionsChanged;
 
-			// First locad in all of the devices
+			// First load in all of the devices
 			factory.LoadOriginators<IDeviceBase>();
 
 			base.ApplySettingsFinal(settings, factory);
