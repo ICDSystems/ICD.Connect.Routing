@@ -78,17 +78,16 @@ namespace ICD.Connect.Routing.Endpoints
 			}
 		}
 
-		/// <summary>
-		/// Called when children are added to the collection before any events are raised.
-		/// </summary>
-		/// <param name="children"></param>
-		protected override void ChildrenAdded(IEnumerable<T> children)
+		public void RebuildCache()
 		{
 			m_EndpointCacheSection.Enter();
 
 			try
 			{
-				foreach (T child in children)
+				m_EndpointCache.Clear();
+				m_EndpointTypeCache.Clear();
+
+				foreach (T child in GetChildren())
 				{
 					foreach (EndpointInfo endpoint in child.GetEndpoints())
 					{
@@ -120,41 +119,6 @@ namespace ICD.Connect.Routing.Endpoints
 							}
 
 							childTypeCache.AddSorted(child, m_ChildIdComparer);
-						}
-					}
-				}
-			}
-			finally
-			{
-				m_EndpointCacheSection.Leave();
-			}
-		}
-
-		/// <summary>
-		/// Called when children are removed from the collection before any events are raised.
-		/// </summary>
-		/// <param name="children"></param>
-		protected override void ChildrenRemoved(IEnumerable<T> children)
-		{
-			m_EndpointCacheSection.Enter();
-
-			try
-			{
-				foreach (T child in children)
-				{
-					foreach (EndpointInfo endpoint in child.GetEndpoints())
-					{
-						// Remove from the cache
-						List<T> childCache;
-						if (m_EndpointCache.TryGetValue(endpoint, out childCache))
-							childCache.Remove(child);
-
-						// Remove from the typed cache
-						IcdOrderedDictionary<eConnectionType, List<T>> types;
-						if (m_EndpointTypeCache.TryGetValue(endpoint, out types))
-						{
-							foreach (KeyValuePair<eConnectionType, List<T>> kvp in types)
-								kvp.Value.Remove(child);
 						}
 					}
 				}

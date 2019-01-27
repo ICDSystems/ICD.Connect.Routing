@@ -474,7 +474,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public IEnumerable<EndpointInfo> FilterEndpointsAny(ISource source, eConnectionType type)
 		{
 			if (source == null)
-				throw new ArgumentNullException("destination");
+				throw new ArgumentNullException("source");
 
 			IEnumerable<EndpointInfo> endpoints =
 				GetOutputConnectionsAny(source.Device, source.Control, type).Select(c => c.Source);
@@ -638,17 +638,17 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#region Caching
 
-		/// <summary>
-		/// Called when children are added to the collection before any events are raised.
-		/// </summary>
-		/// <param name="children"></param>
-		protected override void ChildrenAdded(IEnumerable<Connection> children)
+		public void RebuildCache()
 		{
 			m_ConnectionsSection.Enter();
 
 			try
 			{
-				foreach (Connection child in children)
+				m_OutputConnectionLookup.Clear();
+				m_InputConnectionLookup.Clear();
+				m_FilteredConnectionLookup.Clear();
+
+				foreach (Connection child in GetChildren())
 				{
 					DeviceControlInfo sourceInfo = new DeviceControlInfo(child.Source.Device, child.Source.Control);
 					DeviceControlInfo destinationInfo = new DeviceControlInfo(child.Destination.Device,
@@ -663,33 +663,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 					// Add connections to the maps
 					m_OutputConnectionLookup[sourceInfo][child.Source.Address] = child;
 					m_InputConnectionLookup[destinationInfo][child.Destination.Address] = child;
-				}
-
-				RebuildFilteredConnectionsMap();
-			}
-			finally
-			{
-				m_ConnectionsSection.Leave();
-			}
-		}
-
-		/// <summary>
-		/// Called when children are removed from the collection before any events are raised.
-		/// </summary>
-		/// <param name="children"></param>
-		protected override void ChildrenRemoved(IEnumerable<Connection> children)
-		{
-			m_ConnectionsSection.Enter();
-
-			try
-			{
-				foreach (Connection child in children)
-				{
-					foreach (KeyValuePair<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> kvp in m_OutputConnectionLookup)
-						kvp.Value.RemoveAllValues(child);
-
-					foreach (KeyValuePair<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> kvp in m_InputConnectionLookup)
-						kvp.Value.RemoveAllValues(child);
 				}
 
 				RebuildFilteredConnectionsMap();
