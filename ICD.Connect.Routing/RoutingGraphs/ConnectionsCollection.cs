@@ -789,7 +789,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			}
 
 			// Can only route through midpoints
-			if (midpoints.Contains(inputConnection.Destination.GetDeviceControlInfo()))
+			if (!midpoints.Contains(inputConnection.Destination.GetDeviceControlInfo()))
 				yield break;
 
 			IEnumerable<Connection> outputConnections =
@@ -800,12 +800,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				// Add this sub-path from start to output connection
 				key = new FilteredConnectionLookupKey(startOutputConnection.Source, outputConnection.Destination, flag);
 				if (!m_FilteredConnectionLookup.ContainsKey(key))
-					m_FilteredConnectionLookup.Add(key, outputConnection);
+					m_FilteredConnectionLookup.Add(key, startOutputConnection);
 
 				// Add this sub-path from input connection to output connection
 				key = new FilteredConnectionLookupKey(inputConnection.Source, outputConnection.Destination, flag);
 				if (!m_FilteredConnectionLookup.ContainsKey(key))
-					m_FilteredConnectionLookup.Add(key, outputConnection);
+					m_FilteredConnectionLookup.Add(key, inputConnection);
 
 				yield return outputConnection;
 			}
