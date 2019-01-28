@@ -696,18 +696,50 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 				Connection[] connections = GetChildren().ToArray();
 
-				foreach (Connection outputConnection in connections.Distinct(c => c.Source))
+				IcdHashSet<DeviceControlInfo> midpoints =
+					connections.Select(c => c.Destination.GetDeviceControlInfo())
+					           .Distinct()
+					           .Where(c => m_RoutingGraph.GetControl<IRouteDestinationControl>(c.DeviceId, c.ControlId)
+						                  is IRouteMidpointControl)
+					           .ToIcdHashSet();
+
+				foreach (Connection outputConnection in connections)
 				{
-					foreach (Connection inputConnection in connections.Distinct(d => d.Destination))
+					// Optimization - We can skip terminal output connections
+					// E.g. A -> B -> C we can't path from C to A
+					bool terminal = !m_OutputConnectionLookup.ContainsKey(outputConnection.Destination.GetDeviceControlInfo());
+
+					foreach (Connection inputConnection in connections)
 					{
 						eConnectionType type =
 							EnumUtils.GetFlagsIntersection(outputConnection.ConnectionType, inputConnection.ConnectionType);
 
 						foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 						{
-							bool canPath = RebuildFilteredConnectionsMapHasAnyPath(outputConnection, inputConnection, flag);
 							FilteredConnectionLookupKey key = new FilteredConnectionLookupKey(outputConnection.Source, inputConnection.Destination, flag);
-							m_FilteredConnectionLookup.Add(key, canPath ? outputConnection : null);
+							if (m_FilteredConnectionLookup.ContainsKey(key))
+								continue;
+
+							// Easy case - Output and Input are the same
+							if (outputConnection == inputConnection)
+							{
+								m_FilteredConnectionLookup.Add(key, outputConnection);
+								continue;
+							}
+
+							// Optimization - We can skip terminal output connections
+							if (terminal)
+							{
+								m_FilteredConnectionLookup.Add(key, null);
+								continue;
+							}
+
+							// If a path is found it's added to the cache as part of the pathfinding
+							if (RebuildFilteredConnectionsMapHasAnyPath(midpoints, outputConnection, inputConnection, flag))
+								continue;
+
+							// Add the negative case so we can bail early for other paths
+							m_FilteredConnectionLookup.Add(key, null);
 						}
 					}
 				}
@@ -721,38 +753,62 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Returns true if there is a connection path from the given source to the given destination.
 		/// </summary>
+		/// <param name="midpoints"></param>
 		/// <param name="outputConnection"></param>
 		/// <param name="inputConnection"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		private bool RebuildFilteredConnectionsMapHasAnyPath(Connection outputConnection, Connection inputConnection,
+		private bool RebuildFilteredConnectionsMapHasAnyPath(IcdHashSet<DeviceControlInfo> midpoints, Connection outputConnection, Connection inputConnection,
 		                                                     eConnectionType flag)
 		{
 			return RecursionUtils.BreadthFirstSearch(outputConnection, inputConnection,
-			                                         c => RebuildFilteredConnectionsMapGetChildren(c, inputConnection, flag));
+			                                         c => RebuildFilteredConnectionsMapGetChildren(midpoints, c, outputConnection, inputConnection, flag));
 		}
 
 		/// <summary>
 		/// Given an input connection returns the connected output connections.
 		/// </summary>
+		/// <param name="midpoints"></param>
 		/// <param name="inputConnection"></param>
+		/// <param name="startOutputConnection"></param>
 		/// <param name="finalInputConnection"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		private IEnumerable<Connection> RebuildFilteredConnectionsMapGetChildren(Connection inputConnection, Connection finalInputConnection, eConnectionType flag)
+		private IEnumerable<Connection> RebuildFilteredConnectionsMapGetChildren(
+			IcdHashSet<DeviceControlInfo> midpoints, Connection inputConnection, Connection startOutputConnection,
+			Connection finalInputConnection, eConnectionType flag)
 		{
-			// Break early if we already know the result for this input connection to the final connection
+			// Hack - Bail early if we already know the result for this input connection to the final connection
 			FilteredConnectionLookupKey key = new FilteredConnectionLookupKey(inputConnection.Source, finalInputConnection.Destination, flag);
 			Connection pathableConnection;
 			if (m_FilteredConnectionLookup.TryGetValue(key, out pathableConnection))
-				return pathableConnection == null ? Enumerable.Empty<Connection>() : pathableConnection.Yield();
+			{
+				if (pathableConnection != null)
+					yield return pathableConnection;
+				yield break;
+			}
 
 			// Can only route through midpoints
-			IRouteMidpointControl midpoint =
-				m_RoutingGraph.GetDestinationControl(inputConnection) as IRouteMidpointControl;
-			return midpoint == null
-				? Enumerable.Empty<Connection>()
-				: GetOutputConnections(inputConnection.Destination.Device, inputConnection.Destination.Control, flag);
+			if (midpoints.Contains(inputConnection.Destination.GetDeviceControlInfo()))
+				yield break;
+
+			IEnumerable<Connection> outputConnections =
+				GetOutputConnections(inputConnection.Destination.Device, inputConnection.Destination.Control, flag);
+
+			foreach (Connection outputConnection in outputConnections)
+			{
+				// Add this sub-path from start to output connection
+				key = new FilteredConnectionLookupKey(startOutputConnection.Source, outputConnection.Destination, flag);
+				if (!m_FilteredConnectionLookup.ContainsKey(key))
+					m_FilteredConnectionLookup.Add(key, outputConnection);
+
+				// Add this sub-path from input connection to output connection
+				key = new FilteredConnectionLookupKey(inputConnection.Source, outputConnection.Destination, flag);
+				if (!m_FilteredConnectionLookup.ContainsKey(key))
+					m_FilteredConnectionLookup.Add(key, outputConnection);
+
+				yield return outputConnection;
+			}
 		}
 
 		#endregion
