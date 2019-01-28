@@ -727,7 +727,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 								continue;
 							}
 
-							// Optimization - We can skip terminal output connections
 							if (terminal)
 							{
 								m_FilteredConnectionLookup.Add(key, null);
