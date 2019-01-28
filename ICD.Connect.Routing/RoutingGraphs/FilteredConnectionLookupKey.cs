@@ -1,10 +1,12 @@
 using System;
+using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints;
 
 namespace ICD.Connect.Routing.RoutingGraphs
 {
-	public struct FilteredConnectionLookupKey : IEquatable<FilteredConnectionLookupKey>, IComparable<FilteredConnectionLookupKey>
+	public struct FilteredConnectionLookupKey : IEquatable<FilteredConnectionLookupKey>
 	{
 		private readonly EndpointInfo m_Source;
 		private readonly EndpointInfo m_FinalDestination;
@@ -23,14 +25,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_Flag = flag;
 		}
 
-		/// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
-		/// <param name="other">An object to compare with this object.</param>
-		/// <returns>true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.</returns>
-		public bool Equals(FilteredConnectionLookupKey other)
+		public override string ToString()
 		{
-			return m_Source.Equals(other.m_Source) &&
-			       m_FinalDestination.Equals(other.m_FinalDestination) &&
-			       m_Flag == other.m_Flag;
+			return new ReprBuilder(this).AppendProperty("Source", m_Source)
+			                            .AppendProperty("FinalDestination", m_FinalDestination)
+			                            .AppendProperty("Flag", m_Flag)
+										.ToString();
 		}
 
 		/// <summary>Indicates whether this instance and a specified object are equal.</summary>
@@ -43,8 +43,20 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			return obj is FilteredConnectionLookupKey && Equals((FilteredConnectionLookupKey)obj);
 		}
 
+		/// <summary>Indicates whether the current object is equal to another object of the same type.</summary>
+		/// <param name="other">An object to compare with this object.</param>
+		/// <returns>true if the current object is equal to the <paramref name="other">other</paramref> parameter; otherwise, false.</returns>
+		[Pure]
+		public bool Equals(FilteredConnectionLookupKey other)
+		{
+			return m_Source.Equals(other.m_Source) &&
+			       m_FinalDestination.Equals(other.m_FinalDestination) &&
+			       m_Flag == other.m_Flag;
+		}
+
 		/// <summary>Returns the hash code for this instance.</summary>
 		/// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+		[Pure]
 		public override int GetHashCode()
 		{
 			unchecked
@@ -54,19 +66,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				hashCode = (hashCode * 397) ^ (int)m_Flag;
 				return hashCode;
 			}
-		}
-
-		public int CompareTo(FilteredConnectionLookupKey other)
-		{
-			int sourceComparison = m_Source.CompareTo(other.m_Source);
-			if (sourceComparison != 0)
-				return sourceComparison;
-
-			int finalDestinationComparison = m_FinalDestination.CompareTo(other.m_FinalDestination);
-			if (finalDestinationComparison != 0)
-				return finalDestinationComparison;
-
-			return m_Flag.CompareTo(other.m_Flag);
 		}
 	}
 }
