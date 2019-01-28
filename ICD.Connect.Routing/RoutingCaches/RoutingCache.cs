@@ -1484,10 +1484,9 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 		private void RoutingGraphOnSourceTransmissionStateChanged(object sender, EndpointStateEventArgs args)
 		{
-			m_CacheSection.Enter();
+			CacheStateChangedEventArgs cache;
 
-			bool endpointChanged;
-			CacheStateChangedEventArgs cache = null;
+			m_CacheSection.Enter();
 
 			try
 			{
@@ -1495,25 +1494,24 @@ namespace ICD.Connect.Routing.RoutingCaches
 				if (!m_EndpointToSources.ContainsKey(args.Endpoint))
 					return;
 
-				endpointChanged = UpdateSourceEndpointTransmissionState(args.Endpoint, args.Type, args.State);
-				if (endpointChanged)
-					cache = new CacheStateChangedEventArgs(new[] {args.Endpoint}, args.Type, args.State);
+				cache = UpdateSourceEndpointTransmissionState(args.Endpoint, args.Type, args.State)
+					        ? new CacheStateChangedEventArgs(new[] {args.Endpoint}, args.Type, args.State)
+					        : null;
 			}
 			finally
 			{
 				m_CacheSection.Leave();
 			}
 
-			if (endpointChanged)
+			if (cache != null)
 				OnTransmissionStateChanged.Raise(this, cache);
 		}
 
 		private void RoutingGraphOnSourceDetectionStateChanged(object sender, EndpointStateEventArgs args)
 		{
-			m_CacheSection.Enter();
+			CacheStateChangedEventArgs cache;
 
-			bool endpointChanged;
-			CacheStateChangedEventArgs cache = null;
+			m_CacheSection.Enter();
 
 			try
 			{
@@ -1521,27 +1519,24 @@ namespace ICD.Connect.Routing.RoutingCaches
 				if (!m_EndpointToSources.ContainsKey(args.Endpoint))
 					return;
 
-				endpointChanged = UpdateSourceEndpointDetectionState(args.Endpoint, args.Type, args.State);
-				if (endpointChanged)
-					cache =  new CacheStateChangedEventArgs(new[] { args.Endpoint },
-																					   args.Type,
-																					   args.State);
+				cache = UpdateSourceEndpointDetectionState(args.Endpoint, args.Type, args.State)
+					        ? new CacheStateChangedEventArgs(new[] {args.Endpoint}, args.Type, args.State)
+					        : null;
 			}
 			finally
 			{
 				m_CacheSection.Leave();
 			}
 
-			if (endpointChanged)
+			if (cache != null)
 				OnDetectionStateChanged.Raise(this, cache);
 		}
 
 		private void RoutingGraphOnDestinationInputActiveStateChanged(object sender, EndpointStateEventArgs args)
 		{
-			m_CacheSection.Enter();
+			CacheStateChangedEventArgs cache;
 
-			bool endpointChanged;
-			CacheStateChangedEventArgs cache = null;
+			m_CacheSection.Enter();
 
 			try
 			{
@@ -1549,18 +1544,16 @@ namespace ICD.Connect.Routing.RoutingCaches
 				if (!m_EndpointToDestinations.ContainsKey(args.Endpoint))
 					return;
 
-				endpointChanged = UpdateDestinationEndpointInputActiveState(args.Endpoint, args.Type, args.State);
-				if (endpointChanged)
-					cache = new CacheStateChangedEventArgs(new[] { args.Endpoint },
-																								  args.Type,
-																								  args.State);
+				cache = UpdateDestinationEndpointInputActiveState(args.Endpoint, args.Type, args.State)
+					        ? new CacheStateChangedEventArgs(new[] {args.Endpoint}, args.Type, args.State)
+					        : null;
 			}
 			finally
 			{
 				m_CacheSection.Leave();
 			}
 
-			if (endpointChanged)
+			if (cache != null)
 				OnDestinationEndpointActiveChanged.Raise(this, cache);
 		}
 
