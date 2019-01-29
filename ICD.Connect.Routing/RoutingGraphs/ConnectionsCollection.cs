@@ -777,16 +777,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			IcdHashSet<DeviceControlInfo> midpoints, Connection inputConnection, Connection startOutputConnection,
 			Connection finalInputConnection, eConnectionType flag)
 		{
-			// Hack - Bail early if we already know the result for this input connection to the final connection
-			FilteredConnectionLookupKey key = new FilteredConnectionLookupKey(inputConnection.Source, finalInputConnection.Destination, flag);
-			Connection pathableConnection;
-			if (m_FilteredConnectionLookup.TryGetValue(key, out pathableConnection))
-			{
-				if (pathableConnection != null)
-					yield return pathableConnection;
-				yield break;
-			}
-
 			// Can only route through midpoints
 			if (!midpoints.Contains(inputConnection.Destination.GetDeviceControlInfo()))
 				yield break;
@@ -796,6 +786,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			foreach (Connection outputConnection in outputConnections)
 			{
+				// Bail early if we already know the result for the output connection to the final connection
+				FilteredConnectionLookupKey key = new FilteredConnectionLookupKey(outputConnection.Source, finalInputConnection.Destination, flag);
+				Connection pathableConnection;
+				if (m_FilteredConnectionLookup.TryGetValue(key, out pathableConnection) && pathableConnection == null)
+					continue;
+
 				// Add this sub-path from start to output connection
 				key = new FilteredConnectionLookupKey(startOutputConnection.Source, outputConnection.Destination, flag);
 				if (!m_FilteredConnectionLookup.ContainsKey(key))
