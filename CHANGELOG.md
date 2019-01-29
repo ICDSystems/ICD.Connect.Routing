@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
  - DM-NVX changed "EthernetId" to "IPID" in settings
+ - Significant optimizations to routing pre-caching on startup
 
 ## [14.0.0] - 2019-01-10
 ### Added
