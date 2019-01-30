@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [14.1.0] - 2019-01-29
 ### Added
  - DMC-SO-HD DM 8G Fiber Output Card
  - DM-RMC-200-S DM 8G Fiber Receiver
@@ -13,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
  - DM-NVX changed "EthernetId" to "IPID" in settings
+ - Significant optimizations to routing pre-caching on startup
 
 ## [14.0.0] - 2019-01-10
 ### Added

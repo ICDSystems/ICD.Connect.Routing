@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
@@ -178,6 +179,7 @@ namespace ICD.Connect.Routing.Endpoints
 		/// </summary>
 		/// <param name="other"></param>
 		/// <returns></returns>
+		[Pure]
 		public bool Equals(EndpointInfo other)
 		{
 			return m_DeviceId == other.m_DeviceId &&
@@ -189,6 +191,7 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Gets the hashcode for this instance.
 		/// </summary>
 		/// <returns></returns>
+		[Pure]
 		public override int GetHashCode()
 		{
 			unchecked
