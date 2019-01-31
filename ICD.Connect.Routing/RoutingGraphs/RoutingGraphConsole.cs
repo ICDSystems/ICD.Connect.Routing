@@ -5,6 +5,8 @@ using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Controls;
+using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
 using ICD.Connect.Routing.Endpoints.Sources;
 using ICD.Connect.Routing.PathFinding;
@@ -60,6 +62,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			yield return
 				new ConsoleCommand("PrintPathable", "Prints a table of sources to routable destinations",
 				                   () => PrintPathable(instance));
+
+			yield return new GenericConsoleCommand<int>("PrintDestinationPaths", "PrintDestinationPaths <DESTINATION>",
+											id => PrintDestinationPaths(instance, id));
 
 			yield return new GenericConsoleCommand<int, int, eConnectionType, int>("Route",
 			                                                                       "Routes source to destination. Usage: Route <sourceId> <destId> <connType> <roomId>",
@@ -169,6 +174,74 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			}
 
 			return builder.ToString();
+		}
+
+		private static string PrintDestinationPaths(IRoutingGraph instance, int id)
+		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
+			TableBuilder builder = new TableBuilder("Input", "Type", "Active", "Path");
+
+			IDestination destination = instance.Destinations.GetChild(id);
+			IRouteDestinationControl control = instance.GetDestinationControl(destination.Device, destination.Control);
+
+			foreach (int input in destination.GetAddresses())
+			{
+				string inputString = input.ToString();
+
+				foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(destination.ConnectionType))
+				{
+					string flagString = flag.ToString();
+					string activeString = control.GetInputActiveState(input, flag).ToString();
+
+					EndpointInfo destinationEndpoint = control.GetInputEndpointInfo(input);
+
+					Connection[] connections = GetInputConnectionsRecursive(instance, destinationEndpoint, flag).ToArray();
+
+					if (connections.Length == 0)
+					{
+						builder.AddRow(inputString, flagString, activeString, null);
+						inputString = null;
+						continue;
+					}
+
+					foreach (Connection connection in connections)
+					{
+						builder.AddRow(inputString, flagString, activeString, connection);
+
+						inputString = null;
+						flagString = null;
+						activeString = null;
+					}
+				}
+			}
+
+			return builder.ToString();
+		}
+
+		private static IEnumerable<Connection> GetInputConnectionsRecursive(IRoutingGraph instance,
+		                                                                    EndpointInfo destinationEndpoint,
+		                                                                    eConnectionType flag)
+		{
+			while (true)
+			{
+				Connection connection = instance.Connections.GetInputConnection(destinationEndpoint);
+				if (connection == null)
+					yield break;
+
+				yield return connection;
+
+				IRouteMidpointControl midpoint = instance.GetSourceControl(connection) as IRouteMidpointControl;
+				if (midpoint == null)
+					yield break;
+
+				ConnectorInfo? input = midpoint.GetInput(connection.Source.Address, flag);
+				if (!input.HasValue)
+					yield break;
+
+				destinationEndpoint = new EndpointInfo(midpoint.Parent.Id, midpoint.Id, input.Value.Address);
+			}
 		}
 
 		private static string RouteConsoleCommand(IRoutingGraph instance, int source, int destination, eConnectionType connectionType, int roomId)
