@@ -86,7 +86,7 @@ namespace ICD.Connect.Routing.Tests
 		[TestCase("test", (ushort)7263)]
 		public void RouteRequestFromTest(string hostname, ushort port)
 		{
-			HostInfo expected = new HostInfo(hostname, port);
+			HostSessionInfo expected = new HostSessionInfo(hostname, port, new Guid());
 			RouteOperation op = new RouteOperation { RouteRequestFrom = expected };
 
 			Assert.AreEqual(expected, op.RouteRequestFrom);

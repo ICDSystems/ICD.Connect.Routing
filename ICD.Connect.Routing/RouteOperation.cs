@@ -59,7 +59,7 @@ namespace ICD.Connect.Routing
 		/// <summary>
 		/// Used with remote routing 
 		/// </summary>
-		public HostInfo RouteRequestFrom { get; set; }
+		public HostSessionInfo RouteRequestFrom { get; set; }
 
 		/// <summary>
 		/// Constructor.
@@ -121,7 +121,7 @@ namespace ICD.Connect.Routing
 			if (RoomId != 0)
 				builder.AppendProperty("RoomId", RoomId);
 
-			if (RouteRequestFrom != default(HostInfo))
+			if (RouteRequestFrom != default(HostSessionInfo))
 				builder.AppendProperty("RouteRequestFrom", RouteRequestFrom);
 
 			return builder.ToString();
