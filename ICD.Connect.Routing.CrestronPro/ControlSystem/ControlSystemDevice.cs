@@ -25,7 +25,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 	/// <summary>
 	/// Wraps a CrestronControlSystem to provide a device that can be used as a port provider and a switcher.
 	/// </summary>
-	public sealed class ControlSystemDevice : AbstractDevice<ControlSystemDeviceSettings>, IPortParent, IDmParent
+	public sealed class ControlSystemDevice : AbstractDevice<ControlSystemDeviceSettings>, IPortParent, IDmParent, IControlSystemDevice
 	{
 #if SIMPLSHARP
 		/// <summary>
