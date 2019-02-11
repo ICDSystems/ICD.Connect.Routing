@@ -25,7 +25,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 
-			yield break;
+			yield return instance.RoutingCache;
 		}
 
 		/// <summary>

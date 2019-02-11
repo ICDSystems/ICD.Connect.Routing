@@ -1555,28 +1555,5 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		}
 
 		#endregion
-		
-		#region Console
-
-		/// <summary>
-		/// Gets the child console nodes.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
-		{
-			foreach (var node in GetBaseConsoleNodes())
-			{
-				yield return node;
-			}
-
-			yield return m_Cache;
-		}
-
-		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
-		{
-			return base.GetConsoleNodes();
-		} 
-
-		#endregion
 	}
 }
