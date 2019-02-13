@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [13.2.0] - 2019-02-13
 ### Added
  - Added DmcCoHd output card variant
 
