@@ -2,17 +2,17 @@
 
 #if SIMPLSHARP
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
+namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kzCoHd
 {
 // ReSharper disable once InconsistentNaming
-	public sealed class Dmc4kCoHdAdapterRoutingControl : AbstractDmc4kCoHdBaseAdapterRoutingControl<Dmc4kCoHdAdapter>
+	public sealed class Dmc4kzCoHdAdapterRoutingControl : AbstractDmc4kCoHdBaseAdapterRoutingControl<Dmc4kzCoHdAdapter>
 	{
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public Dmc4kCoHdAdapterRoutingControl(Dmc4kCoHdAdapter parent, int id)
+		public Dmc4kzCoHdAdapterRoutingControl(Dmc4kzCoHdAdapter parent, int id)
 			: base(parent, id)
 		{
 		}

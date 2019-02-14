@@ -13,7 +13,7 @@ using ICD.Connect.Routing.Utils;
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 {
 	public abstract class AbstractInputCardAdapterRoutingControl<TParent> : AbstractRouteMidpointControl<TParent>
-		where TParent : ICardAdapter
+		where TParent : IInputCardAdapter
 	{
 		/// <summary>
 		/// Raised when an input source status changes.

@@ -2,7 +2,7 @@
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kCBase
 {
 	public abstract class AbstractDmc4kCBaseAdapterRoutingControl<TParent> : AbstractInputCardAdapterRoutingControl<TParent>
-		where TParent : ICardAdapter
+		where TParent : IInputCardAdapter
 	{
 		/// <summary>
 		/// Constructor.

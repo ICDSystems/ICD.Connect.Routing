@@ -1,9 +1,10 @@
-﻿using ICD.Connect.Settings.Attributes;
+﻿using ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHdBase;
+using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
 {
 	[KrangSettings("Dmc4kCoHd", typeof(Dmc4kCoHdAdapter))]
-	public sealed class Dmc4kCoHdAdapterSettings : AbstractOutputCardSettings
+	public sealed class Dmc4kCoHdAdapterSettings : AbstractDmc4kCoHdBaseAdapterSettings
 	{
 	}
 }
