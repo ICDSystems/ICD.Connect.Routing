@@ -100,6 +100,12 @@
     <Compile Include="Cards\Inputs\AbstractInputCardSettings.cs" />
     <Compile Include="Cards\ICardAdapter.cs" />
     <Compile Include="Cards\Inputs\AbstractInputCardAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Inputs\Dmc4kzCDsp\Dmc4kzCDspAdapter.cs" />
+    <Compile Include="Cards\Inputs\Dmc4kzCDsp\Dmc4kzCDspAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Inputs\Dmc4kzCDsp\Dmc4kzCDspAdapterSettings.cs" />
+    <Compile Include="Cards\Inputs\Dmc4kCDspBase\AbstractDmc4kCDspBaseAdapter.cs" />
+    <Compile Include="Cards\Inputs\Dmc4kCDspBase\AbstractDmc4kCDspBaseAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Inputs\Dmc4kCDspBase\AbstractDmc4kCDspBaseAdapterSettings.cs" />
     <Compile Include="Cards\Inputs\Dmc4kzHd\Dmc4kzHdAdapter.cs" />
     <Compile Include="Cards\Inputs\Dmc4kzHd\Dmc4kzHdAdapterRoutingControl.cs" />
     <Compile Include="Cards\Inputs\Dmc4kzHd\Dmc4kzHdAdapterSettings.cs" />

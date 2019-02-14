@@ -1,8 +1,10 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kCDspBase;
+
+#if SIMPLSHARP
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kCDsp
 {
-	public sealed class Dmc4kCDspAdapterRoutingControl : AbstractInputCardAdapterRoutingControl<Dmc4kCDspAdapter>
+	public sealed class Dmc4kCDspAdapterRoutingControl : AbstractDmc4kCDspBaseAdapterRoutingControl<Dmc4kCDspAdapter>
 	{
 		/// <summary>
 		/// Constructor.
