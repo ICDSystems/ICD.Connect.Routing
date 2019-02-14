@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [14.2.0] - 2019-02-14
 ### Added
  - Added DM-TX-4KZ-202-C and DM-TX-4KZ-302-C transmitters
  - Added DMC-4K-HD and DMC-4KZ-HD input cards
