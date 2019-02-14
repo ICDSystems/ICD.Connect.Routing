@@ -1,4 +1,5 @@
-﻿namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDspBase
+﻿#if SIMPLSHARP
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDspBase
 {
 	public abstract class AbstractDmc4kHdDspBaseAdapterRoutingControl<TParent> : AbstractInputCardAdapterRoutingControl<TParent>
 		where TParent : ICardAdapter
@@ -14,3 +15,4 @@
 		}
 	}
 }
+#endif
