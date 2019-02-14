@@ -6,18 +6,18 @@ using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
+namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kzCoHd
 {
 #if SIMPLSHARP
 	// ReSharper disable once InconsistentNaming
-	public sealed class Dmc4kCoHdAdapter : AbstractDmc4kCoHdBaseAdapter<Dmc4kCoHdSingle, Dmc4kCoHdAdapterSettings>
+	public sealed class Dmc4kzCoHdAdapter : AbstractDmc4kCoHdBaseAdapter<Dmc4kzCoHdSingle, Dmc4kzCoHdAdapterSettings>
 	{
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public Dmc4kCoHdAdapter()
+		public Dmc4kzCoHdAdapter()
 		{
-			Controls.Add(new Dmc4kCoHdAdapterRoutingControl(this, 0));
+			Controls.Add(new Dmc4kzCoHdAdapterRoutingControl(this, 0));
 		}
 
 		/// <summary>
@@ -48,13 +48,13 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
 		/// <param name="cardNumber"></param>
 		/// <param name="switcher"></param>
 		/// <returns></returns>
-		protected override Dmc4kCoHdSingle InstantiateCardInternal(uint cardNumber, Switch switcher)
+		protected override Dmc4kzCoHdSingle InstantiateCardInternal(uint cardNumber, Switch switcher)
 		{
-			return new Dmc4kCoHdSingle(cardNumber, switcher);
+			return new Dmc4kzCoHdSingle(cardNumber, switcher);
 		}
 	}
 #else
-	public sealed class Dmc4kCoHdAdapter : AbstractDmc4kCoHdBaseAdapter<Dmc4kCoHdAdapterSettings>
+	public sealed class Dmc4kzCoHdAdapter : AbstractDmc4kCoHdBaseAdapter<Dmc4kzCoHdAdapterSettings>
 	{
 	    protected override bool GetIsOnlineStatus()
 	    {

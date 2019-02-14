@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+ - Added DM-TX-4KZ-202-C and DM-TX-4KZ-302-C transmitters
+ - Added DMC-4K-HD and DMC-4KZ-HD input cards
+ - Added DMC-4KZ-C-DSP input card
+ - Added DMC-4KZ-C input card
+ - Added DMC-4KZ-HD-DSP input card
+ - Added DMC-4KZ-CO-HD output card
+
 ## [14.1.0] - 2019-01-29
 ### Added
  - DMC-SO-HD DM 8G Fiber Output Card

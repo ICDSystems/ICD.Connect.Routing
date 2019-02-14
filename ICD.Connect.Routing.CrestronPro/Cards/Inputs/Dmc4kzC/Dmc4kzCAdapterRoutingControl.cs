@@ -2,16 +2,16 @@
 
 #if SIMPLSHARP
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kC
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kzC
 {
-	public sealed class Dmc4kCAdapterRoutingControl : AbstractDmc4kCBaseAdapterRoutingControl<Dmc4kCAdapter>
+	public sealed class Dmc4kzCAdapterRoutingControl : AbstractDmc4kCBaseAdapterRoutingControl<Dmc4kzCAdapter>
 	{
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public Dmc4kCAdapterRoutingControl(Dmc4kCAdapter parent, int id)
+		public Dmc4kzCAdapterRoutingControl(Dmc4kzCAdapter parent, int id)
 			: base(parent, id)
 		{
 		}
