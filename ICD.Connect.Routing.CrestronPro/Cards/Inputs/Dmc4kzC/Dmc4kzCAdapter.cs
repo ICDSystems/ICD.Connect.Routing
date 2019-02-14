@@ -5,18 +5,18 @@ using Crestron.SimplSharpPro.DM;
 
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kC
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kzC
 {
 #if SIMPLSHARP
-	public sealed class Dmc4kCAdapter :
-		AbstractDmc4kCBaseAdapter<Crestron.SimplSharpPro.DM.Cards.Dmc4kC, Dmc4kCAdapterSettings>
+	public sealed class Dmc4kzCAdapter :
+		AbstractDmc4kCBaseAdapter<Crestron.SimplSharpPro.DM.Cards.Dmc4kzC, Dmc4kzCAdapterSettings>
 	{
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public Dmc4kCAdapter()
+		public Dmc4kzCAdapter()
 		{
-			Controls.Add(new Dmc4kCAdapterRoutingControl(this, 0));
+			Controls.Add(new Dmc4kzCAdapterRoutingControl(this, 0));
 		}
 
 		protected override bool GetIsOnlineStatus()
@@ -32,10 +32,10 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kC
 		/// <param name="cresnetId"></param>
 		/// <param name="controlSystem"></param>
 		/// <returns></returns>
-		protected override Crestron.SimplSharpPro.DM.Cards.Dmc4kC InstantiateCardExternal(byte cresnetId,
+		protected override Crestron.SimplSharpPro.DM.Cards.Dmc4kzC InstantiateCardExternal(byte cresnetId,
 		                                                                                  CrestronControlSystem controlSystem)
 		{
-			return new Crestron.SimplSharpPro.DM.Cards.Dmc4kC(cresnetId, controlSystem);
+			return new Crestron.SimplSharpPro.DM.Cards.Dmc4kzC(cresnetId, controlSystem);
 		}
 
 		/// <summary>
@@ -44,13 +44,13 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kC
 		/// <param name="cardNumber"></param>
 		/// <param name="switcher"></param>
 		/// <returns></returns>
-		protected override Crestron.SimplSharpPro.DM.Cards.Dmc4kC InstantiateCardInternal(uint cardNumber, Switch switcher)
+		protected override Crestron.SimplSharpPro.DM.Cards.Dmc4kzC InstantiateCardInternal(uint cardNumber, Switch switcher)
 		{
-			return new Crestron.SimplSharpPro.DM.Cards.Dmc4kC(cardNumber, switcher);
+			return new Crestron.SimplSharpPro.DM.Cards.Dmc4kzC(cardNumber, switcher);
 		}
 	}
 #else
-	public sealed class Dmc4kCAdapter : AbstractDmc4kCBaseAdapter<Dmc4kCAdapterSettings>
+	public sealed class Dmc4kzCAdapter : AbstractDmc4kzCBaseAdapter<Dmc4kzCAdapterSettings>
 	{
 	}
 #endif

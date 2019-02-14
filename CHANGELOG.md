@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added DMC-4K-HD and DMC-4KZ-HD input cards
  - Added DMC-4KZ-C-DSP input card
+ - Added DMC-4KZ-C input card
 
 ## [13.2.0] - 2019-02-13
 ### Added
