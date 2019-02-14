@@ -5,18 +5,18 @@ using Crestron.SimplSharpPro.DM;
 
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDsp
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kzHdDsp
 {
 #if SIMPLSHARP
-	public sealed class Dmc4kHdDspAdapter :
-		AbstractDmc4kHdDspBaseAdapter<Crestron.SimplSharpPro.DM.Cards.Dmc4kHdDsp, Dmc4kHdDspAdapterSettings>
+	public sealed class Dmc4kzHdDspAdapter :
+		AbstractDmc4kHdDspBaseAdapter<Crestron.SimplSharpPro.DM.Cards.Dmc4kzHdDsp, Dmc4kzHdDspAdapterSettings>
 	{
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		public Dmc4kHdDspAdapter()
+		public Dmc4kzHdDspAdapter()
 		{
-			Controls.Add(new Dmc4kHdDspAdapterRoutingControl(this, 0));
+			Controls.Add(new Dmc4kzHdDspAdapterRoutingControl(this, 0));
 		}
 
 		protected override bool GetIsOnlineStatus()
@@ -32,11 +32,11 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDsp
 		/// <param name="cresnetId"></param>
 		/// <param name="controlSystem"></param>
 		/// <returns></returns>
-		protected override Crestron.SimplSharpPro.DM.Cards.Dmc4kHdDsp InstantiateCardExternal(byte cresnetId,
+		protected override Crestron.SimplSharpPro.DM.Cards.Dmc4kzHdDsp InstantiateCardExternal(byte cresnetId,
 		                                                                                      CrestronControlSystem
 			                                                                                      controlSystem)
 		{
-			return new Crestron.SimplSharpPro.DM.Cards.Dmc4kHdDsp(cresnetId, controlSystem);
+			return new Crestron.SimplSharpPro.DM.Cards.Dmc4kzHdDsp(cresnetId, controlSystem);
 		}
 
 		/// <summary>
@@ -45,13 +45,13 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDsp
 		/// <param name="cardNumber"></param>
 		/// <param name="switcher"></param>
 		/// <returns></returns>
-		protected override Crestron.SimplSharpPro.DM.Cards.Dmc4kHdDsp InstantiateCardInternal(uint cardNumber, Switch switcher)
+		protected override Crestron.SimplSharpPro.DM.Cards.Dmc4kzHdDsp InstantiateCardInternal(uint cardNumber, Switch switcher)
 		{
-			return new Crestron.SimplSharpPro.DM.Cards.Dmc4kHdDsp(cardNumber, switcher);
+			return new Crestron.SimplSharpPro.DM.Cards.Dmc4kzHdDsp(cardNumber, switcher);
 		}
 	}
 #else
-	public sealed class Dmc4kHdDspAdapter : AbstractDmc4kHdDspBaseAdapter<Dmc4kHdDspAdapterSettings>
+	public sealed class Dmc4kzHdDspAdapter : AbstractDmc4kHdDspBaseAdapter<Dmc4kzHdDspAdapterSettings>
 	{
 	}
 #endif
