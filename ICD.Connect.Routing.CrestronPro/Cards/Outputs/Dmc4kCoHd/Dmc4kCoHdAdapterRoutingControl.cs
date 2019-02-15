@@ -1,10 +1,11 @@
-﻿
+﻿using ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHdBase;
+
 #if SIMPLSHARP
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
 {
 // ReSharper disable once InconsistentNaming
-	public sealed class Dmc4kCoHdAdapterRoutingControl : AbstractOutputCardAdapterRoutingControl<Dmc4kCoHdAdapter>
+	public sealed class Dmc4kCoHdAdapterRoutingControl : AbstractDmc4kCoHdBaseAdapterRoutingControl<Dmc4kCoHdAdapter>
 	{
 		/// <summary>
 		/// Constructor.

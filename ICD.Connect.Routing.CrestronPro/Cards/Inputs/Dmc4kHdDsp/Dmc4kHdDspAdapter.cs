@@ -1,14 +1,14 @@
+using ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDspBase;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
-
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4KHdDsp
+namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDsp
 {
 #if SIMPLSHARP
 	public sealed class Dmc4kHdDspAdapter :
-		AbstractInputCardAdapter<Crestron.SimplSharpPro.DM.Cards.Dmc4kHdDsp, Dmc4kHdDspAdapterSettings>
+		AbstractDmc4kHdDspBaseAdapter<Crestron.SimplSharpPro.DM.Cards.Dmc4kHdDsp, Dmc4kHdDspAdapterSettings>
 	{
 		/// <summary>
 		/// Constructor.
@@ -50,7 +50,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4KHdDsp
 		}
 	}
 #else
-	public sealed class Dmc4kHdDspAdapter : AbstractInputCardAdapter<Dmc4kHdDspAdapterSettings>
+	public sealed class Dmc4kHdDspAdapter : AbstractDmc4kHdDspBaseAdapter<Dmc4kHdDspAdapterSettings>
 	{
 	}
 #endif
