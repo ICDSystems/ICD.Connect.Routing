@@ -60,7 +60,7 @@ namespace ICD.Connect.Routing.Telemetry
 		public IEnumerable<string> VideoInputSyncType { get { return GetSwitcherVideoInputSyncTypeNames(); } }
 		public IEnumerable<string> VideoInputResolution { get { return GetSwitcherVideoInputResolutions(); } }
 		public IEnumerable<string> VideoOutputId { get { return GetSwitcherVideoOutputIds(); } }
-		public IEnumerable<string> VideoOutputName { get; private set; }
+		public IEnumerable<string> VideoOutputName { get { return GetSwitcherVideoOutputNames(); } }
 		public IEnumerable<string> VideoOutputSyncType { get; private set; }
 		public IEnumerable<string> VideoOutputResolution { get; private set; }
 		public IEnumerable<string> VideoOutputEncoding { get; private set; }
@@ -205,6 +205,20 @@ namespace ICD.Connect.Routing.Telemetry
 
 			foreach (var id in control.GetSwitcherVideoOutputIds())
 				yield return id;
+		}
+
+		private IEnumerable<string> GetSwitcherVideoOutputNames()
+		{
+			IDeviceBase device = m_Parent as IDeviceBase;
+			if (device == null)
+				yield break;
+
+			IRouteSwitcherControl control = device.Controls.GetControl<IRouteSwitcherControl>();
+			if (control == null)
+				yield break;
+
+			foreach (var name in control.GetSwitcherVideoOutputNames())
+				yield return name;
 		}
 
 		#endregion

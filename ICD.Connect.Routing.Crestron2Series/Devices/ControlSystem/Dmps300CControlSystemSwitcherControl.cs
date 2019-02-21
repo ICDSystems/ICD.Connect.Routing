@@ -240,6 +240,15 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		}
 
 		/// <summary>
+		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoOutputNames()
+		{
+			return GetSwitcherVideoOutputIds();
+		}
+
+		/// <summary>
 		/// Gets the connector info for the output at the given address.
 		/// </summary>
 		/// <param name="address"></param>

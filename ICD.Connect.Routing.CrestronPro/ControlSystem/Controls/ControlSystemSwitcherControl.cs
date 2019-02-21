@@ -373,6 +373,23 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		}
 
 		/// <summary>
+		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoOutputNames()
+		{
+			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SwitcherInputs == null)
+				yield break;
+
+			foreach (var output in GetOutputs().Where(o => o.ConnectionType.HasFlag(eConnectionType.Video)))
+			{
+				DMOutput dmOutput = Parent.GetDmOutput(output.Address);
+
+				yield return string.Format("{0} {1}", dmOutput.NameFeedback.StringValue, output.Address);
+			}
+		}
+
+		/// <summary>
 		/// Gets the connector info for the output at the given address.
 		/// </summary>
 		/// <param name="address"></param>

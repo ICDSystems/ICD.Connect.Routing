@@ -109,6 +109,12 @@ namespace ICD.Connect.Routing.Controls
 		/// <returns></returns>
 		public abstract IEnumerable<string> GetSwitcherVideoOutputIds();
 
+		/// <summary>
+		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
+		/// </summary>
+		/// <returns></returns>
+		public abstract IEnumerable<string> GetSwitcherVideoOutputNames();
+
 		#endregion
 
 		#region Console

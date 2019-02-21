@@ -95,5 +95,14 @@ namespace ICD.Connect.Routing.Proxies
 		{
 			return Enumerable.Empty<string>();
 		}
+
+		/// <summary>
+		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<string> GetSwitcherVideoOutputNames()
+		{
+			return Enumerable.Empty<string>();
+		}
 	}
 }

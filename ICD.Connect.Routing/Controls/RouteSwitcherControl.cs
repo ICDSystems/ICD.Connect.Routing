@@ -239,6 +239,15 @@ namespace ICD.Connect.Routing.Controls
 			                   .Select(i => string.Format("NVX Stream {0}", i.Address));
 		}
 
+		/// <summary>
+		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoOutputNames()
+		{
+			return GetSwitcherVideoOutputIds();
+		}
+
 		#endregion
 
 		#region Parent Callbacks

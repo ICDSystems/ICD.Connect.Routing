@@ -270,6 +270,22 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 		}
 
 		/// <summary>
+		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoOutputNames()
+		{
+			if (m_Switcher == null)
+				yield break;
+
+			foreach (var output in GetOutputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
+			{
+				DMOutput dmOutput = Parent.GetDmOutput(output.Address);
+				yield return string.Format("{0} {1}", dmOutput.NameFeedback.StringValue, output.Address);
+			}
+		}
+
+		/// <summary>
 		/// Gets the output at the given address.
 		/// </summary>
 		/// <param name="address"></param>

@@ -216,6 +216,15 @@ namespace ICD.Connect.Routing.SPlus
 		}
 
 		/// <summary>
+		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoOutputNames()
+		{
+			return GetSwitcherVideoOutputIds();
+		}
+
+		/// <summary>
 		/// Gets the input at the given address.
 		/// </summary>
 		/// <param name="input"></param>

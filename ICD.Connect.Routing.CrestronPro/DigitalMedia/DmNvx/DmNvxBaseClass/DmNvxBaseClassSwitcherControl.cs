@@ -684,6 +684,15 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		}
 
 		/// <summary>
+		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoOutputNames()
+		{
+			return GetSwitcherVideoOutputIds();
+		}
+
+		/// <summary>
 		/// Updates the cache with the active input for the given flag.
 		/// </summary>
 		/// <param name="input"></param>
