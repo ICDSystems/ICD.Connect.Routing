@@ -1,4 +1,4 @@
-﻿using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kzX02CBase;
+﻿using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;

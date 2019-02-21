@@ -1,14 +1,13 @@
-﻿using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kzX02CBase;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
-using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 #endif
+using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase;
 
-namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4Kz302C
+namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 {
 #if SIMPLSHARP
-	public sealed class DmTx4Kz302CAdapter : AbstractDmTx4kzX02CBaseAdapter<DmTx4kz302C, DmTx4Kz302CAdapterSettings>
+	public sealed class DmTx4Kz302CAdapter : AbstractDmTx4kzX02CBaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kz302C, DmTx4Kz302CAdapterSettings>
 #else
 	public sealed class DmTx4Kz302CAdapter : AbstractDmTx4kzX02CBaseAdapter<DmTx4Kz302CAdapterSettings>
 #endif
@@ -16,19 +15,19 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4Kz302C
 		#region Settings
 
 #if SIMPLSHARP
-		public override DmTx4kz302C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
+		public override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kz302C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
 		{
-			return new DmTx4kz302C(ipid, controlSystem);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kz302C(ipid, controlSystem);
 		}
 
-		public override DmTx4kz302C InstantiateTransmitter(byte ipid, DMInput input)
+		public override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kz302C InstantiateTransmitter(byte ipid, DMInput input)
 		{
-			return new DmTx4kz302C(ipid, input);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kz302C(ipid, input);
 		}
 
-		public override DmTx4kz302C InstantiateTransmitter(DMInput input)
+		public override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kz302C InstantiateTransmitter(DMInput input)
 		{
-			return new DmTx4kz302C(input);
+			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kz302C(input);
 		}
 #endif
 
