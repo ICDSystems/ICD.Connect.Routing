@@ -82,7 +82,16 @@ namespace ICD.Connect.Routing.Proxies
 		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<string> GetSwitcherVideoInputResolution()
+		public IEnumerable<string> GetSwitcherVideoInputResolutions()
+		{
+			return Enumerable.Empty<string>();
+		}
+
+		/// <summary>
+		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<string> GetSwitcherVideoOutputIds()
 		{
 			return Enumerable.Empty<string>();
 		}

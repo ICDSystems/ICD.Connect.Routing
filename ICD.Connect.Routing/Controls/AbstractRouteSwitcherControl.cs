@@ -79,6 +79,10 @@ namespace ICD.Connect.Routing.Controls
 		/// <returns>True if successfully cleared.</returns>
 		public abstract bool ClearOutput(int output, eConnectionType type);
 
+		/// <summary>
+		/// Gets the Input Ids of the switcher's inputs (ie HDMI1, VGA2)
+		/// </summary>
+		/// <returns></returns>
 		public abstract IEnumerable<string> GetSwitcherVideoInputIds();
 
 		/// <summary>
@@ -97,7 +101,13 @@ namespace ICD.Connect.Routing.Controls
 		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
 		/// </summary>
 		/// <returns></returns>
-		public abstract IEnumerable<string> GetSwitcherVideoInputResolution();
+		public abstract IEnumerable<string> GetSwitcherVideoInputResolutions();
+
+		/// <summary>
+		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
+		/// </summary>
+		/// <returns></returns>
+		public abstract IEnumerable<string> GetSwitcherVideoOutputIds();
 
 		#endregion
 

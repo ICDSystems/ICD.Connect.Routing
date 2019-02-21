@@ -72,6 +72,15 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				{OUTPUT_SECONDARY_AUDIO_STREAM, new ConnectorInfo(OUTPUT_SECONDARY_AUDIO_STREAM, eConnectionType.Audio)}
 			};
 
+		private static readonly IcdOrderedDictionary<int, string> s_OutputConnectorOutputTypes =
+			new IcdOrderedDictionary<int, string>
+			{
+				{OUTPUT_HDMI, "HDMI"},
+				{OUTPUT_ANALOG_AUDIO, "Audio"},
+				{OUTPUT_STREAM, "Streaming"},
+				{OUTPUT_SECONDARY_AUDIO_STREAM, "Audio Stream"}
+			};
+
 #if SIMPLSHARP
 		private static readonly BiDictionary<int, DmNvxControl.eAudioSource> s_AudioSources =
 			new BiDictionary<int, DmNvxControl.eAudioSource>
@@ -574,9 +583,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			if (m_Streamer == null)
 				yield break;
 
-			foreach (var connectorInfo in GetInputs().Where(info => s_VideoSources.ContainsKey(info.Address)))
+			foreach (var address in GetInputs()
+				.Where(index => s_InputConnectors[index.Address].ConnectionType.HasFlag(eConnectionType.Video))
+				.Select(ci => ci.Address))
 			{
-				yield return string.Format("{0} {1}", s_InputConnectorInputTypes[connectorInfo.Address], connectorInfo.Address);
+				yield return string.Format("{0} {1}", s_InputConnectorInputTypes[address], address);
 			}
 		}
 
@@ -615,7 +626,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
 		/// </summary>
 		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputResolution()
+		public override IEnumerable<string> GetSwitcherVideoInputResolutions()
 		{
 			if (m_Streamer == null)
 				yield break;
@@ -652,6 +663,23 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				}
 
 				yield return DmInputOutputUtils.GetResolutionFormatted(h, v);
+			}
+		}
+
+		/// <summary>
+		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoOutputIds()
+		{
+			if (m_Streamer == null)
+				yield break;
+
+			foreach (var address in GetOutputs()
+				.Where(index => s_OutputConnectors[index.Address].ConnectionType.HasFlag(eConnectionType.Video))
+				.Select(ci => ci.Address))
+			{
+				yield return string.Format("{0} {1}", s_OutputConnectorOutputTypes[address], address);
 			}
 		}
 

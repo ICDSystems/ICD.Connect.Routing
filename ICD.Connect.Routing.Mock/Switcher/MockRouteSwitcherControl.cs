@@ -137,12 +137,22 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
 		/// </summary>
 		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputResolution()
+		public override IEnumerable<string> GetSwitcherVideoInputResolutions()
 		{
 			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
 			{
 				yield return string.Empty;
 			}
+		}
+
+		/// <summary>
+		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoOutputIds()
+		{
+			return GetOutputs().Where(output => output.ConnectionType.HasFlag(eConnectionType.Video))
+							   .Select(output => string.Format("Mock Video Output {0}", output.Address));
 		}
 
 		/// <summary>

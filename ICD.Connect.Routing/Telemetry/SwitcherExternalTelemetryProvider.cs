@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Crestron.SimplSharp.Reflection;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
-using ICD.Connect.Settings;
 using ICD.Connect.Telemetry;
 using ICD.Connect.Telemetry.EventArguments;
 
@@ -60,8 +58,8 @@ namespace ICD.Connect.Routing.Telemetry
 		public IEnumerable<string> VideoInputId { get { return GetSwitcherVideoInputIds(); } }
 		public IEnumerable<string> VideoInputName { get { return GetSwitcherVideoInputNames(); } }
 		public IEnumerable<string> VideoInputSyncType { get { return GetSwitcherVideoInputSyncTypeNames(); } }
-		public IEnumerable<string> VideoInputResolution { get; private set; }
-		public IEnumerable<string> VideoOutputId { get; private set; }
+		public IEnumerable<string> VideoInputResolution { get { return GetSwitcherVideoInputResolutions(); } }
+		public IEnumerable<string> VideoOutputId { get { return GetSwitcherVideoOutputIds(); } }
 		public IEnumerable<string> VideoOutputName { get; private set; }
 		public IEnumerable<string> VideoOutputSyncType { get; private set; }
 		public IEnumerable<string> VideoOutputResolution { get; private set; }
@@ -72,17 +70,17 @@ namespace ICD.Connect.Routing.Telemetry
 
 		public void Mute(int outputNumber)
 		{
-			//throw new NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public void Unmute(int outputNumber)
 		{
-			//throw new NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		public void SetVolume(int outputNumber)
 		{
-			//throw new NotImplementedException();
+			throw new NotImplementedException();
 		}
 
 		#region Private Methods
@@ -179,7 +177,35 @@ namespace ICD.Connect.Routing.Telemetry
 
 			foreach (var sync in control.GetSwitcherVideoInputSyncType())
 				yield return sync;
-		} 
+		}
+
+		private IEnumerable<string> GetSwitcherVideoInputResolutions()
+		{
+			IDeviceBase device = m_Parent as IDeviceBase;
+			if (device == null)
+				yield break;
+
+			IRouteSwitcherControl control = device.Controls.GetControl<IRouteSwitcherControl>();
+			if (control == null)
+				yield break;
+
+			foreach (var resolution in control.GetSwitcherVideoInputResolutions())
+				yield return resolution;
+		}
+
+		private IEnumerable<string> GetSwitcherVideoOutputIds()
+		{
+			IDeviceBase device = m_Parent as IDeviceBase;
+			if (device == null)
+				yield break;
+
+			IRouteSwitcherControl control = device.Controls.GetControl<IRouteSwitcherControl>();
+			if (control == null)
+				yield break;
+
+			foreach (var id in control.GetSwitcherVideoOutputIds())
+				yield return id;
+		}
 
 		#endregion
 	}

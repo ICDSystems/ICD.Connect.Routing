@@ -212,7 +212,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
 		/// </summary>
 		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputResolution()
+		public override IEnumerable<string> GetSwitcherVideoInputResolutions()
 		{
 			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
 			{
@@ -225,6 +225,18 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 
 				yield return "Unknown";
 			}
+		}
+
+		/// <summary>
+		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoOutputIds()
+		{
+			yield return "HDMI 1";
+			yield return "HDMI 2";
+			yield return "DM 3";
+			yield return "DM 4";
 		}
 
 		/// <summary>

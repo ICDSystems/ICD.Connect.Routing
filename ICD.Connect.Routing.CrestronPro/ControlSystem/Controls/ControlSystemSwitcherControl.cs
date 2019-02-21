@@ -335,7 +335,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
 		/// </summary>
 		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputResolution()
+		public override IEnumerable<string> GetSwitcherVideoInputResolutions()
 		{
 			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SwitcherInputs == null)
 				yield break;
@@ -352,6 +352,23 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				DMInput dmInput = Parent.GetDmInput(input.Address);
 
 				yield return DmInputOutputUtils.GetResolutionStringForVideoInput(dmInput);
+			}
+		}
+
+		/// <summary>
+		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoOutputIds()
+		{
+			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SwitcherInputs == null)
+				yield break;
+
+			foreach (var output in GetOutputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
+			{
+				DMOutput dmOutput = Parent.GetDmOutput(output.Address);
+
+				yield return string.Format("{0} {1}", DmInputOutputUtils.GetOutputTypeStringForOutput(dmOutput), output.Address);
 			}
 		}
 

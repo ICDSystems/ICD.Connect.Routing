@@ -80,7 +80,14 @@ namespace ICD.Connect.Routing.Controls
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		IEnumerable<string> GetSwitcherVideoInputResolution();
+		IEnumerable<string> GetSwitcherVideoInputResolutions();
+
+		/// <summary>
+		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
+		/// </summary>
+		/// <returns></returns>
+		[PublicAPI]
+		IEnumerable<string> GetSwitcherVideoOutputIds();
 	}
 
 	/// <summary>

@@ -190,7 +190,7 @@ namespace ICD.Connect.Routing.SPlus
 		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
 		/// </summary>
 		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputResolution()
+		public override IEnumerable<string> GetSwitcherVideoInputResolutions()
 		{
 			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
 			{
@@ -203,6 +203,16 @@ namespace ICD.Connect.Routing.SPlus
 
 				yield return "Unknown";
 			}
+		}
+
+		/// <summary>
+		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoOutputIds()
+		{
+			return GetOutputs().Where(o => o.ConnectionType.HasFlag(eConnectionType.Video))
+							   .Select(o => string.Format("S+ Video Output {0}", o.Address));
 		}
 
 		/// <summary>
