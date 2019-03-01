@@ -7,7 +7,6 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.RoutingGraphs;
 
@@ -176,11 +175,6 @@ namespace ICD.Connect.Routing.PathFinding
 
 			if (EnumUtils.HasMultipleFlags(flag))
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
-
-			// Does the input connection lead to a midpoint?
-			IRouteMidpointControl midpoint = m_RoutingGraph.GetDestinationControl(inputConnection) as IRouteMidpointControl;
-			if (midpoint == null)
-				return Enumerable.Empty<Connection>();
 
 			return
 				m_Connections.GetOutputConnections(inputConnection.Destination.GetDeviceControlInfo(),
