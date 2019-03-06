@@ -651,7 +651,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			streamer.BaseEvent -= StreamerOnBaseEvent;
 			streamer.SecondaryAudio.SecondaryAudioChange -= SecondaryAudioOnSecondaryAudioChange;
-			streamer.HdmiOut.StreamChange += HdmiOutOnStreamChange;
+			streamer.HdmiOut.StreamChange -= HdmiOutOnStreamChange;
 		}
 
 		private void HdmiOutOnStreamChange(Stream stream, StreamEventArgs args)
