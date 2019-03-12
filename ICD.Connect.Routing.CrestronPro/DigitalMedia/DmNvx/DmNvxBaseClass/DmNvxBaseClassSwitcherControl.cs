@@ -576,6 +576,15 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			                   .Any(result => result);
 		}
 
+#if SIMPLSHARP
+		private void SetHdcpTransmitterMode(HdmiOutWithColorSpaceMode.eHdcpTransmitterMode mode)
+		{
+			if (m_Streamer == null || mode == m_Streamer.HdmiOut.HdcpTransmitterModeFeedback)
+				return;
+
+			m_Streamer.HdmiOut.HdcpTransmitterMode = mode;
+		}
+#endif
 		#endregion
 
 #if SIMPLSHARP
@@ -624,6 +633,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			m_NvxControl.EnableAutomaticInitiation();
 			m_NvxControl.DisableAutomaticInputRouting();
+
+			SetHdcpTransmitterMode(HdmiOutWithColorSpaceMode.eHdcpTransmitterMode.FollowInputRequirement);
 		}
 
 		/// <summary>
@@ -638,6 +649,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			streamer.BaseEvent += StreamerOnBaseEvent;
 			streamer.SecondaryAudio.SecondaryAudioChange += SecondaryAudioOnSecondaryAudioChange;
 			streamer.HdmiOut.StreamChange += HdmiOutOnStreamChange;
+
+			foreach (HdmiInWithColorSpaceMode input in streamer.HdmiIn)
+				input.StreamChange -= HdmiInOnStreamChange;
 		}
 
 		/// <summary>
@@ -652,6 +666,25 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			streamer.BaseEvent -= StreamerOnBaseEvent;
 			streamer.SecondaryAudio.SecondaryAudioChange -= SecondaryAudioOnSecondaryAudioChange;
 			streamer.HdmiOut.StreamChange -= HdmiOutOnStreamChange;
+
+			foreach (HdmiInWithColorSpaceMode input in streamer.HdmiIn)
+				input.StreamChange -= HdmiInOnStreamChange;
+		}
+
+		private void HdmiInOnStreamChange(Stream stream, StreamEventArgs args)
+		{
+			HdmiInWithColorSpaceMode input = stream as HdmiInWithColorSpaceMode;
+
+			switch (args.EventId)
+			{
+				case DMInputEventIds.ResolutionEventId:
+					Log(eSeverity.Warning, "HDMI Input {0} Resolution changed to {1}x{2}&{3}",
+						input.Name,
+					    input.VideoAttributes.HorizontalResolutionFeedback.UShortValue,
+					    input.VideoAttributes.VerticalResolutionFeedback.UShortValue,
+					    input.VideoAttributes.FramesPerSecondFeedback);
+					break;
+			}
 		}
 
 		private void HdmiOutOnStreamChange(Stream stream, StreamEventArgs args)
@@ -659,7 +692,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			switch (args.EventId)
 			{
 				case DMOutputEventIds.HdcpTransmitterModeFeedbackEventId:
-					Log(eSeverity.Warning, "HDCP Transmitter Mode changed to {0}", m_Streamer.HdmiOut.HdcpTransmitterModeFeedback);
+					Log(eSeverity.Warning, "HDMI Output HDCP Transmitter Mode changed to {0}", m_Streamer.HdmiOut.HdcpTransmitterModeFeedback);
+					SetHdcpTransmitterMode(HdmiOutWithColorSpaceMode.eHdcpTransmitterMode.FollowInputRequirement);
+					break;
+
+				case DMOutputEventIds.DisabledByHdcpEventId:
+					Log(eSeverity.Warning, "HDMI Output Disabled By HDCP changed to {0}", m_Streamer.HdmiOut.DisabledByHdcpFeedback.BoolValue);
+					break;
+
+				case DMOutputEventIds.ResolutionEventId:
+					Log(eSeverity.Warning, "HDMI Output Resolution changed to {0}", m_Streamer.HdmiOut.ResolutionFeedback);
 					break;
 			}
 		}
