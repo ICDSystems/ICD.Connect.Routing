@@ -5,6 +5,7 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Originators;
@@ -252,6 +253,9 @@ namespace ICD.Connect.Routing.Endpoints
 			ConnectionType = settings.ConnectionType;
 
 			SetAddresses(settings.GetAddresses());
+
+			if (!GetAddresses().Any())
+				Log(eSeverity.Warning, "No addresses assigned");
 		}
 
 		#endregion
