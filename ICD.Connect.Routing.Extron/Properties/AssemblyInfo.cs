@@ -5,4 +5,3 @@ using System.Reflection;
 [assembly: AssemblyProduct("ICD.Connect.Routing.Extron")]
 [assembly: AssemblyCopyright("Copyright © ICD Systems 2019")]
 [assembly: AssemblyVersion("14.2.0.0")]
-

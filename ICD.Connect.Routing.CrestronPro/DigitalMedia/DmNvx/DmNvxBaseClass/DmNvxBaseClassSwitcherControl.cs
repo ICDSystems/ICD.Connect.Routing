@@ -637,6 +637,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			streamer.BaseEvent += StreamerOnBaseEvent;
 			streamer.SecondaryAudio.SecondaryAudioChange += SecondaryAudioOnSecondaryAudioChange;
+			streamer.HdmiOut.StreamChange += HdmiOutOnStreamChange;
 		}
 
 		/// <summary>
@@ -650,6 +651,17 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			streamer.BaseEvent -= StreamerOnBaseEvent;
 			streamer.SecondaryAudio.SecondaryAudioChange -= SecondaryAudioOnSecondaryAudioChange;
+			streamer.HdmiOut.StreamChange += HdmiOutOnStreamChange;
+		}
+
+		private void HdmiOutOnStreamChange(Stream stream, StreamEventArgs args)
+		{
+			switch (args.EventId)
+			{
+				case DMOutputEventIds.HdcpTransmitterModeFeedbackEventId:
+					Log(eSeverity.Warning, "HDCP Transmitter Mode changed to {0}", m_Streamer.HdmiOut.HdcpTransmitterModeFeedback);
+					break;
+			}
 		}
 
 		/// <summary>
