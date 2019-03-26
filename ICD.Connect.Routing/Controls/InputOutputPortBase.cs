@@ -8,5 +8,6 @@ namespace ICD.Connect.Routing.Controls
 	{
 		public event EventHandler OnRequestTelemetryRebuild;
 		public eConnectionType ConnectionType { get; set; }
+		public int Address { get; set; }
 	}
 }

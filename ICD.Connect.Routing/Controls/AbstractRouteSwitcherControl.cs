@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
@@ -19,10 +20,6 @@ namespace ICD.Connect.Routing.Controls
 		public event EventHandler<BoolEventArgs> OnAudioBreakawayEnabledChanged;
 		public event EventHandler<BoolEventArgs> OnUsbBreakawayEnabledChanged;
 
-
-		protected Dictionary<ConnectorInfo, InputPort> inputPorts;
-		protected Dictionary<ConnectorInfo, OutputPort> outputPorts; 
-
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -31,8 +28,6 @@ namespace ICD.Connect.Routing.Controls
 		protected AbstractRouteSwitcherControl(T parent, int id)
 			: base(parent, id)
 		{
-			inputPorts = new Dictionary<ConnectorInfo, InputPort>();
-			outputPorts = new Dictionary<ConnectorInfo, OutputPort>();
 		}
 
 		#region Methods
@@ -75,32 +70,35 @@ namespace ICD.Connect.Routing.Controls
 		/// Returns switcher port objects to get details about the input ports on this switcher.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<InputPort> GetInputPorts()
-		{
-			if (inputPorts == null)
-			{
-				InitializeInputPorts();
-			}
+		public abstract IEnumerable<InputPort> GetInputPorts();
 
-			return inputPorts != null ? inputPorts.Values : Enumerable.Empty<InputPort>();
+		[NotNull]
+		public InputPort GetInputPort(int address)
+		{
+			return GetInputPorts().First(i => i.Address == address);
 		}
 
 		/// <summary>
 		/// Returns switcher port objects to get details about the output ports on this switcher.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<OutputPort> GetOutputPorts()
-		{
-			if (outputPorts == null)
-			{
-				InitializeOutputPorts();
-			}
+		public abstract IEnumerable<OutputPort> GetOutputPorts();
 
-			return outputPorts != null ? outputPorts.Values : Enumerable.Empty<OutputPort>();
+		[NotNull]
+		public OutputPort GetOutputPort(int address)
+		{
+			return GetOutputPorts().First(o => o.Address == address);
 		}
 
-		protected abstract void InitializeInputPorts();
-		protected abstract void InitializeOutputPorts();
+		protected string GetActiveSourceIdName(ConnectorInfo info, eConnectionType type)
+		{
+			ConnectorInfo? activeInput = GetInput(info.Address, type);
+			if (activeInput == null)
+				return null;
+
+			InputPort port = GetInputPort(activeInput.Value.Address);
+			return string.Format("{0} {1}", port.InputId, port.InputName);
+		}
 
 		/// <summary>
 		/// Performs the given route operation.

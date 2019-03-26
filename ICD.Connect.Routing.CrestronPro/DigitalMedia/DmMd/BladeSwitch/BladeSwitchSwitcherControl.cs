@@ -122,13 +122,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 			return input >= 1 && input <= m_Switcher.NumberOfInputs;
 		}
 
-		protected override void InitializeInputPorts()
+		public override IEnumerable<InputPort> GetInputPorts()
 		{
 			foreach (ConnectorInfo input in GetInputs())
 			{
 				bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
-				inputPorts.Add(input, new InputPort
+				yield return new InputPort
 				{
+					Address = input.Address,
 					ConnectionType = input.ConnectionType,
 					InputId = GetInputId(input),
 					InputIdFeedbackSupported = true,
@@ -140,18 +141,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 					VideoInputSyncFeedbackSupported = supportsVideo,
 					VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
 					VideoInputSyncTypeFeedbackSupported = supportsVideo
-				});
+				};
 			}
 		}
 
-		protected override void InitializeOutputPorts()
+		public override IEnumerable<OutputPort> GetOutputPorts()
 		{
 			foreach (ConnectorInfo output in GetOutputs())
 			{
 				bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
 				bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
-				outputPorts.Add(output, new OutputPort
+				yield return new OutputPort
 				{
+					Address = output.Address,
 					ConnectionType = output.ConnectionType,
 					OutputId = GetOutputId(output),
 					OutputIdFeedbackSupport = true,
@@ -161,7 +163,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 					VideoOutputSourceFeedbackSupport = supportsVideo,
 					AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
 					AudioOutputSourceFeedbackSupport = supportsAudio
-				});
+				};
 			}
 		}
 
@@ -320,18 +322,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 
 			DMOutput dmOutput = Parent.GetDmOutput(info.Address);
 			return string.Format("{0} {1}", DmInputOutputUtils.GetOutputTypeStringForOutput(dmOutput), info.Address);
-		}
-
-		private string GetActiveSourceIdName(ConnectorInfo info, eConnectionType type)
-		{
-			if(!EnumUtils.HasSingleFlag(type))
-				throw new InvalidOperationException("Cannot get active source for multiple type flags");
-
-			var activeInput = m_Cache.GetInputConnectorInfoForOutput(info.Address, type);
-			return activeInput != null
-				       ? string.Format("{0} {1}", inputPorts[activeInput.Value].InputId ?? string.Empty,
-				                       inputPorts[activeInput.Value].InputName ?? string.Empty)
-					   : null;
 		}
 
 		/// <summary>
@@ -623,8 +613,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 
 			if (DmInputOutputUtils.GetIsEventIdResolutionEventId(args.EventId))
 			{
-				KeyValuePair<ConnectorInfo, InputPort> input = inputPorts.First(i => i.Key.Address == (int)args.Number);
-				input.Value.VideoInputResolution = GetVideoInputResolution(input.Key);
+				InputPort input = GetInputPort((int)(args.Number));
+				ConnectorInfo info = GetInput((int)(args.Number));
+				input.VideoInputResolution = GetVideoInputResolution(info);
 			}
 		}
 
@@ -680,13 +671,12 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
-			KeyValuePair<ConnectorInfo, OutputPort> outputPort = outputPorts.FirstOrDefault(kvp => kvp.Key.Address == args.Output);
-			if (outputPort.Value == null)
-				return;
+			OutputPort outputPort = GetOutputPort(args.Output);
+			ConnectorInfo info = GetOutput(args.Output);
 			if (args.Type.HasFlag(eConnectionType.Video))
-				outputPort.Value.VideoOutputSource = GetActiveSourceIdName(outputPort.Key, eConnectionType.Video);
+				outputPort.VideoOutputSource = GetActiveSourceIdName(info, eConnectionType.Video);
 			if (args.Type.HasFlag(eConnectionType.Audio))
-				outputPort.Value.AudioOutputSource = GetActiveSourceIdName(outputPort.Key, eConnectionType.Audio);
+				outputPort.AudioOutputSource = GetActiveSourceIdName(info, eConnectionType.Audio);
 		}
 
 		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
@@ -697,12 +687,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
-			KeyValuePair<ConnectorInfo, InputPort> inputPort = inputPorts.FirstOrDefault(kvp => kvp.Key.Address == args.Input);
-			if (inputPort.Value != null && args.Type.HasFlag(eConnectionType.Video))
-			{
-				inputPort.Value.VideoInputSync = GetVideoInputSyncState(inputPort.Key);
-				inputPort.Value.VideoInputSyncType = GetVideoInputSyncType(inputPort.Key);
-			}
+
+			InputPort inputPort = GetInputPort(args.Input);
+			ConnectorInfo info = GetInput(args.Input);
+			inputPort.VideoInputSync = args.State;
+			inputPort.VideoInputSyncType = GetVideoInputSyncType(info);
 		}
 
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)

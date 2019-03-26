@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.EventArguments;
-using ICD.Connect.Devices;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Telemetry;
 
 namespace ICD.Connect.Routing.Telemetry
 {
-	public class SwitcherExternalTelemetryProvider : ISwitcherExternalTelemetryProvider
+	public sealed class SwitcherExternalTelemetryProvider : ISwitcherExternalTelemetryProvider
 	{
 		public event EventHandler OnRequestTelemetryRebuild;
 		public event EventHandler<BoolEventArgs> OnAudioBreakawayEnabledChanged;
@@ -26,14 +25,10 @@ namespace ICD.Connect.Routing.Telemetry
 
 		public void SetParent(ITelemetryProvider provider)
 		{
-			var castProvider = provider as IDevice;
-			if (castProvider == null)
-				throw new ArgumentException("Provider for Switcher Telemetry must be IDevice.");
+			var switcherControl = provider as IRouteSwitcherControl;
+			if (switcherControl == null)
+				throw new ArgumentException("Provider for Switcher Telemetry must be IRouteSwitcherControl.");
 
-			var switcherControl = castProvider.Controls.GetControl<IRouteSwitcherControl>();
-			if(switcherControl == null)
-				throw new ArgumentException("Provider for Switcher Telemetry does not contain Switcher Control");
-			
 			m_Parent = switcherControl;
 			m_InputPorts.Clear();
 			m_OutputPorts.Clear();
@@ -48,8 +43,8 @@ namespace ICD.Connect.Routing.Telemetry
 		public string SubnetMask { get; private set; }
 		public string MacAddress { get; private set; }
 		public string DefaultRouter { get; private set; }
-		public IEnumerable<InputPort> SwitcherInputPorts { get; private set; }
-		public IEnumerable<OutputPort> SwitcherOutputPorts { get; private set; }
+		public IEnumerable<InputPort> SwitcherInputPorts { get { return m_InputPorts; } }
+		public IEnumerable<OutputPort> SwitcherOutputPorts { get { return m_OutputPorts; } }
 
 		public void Mute(int outputNumber)
 		{

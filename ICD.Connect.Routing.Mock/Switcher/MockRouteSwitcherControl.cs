@@ -81,30 +81,32 @@ namespace ICD.Connect.Routing.Mock.Switcher
 
 		#region Methods
 
-		protected override void InitializeInputPorts()
+		public override IEnumerable<InputPort> GetInputPorts()
 		{
 			foreach (ConnectorInfo input in GetInputs())
 			{
 				bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
-				inputPorts.Add(input, new InputPort
+				yield return new InputPort
 				{
+					Address = input.Address,
 					ConnectionType = input.ConnectionType,
 					InputId = GetInputId(input),
 					InputIdFeedbackSupported = true,
 					VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
 					VideoInputSyncFeedbackSupported = supportsVideo,
-				});
+				};
 			}
 		}
 
-		protected override void InitializeOutputPorts()
+		public override IEnumerable<OutputPort> GetOutputPorts()
 		{
 			foreach (ConnectorInfo output in GetOutputs())
 			{
 				bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
 				bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
-				outputPorts.Add(output, new OutputPort
+				yield return new OutputPort
 				{
+					Address = output.Address,
 					ConnectionType = output.ConnectionType,
 					OutputId = GetOutputId(output),
 					OutputIdFeedbackSupport = true,
@@ -112,7 +114,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 					VideoOutputSourceFeedbackSupport = supportsVideo,
 					AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
 					AudioOutputSourceFeedbackSupport = supportsAudio
-				});
+				};
 			}
 		}
 
@@ -148,18 +150,6 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		private string GetOutputId(ConnectorInfo info)
 		{
 			return string.Format("Mock Video Output {0}", info.Address);
-		}
-
-		private string GetActiveSourceIdName(ConnectorInfo info, eConnectionType type)
-		{
-			if (!EnumUtils.HasSingleFlag(type))
-				throw new InvalidOperationException("Cannot get active source for multiple type flags");
-
-			var activeInput = m_Cache.GetInputConnectorInfoForOutput(info.Address, type);
-			return activeInput != null
-					   ? string.Format("{0} {1}", inputPorts[activeInput.Value].InputId ?? string.Empty,
-									   inputPorts[activeInput.Value].InputName ?? string.Empty)
-					   : null;
 		}
 
 		/// <summary>
@@ -309,13 +299,12 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
-			KeyValuePair<ConnectorInfo, OutputPort> outputPort = outputPorts.FirstOrDefault(kvp => kvp.Key.Address == args.Output);
-			if (outputPort.Value == null)
-				return;
+			OutputPort outputPort = GetOutputPort(args.Output);
+			ConnectorInfo info = GetOutput(args.Output);
 			if (args.Type.HasFlag(eConnectionType.Video))
-				outputPort.Value.VideoOutputSource = GetActiveSourceIdName(outputPort.Key, eConnectionType.Video);
+				outputPort.VideoOutputSource = GetActiveSourceIdName(info, eConnectionType.Video);
 			if (args.Type.HasFlag(eConnectionType.Audio))
-				outputPort.Value.AudioOutputSource = GetActiveSourceIdName(outputPort.Key, eConnectionType.Audio);
+				outputPort.AudioOutputSource = GetActiveSourceIdName(info, eConnectionType.Audio);
 		}
 
 		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
@@ -326,9 +315,10 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
-			KeyValuePair<ConnectorInfo, InputPort> inputPort = inputPorts.FirstOrDefault(kvp => kvp.Key.Address == args.Input);
-			if (inputPort.Value != null && args.Type.HasFlag(eConnectionType.Video))
-				inputPort.Value.VideoInputSync = GetVideoInputSyncState(inputPort.Key);
+
+			InputPort inputPort = GetInputPort(args.Input);
+			ConnectorInfo info = GetInput(args.Input);
+			inputPort.VideoInputSync = args.State;
 		}
 
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)

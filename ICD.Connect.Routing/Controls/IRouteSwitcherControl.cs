@@ -15,7 +15,7 @@ namespace ICD.Connect.Routing.Controls
 	/// for routing specific inputs to specific outputs.
 	/// </summary>
 	[ApiClass(typeof(ProxyRouteSwitcherControl), typeof(IRouteMidpointControl))]
-	[ExternalTelemetry("Switcher", typeof(ISwitcherExternalTelemetryProvider))]
+	[ExternalTelemetry("Switcher", typeof(SwitcherExternalTelemetryProvider))]
 	public interface IRouteSwitcherControl : IRouteMidpointControl
 	{
 		/// <summary>

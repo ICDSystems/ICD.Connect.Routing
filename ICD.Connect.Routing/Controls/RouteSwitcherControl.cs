@@ -151,13 +151,14 @@ namespace ICD.Connect.Routing.Controls
 			return Parent.GetInput(output, type);
 		}
 
-		protected override void InitializeInputPorts()
+		public override IEnumerable<InputPort> GetInputPorts()
 		{
 			foreach (ConnectorInfo input in GetInputs())
 			{
 				bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
-				inputPorts.Add(input, new InputPort
+				yield return new InputPort
 				{
+					Address = input.Address,
 					ConnectionType = input.ConnectionType,
 					InputId = string.Format("NVX Stream {0}", input.Address),
 					InputIdFeedbackSupported = true,
@@ -165,18 +166,19 @@ namespace ICD.Connect.Routing.Controls
 					VideoInputSyncFeedbackSupported = supportsVideo,
 					VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
 					VideoInputSyncTypeFeedbackSupported = supportsVideo
-				});
+				};
 			}
 		}
 
-		protected override void InitializeOutputPorts()
+		public override IEnumerable<OutputPort> GetOutputPorts()
 		{
 			foreach(ConnectorInfo output in GetOutputs())
 			{
 				bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
 				bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
-				outputPorts.Add(output, new OutputPort
+				yield return new OutputPort
 				{
+					Address = output.Address,
 					ConnectionType = output.ConnectionType,
 					OutputId = string.Format("NVX Stream Output {0}", output.Address),
 					OutputIdFeedbackSupport = true,
@@ -184,7 +186,7 @@ namespace ICD.Connect.Routing.Controls
 					VideoOutputSourceFeedbackSupport = supportsVideo,
 					AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
 					AudioOutputSourceFeedbackSupport = supportsAudio
-				});
+				};
 			}
 		}
 		
@@ -219,15 +221,6 @@ namespace ICD.Connect.Routing.Controls
 			return GetSignalDetectedState(info.Address, eConnectionType.Video) ? "NVX" : string.Empty;
 		}
 
-		private string GetActiveSourceIdName(ConnectorInfo info, eConnectionType type)
-		{
-			ConnectorInfo? activeInput = Parent.GetInput(info.Address, type);
-			return activeInput != null
-					   ? string.Format("{0} {1}", inputPorts[activeInput.Value].InputId ?? string.Empty,
-									   inputPorts[activeInput.Value].InputName ?? string.Empty)
-					   : null;
-		}
-
 		#endregion
 
 		#region Parent Callbacks
@@ -259,12 +252,12 @@ namespace ICD.Connect.Routing.Controls
 		private void ParentOnRouteChange(object sender, RouteChangeEventArgs eventArgs)
 		{
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(eventArgs));
-			KeyValuePair<ConnectorInfo, OutputPort> outputPort =
-					outputPorts.FirstOrDefault(kvp => kvp.Key.Address == eventArgs.Output);
+			OutputPort outputPort = GetOutputPort(eventArgs.Output);
+			ConnectorInfo info = GetOutput(eventArgs.Output);
 			if (eventArgs.Type.HasFlag(eConnectionType.Video))
-				outputPort.Value.VideoOutputSource = GetActiveSourceIdName(outputPort.Key, eConnectionType.Video);
+				outputPort.VideoOutputSource = GetActiveSourceIdName(info, eConnectionType.Video);
 			if (eventArgs.Type.HasFlag(eConnectionType.Audio))
-				outputPort.Value.AudioOutputSource = GetActiveSourceIdName(outputPort.Key, eConnectionType.Audio);
+				outputPort.AudioOutputSource = GetActiveSourceIdName(info, eConnectionType.Audio);
 		}
 
 		private void ParentOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs eventArgs)
@@ -281,9 +274,10 @@ namespace ICD.Connect.Routing.Controls
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(eventArgs));
 
-			KeyValuePair<ConnectorInfo, InputPort> inputPort = inputPorts.FirstOrDefault(kvp => kvp.Key.Address == eventArgs.Input);
-			inputPort.Value.VideoInputSync = eventArgs.State;
-			inputPort.Value.VideoInputSyncType = GetVideoInputSyncType(inputPort.Key);
+			InputPort inputPort = GetInputPort(eventArgs.Input);
+			ConnectorInfo info = GetInput(eventArgs.Input);
+			inputPort.VideoInputSync = eventArgs.State;
+			inputPort.VideoInputSyncType = GetVideoInputSyncType(info);
 		}
 
 		#endregion
