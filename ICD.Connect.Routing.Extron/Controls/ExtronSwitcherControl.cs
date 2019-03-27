@@ -224,6 +224,56 @@ namespace ICD.Connect.Routing.Extron.Controls
 		}
 
 		/// <summary>
+		/// Returns switcher port objects to get details about the input ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<InputPort> GetInputPorts()
+		{
+			foreach (ConnectorInfo input in GetInputs())
+			{
+				bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+				yield return new InputPort
+				{
+					Address = input.Address,
+					ConnectionType = input.ConnectionType,
+					InputId = input.Address.ToString(),
+					InputIdFeedbackSupported = true,
+					VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+					VideoInputSyncFeedbackSupported = supportsVideo
+				};
+			}
+		}
+
+		/// <summary>
+		/// Returns switcher port objects to get details about the output ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<OutputPort> GetOutputPorts()
+		{
+			foreach (ConnectorInfo output in GetOutputs())
+			{
+				bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+				bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+				yield return new OutputPort
+				{
+					Address = output.Address,
+					ConnectionType = output.ConnectionType,
+					OutputId = output.Address.ToString(),
+					OutputIdFeedbackSupport = true,
+					VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+					VideoOutputSourceFeedbackSupport = supportsVideo,
+					AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+					AudioOutputSourceFeedbackSupport = supportsAudio
+				};
+			}
+		}
+
+		private bool GetVideoInputSyncState(ConnectorInfo info)
+		{
+			return m_Cache.GetSourceDetectedState(info.Address, eConnectionType.Video);
+		}
+
+		/// <summary>
 		/// Performs the given RouteOperation on this switcher.
 		/// </summary>
 		/// <param name="info"></param>
