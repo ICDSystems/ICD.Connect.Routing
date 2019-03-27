@@ -1,4 +1,5 @@
-﻿using System;
+﻿#if SIMPLSHARP
+using System;
 using System.Collections.Generic;
 using Crestron.SimplSharp.Reflection;
 using Crestron.SimplSharpPro;
