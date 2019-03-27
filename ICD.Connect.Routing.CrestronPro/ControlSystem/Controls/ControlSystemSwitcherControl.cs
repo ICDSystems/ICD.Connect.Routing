@@ -134,7 +134,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 					ConnectionType = output.ConnectionType,
 					OutputId = GetOutputId(output),
 					OutputIdFeedbackSupport = true,
-					OutputName = GetVideoOutputName(output),
+					OutputName = GetOutputName(output),
 					OutputNameFeedbackSupport = true,
 					VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
 					VideoOutputSourceFeedbackSupport = supportsVideo,
@@ -593,7 +593,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 
 			DMInput dmInput = Parent.GetDmInput(info.Address);
 
-			return string.Format("{0} {1}", dmInput.NameFeedback.StringValue, info.Address);
+			return dmInput.NameFeedback.StringValue;
 		}
 
 		private string GetVideoInputSyncType(ConnectorInfo info)
@@ -674,14 +674,14 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			return string.Format("{0} {1}", DmInputOutputUtils.GetOutputTypeStringForOutput(dmOutput), info.Address);
 		}
 
-		private string GetVideoOutputName(ConnectorInfo info)
+		private string GetOutputName(ConnectorInfo info)
 		{
 			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SwitcherInputs == null)
 				return null;
 
 			DMOutput dmOutput = Parent.GetDmOutput(info.Address);
 
-			return string.Format("{0} {1}", dmOutput.NameFeedback.StringValue, info.Address);
+			return dmOutput.NameFeedback.StringValue;
 		}
 
 		private string GetAudioOutputName(ConnectorInfo info)

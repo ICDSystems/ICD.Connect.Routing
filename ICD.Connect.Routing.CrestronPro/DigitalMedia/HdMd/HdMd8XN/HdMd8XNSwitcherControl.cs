@@ -236,7 +236,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 				return null;
 			
 			DMInput dmInput = Parent.GetDmInput(input.Address);
-			return string.Format("{0} {1}", dmInput.NameFeedback.StringValue, input.Address);
+			return dmInput.NameFeedback.StringValue;
 		}
 
 		private bool GetVideoInputSyncState(ConnectorInfo info)
@@ -283,7 +283,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 				return null;
 
 			DMOutput dmOutput = Parent.GetDmOutput(output.Address);
-			return string.Format("{0} {1}", dmOutput.NameFeedback.StringValue, output.Address);
+			return dmOutput.NameFeedback.StringValue;
 		}
 
 		/// <summary>

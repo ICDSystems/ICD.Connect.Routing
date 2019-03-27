@@ -220,7 +220,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMd6XN
 				return null;
 
 				DMInput dmInput = Parent.GetDmInput(input.Address);
-				return string.Format("{0} {1}", dmInput.NameFeedback.StringValue, input.Address);
+				return dmInput.NameFeedback.StringValue;
 			
 		}
 
@@ -272,7 +272,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMd6XN
 				return null;
 			
 			DMOutput dmOutput = Parent.GetDmOutput(info.Address);
-			return string.Format("{0} {1}", dmOutput.NameFeedback.StringValue, info.Address);
+			return dmOutput.NameFeedback.StringValue;
 		}
 
 		/// <summary>

@@ -267,7 +267,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 				return null;
 
 			DMInput dmInput = Parent.GetDmInput(info.Address);
-			return string.Format("{0} {1}", dmInput.NameFeedback.StringValue, info.Address);
+			return dmInput.NameFeedback.StringValue;
 		}
 
 		/// <summary>
@@ -334,7 +334,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 				return null;
 
 			DMOutput dmOutput = Parent.GetDmOutput(output.Address);
-			return string.Format("{0} {1}", dmOutput.NameFeedback.StringValue, output.Address);
+			return dmOutput.NameFeedback.StringValue;
 		}
 
 		/// <summary>
