@@ -623,9 +623,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 		private string GetInputId(ConnectorInfo info)
 		{
-			if (m_Streamer == null)
-				return null;
-			
 			return string.Format("{0} {1}", s_InputConnectorInputTypes[info.Address], info);
 		}
 
@@ -636,9 +633,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 		private string GetVideoInputSyncType(ConnectorInfo info)
 		{
-			if(m_Streamer == null)
-				return null;
-
 			bool syncState = GetSignalDetectedState(info.Address, eConnectionType.Video);
 			if (!syncState)
 				return string.Empty;
@@ -648,6 +642,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 		private string GetVideoInputResolution(ConnectorInfo input)
 		{
+#if SIMPLSHARP
 			if (m_Streamer == null)
 				return null;
 
@@ -678,24 +673,26 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				}
 
 			return DmInputOutputUtils.GetResolutionFormatted(h, v);
-
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		private string GetOutputId(ConnectorInfo output)
 		{
-			if (m_Streamer == null)
-				return null;
-
 			return string.Format("{0} {1}", s_OutputConnectorOutputTypes[output.Address], output.Address);
-
 		}
 
 		private string GetVideoOutputSyncType(ConnectorInfo info)
 		{
+#if SIMPLSHARP
 			if (m_Streamer == null)
 				return null;
 
 			return info.Address == 1 ? m_Streamer.HdmiOut.SyncDetectedFeedback.BoolValue ? "HDMI" : "" : null;
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		/// <summary>
