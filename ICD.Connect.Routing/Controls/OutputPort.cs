@@ -13,40 +13,40 @@ namespace ICD.Connect.Routing.Controls
 		#region Events
 
 		[EventTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_SYNC_CHANGED)]
-		event EventHandler<BoolEventArgs> VideoOutputSyncChanged;
+		public event EventHandler<BoolEventArgs> OnVideoOutputSyncChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.AUDIO_OUTPUT_MUTE_CHANGED)]
-		event EventHandler<BoolEventArgs> AudioOutputMuteChanged;
+		public event EventHandler<BoolEventArgs> OnAudioOutputMuteChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.AUDIO_OUTPUT_VOLUME_CHANGED)]
-		event EventHandler<FloatEventArgs> AudioOutputVolumeChanged;
+		public event EventHandler<FloatEventArgs> OnAudioOutputVolumeChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.OUTPUT_ID_CHANGED)]
-		event EventHandler<StringEventArgs> OutputIdChanged;
+		public event EventHandler<StringEventArgs> OnOutputIdChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.OUTPUT_NAME_CHANGED)]
-		event EventHandler<StringEventArgs> OutputNameChanged;
+		public event EventHandler<StringEventArgs> OnOutputNameChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_SYNC_TYPE_CHANGED)]
-		event EventHandler<StringEventArgs> VideoOutputSyncTypeChanged;
+		public event EventHandler<StringEventArgs> OnVideoOutputSyncTypeChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_RESOLUTION_CHANGED)]
-		event EventHandler<StringEventArgs> VideoOutputResolutionChanged;
+		public event EventHandler<StringEventArgs> OnVideoOutputResolutionChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_ENCODING_CHANGED)]
-		event EventHandler<StringEventArgs> VideoOutputEncodingChanged;
+		public event EventHandler<StringEventArgs> OnVideoOutputEncodingChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_SOURCE_CHANGED)]
-		event EventHandler<StringEventArgs> VideoOutputSourceChanged; 
+		public event EventHandler<StringEventArgs> OnVideoOutputSourceChanged; 
 
 		[EventTelemetry(SwitcherTelemetryNames.AUDIO_OUTPUT_SOURCE_CHANGED)]
-		event EventHandler<StringEventArgs> AudioOutputSourceChanged;
+		public event EventHandler<StringEventArgs> OnAudioOutputSourceChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.AUDIO_OUTPUT_FORMAT_CHANGED)]
-		event EventHandler<StringEventArgs> AudioOutputFormatChanged;
+		public event EventHandler<StringEventArgs> OnAudioOutputFormatChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.USB_OUTPUT_ID_CHANGED)]
-		event EventHandler<StringEventArgs> UsbOutputIdChanged;
+		public event EventHandler<StringEventArgs> OnUsbOutputIdChanged;
 
 		#endregion
 
@@ -90,7 +90,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_VideoOutputSync == value)
 					return;
 				m_VideoOutputSync = value;
-				VideoOutputSyncChanged.Raise(this, new BoolEventArgs(m_VideoOutputSync));
+				OnVideoOutputSyncChanged.Raise(this, new BoolEventArgs(m_VideoOutputSync));
 			}
 		}
 
@@ -113,7 +113,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_AudioOutputMute == value)
 					return;
 				m_AudioOutputMute = value;
-				AudioOutputMuteChanged.Raise(this, new BoolEventArgs(m_AudioOutputMute));
+				OnAudioOutputMuteChanged.Raise(this, new BoolEventArgs(m_AudioOutputMute));
 			}
 		}
 
@@ -137,7 +137,7 @@ namespace ICD.Connect.Routing.Controls
 				if (Math.Abs(m_AudioOutputVolume - value) < 0.01f)
 					return;
 				m_AudioOutputVolume = value;
-				AudioOutputVolumeChanged.Raise(this, new FloatEventArgs(m_AudioOutputVolume));
+				OnAudioOutputVolumeChanged.Raise(this, new FloatEventArgs(m_AudioOutputVolume));
 			}
 		}
 
@@ -160,7 +160,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_OutputId == value)
 					return;
 				m_OutputId = value;
-				OutputIdChanged.Raise(this, new StringEventArgs(m_OutputId));
+				OnOutputIdChanged.Raise(this, new StringEventArgs(m_OutputId));
 			}
 		}
 
@@ -179,7 +179,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_OutputName == value)
 					return;
 				m_OutputName = value;
-				OutputNameChanged.Raise(this, new StringEventArgs(m_OutputName));
+				OnOutputNameChanged.Raise(this, new StringEventArgs(m_OutputName));
 			}
 		}
 
@@ -198,7 +198,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_VideoOutputSyncType == value)
 					return;
 				m_VideoOutputSyncType = value;
-				VideoOutputSyncTypeChanged.Raise(this, new StringEventArgs(m_VideoOutputSyncType));
+				OnVideoOutputSyncTypeChanged.Raise(this, new StringEventArgs(m_VideoOutputSyncType));
 			}
 		}
 
@@ -221,7 +221,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_VideoOutputResolution == value)
 					return;
 				m_VideoOutputResolution = value;
-				VideoOutputResolutionChanged.Raise(this, new StringEventArgs(m_VideoOutputResolution));
+				OnVideoOutputResolutionChanged.Raise(this, new StringEventArgs(m_VideoOutputResolution));
 			}
 		}
 
@@ -244,7 +244,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_VideoOutputEncoding == value)
 					return;
 				m_VideoOutputEncoding = value;
-				VideoOutputEncodingChanged.Raise(this, new StringEventArgs(m_VideoOutputEncoding));
+				OnVideoOutputEncodingChanged.Raise(this, new StringEventArgs(m_VideoOutputEncoding));
 			}
 		}
 
@@ -267,7 +267,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_VideoOutputSource == value)
 					return;
 				m_VideoOutputSource = value;
-				VideoOutputSourceChanged.Raise(this, new StringEventArgs(m_VideoOutputSource));
+				OnVideoOutputSourceChanged.Raise(this, new StringEventArgs(m_VideoOutputSource));
 			}
 		}
 
@@ -291,7 +291,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_AudioOutputSource == value)
 					return;
 				m_AudioOutputSource = value;
-				AudioOutputSourceChanged.Raise(this, new StringEventArgs(m_AudioOutputSource));
+				OnAudioOutputSourceChanged.Raise(this, new StringEventArgs(m_AudioOutputSource));
 			}
 		}
 
@@ -314,7 +314,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_AudioOutputFormat == value)
 					return;
 				m_AudioOutputFormat = value;
-				AudioOutputFormatChanged.Raise(this, new StringEventArgs(m_AudioOutputFormat));
+				OnAudioOutputFormatChanged.Raise(this, new StringEventArgs(m_AudioOutputFormat));
 			}
 		}
 
@@ -337,7 +337,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_UsbOutputId == value)
 					return;
 				m_UsbOutputId = value;
-				UsbOutputIdChanged.Raise(this, new StringEventArgs(m_UsbOutputId));
+				OnUsbOutputIdChanged.Raise(this, new StringEventArgs(m_UsbOutputId));
 			}
 		}
 

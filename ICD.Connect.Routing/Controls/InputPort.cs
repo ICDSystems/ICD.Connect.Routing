@@ -12,19 +12,19 @@ namespace ICD.Connect.Routing.Controls
 		#region Events
 
 		[EventTelemetry(SwitcherTelemetryNames.VIDEO_INPUT_SYNC_CHANGED)]
-		event EventHandler<BoolEventArgs> VideoInputSyncChanged;
+		public event EventHandler<BoolEventArgs> OnVideoInputSyncChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.INPUT_ID_CHANGED)]
-		event EventHandler<StringEventArgs> InputIdChanged;
+		public event EventHandler<StringEventArgs> OnInputIdChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.INPUT_NAME_CHANGED)]
-		event EventHandler<StringEventArgs> InputNameChanged;
+		public event EventHandler<StringEventArgs> OnInputNameChanged;
 
-		[EventTelemetry(SwitcherTelemetryNames.VIDEO_INPUT_SYNC_CHANGED)]
-		event EventHandler<StringEventArgs> VideoInputSyncTypeChanged;
+		[EventTelemetry(SwitcherTelemetryNames.VIDEO_INPUT_SYNC_TYPE_CHANGED)]
+		public event EventHandler<StringEventArgs> OnVideoInputSyncTypeChanged;
 
 		[EventTelemetry(SwitcherTelemetryNames.VIDEO_INPUT_RESOLUTION_CHANGED)]
-		event EventHandler<StringEventArgs> VideoInputResolutionChanged;
+		public event EventHandler<StringEventArgs> OnVideoInputResolutionChanged;
 
 		#endregion
 
@@ -54,7 +54,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_VideoInputSync == value)
 					return;
 				m_VideoInputSync = value;
-				VideoInputSyncChanged.Raise(this, new BoolEventArgs(m_VideoInputSync));
+				OnVideoInputSyncChanged.Raise(this, new BoolEventArgs(m_VideoInputSync));
 			}
 		}
 
@@ -77,7 +77,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_InputId == value)
 					return;
 				m_InputId = value;
-				InputIdChanged.Raise(this, new StringEventArgs(m_InputId));
+				OnInputIdChanged.Raise(this, new StringEventArgs(m_InputId));
 			}
 		}
 
@@ -96,7 +96,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_InputName == value)
 					return;
 				m_InputName = value;
-				InputNameChanged.Raise(this, new StringEventArgs(m_InputName));
+				OnInputNameChanged.Raise(this, new StringEventArgs(m_InputName));
 			}
 		}
 
@@ -115,7 +115,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_VideoInputSyncType == value)
 					return;
 				m_VideoInputSyncType = value;
-				VideoInputSyncTypeChanged.Raise(this, new StringEventArgs(m_VideoInputSyncType));
+				OnVideoInputSyncTypeChanged.Raise(this, new StringEventArgs(m_VideoInputSyncType));
 			}
 		}
 
@@ -138,7 +138,7 @@ namespace ICD.Connect.Routing.Controls
 				if (m_VideoInputResolution == value)
 					return;
 				m_VideoInputResolution = value;
-				VideoInputResolutionChanged.Raise(this, new StringEventArgs(m_VideoInputResolution));
+				OnVideoInputResolutionChanged.Raise(this, new StringEventArgs(m_VideoInputResolution));
 			}
 		}
 
