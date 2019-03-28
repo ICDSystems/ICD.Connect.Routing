@@ -35,14 +35,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public event EventHandler<StringEventArgs> OnProcessorUptimeChanged;
 		public event EventHandler<StringEventArgs> OnProgramUptimeChanged;
 
-		public bool DhcpStatus
-		{
-			get
-			{
-				IcdConsole.PrintLine(eConsoleColor.Magenta, "DHCP STATUS {0}", GetDhcpStatus());
-				return IcdEnvironment.DhcpStatus != string.Empty;
-			}
-		}
+		public bool DhcpStatus { get { return !string.IsNullOrEmpty(IcdEnvironment.DhcpStatus); } }
 
 		public string ProcessorModel { get { return ProcessorUtils.ModelName; } }
 		public string ProcessorFirmwareVersion { get { return ProcessorUtils.ModelVersion.ToString(); } }
