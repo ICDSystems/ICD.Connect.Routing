@@ -592,8 +592,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				return null;
 
 			DMInput dmInput = Parent.GetDmInput(info.Address);
-
-			return dmInput.NameFeedback.StringValue;
+			return dmInput.NameFeedback.Type == eSigType.NA ? null : dmInput.NameFeedback.StringValue;
 		}
 
 		private string GetVideoInputSyncType(ConnectorInfo info)
