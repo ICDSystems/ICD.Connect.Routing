@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Common.Utils;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using Crestron.SimplSharp.Reflection;
@@ -216,91 +217,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 		#region Card Information
 
-		private static readonly Dictionary<Type, CardInformation> s_CardInformationByType =
-			new Dictionary<Type, CardInformation>
+		private static readonly Dictionary<eDmSwitcherCards, CardInformation> s_CardInformationByType =
+			new Dictionary<eDmSwitcherCards, CardInformation>
 			{
 				{
-					typeof(DmC4kInputBladeCard), new CardInformation
+					eDmSwitcherCards.Empty, new CardInformation
 					{
-						GetLabel = i => "DM", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmC4kInputBladeCard
+						GetLabel = i => "Empty", 
+						GetSignalType = i => eConnectionType.None,
+						GetResolution = ResolutionUnsupported
 					}
 				},
 				{
-					typeof(DmHdmi4kInputBladeCard), new CardInformation
-					{
-						GetLabel = i => "HDMI", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio ,
-						GetResolution = ResolutionDmHdmi4kInputBladeCard
-					}
-				},
-				{
-					typeof(Dmc4kC), new CardInformation
-					{
-						GetLabel = i => "DM", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmc4kCBase
-					}
-				},
-				{
-					typeof(Dmc4kzC), new CardInformation
-					{
-						GetLabel = i => "DM", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmc4kCBase
-					}
-				},
-				{
-					typeof(Dmc4kCDsp), new CardInformation
-					{
-						GetLabel = i => "DM", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmc4kCDspBase
-					}
-				},
-				{
-					typeof(Dmc4kzCDsp), new CardInformation
-					{
-						GetLabel = i => "DM", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmc4kCDspBase
-					}
-				},
-				{
-					typeof(Dmc4kHd), new CardInformation
-					{
-						GetLabel = i => "HDMI", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
-						GetResolution = ResolutionDmc4kHdBase
-					}
-				},
-				{
-					typeof(Dmc4kzHd), new CardInformation
-					{
-						GetLabel = i => "HDMI", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
-						GetResolution = ResolutionDmc4kHdBase
-					}
-				},
-				{
-					typeof(Dmc4kHdDsp), new CardInformation
-					{
-						GetLabel = i => "HDMI", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
-						GetResolution = ResolutionDmc4kHdDspBase
-					}
-				},
-				{
-					typeof(Dmc4kzHdDsp), new CardInformation
-					{
-						GetLabel = i => "HDMI", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
-						GetResolution = ResolutionDmc4kHdDspBase
-					}
-				},
-				{
-					typeof(DmcC), new CardInformation
+					eDmSwitcherCards.DmcC, new CardInformation
 					{
 						GetLabel = i => "DM", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
@@ -308,23 +237,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 					}
 				},
 				{
-					typeof(DmcCat), new CardInformation
-					{
-						GetLabel = i => "DM CAT", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmcCat
-					}
-				},
-				{
-					typeof(DmcCatDsp), new CardInformation
-					{
-						GetLabel = i => "DM CAT", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmcCatDsp
-					}
-				},
-				{
-					typeof(DmcCDsp), new CardInformation
+					eDmSwitcherCards.DmcCDsp, new CardInformation
 					{
 						GetLabel = i => "DM", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
@@ -332,47 +245,23 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 					}
 				},
 				{
-					typeof(DmcDvi), new CardInformation
+					eDmSwitcherCards.Dmc4kCDsp, new CardInformation
 					{
-						GetLabel = i => "DVI", 
+						GetLabel = i => "DM", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmcDvi
+						GetResolution = ResolutionDmc4kCDspBase
 					}
 				},
 				{
-					typeof(DmcF), new CardInformation
+					eDmSwitcherCards.Dmc4kC, new CardInformation
 					{
-						GetLabel = i => "DM Fiber", 
+						GetLabel = i => "DM", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmcF
+						GetResolution = ResolutionDmc4kCBase
 					}
 				},
 				{
-					typeof(DmcFDsp), new CardInformation
-					{
-						GetLabel = i => "DM Fiber", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmcFDsp
-					}
-				},
-				{
-					typeof(DmcHd), new CardInformation
-					{
-						GetLabel = i => "HDMI", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
-						GetResolution = ResolutionDmcHd
-					}
-				},
-				{
-					typeof(DmcHdDsp), new CardInformation
-					{
-						GetLabel = i => "HDMI", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
-						GetResolution = ResolutionDmcHdDsp
-					}
-				},
-				{
-					typeof(DmcS), new CardInformation
+					eDmSwitcherCards.DmcS, new CardInformation
 					{
 						GetLabel = i => "DM 8G Fiber", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
@@ -380,7 +269,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 					}
 				},
 				{
-					typeof(DmcSDsp), new CardInformation
+					eDmSwitcherCards.DmcSDsp, new CardInformation
 					{
 						GetLabel = i => "", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
@@ -388,7 +277,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 					}
 				},
 				{
-					typeof(DmcS2), new CardInformation
+					eDmSwitcherCards.DmcS2, new CardInformation
 					{
 						GetLabel = i => "DM 8G Fiber", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
@@ -396,7 +285,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 					}
 				},
 				{
-					typeof(DmcS2Dsp), new CardInformation
+					eDmSwitcherCards.DmcS2Dsp, new CardInformation
 					{
 						GetLabel = i => "DM 8G Fiber", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
@@ -404,31 +293,63 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 					}
 				},
 				{
-					typeof(DmcSdi), new CardInformation
+					eDmSwitcherCards.DmcF, new CardInformation
 					{
-						GetLabel = i => "SDI", 
+						GetLabel = i => "DM Fiber", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
+						GetResolution = ResolutionDmcF
+					}
+				},
+				{
+					eDmSwitcherCards.DmcFDsp, new CardInformation
+					{
+						GetLabel = i => "DM Fiber", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
+						GetResolution = ResolutionDmcFDsp
+					}
+				},
+				{
+					eDmSwitcherCards.DmcHd, new CardInformation
+					{
+						GetLabel = i => "HDMI", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
-						GetResolution = ResolutionDmcSdi
+						GetResolution = ResolutionDmcHd
 					}
 				},
 				{
-					typeof(DmcStr), new CardInformation
+					eDmSwitcherCards.Dmc4kHd, new CardInformation
 					{
-						GetLabel = i => "Streaming", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmcStr
+						GetLabel = i => "HDMI", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
+						GetResolution = ResolutionDmc4kHdBase
 					}
 				},
 				{
-					typeof(DmcStrCresnet), new CardInformation
+					eDmSwitcherCards.Dmc4kHdDsp, new CardInformation
 					{
-						GetLabel = i => "Streaming", 
-						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
-						GetResolution = ResolutionDmcStr
+						GetLabel = i => "HDMI", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
+						GetResolution = ResolutionDmc4kHdDspBase
 					}
 				},
 				{
-					typeof(DmcVga), new CardInformation
+					eDmSwitcherCards.DmcCat, new CardInformation
+					{
+						GetLabel = i => "DM CAT", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
+						GetResolution = ResolutionDmcCat
+					}
+				},
+				{
+					eDmSwitcherCards.DmcCatDsp, new CardInformation
+					{
+						GetLabel = i => "DM CAT", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
+						GetResolution = ResolutionDmcCatDsp
+					}
+				},
+				{
+					eDmSwitcherCards.DmcVga, new CardInformation
 					{
 						GetLabel = i => "VGA", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
@@ -436,15 +357,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 					}
 				},
 				{
-					typeof(DmcVid4), new CardInformation
-					{
-						GetLabel = i => "Composite", 
-						GetSignalType = i => eConnectionType.Video,
-						GetResolution = ResolutionUnsupported
-					}
-				},
-				{
-					typeof(DmcVidBnc), new CardInformation
+					eDmSwitcherCards.DmcVidBnc, new CardInformation
 					{
 						GetLabel = i => "Bnc", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
@@ -452,7 +365,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 					}
 				},
 				{
-					typeof(DmcVidRcaA), new CardInformation
+					eDmSwitcherCards.DmcVidRcaA, new CardInformation
 					{
 						GetLabel = i => "RCA", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
@@ -460,37 +373,109 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 					}
 				},
 				{
-					typeof(DmcVidRcaD), new CardInformation
+					eDmSwitcherCards.DmcVidRcaD, new CardInformation
 					{
 						GetLabel = i => "RCA", 
 						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
 						GetResolution = ResolutionDmcVidBase
 					}
 				},
+				{
+					eDmSwitcherCards.DmcVid4, new CardInformation
+					{
+						GetLabel = i => "Composite", 
+						GetSignalType = i => eConnectionType.Video,
+						GetResolution = ResolutionUnsupported
+					}
+				},
+				{
+					eDmSwitcherCards.DmcDvi, new CardInformation
+					{
+						GetLabel = i => "DVI", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
+						GetResolution = ResolutionDmcDvi
+					}
+				},
+				{
+					eDmSwitcherCards.DmcSdi, new CardInformation
+					{
+						GetLabel = i => "SDI", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
+						GetResolution = ResolutionDmcSdi
+					}
+				},
+				{
+					eDmSwitcherCards.Dmc4kzC, new CardInformation
+					{
+						GetLabel = i => "DM", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
+						GetResolution = ResolutionDmc4kCBase
+					}
+				},
+				{
+					eDmSwitcherCards.Dmc4kzCDsp, new CardInformation
+					{
+						GetLabel = i => "DM", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
+						GetResolution = ResolutionDmc4kCDspBase
+					}
+				},
+				{
+					eDmSwitcherCards.Dmc4kzHd, new CardInformation
+					{
+						GetLabel = i => "HDMI", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
+						GetResolution = ResolutionDmc4kHdBase
+					}
+				},
+				{
+					eDmSwitcherCards.Dmc4kzHdDsp, new CardInformation
+					{
+						GetLabel = i => "HDMI", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
+						GetResolution = ResolutionDmc4kHdDspBase
+					}
+				},
+				{
+					eDmSwitcherCards.DmcHdDsp, new CardInformation
+					{
+						GetLabel = i => "HDMI", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio,
+						GetResolution = ResolutionDmcHdDsp
+					}
+				},
+				{
+					eDmSwitcherCards.DmcStr, new CardInformation
+					{
+						GetLabel = i => "Streaming", 
+						GetSignalType = i => eConnectionType.Video | eConnectionType.Audio | eConnectionType.Usb,
+						GetResolution = ResolutionDmcStr
+					}
+				},
 			};
 
 		private static string GetLabelForInputCard(DMInputOutputBase input)
 		{
-			if (input.Card == null)
-				return "Unsupported";
-
-			return s_CardInformationByType[input.Card.GetType()].GetLabel(input.Card);
+			CardInformation information;
+			return input.Card != null && s_CardInformationByType.TryGetValue(input.Card.Type, out information)
+					   ? information.GetLabel(input.Card)
+					   : "Unsupported";
 		}
 
 		private static eConnectionType GetSignalTypeForInputCard(DMInputOutputBase input)
 		{
-			if (input.Card == null)
-				return eConnectionType.None;
-
-			return s_CardInformationByType[input.Card.GetType()].GetSignalType(input.Card);
+			CardInformation information;
+			return input.Card != null && s_CardInformationByType.TryGetValue(input.Card.Type, out information)
+				       ? information.GetSignalType(input.Card)
+				       : eConnectionType.None;
 		}
 
 		private static string ResolutionInputCard(DMInputOutputBase input)
 		{
-			if (input.Card == null)
-				return "Unsupported";
-
-			return s_CardInformationByType[input.Card.GetType()].GetResolution(input.Card);
+			CardInformation information;
+			return input.Card != null && s_CardInformationByType.TryGetValue(input.Card.Type, out information)
+					   ? information.GetResolution(input.Card)
+					   : "Unsupported";
 		}
 		#endregion
 
