@@ -633,8 +633,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			m_NvxControl.EnableAutomaticInitiation();
 			m_NvxControl.DisableAutomaticInputRouting();
-
-			SetHdcpTransmitterMode(HdmiOutWithColorSpaceMode.eHdcpTransmitterMode.FollowInputRequirement);
 		}
 
 		/// <summary>
@@ -651,7 +649,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			streamer.HdmiOut.StreamChange += HdmiOutOnStreamChange;
 
 			foreach (HdmiInWithColorSpaceMode input in streamer.HdmiIn)
-				input.StreamChange -= HdmiInOnStreamChange;
+				input.StreamChange += HdmiInOnStreamChange;
 		}
 
 		/// <summary>
@@ -678,7 +676,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			switch (args.EventId)
 			{
 				case DMInputEventIds.ResolutionEventId:
-					Log(eSeverity.Warning, "HDMI Input {0} Resolution changed to {1}x{2}&{3}",
+					Log(eSeverity.Debug, "HDMI Input {0} Resolution changed to {1}x{2}&{3}",
 						input.Name,
 					    input.VideoAttributes.HorizontalResolutionFeedback.UShortValue,
 					    input.VideoAttributes.VerticalResolutionFeedback.UShortValue,
@@ -692,16 +690,15 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			switch (args.EventId)
 			{
 				case DMOutputEventIds.HdcpTransmitterModeFeedbackEventId:
-					Log(eSeverity.Warning, "HDMI Output HDCP Transmitter Mode changed to {0}", m_Streamer.HdmiOut.HdcpTransmitterModeFeedback);
-					SetHdcpTransmitterMode(HdmiOutWithColorSpaceMode.eHdcpTransmitterMode.FollowInputRequirement);
+					Log(eSeverity.Debug, "HDMI Output HDCP Transmitter Mode changed to {0}", m_Streamer.HdmiOut.HdcpTransmitterModeFeedback);
 					break;
 
 				case DMOutputEventIds.DisabledByHdcpEventId:
-					Log(eSeverity.Warning, "HDMI Output Disabled By HDCP changed to {0}", m_Streamer.HdmiOut.DisabledByHdcpFeedback.BoolValue);
+					Log(eSeverity.Debug, "HDMI Output Disabled By HDCP changed to {0}", m_Streamer.HdmiOut.DisabledByHdcpFeedback.BoolValue);
 					break;
 
 				case DMOutputEventIds.ResolutionEventId:
-					Log(eSeverity.Warning, "HDMI Output Resolution changed to {0}", m_Streamer.HdmiOut.ResolutionFeedback);
+					Log(eSeverity.Debug, "HDMI Output Resolution changed to {0}", m_Streamer.HdmiOut.ResolutionFeedback);
 					break;
 			}
 		}
