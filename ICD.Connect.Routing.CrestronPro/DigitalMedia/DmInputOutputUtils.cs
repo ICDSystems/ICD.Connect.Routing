@@ -1,4 +1,4 @@
-﻿using ICD.Common.Utils;
+﻿using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using System;
 using System.Collections.Generic;
@@ -489,8 +489,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		private static string ResolutionDmps3AirMediaInput(DMInputOutputBase input)
 		{
 			Card.Dmps3AirMediaInput castInput = (Card.Dmps3AirMediaInput)input;
-			ushort h = castInput.StreamingInputPort.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.StreamingInputPort.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.StreamingInputPort.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.StreamingInputPort.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
@@ -550,16 +550,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		private static string ResolutionDmps3DmInput(DMInputOutputBase input)
 		{
 			Dmps3DmInputPort port = ((Card.Dmps3DmInput)input).DmInputPort;
-			ushort h = port.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = port.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = port.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = port.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmps3HdmiInputWithoutAnalogAudio(DMInputOutputBase input)
 		{
 			Card.Dmps3HdmiInputWithoutAnalogAudio cast = (Card.Dmps3HdmiInputWithoutAnalogAudio)input;
-			ushort h = cast.HdmiInputPort.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = cast.HdmiInputPort.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = cast.HdmiInputPort.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = cast.HdmiInputPort.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
@@ -593,11 +593,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 		private static void GetComboPortAutoResolution(Card.Dmps3HdmiVgaBncInput cast, out ushort h, out ushort v)
 		{
-			if (cast.HdmiSyncDetected.BoolValue)
+			if (cast.HdmiSyncDetected.GetBoolValueOrDefault())
 				GetComboPortHdmiResolution(cast, out h, out v);
-			else if (cast.VgaSyncDetectedFeedback.BoolValue)
+			else if (cast.VgaSyncDetectedFeedback.GetBoolValueOrDefault())
 				GetComboPortVgaResolution(cast, out h, out v);
-			else if (cast.BncSyncDetected.BoolValue)
+			else if (cast.BncSyncDetected.GetBoolValueOrDefault())
 				GetComboPortBncResolution(cast, out h, out v);
 			else
 			{
@@ -608,20 +608,20 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 		private static void GetComboPortBncResolution(Card.Dmps3HdmiVgaBncInput cast, out ushort h, out ushort v)
 		{
-			h = cast.BncInputPort.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			v = cast.BncInputPort.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			h = cast.BncInputPort.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			v = cast.BncInputPort.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 		}
 
 		private static void GetComboPortVgaResolution(Card.Dmps3HdmiVgaBncInput cast, out ushort h, out ushort v)
 		{
-			h = cast.VgaInputPort.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			v = cast.VgaInputPort.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			h = cast.VgaInputPort.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			v = cast.VgaInputPort.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 		}
 
 		private static void GetComboPortHdmiResolution(Card.Dmps3HdmiVgaBncInput cast, out ushort h, out ushort v)
 		{
-			h = cast.HdmiInputPort.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			v = cast.HdmiInputPort.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			h = cast.HdmiInputPort.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			v = cast.HdmiInputPort.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 		}
 
 		#endregion
@@ -653,9 +653,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 		private static void GetComboPortAutoResolution(Card.Dmps3HdmiVgaInput cast, out ushort h, out ushort v)
 		{
-			if (cast.HdmiSyncDetected.BoolValue)
+			if (cast.HdmiSyncDetected.GetBoolValueOrDefault())
 				GetComboPortHdmiResolution(cast, out h, out v);
-			else if (cast.VgaSyncDetectedFeedback.BoolValue)
+			else if (cast.VgaSyncDetectedFeedback.GetBoolValueOrDefault())
 				GetComboPortVgaResolution(cast, out h, out v);
 			else
 			{
@@ -666,14 +666,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 		private static void GetComboPortVgaResolution(Card.Dmps3HdmiVgaInput cast, out ushort h, out ushort v)
 		{
-			h = cast.VgaInputPort.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			v = cast.VgaInputPort.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			h = cast.VgaInputPort.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			v = cast.VgaInputPort.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 		}
 
 		private static void GetComboPortHdmiResolution(Card.Dmps3HdmiVgaInput cast, out ushort h, out ushort v)
 		{
-			h = cast.HdmiInputPort.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			v = cast.HdmiInputPort.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			h = cast.HdmiInputPort.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			v = cast.HdmiInputPort.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 		}
 
 		#endregion
@@ -691,8 +691,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 			if (port == null)
 				return "Unsupported";
 
-			ushort h = port.HorizontalResolutionFeedback.UShortValue;
-			ushort v = port.VerticalResolutionFeedback.UShortValue;
+			ushort h = port.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = port.VerticalResolutionFeedback.GetUShortValueOrDefault();
 
 			return GetResolutionFormatted(h, v);
 		}
@@ -700,56 +700,56 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		private static string ResolutionDmps3VgaInput(DMInputOutputBase input)
 		{
 			Card.Dmps3VgaInput cast = (Card.Dmps3VgaInput)input;
-			ushort h = cast.VgaInputPort.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = cast.VgaInputPort.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = cast.VgaInputPort.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = cast.VgaInputPort.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmMd4kVgaInput(DMInputOutputBase input)
 		{
 			Card.DmMd4kVgaInput cast = (Card.DmMd4kVgaInput)input;
-			ushort h = cast.VgaInputPort.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = cast.VgaInputPort.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = cast.VgaInputPort.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = cast.VgaInputPort.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmsBncAnalogSpdifAdvanced(DMInputOutputBase input)
 		{
 			Card.DmsBncAnalogSpdifAdvanced castInput = (Card.DmsBncAnalogSpdifAdvanced)input;
-			ushort h = castInput.BncInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.BncInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.BncInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.BncInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmsCatHdAdvanced(DMInputOutputBase input)
 		{
 			Card.DmsCatHdAdvanced castInput = (Card.DmsCatHdAdvanced)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmsHdmiInAdvanced(DMInputOutputBase input)
 		{
 			Card.DmsHdmiInAdvanced castInput = (Card.DmsHdmiInAdvanced)input;
-			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmsHdmiInUhpAdvanced(DMInputOutputBase input)
 		{
 			Card.DmsHdmiInUhpAdvanced castInput = (Card.DmsHdmiInUhpAdvanced)input;
-			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmsHdmiRxAdvanced(DMInputOutputBase input)
 		{
 			Card.DmsHdmiRxAdvanced castInput = (Card.DmsHdmiRxAdvanced)input;
-			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
@@ -757,184 +757,184 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		private static string ResolutionDmsVgaAnalogAdvanced(DMInputOutputBase input)
 		{
 			Card.DmsVgaAnalogAdvanced castInput = (Card.DmsVgaAnalogAdvanced)input;
-			ushort h = castInput.VgaInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.VgaInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.VgaInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.VgaInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionHdMdNxMHdmiInput(DMInputOutputBase input)
 		{
 			HdMdNxMHdmiInput castInput = (HdMdNxMHdmiInput)input;
-			ushort h = castInput.HdmiInputPort.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.HdmiInputPort.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.HdmiInputPort.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.HdmiInputPort.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionHdMdNxMVgaInput(DMInputOutputBase input)
 		{
 			HdMdNxMVgaInput castInput = (HdMdNxMVgaInput)input;
-			ushort h = castInput.VgaInputPort.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.VgaInputPort.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.VgaInputPort.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.VgaInputPort.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionHdmiRxAdvanced(DMInputOutputBase input)
 		{
 			Card.HdmiRxAdvanced castInput = (Card.HdmiRxAdvanced)input;
-			ushort h = castInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmC4kInputBladeCard(CardDevice input)
 		{
 			var castInput = (DmC4kInputBladeCard)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmHdmi4kInputBladeCard(CardDevice input)
 		{
 			var castInput = (DmHdmi4kInputBladeCard)input;
-			ushort h = castInput.Hdmi4kInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.Hdmi4kInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.Hdmi4kInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.Hdmi4kInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmc4kCBase(CardDevice input)
 		{
 			var castInput = (Dmc4kCBase)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmc4kCDspBase(CardDevice input)
 		{
 			var castInput = (Dmc4kCDspBase)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmc4kHdBase(CardDevice input)
 		{
 			var castInput = (Dmc4kHdBase)input;
-			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmc4kHdDspBase(CardDevice input)
 		{
 			var castInput = (Dmc4kHdDspBase)input;
-			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcC(CardDevice input)
 		{
 			var castInput = (DmcC)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcCatDsp(CardDevice input)
 		{
 			var castInput = (DmcCatDsp)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcCDsp(CardDevice input)
 		{
 			var castInput = (DmcCDsp)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcDvi(CardDevice input)
 		{
 			var castInput = (DmcDvi)input;
-			ushort h = castInput.DviInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DviInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DviInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DviInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcCat(CardDevice input)
 		{
 			var castInput = (DmcCat)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcF(CardDevice input)
 		{
 			var castInput = (DmcF)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcFDsp(CardDevice input)
 		{
 			var castInput = (DmcFDsp)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcHd(CardDevice input)
 		{
 			var castInput = (DmcHd)input;
-			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcHdDsp(CardDevice input)
 		{
 			var castInput = (DmcHdDsp)input;
-			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.HdmiInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.HdmiInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcS(CardDevice input)
 		{
 			var castInput = (DmcS)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcSDsp(CardDevice input)
 		{
 			var castInput = (DmcSDsp)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcS2Base(CardDevice input)
 		{
 			var castInput = (DmcSBase)input;
-			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.DmInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.DmInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcSdi(CardDevice input)
 		{
 			var castInput = (DmcSdi)input;
-			ushort h = castInput.SdiInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.SdiInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.SdiInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.SdiInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
@@ -1114,16 +1114,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		private static string ResolutionDmcVga(CardDevice input)
 		{
 			var castInput = (DmcVga)input;
-			ushort h = castInput.VgaInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.VgaInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.VgaInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.VgaInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 
 		private static string ResolutionDmcVidBase(CardDevice input)
 		{
 			var castInput = (DmcVidBase)input;
-			ushort h = castInput.VideoInput.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-			ushort v = castInput.VideoInput.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+			ushort h = castInput.VideoInput.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+			ushort v = castInput.VideoInput.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 			return GetResolutionFormatted(h, v);
 		}
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharp.Reflection;
 using Crestron.SimplSharpPro;
@@ -38,8 +39,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			get
 			{
 #if SIMPLSHARP
-				return AttachableVolumeOutputMixer.MinVolumeFeedback.ShortValue != 0
-					       ? AttachableVolumeOutputMixer.MinVolumeFeedback.ShortValue
+				return AttachableVolumeOutputMixer.MinVolumeFeedback.GetShortValueOrDefault() != 0
+					       ? AttachableVolumeOutputMixer.MinVolumeFeedback.GetShortValueOrDefault()
 					       : (short)-800;
 #else
 				throw new NotSupportedException();
@@ -55,7 +56,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			get
 			{
 #if SIMPLSHARP
-				return AttachableVolumeOutputMixer.MaxVolumeFeedback.ShortValue;
+				return AttachableVolumeOutputMixer.MaxVolumeFeedback.GetShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -190,18 +191,18 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			switch (InputType)
 			{
 				case eDmps3InputType.Master:
-					VolumeLevel = AttachableVolumeOutputMixer.MasterVolumeFeedBack.ShortValue;
-					VolumeIsMuted = AttachableVolumeOutputMixer.MasterMuteOnFeedBack.BoolValue;
+					VolumeLevel = AttachableVolumeOutputMixer.MasterVolumeFeedBack.GetShortValueOrDefault();
+					VolumeIsMuted = AttachableVolumeOutputMixer.MasterMuteOnFeedBack.GetBoolValueOrDefault();
 					break;
 
 				case eDmps3InputType.MicrophoneMaster:
-					VolumeLevel = AttachableVolumeOutputMixer.MicMasterLevelFeedBack.ShortValue;
-					VolumeIsMuted = GetMicMasterMuteOnFeedBack(AttachableVolumeOutputMixer).BoolValue;
+					VolumeLevel = AttachableVolumeOutputMixer.MicMasterLevelFeedBack.GetShortValueOrDefault();
+					VolumeIsMuted = GetMicMasterMuteOnFeedBack(AttachableVolumeOutputMixer).GetBoolValueOrDefault();
 					break;
 
 				case eDmps3InputType.Source:
-					VolumeLevel = AttachableVolumeOutputMixer.SourceLevelFeedBack.ShortValue;
-					VolumeIsMuted = AttachableVolumeOutputMixer.SourceMuteOnFeedBack.BoolValue;
+					VolumeLevel = AttachableVolumeOutputMixer.SourceLevelFeedBack.GetShortValueOrDefault();
+					VolumeIsMuted = AttachableVolumeOutputMixer.SourceMuteOnFeedBack.GetBoolValueOrDefault();
 					break;
 			}
 		}

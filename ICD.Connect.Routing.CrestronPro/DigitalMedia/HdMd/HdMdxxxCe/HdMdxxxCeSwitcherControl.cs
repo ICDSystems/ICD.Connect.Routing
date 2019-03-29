@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Misc.CrestronPro.Extensions;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -245,7 +246,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 				return null;
 
 			DMInput dmInput = Parent.GetDmInput(info.Address);
-			return dmInput.NameFeedback.StringValue;
+			return dmInput.NameFeedback.GetSerialValueOrDefault();
 		}
 
 		private bool GetVideoInputSyncState(ConnectorInfo info)
@@ -292,7 +293,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 				return null;
 
 			DMOutput dmOutput = Parent.GetDmOutput(info.Address);
-			return dmOutput.NameFeedback.StringValue;
+			return dmOutput.NameFeedback.GetSerialValueOrDefault();
 		}
 
 		/// <summary>
@@ -416,7 +417,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 			{
 				case eConnectionType.Video:
 					BoolOutputSig videoFeedbackSig = switcherInput.VideoDetectedFeedback;
-					return videoFeedbackSig != null && videoFeedbackSig.BoolValue;
+					return videoFeedbackSig != null && videoFeedbackSig.GetBoolValueOrDefault();
 
 				case eConnectionType.Audio:
 					// No way of detecting audio?
@@ -511,7 +512,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 			m_Switcher = switcher;
 			Subscribe(m_Switcher);
 
-			UsbBreakawayEnabled = m_Switcher != null && m_Switcher.EnableUSBBreakawayFeedback.BoolValue;
+			UsbBreakawayEnabled = m_Switcher != null && m_Switcher.EnableUSBBreakawayFeedback.GetBoolValueOrDefault();
 
 			RebuildCache();
 		}
@@ -644,7 +645,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 				return;
 
 			if (args.EventId == DMSystemEventIds.USBBreakawayEventId)
-				UsbBreakawayEnabled = m_Switcher.EnableUSBBreakawayFeedback.BoolValue;
+				UsbBreakawayEnabled = m_Switcher.EnableUSBBreakawayFeedback.GetBoolValueOrDefault();
 		}
 
 		#endregion

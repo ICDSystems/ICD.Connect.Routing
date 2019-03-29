@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -127,8 +128,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 				if (VolumeOutputMixer == null)
 					throw new ArgumentNullException("VolumeOutputMixer");
 
-				return VolumeOutputMixer.MinVolumeFeedback.ShortValue != 0
-					       ? VolumeOutputMixer.MinVolumeFeedback.ShortValue
+				return VolumeOutputMixer.MinVolumeFeedback.GetShortValueOrDefault() != 0
+					       ? VolumeOutputMixer.MinVolumeFeedback.GetShortValueOrDefault()
 					       : (short)-800;
 #else
 				throw new NotSupportedException();
@@ -147,7 +148,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 				if (VolumeOutputMixer == null)
 					throw new ArgumentNullException("VolumeOutputMixer");
 
-				return VolumeOutputMixer.MaxVolumeFeedback.ShortValue;
+				return VolumeOutputMixer.MaxVolumeFeedback.GetShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -410,26 +411,26 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			switch (InputType)
 			{
 				case eDmps3InputType.Master:
-					VolumeLevel = VolumeObject.MasterVolumeFeedBack.ShortValue;
-					VolumeIsMuted = VolumeObject.MasterMuteOnFeedBack.BoolValue;
+					VolumeLevel = VolumeObject.MasterVolumeFeedBack.GetShortValueOrDefault();
+					VolumeIsMuted = VolumeObject.MasterMuteOnFeedBack.GetBoolValueOrDefault();
 					break;
 
 				case eDmps3InputType.Microphone:
 					if (VolumeOutputMixer != null)
 					{
 						VolumeLevel = VolumeOutputMixer.MicLevel[InputAddress].ShortValue;
-						VolumeIsMuted = VolumeOutputMixer.MicMuteOnFeedback[InputAddress].BoolValue;
+						VolumeIsMuted = VolumeOutputMixer.MicMuteOnFeedback[InputAddress].GetBoolValueOrDefault();
 					}
 					break;
 
 				case eDmps3InputType.MicrophoneMaster:
-					VolumeLevel = VolumeObject.MicMasterLevelFeedBack.ShortValue;
-					VolumeIsMuted = VolumeObject.MicMasterMuteOnFeedBack.BoolValue;
+					VolumeLevel = VolumeObject.MicMasterLevelFeedBack.GetShortValueOrDefault();
+					VolumeIsMuted = VolumeObject.MicMasterMuteOnFeedBack.GetBoolValueOrDefault();
 					break;
 
 				case eDmps3InputType.Source:
-					VolumeLevel = VolumeObject.SourceLevelFeedBack.ShortValue;
-					VolumeIsMuted = VolumeObject.SourceMuteOnFeedBack.BoolValue;
+					VolumeLevel = VolumeObject.SourceLevelFeedBack.GetShortValueOrDefault();
+					VolumeIsMuted = VolumeObject.SourceMuteOnFeedBack.GetBoolValueOrDefault();
 					break;
 			}
 		}

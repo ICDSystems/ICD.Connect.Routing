@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -42,7 +43,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			get
 			{
 #if SIMPLSHARP
-				return Transmitter != null && Transmitter.HdmiInput.SyncDetectedFeedback.BoolValue;
+				return Transmitter != null && Transmitter.HdmiInput.SyncDetectedFeedback.GetBoolValueOrDefault();
 #else
 				return false;
 #endif
@@ -58,7 +59,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			get
 			{
 #if SIMPLSHARP
-				return Transmitter != null && Transmitter.VgaInput.SyncDetectedFeedback.BoolValue;
+				return Transmitter != null && Transmitter.VgaInput.SyncDetectedFeedback.GetBoolValueOrDefault();
 #else
 				return false;
 #endif

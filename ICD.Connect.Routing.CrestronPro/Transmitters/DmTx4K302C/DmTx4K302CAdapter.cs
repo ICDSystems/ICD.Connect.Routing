@@ -1,4 +1,5 @@
 ﻿using ICD.Common.Properties;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -26,7 +27,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 			get
 			{
 #if SIMPLSHARP
-				return Transmitter.VgaInput.SyncDetectedFeedback.BoolValue;
+				return Transmitter.VgaInput.SyncDetectedFeedback.GetBoolValueOrDefault();
 #else
 				return false;
 #endif

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -655,16 +656,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				switch (input.Address)
 				{
 					case INPUT_HDMI_1:
-						h = m_Streamer.HdmiIn[0].VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-						v = m_Streamer.HdmiIn[0].VideoAttributes.VerticalResolutionFeedback.UShortValue;
+						h = m_Streamer.HdmiIn[0].VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+						v = m_Streamer.HdmiIn[0].VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 						break;
 					case INPUT_HDMI_2:
-						h = m_Streamer.HdmiIn[1].VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-						v = m_Streamer.HdmiIn[1].VideoAttributes.VerticalResolutionFeedback.UShortValue;
+						h = m_Streamer.HdmiIn[1].VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+						v = m_Streamer.HdmiIn[1].VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 						break;
 					case INPUT_STREAM:
-						h = m_Streamer.SourceReceive.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
-						v = m_Streamer.SourceReceive.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+						h = m_Streamer.SourceReceive.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+						v = m_Streamer.SourceReceive.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 						break;
 					default:
 						h = 0;
@@ -689,7 +690,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			if (m_Streamer == null)
 				return null;
 
-			return info.Address == 1 ? m_Streamer.HdmiOut.SyncDetectedFeedback.BoolValue ? "HDMI" : "" : null;
+			return info.Address == 1 ? m_Streamer.HdmiOut.SyncDetectedFeedback.GetBoolValueOrDefault() ? "HDMI" : "" : null;
 #else
 			throw new NotSupportedException();
 #endif
@@ -801,7 +802,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					SecondaryAudioMulticastAddress =
 						m_Streamer == null
 							? null
-							: m_Streamer.SecondaryAudio.MulticastAddressFeedback.StringValue;
+							: m_Streamer.SecondaryAudio.MulticastAddressFeedback.GetSerialValueOrDefault();
 					break;
 			}
 		}
@@ -819,14 +820,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					ServerUrl =
 						m_NvxControl == null
 							? null
-							: m_NvxControl.ServerUrlFeedback.StringValue;
+							: m_NvxControl.ServerUrlFeedback.GetSerialValueOrDefault();
 					break;
 
 				case DMInputEventIds.MulticastAddressEventId:
 					MulticastAddress =
 						m_NvxControl == null
 							? null
-							: m_NvxControl.MulticastAddressFeedback.StringValue;
+							: m_NvxControl.MulticastAddressFeedback.GetSerialValueOrDefault();
 					break;
 
 				case DMInputEventIds.AudioSourceEventId:

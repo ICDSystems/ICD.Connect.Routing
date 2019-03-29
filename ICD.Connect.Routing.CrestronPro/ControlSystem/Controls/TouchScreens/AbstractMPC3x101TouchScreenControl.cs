@@ -5,6 +5,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -155,7 +156,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.ProximityRangeFeedBack.UShortValue;
+				return TouchScreen.ProximityRangeFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -171,7 +172,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.ProximityThresholdFeedBack.UShortValue;
+				return TouchScreen.ProximityThresholdFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif

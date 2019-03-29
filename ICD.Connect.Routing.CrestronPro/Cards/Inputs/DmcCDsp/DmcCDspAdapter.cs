@@ -1,3 +1,4 @@
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -21,7 +22,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcCDsp
 		{
 			return true;
 			//TODO: Crestron api broken, re enable this line when a resolution comes back from them
-			return Card != null && Card.PresentFeedback.BoolValue;
+			return Card != null && Card.PresentFeedback.GetBoolValueOrDefault();
 		}
 
 		/// <summary>

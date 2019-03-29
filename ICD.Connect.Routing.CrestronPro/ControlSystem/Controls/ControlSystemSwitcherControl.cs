@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Misc.CrestronPro.Extensions;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -385,7 +386,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			switch (type)
 			{
 				case eConnectionType.Video:
-					return switcherInput.VideoDetectedFeedback.Type == eSigType.Bool && switcherInput.VideoDetectedFeedback.BoolValue;
+					return switcherInput.VideoDetectedFeedback.Type == eSigType.Bool && switcherInput.VideoDetectedFeedback.GetBoolValueOrDefault();
 
 				case eConnectionType.Audio:
 					// No way of detecting audio?
@@ -592,7 +593,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				return null;
 
 			DMInput dmInput = Parent.GetDmInput(info.Address);
-			return dmInput.NameFeedback.Type == eSigType.NA ? null : dmInput.NameFeedback.StringValue;
+			return dmInput.NameFeedback.Type == eSigType.NA ? null : dmInput.NameFeedback.GetSerialValueOrDefault();
 		}
 
 		private string GetVideoInputSyncType(ConnectorInfo info)
@@ -612,10 +613,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				if (castInput == null)
 					return string.Empty;
 
-				if (castInput.HdmiSyncDetected.BoolValue)
+				if (castInput.HdmiSyncDetected.GetBoolValueOrDefault())
 					return "HDMI";
 
-				if (castInput.VgaSyncDetectedFeedback.BoolValue)
+				if (castInput.VgaSyncDetectedFeedback.GetBoolValueOrDefault())
 					return "VGA";
 
 				return string.Empty;
@@ -627,13 +628,13 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				if (castInput == null)
 					return string.Empty;
 
-				if (castInput.HdmiSyncDetected.BoolValue)
+				if (castInput.HdmiSyncDetected.GetBoolValueOrDefault())
 					return "HDMI";
 
-				if (castInput.VgaSyncDetectedFeedback.BoolValue)
+				if (castInput.VgaSyncDetectedFeedback.GetBoolValueOrDefault())
 					return "VGA";
 
-				if (castInput.BncSyncDetected.BoolValue)
+				if (castInput.BncSyncDetected.GetBoolValueOrDefault())
 					return "BNC";
 
 				return string.Empty;
@@ -680,7 +681,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 
 			DMOutput dmOutput = Parent.GetDmOutput(info.Address);
 
-			return dmOutput.NameFeedback.StringValue;
+			return dmOutput.NameFeedback.GetSerialValueOrDefault();
 		}
 
 		private string GetAudioOutputName(ConnectorInfo info)
@@ -690,7 +691,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 
 			DMOutput dmOutput = Parent.GetDmOutput(info.Address);
 
-			return string.Format("{0} {1}", dmOutput.NameFeedback.StringValue, info.Address);
+			return string.Format("{0} {1}", dmOutput.NameFeedback.GetSerialValueOrDefault(), info.Address);
 		}
 
 		#endregion
@@ -898,12 +899,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			addRow("Audio Breakaway",
 			       m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported &&
 			       m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool
-				       ? m_SubscribedControlSystem.SystemControl.EnableAudioBreakawayFeedback.BoolValue.ToString()
+				       ? m_SubscribedControlSystem.SystemControl.EnableAudioBreakawayFeedback.GetBoolValueOrDefault().ToString()
 				       : "Not Supported");
 			addRow("USB Breakaway",
 			       m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported &&
 			       m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool
-				       ? m_SubscribedControlSystem.SystemControl.EnableUSBBreakawayFeedback.BoolValue.ToString()
+				       ? m_SubscribedControlSystem.SystemControl.EnableUSBBreakawayFeedback.GetBoolValueOrDefault().ToString()
 				       : "Not Supported");
 		}
 

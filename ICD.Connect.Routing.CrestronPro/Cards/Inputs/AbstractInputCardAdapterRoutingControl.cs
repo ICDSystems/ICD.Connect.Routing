@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using System;
 using Crestron.SimplSharpPro.DM;
@@ -293,7 +294,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 
 		private bool GetVideoDetectedFeedback(int input)
 		{
-			return Card != null && Card.Switcher.Inputs[(uint)input].VideoDetectedFeedback.BoolValue;
+			return Card != null && Card.Switcher.Inputs[(uint)input].VideoDetectedFeedback.GetBoolValueOrDefault();
 		}
 
 		#endregion

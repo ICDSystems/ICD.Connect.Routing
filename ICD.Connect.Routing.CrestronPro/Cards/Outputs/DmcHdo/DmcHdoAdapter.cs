@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
@@ -29,7 +30,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.DmcHdo
 			//TODO: Crestron api broken, re enable this line when a resolution comes back from them
 			return Card != null &&
 			       GetInternalCards().Select(internalCard => internalCard as Crestron.SimplSharpPro.DM.Cards.Dmc4kHdo)
-			                         .All(internalBase => internalBase == null || internalBase.PresentFeedback.BoolValue);
+			                         .All(internalBase => internalBase == null || internalBase.PresentFeedback.GetBoolValueOrDefault());
 		}
 
 		public override IEnumerable<CardDevice> GetInternalCards()

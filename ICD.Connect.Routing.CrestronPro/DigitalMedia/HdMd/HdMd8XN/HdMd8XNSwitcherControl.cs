@@ -1,3 +1,4 @@
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using System;
 using System.Collections.Generic;
@@ -236,7 +237,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 				return null;
 			
 			DMInput dmInput = Parent.GetDmInput(input.Address);
-			return dmInput.NameFeedback.StringValue;
+			return dmInput.NameFeedback.GetSerialValueOrDefault();
 		}
 
 		private bool GetVideoInputSyncState(ConnectorInfo info)
@@ -283,7 +284,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 				return null;
 
 			DMOutput dmOutput = Parent.GetDmOutput(output.Address);
-			return dmOutput.NameFeedback.StringValue;
+			return dmOutput.NameFeedback.GetSerialValueOrDefault();
 		}
 
 		/// <summary>
@@ -403,7 +404,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 			switch (type)
 			{
 				case eConnectionType.Video:
-					return switcherInput.VideoDetectedFeedback.BoolValue;
+					return switcherInput.VideoDetectedFeedback.GetBoolValueOrDefault();
 
 				case eConnectionType.Audio:
 					// No way of detecting audio?
@@ -482,8 +483,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 			m_Switcher = switcher;
 			Subscribe(m_Switcher);
 
-			AudioBreakawayEnabled = m_Switcher != null && m_Switcher.EnableAudioBreakawayFeedback.BoolValue;
-			UsbBreakawayEnabled = m_Switcher != null && m_Switcher.EnableUSBBreakawayFeedback.BoolValue;
+			AudioBreakawayEnabled = m_Switcher != null && m_Switcher.EnableAudioBreakawayFeedback.GetBoolValueOrDefault();
+			UsbBreakawayEnabled = m_Switcher != null && m_Switcher.EnableUSBBreakawayFeedback.GetBoolValueOrDefault();
 
 			RebuildCache();
 		}
@@ -616,10 +617,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 				return;
 
 			if (args.EventId == DMSystemEventIds.AudioBreakawayEventId)
-				AudioBreakawayEnabled = m_Switcher.EnableAudioBreakawayFeedback.BoolValue;
+				AudioBreakawayEnabled = m_Switcher.EnableAudioBreakawayFeedback.GetBoolValueOrDefault();
 
 			if (args.EventId == DMSystemEventIds.USBBreakawayEventId)
-				UsbBreakawayEnabled = m_Switcher.EnableUSBBreakawayFeedback.BoolValue;
+				UsbBreakawayEnabled = m_Switcher.EnableUSBBreakawayFeedback.GetBoolValueOrDefault();
 		}
 
 		#endregion

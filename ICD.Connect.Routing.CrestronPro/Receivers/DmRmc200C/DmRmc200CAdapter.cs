@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -107,7 +108,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc200C
 					return true;
 				case eConnectionType.Video:
 #if SIMPLSHARP
-					return Receiver.DmInput.SyncDetectedFeedback.BoolValue;
+					return Receiver.DmInput.SyncDetectedFeedback.GetBoolValueOrDefault();
 #else
 					return false;
 #endif
