@@ -320,6 +320,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		private void FrontPanelLockEnable()
 		{
+#if SIMPLSHARP
 			if (ControlSystem == null)
 				return;
 
@@ -328,10 +329,14 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				return;
 
 			control.FrontPanelLockOn();
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		private void FrontPanelLockDisable()
 		{
+#if SIMPLSHARP
 			if (ControlSystem == null)
 				return;
 
@@ -340,12 +345,16 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				return;
 
 			control.FrontPanelLockOff();
+#else
+			throw new NotSupportedException();
+#endif
 		}
 
 		private bool? FrontPanelLockStatus
 		{
 			get
 			{
+#if SIMPLSHARP
 				if (ControlSystem == null)
 					return null;
 
@@ -354,6 +363,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 					return null;
 
 				return control.FrontPanelLockOnFeedback.BoolValue;
+#else
+				return null;
+#endif
 			}
 		}
 
