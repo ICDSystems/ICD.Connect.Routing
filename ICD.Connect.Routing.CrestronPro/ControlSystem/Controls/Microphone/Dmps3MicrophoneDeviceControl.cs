@@ -1,8 +1,8 @@
 ﻿using ICD.Connect.Audio.Controls.Microphone;
-using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #else
 using System;
 #endif

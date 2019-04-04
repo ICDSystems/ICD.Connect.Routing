@@ -1,12 +1,12 @@
 ﻿using System;
-using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
-#endif
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Connect.Misc.CrestronPro.Extensions;
+#endif
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 

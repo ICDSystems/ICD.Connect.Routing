@@ -1,13 +1,13 @@
 using System.Collections.Generic;
-using ICD.Common.Utils;
-using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
-using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Extensions;
+using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 using System;
 using ICD.Connect.Misc.Keypads;

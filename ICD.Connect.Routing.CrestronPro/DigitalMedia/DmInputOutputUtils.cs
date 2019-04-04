@@ -1,5 +1,4 @@
-﻿using ICD.Connect.Misc.CrestronPro.Extensions;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using Crestron.SimplSharp.Reflection;
@@ -8,6 +7,7 @@ using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Blades;
 using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 using ICD.Connect.Routing.Connections;
 using SimplSharpProDM;
 
@@ -15,7 +15,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
 	public static class DmInputOutputUtils
 	{
-		#region Input Information
+#region Input Information
 		private static readonly Dictionary<Type, InputOutputInformation> s_InputInformationByType =
 			new Dictionary<Type, InputOutputInformation>
 			{

@@ -1,10 +1,10 @@
-using System.Collections.Generic;
-using System.Linq;
-using ICD.Connect.Misc.CrestronPro.Extensions;
 using ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHdBase;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
+using System.Collections.Generic;
+using System.Linq;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd

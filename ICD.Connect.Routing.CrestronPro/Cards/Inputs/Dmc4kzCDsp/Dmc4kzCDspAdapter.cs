@@ -1,8 +1,8 @@
-﻿using ICD.Connect.Misc.CrestronPro.Extensions;
-using ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kCDspBase;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro.Extensions;
+using ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kCDspBase;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kzCDsp

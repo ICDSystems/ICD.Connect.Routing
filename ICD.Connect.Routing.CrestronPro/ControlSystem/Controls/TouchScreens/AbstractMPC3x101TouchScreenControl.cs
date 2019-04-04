@@ -5,14 +5,12 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
-#else
-using System;
-#endif
 using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
+using ICD.Connect.Misc.CrestronPro.Extensions;
+#endif
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using eButtonState = ICD.Connect.Misc.Keypads.eButtonState;
 
