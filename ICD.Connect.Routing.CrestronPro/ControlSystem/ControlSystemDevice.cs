@@ -10,6 +10,7 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens;
@@ -362,7 +363,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				if (control == null)
 					return null;
 
-				return control.FrontPanelLockOnFeedback.BoolValue;
+				return control.FrontPanelLockOnFeedback.GetBoolValueOrDefault();
 #else
 				return null;
 #endif
