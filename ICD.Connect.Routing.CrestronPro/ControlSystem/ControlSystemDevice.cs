@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services.Logging;
@@ -10,15 +9,16 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
-using ICD.Connect.Misc.CrestronPro.Extensions;
-using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls;
-using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
+using ICD.Common.Properties;
+using ICD.Connect.Misc.CrestronPro.Extensions;
+using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
+using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
