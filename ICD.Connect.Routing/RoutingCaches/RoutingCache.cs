@@ -1000,9 +1000,10 @@ namespace ICD.Connect.Routing.RoutingCaches
 				if (m_DebugEnabled)
 					PrintEndpointDetectedMap();
 
-				if (m_EndpointToSources.ContainsKey(endpoint))
+				IcdHashSet<ISource> sources;
+				if (m_EndpointToSources.TryGetValue(endpoint, out sources))
 				{
-					foreach (ISource source in m_EndpointToSources[endpoint])
+					foreach (ISource source in sources)
 						UpdateSourceDetectionState(source);
 				}
 
@@ -1438,6 +1439,10 @@ namespace ICD.Connect.Routing.RoutingCaches
 					if (connection == null)
 						continue;
 
+					// Fix for infinite loop
+					if (destinations.Contains(connection.Destination))
+						continue;
+
 					destinations.Add(connection.Destination);
 
 					IEnumerable<EndpointInfo> outputs = m_MidpointCache.GetCachedOutputsForInput(connection.Destination, flag);
@@ -1461,10 +1466,16 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 			try
 			{
+				IcdHashSet<Connection> visited = new IcdHashSet<Connection>();
+
 				while (true)
 				{
 					Connection connection = m_RoutingGraph.Connections.GetInputConnection(inputEndpointInfo, flag);
 					if (connection == null)
+						yield break;
+
+					// Fix for infinite loop
+					if (!visited.Add(connection))
 						yield break;
 
 					yield return connection.Source;
