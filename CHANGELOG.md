@@ -25,6 +25,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.4.0] - 2019-04-05
+### Added
+ - Front panel lockout enabled by default for switcher control systems
+ - Console Commands for lockout enable/disable and status
+ - IRoutingGraph exposes FindActivePaths overload for source endpoints
+
 ## [13.3.0] - 2019-03-21
 ### Added
  - Added DMC-4K-HD and DMC-4KZ-HD input cards
