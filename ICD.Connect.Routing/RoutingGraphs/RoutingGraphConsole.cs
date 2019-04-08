@@ -70,6 +70,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			                                                                       "Routes source to destination. Usage: Route <sourceId> <destId> <connType> <roomId>",
 			                                                                       (a, b, c, d) =>
 			                                                                       RouteConsoleCommand(instance, a, b, c, d));
+
+			yield return new GenericConsoleCommand<int, int, int, int>("RouteAB",
+																	   "RouteAB <SourceDeviceId> <SourceAddress> <DestinationDeviceId> <DestinationAddress>",
+			                                                           (a, b, c, d) => RouteDevicesConsoleCommand(instance, a, b, c, d));
 		}
 
 		private static string PrintSources(IRoutingGraph instance)
@@ -260,6 +264,37 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				           .To(instance.Destinations.GetChild(destination))
 				           .OfType(connectionType)
 				           .With(pathFinder);
+
+			instance.RoutePaths(paths, roomId);
+
+			return "Sucessfully executed route command";
+		}
+
+		private static string RouteDevicesConsoleCommand(IRoutingGraph instance, int sourceDeviceId, int sourceAddress,
+		                                                 int destinationDeviceId, int destinationAddress)
+		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
+			// Not great, but currently unused anyway
+			const int roomId = 0;
+
+			IPathFinder pathFinder = new DefaultPathFinder(instance, roomId);
+
+			IRouteSourceControl sourceControl = instance.GetSourceControl(sourceDeviceId, 0);
+			IRouteDestinationControl destinationControl = instance.GetDestinationControl(destinationDeviceId, 0);
+
+			ConnectorInfo outputConnector = sourceControl.GetOutput(sourceAddress);
+			ConnectorInfo inputConnector = destinationControl.GetInput(destinationAddress);
+
+			eConnectionType type = EnumUtils.GetFlagsIntersection(inputConnector.ConnectionType, outputConnector.ConnectionType);
+
+			IEnumerable<ConnectionPath> paths =
+				PathBuilder.FindPaths()
+						   .From(sourceControl.GetOutputEndpointInfo(sourceAddress))
+						   .To(destinationControl.GetInputEndpointInfo(destinationAddress))
+						   .OfType(type)
+						   .With(pathFinder);
 
 			instance.RoutePaths(paths, roomId);
 
