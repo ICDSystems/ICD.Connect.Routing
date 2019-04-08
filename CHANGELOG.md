@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - RoutingCache fix for potential infinite recursion
+
 ## [14.2.0] - 2019-02-14
 ### Added
  - Added DM-TX-4KZ-202-C and DM-TX-4KZ-302-C transmitters
@@ -24,6 +27,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [14.0.0] - 2019-01-10
 ### Added
  - Added port configuration features to routing devices
+
+## [13.4.0] - 2019-04-05
+### Added
+ - Front panel lockout enabled by default for switcher control systems
+ - Console Commands for lockout enable/disable and status
+ - IRoutingGraph exposes FindActivePaths overload for source endpoints
 
 ## [13.3.0] - 2019-03-21
 ### Added

@@ -5,6 +5,8 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
@@ -131,6 +133,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 						control.USBEnter.BoolValue = true;
 					if (control.EnableUSBBreakaway.Type == eSigType.Bool)
 						control.EnableUSBBreakaway.BoolValue = true;
+
+					control.FrontPanelLockOn();
 				}
 			}
 
@@ -328,6 +332,57 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			m_LoadedControls.Clear();
 		}
 
+		private void FrontPanelLockEnable()
+		{
+#if SIMPLSHARP
+			if (ControlSystem == null)
+				return;
+
+			ISystemControl control = ControlSystem.SystemControl;
+			if (control == null)
+				return;
+
+			control.FrontPanelLockOn();
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		private void FrontPanelLockDisable()
+		{
+#if SIMPLSHARP
+			if (ControlSystem == null)
+				return;
+
+			ISystemControl control = ControlSystem.SystemControl;
+			if (control == null)
+				return;
+
+			control.FrontPanelLockOff();
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		private bool? FrontPanelLockStatus
+		{
+			get
+			{
+#if SIMPLSHARP
+				if (ControlSystem == null)
+					return null;
+
+				ISystemControl control = ControlSystem.SystemControl;
+				if (control == null)
+					return null;
+
+				return control.FrontPanelLockOnFeedback.BoolValue;
+#else
+				return null;
+#endif
+			}
+		}
+
 		#endregion
 
 		#region Settings
@@ -352,6 +407,42 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 			if (!string.IsNullOrEmpty(settings.Config))
 				LoadControls(settings.Config);
+		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+			yield return new ConsoleCommand("FrontPanelLockEnable", "Enables front panel lockout on switcher control systems", () => FrontPanelLockEnable());
+			yield return new ConsoleCommand("FrontPanelLockDisable", "Disables front panel lockout on switcher control systems", () => FrontPanelLockDisable());
+		}
+
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
+		}
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			bool? lockout = FrontPanelLockStatus;
+			if (lockout.HasValue)
+				addRow("Front Panel Lockout", lockout.Value);
+
 		}
 
 		#endregion

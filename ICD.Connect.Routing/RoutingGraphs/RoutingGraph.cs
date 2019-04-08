@@ -543,8 +543,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="signalDetected"></param>
 		/// <param name="inputActive"></param>
 		/// <returns></returns>
-		private IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type,
-		                                                  bool signalDetected, bool inputActive)
+		public override IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type,
+		                                                          bool signalDetected, bool inputActive)
 		{
 			return EnumUtils.GetFlagsExceptNone(type)
 			                .SelectMany(f => FindActivePathsSingleFlag(source, f, signalDetected, inputActive));
