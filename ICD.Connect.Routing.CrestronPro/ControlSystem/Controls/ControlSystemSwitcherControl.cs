@@ -298,7 +298,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				                                ReadOnlyCollection<uint, ICardInputOutputType>).Select(kvp => (int)kvp.Key)
 				                             : Enumerable.Empty<int>();
 
-			return addresses.Select(i => GetOutput(i)).Where(c => c.ConnectionType != eConnectionType.None);
+			return addresses.Order().Select(i => GetOutput(i)).Where(c => c.ConnectionType != eConnectionType.None);
 		}
 
 		/// <summary>
@@ -346,7 +346,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				                                ReadOnlyCollection<uint, ICardInputOutputType>).Select(kvp => (int)kvp.Key)
 				                             : Enumerable.Empty<int>();
 
-			return addresses.Select(i => GetInput(i)).Where(c => c.ConnectionType != eConnectionType.None);
+			return addresses.Order().Select(i => GetInput(i)).Where(c => c.ConnectionType != eConnectionType.None);
 		}
 
 		/// <summary>
