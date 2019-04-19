@@ -379,6 +379,23 @@ namespace ICD.Connect.Routing.RoutingCaches
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("type cannot have multiple flags", "flag");
 
+			return GetSourcesForDestinationEndpoint(destinationEndpoint, flag, false, false);
+		}
+
+		/// <summary>
+		/// Returns all of the sources routed to the given destination endpoint for the given connection type.
+		/// </summary>
+		[PublicAPI]
+		public IEnumerable<ISource> GetSourcesForDestinationEndpoint(EndpointInfo destinationEndpoint, eConnectionType flag,
+		                                                             bool signalDetected, bool inputActive)
+		{
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("type cannot have multiple flags", "flag");
+
+			// TODO - Do we need to check this for every source endpoints?
+			if (!GetDestinationEndpointActive(destinationEndpoint, flag))
+				return Enumerable.Empty<ISource>();
+
 			m_CacheSection.Enter();
 
 			try
@@ -387,13 +404,14 @@ namespace ICD.Connect.Routing.RoutingCaches
 				if (!m_DestinationEndpointToSourceEndpointCache.TryGetValue(destinationEndpoint, out cache))
 					return Enumerable.Empty<ISource>();
 
-				IcdHashSet<EndpointInfo> endpoints;
-				if (!cache.TryGetValue(flag, out endpoints))
+				IcdHashSet<EndpointInfo> sourceEndpoints;
+				if (!cache.TryGetValue(flag, out sourceEndpoints))
 					return Enumerable.Empty<ISource>();
 
-				return endpoints.SelectMany(endpoint => GetSources(endpoint))
-				                .Distinct()
-				                .ToArray();
+				return sourceEndpoints.Where(s => !signalDetected || GetSourceEndpointDetected(s, flag))
+				                      .SelectMany(endpoint => GetSources(endpoint))
+				                      .Distinct()
+				                      .ToArray();
 			}
 			finally
 			{

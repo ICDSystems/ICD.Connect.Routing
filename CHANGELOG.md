@@ -28,6 +28,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.4.1] - 2019-04-19
+### Added
+ - Added RoutingCache methods for source/destination state lookup
+
+### Changed
+ - Fixed RoutingCache issues with destination active inputs
+
 ## [13.4.0] - 2019-04-05
 ### Added
  - Front panel lockout enabled by default for switcher control systems
