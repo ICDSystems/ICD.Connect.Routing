@@ -195,6 +195,30 @@ namespace ICD.Connect.Routing.RoutingCaches
 		}
 
 		/// <summary>
+		/// Returns true if the source endpoint is detected for the given connection type.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		public bool GetSourceEndpointDetected(EndpointInfo sourceEndpoint, eConnectionType flag)
+		{
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("type cannot have multiple flags", "flag");
+
+			m_CacheSection.Enter();
+
+			try
+			{
+				eConnectionType detected;
+				return m_SourceEndpointDetected.TryGetValue(sourceEndpoint, out detected) && detected.HasFlag(flag);
+			}
+			finally
+			{
+				m_CacheSection.Leave();
+			}
+		}
+
+		/// <summary>
 		/// Returns true if the source is transmitting for the given connection type.
 		/// </summary>
 		/// <param name="source"></param>
@@ -221,9 +245,82 @@ namespace ICD.Connect.Routing.RoutingCaches
 			}
 		}
 
+		/// <summary>
+		/// Returns true if the source endpoint is transmitting for the given connection type.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		public bool GetSourceEndpointTransmitting(EndpointInfo sourceEndpoint, eConnectionType flag)
+		{
+			if (sourceEndpoint == null)
+				throw new ArgumentNullException("source");
+
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("type cannot have multiple flags", "flag");
+
+			m_CacheSection.Enter();
+
+			try
+			{
+				eConnectionType transmitting;
+				return m_SourceEndpointTransmitting.TryGetValue(sourceEndpoint, out transmitting) && transmitting.HasFlag(flag);
+			}
+			finally
+			{
+				m_CacheSection.Leave();
+			}
+		}
+
+		/// <summary>
+		/// Returns true if the destination endpoint is active for the given connection type.
+		/// </summary>
+		/// <param name="destinationEndpoint"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		public bool GetDestinationEndpointActive(EndpointInfo destinationEndpoint, eConnectionType flag)
+		{
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("type cannot have multiple flags", "flag");
+
+			m_CacheSection.Enter();
+
+			try
+			{
+				eConnectionType active;
+				return m_DestinationEndpointActive.TryGetValue(destinationEndpoint, out active) && active.HasFlag(flag);
+			}
+			finally
+			{
+				m_CacheSection.Leave();
+			}
+		}
+
 		#endregion
 
 		#region Get Sources
+
+		/// <summary>
+		/// Gets the sources with the given source endpoint.
+		/// </summary>
+		/// <param name="sourceEndpoint"></param>
+		/// <returns></returns>
+		public IEnumerable<ISource> GetSources(EndpointInfo sourceEndpoint)
+		{
+			m_CacheSection.Enter();
+
+			try
+			{
+				IcdHashSet<ISource> sources;
+				return m_EndpointToSources.TryGetValue(sourceEndpoint, out sources)
+					       ? sources.ToArray(sources.Count)
+					       : Enumerable.Empty<ISource>();
+			}
+			finally
+			{
+				m_CacheSection.Leave();
+			}
+		}
 
 		/// <summary>
 		/// Returns all of the sources routed to the given destination for the given connection type.
@@ -263,11 +360,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 			try
 			{
 				return GetSourceEndpointsForDestination(destination, flag, signalDetected, inputActive)
-					.SelectMany(e =>
-					            {
-						            IcdHashSet<ISource> sources;
-						            return m_EndpointToSources.TryGetValue(e, out sources) ? sources : Enumerable.Empty<ISource>();
-					            })
+					.SelectMany(e => GetSources(e))
 					.Distinct()
 					.ToArray();
 			}
@@ -298,13 +391,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 				if (!cache.TryGetValue(flag, out endpoints))
 					return Enumerable.Empty<ISource>();
 
-				return endpoints.SelectMany(endpoint =>
-				{
-					IcdHashSet<ISource> sources;
-					return m_EndpointToSources.TryGetValue(endpoint, out sources)
-						? sources
-						: Enumerable.Empty<ISource>();
-				})
+				return endpoints.SelectMany(endpoint => GetSources(endpoint))
 				                .Distinct()
 				                .ToArray();
 			}
@@ -355,10 +442,10 @@ namespace ICD.Connect.Routing.RoutingCaches
 				if (!m_DestinationToEndpoints.TryGetValue(destination, out cache))
 					return Enumerable.Empty<EndpointInfo>();
 
-				return cache.Where(d => !inputActive || m_DestinationEndpointActive.GetDefault(d).HasFlag(flag))
+				return cache.Where(d => !inputActive || GetDestinationEndpointActive(d, flag))
 				            .SelectMany(d => GetSourceEndpointsForDestinationEndpoint(d, flag))
 				            .Distinct()
-				            .Where(s => !signalDetected || m_SourceEndpointDetected.GetDefault(s).HasFlag(flag))
+				            .Where(s => !signalDetected || GetSourceEndpointDetected(s, flag))
 				            .ToArray();
 			}
 			finally
@@ -399,6 +486,28 @@ namespace ICD.Connect.Routing.RoutingCaches
 		#region Get Destinations
 
 		/// <summary>
+		/// Gets the destinations with the given endpoint.
+		/// </summary>
+		/// <param name="destinationEndpoint"></param>
+		/// <returns></returns>
+		public IEnumerable<IDestination> GetDestinations(EndpointInfo destinationEndpoint)
+		{
+			m_CacheSection.Enter();
+
+			try
+			{
+				IcdHashSet<IDestination> destinations;
+				return m_EndpointToDestinations.TryGetValue(destinationEndpoint, out destinations)
+					       ? destinations.ToArray(destinations.Count)
+					       : Enumerable.Empty<IDestination>();
+			}
+			finally
+			{
+				m_CacheSection.Leave();
+			}
+		}
+
+		/// <summary>
 		/// Returns all of the destinations routed from the given source for the given connection type.
 		/// </summary>
 		[PublicAPI]
@@ -436,13 +545,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 			try
 			{
 				return GetDestinationEndpointsForSource(source, flag, signalDetected, inputActive)
-					.SelectMany(e =>
-					{
-						IcdHashSet<IDestination> destinations;
-						return m_EndpointToDestinations.TryGetValue(e, out destinations)
-							? destinations
-							: Enumerable.Empty<IDestination>();
-					})
+					.SelectMany(e => GetDestinations(e))
 					.Distinct()
 					.ToArray();
 			}
@@ -473,13 +576,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 				if (!cache.TryGetValue(flag, out endpoints))
 					return Enumerable.Empty<IDestination>();
 
-				return endpoints.SelectMany(endpoint =>
-				{
-					IcdHashSet<IDestination> destinations;
-					return m_EndpointToDestinations.TryGetValue(endpoint, out destinations)
-						? destinations
-						: Enumerable.Empty<IDestination>();
-				})
+				return endpoints.SelectMany(endpoint => GetDestinations(endpoint))
 				                .Distinct()
 				                .ToArray();
 			}
@@ -530,10 +627,10 @@ namespace ICD.Connect.Routing.RoutingCaches
 				if (!m_SourceToEndpoints.TryGetValue(source, out cache))
 					return Enumerable.Empty<EndpointInfo>();
 
-				return cache.Where(s => !inputActive || m_SourceEndpointTransmitting.GetDefault(s).HasFlag(flag))
+				return cache.Where(s => !inputActive || GetSourceEndpointTransmitting(s, flag))
 				            .SelectMany(s => GetDestinationEndpointsForSourceEndpoint(s, flag))
 				            .Distinct()
-				            .Where(s => !signalDetected || m_SourceEndpointDetected.GetDefault(s).HasFlag(flag))
+				            .Where(s => !signalDetected || GetSourceEndpointDetected(s, flag))
 				            .ToArray();
 			}
 			finally
