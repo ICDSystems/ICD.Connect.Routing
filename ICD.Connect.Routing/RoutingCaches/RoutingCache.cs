@@ -627,10 +627,10 @@ namespace ICD.Connect.Routing.RoutingCaches
 				if (!m_SourceToEndpoints.TryGetValue(source, out cache))
 					return Enumerable.Empty<EndpointInfo>();
 
-				return cache.Where(s => !inputActive || GetSourceEndpointTransmitting(s, flag))
-				            .SelectMany(s => GetDestinationEndpointsForSourceEndpoint(s, flag))
+				return cache.Where(s => !signalDetected || GetSourceEndpointDetected(s, flag))
+							.SelectMany(s => GetDestinationEndpointsForSourceEndpoint(s, flag))
 				            .Distinct()
-				            .Where(s => !signalDetected || GetSourceEndpointDetected(s, flag))
+							.Where(d => !inputActive || GetDestinationEndpointActive(d, flag))
 				            .ToArray();
 			}
 			finally
