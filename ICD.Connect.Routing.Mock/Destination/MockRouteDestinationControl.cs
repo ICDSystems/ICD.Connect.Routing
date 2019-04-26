@@ -46,14 +46,26 @@ namespace ICD.Connect.Routing.Mock.Destination
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteDestinationControl(IDeviceBase parent, int id) :
-			base(parent, id)
+		public MockRouteDestinationControl(IDeviceBase parent, int id)
+			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
 			m_Cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
 			m_Cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
 
 			m_Inputs = new Dictionary<int, ConnectorInfo>();
+		}
+
+		/// <summary>
+		/// Override to release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
+		protected override void DisposeFinal(bool disposing)
+		{
+			OnSourceDetectionStateChange = null;
+			OnActiveInputsChanged = null;
+
+			base.DisposeFinal(disposing);
 		}
 
 		#region Methods
