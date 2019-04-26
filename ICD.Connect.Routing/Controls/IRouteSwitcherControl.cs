@@ -2,7 +2,6 @@
 using ICD.Common.Properties;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Proxies;
 
 namespace ICD.Connect.Routing.Controls
@@ -14,11 +13,6 @@ namespace ICD.Connect.Routing.Controls
 	[ApiClass(typeof(ProxyRouteSwitcherControl), typeof(IRouteMidpointControl))]
 	public interface IRouteSwitcherControl : IRouteMidpointControl
 	{
-		/// <summary>
-		/// Raised when a route changes.
-		/// </summary>
-		event EventHandler<RouteChangeEventArgs> OnRouteChange;
-
 		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>

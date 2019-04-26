@@ -11,6 +11,11 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 		where TDevice : IDtpHdmiDevice
 	{
 		/// <summary>
+		/// Raised when a route changes.
+		/// </summary>
+		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
+		/// <summary>
 		/// Raised when the device starts/stops actively transmitting on an output.
 		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
@@ -41,6 +46,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
+			OnRouteChange = null;
 			OnActiveInputsChanged = null;
 			OnSourceDetectionStateChange = null;
 			OnActiveTransmissionStateChanged = null;

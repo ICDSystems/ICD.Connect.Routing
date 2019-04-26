@@ -1,18 +1,11 @@
-﻿using System;
-using ICD.Connect.Devices;
+﻿using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Devices
 {
 	public abstract class AbstractRouteSwitcherDevice<TSettings> : AbstractRouteMidpointDevice<TSettings>, IRouteSwitcherDevice
 		where TSettings : IDeviceSettings, new()
 	{
-		/// <summary>
-		/// Called when a route changes.
-		/// </summary>
-		public abstract event EventHandler<RouteChangeEventArgs> OnRouteChange;
-
 		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>

@@ -5,11 +5,17 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Devices
 {
 	public interface IRouteMidpointDevice : IRouteSourceDevice, IRouteDestinationDevice
 	{
+		/// <summary>
+		/// Called when a route changes.
+		/// </summary>
+		event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
 		/// <summary>
 		/// Gets the input routed to the given output matching the given type.
 		/// </summary>

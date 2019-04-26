@@ -20,6 +20,11 @@ namespace ICD.Connect.Routing.Controls
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		/// <summary>
+		/// Raised when a route changes.
+		/// </summary>
+		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
+		/// <summary>
 		/// Raised when the device starts/stops actively transmitting on an output.
 		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
@@ -41,6 +46,7 @@ namespace ICD.Connect.Routing.Controls
 		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
+			OnRouteChange = null;
 			OnSourceDetectionStateChange = null;
 			OnActiveInputsChanged = null;
 			OnActiveTransmissionStateChanged = null;
@@ -157,6 +163,7 @@ namespace ICD.Connect.Routing.Controls
 			parent.OnSourceDetectionStateChange += ParentOnSourceDetectionStateChange;
 			parent.OnActiveInputsChanged += ParentOnActiveInputsChanged;
 			parent.OnActiveTransmissionStateChanged += ParentOnActiveTransmissionStateChanged;
+			parent.OnRouteChange += ParentOnRouteChange;
 		}
 
 		/// <summary>
@@ -168,6 +175,7 @@ namespace ICD.Connect.Routing.Controls
 			parent.OnSourceDetectionStateChange -= ParentOnSourceDetectionStateChange;
 			parent.OnActiveInputsChanged -= ParentOnActiveInputsChanged;
 			parent.OnActiveTransmissionStateChanged -= ParentOnActiveTransmissionStateChanged;
+			parent.OnRouteChange -= ParentOnRouteChange;
 		}
 
 		private void ParentOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs eventArgs)
@@ -183,6 +191,11 @@ namespace ICD.Connect.Routing.Controls
 		private void ParentOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs eventArgs)
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(eventArgs));
+		}
+
+		private void ParentOnRouteChange(object sender, RouteChangeEventArgs eventArgs)
+		{
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(eventArgs));
 		}
 
 		#endregion

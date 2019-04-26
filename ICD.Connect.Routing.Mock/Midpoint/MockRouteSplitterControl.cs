@@ -32,6 +32,11 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		/// <summary>
+		/// Raised when a route changes.
+		/// </summary>
+		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
+		/// <summary>
 		/// Raised when the device starts/stops actively transmitting on an output.
 		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
@@ -69,6 +74,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 			OnSourceDetectionStateChange = null;
 			OnActiveInputsChanged = null;
 			OnActiveTransmissionStateChanged = null;
+			OnRouteChange = null;
 
 			base.DisposeFinal(disposing);
 
