@@ -393,7 +393,7 @@ namespace ICD.Connect.Routing.RoutingCaches
 				throw new ArgumentException("type cannot have multiple flags", "flag");
 
 			// TODO - Do we need to check this for every source endpoints?
-			if (!GetDestinationEndpointActive(destinationEndpoint, flag))
+			if (inputActive && !GetDestinationEndpointActive(destinationEndpoint, flag))
 				return Enumerable.Empty<ISource>();
 
 			m_CacheSection.Enter();

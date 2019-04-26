@@ -17,7 +17,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Mapping each switcher to the static routes they are used in.
 		/// </summary>
-		private readonly Dictionary<IRouteSwitcherControl, IcdHashSet<StaticRoute>> m_SwitcherStaticRoutes;
+		private readonly Dictionary<IRouteMidpointControl, IcdHashSet<StaticRoute>> m_MidpointStaticRoutes;
 
 		private readonly RoutingGraph m_RoutingGraph;
 
@@ -30,23 +30,23 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_RoutingGraph = routingGraph;
 
 			m_StaticRoutesSection = new SafeCriticalSection();
-			m_SwitcherStaticRoutes = new Dictionary<IRouteSwitcherControl, IcdHashSet<StaticRoute>>();
+			m_MidpointStaticRoutes = new Dictionary<IRouteMidpointControl, IcdHashSet<StaticRoute>>();
 		}
 
 		#region Methods
 
 		/// <summary>
-		/// Re-applies the static routes that include the given switcher.
+		/// Re-applies the static routes that include the given midpoint.
 		/// </summary>
-		/// <param name="switcher"></param>
-		public void ReApplyStaticRoutesForSwitcher(IRouteSwitcherControl switcher)
+		/// <param name="midpoint"></param>
+		public void ReApplyStaticRoutesForMidpoint(IRouteMidpointControl midpoint)
 		{
 			m_StaticRoutesSection.Enter();
 
 			try
 			{
 				IcdHashSet<StaticRoute> staticRoutes;
-				if (m_SwitcherStaticRoutes.TryGetValue(switcher, out staticRoutes))
+				if (m_MidpointStaticRoutes.TryGetValue(midpoint, out staticRoutes))
 					Route(staticRoutes);
 			}
 			finally
@@ -189,16 +189,16 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			try
 			{
 				// Clear the old lookup
-				m_SwitcherStaticRoutes.Clear();
+				m_MidpointStaticRoutes.Clear();
 
 				// Build the new lookup
 				foreach (StaticRoute staticRoute in GetChildren())
 				{
 					foreach (IRouteSwitcherControl switcher in GetSwitcherDevices(staticRoute))
 					{
-						if (!m_SwitcherStaticRoutes.ContainsKey(switcher))
-							m_SwitcherStaticRoutes[switcher] = new IcdHashSet<StaticRoute>();
-						m_SwitcherStaticRoutes[switcher].Add(staticRoute);
+						if (!m_MidpointStaticRoutes.ContainsKey(switcher))
+							m_MidpointStaticRoutes[switcher] = new IcdHashSet<StaticRoute>();
+						m_MidpointStaticRoutes[switcher].Add(staticRoute);
 					}
 
 					// Initialize this static route

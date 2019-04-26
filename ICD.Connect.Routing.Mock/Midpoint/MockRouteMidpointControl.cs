@@ -18,6 +18,11 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 	public sealed class MockRouteMidpointControl : AbstractRouteMidpointControl<IDeviceBase>
 	{
 		/// <summary>
+		/// Raised when a route changes.
+		/// </summary>
+		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
+		/// <summary>
 		/// Raised when the device starts/stops actively transmitting on an output.
 		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
@@ -64,6 +69,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
+			OnRouteChange = null;
 			OnActiveInputsChanged = null;
 			OnSourceDetectionStateChange = null;
 			OnActiveInputsChanged = null;
@@ -207,6 +213,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
 			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
 			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
+			cache.OnRouteChange += CacheOnRouteChange;
 		}
 
 		/// <summary>
@@ -218,6 +225,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 			cache.OnActiveInputsChanged -= CacheOnActiveInputsChanged;
 			cache.OnSourceDetectionStateChange -= CacheOnSourceDetectionStateChange;
 			cache.OnActiveTransmissionStateChanged -= CacheOnActiveTransmissionStateChanged;
+			cache.OnRouteChange -= CacheOnRouteChange;
 		}
 
 		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
@@ -233,6 +241,11 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
 		{
 			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
+		}
+
+		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
+		{
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
 		}
 
 		#endregion
