@@ -9,6 +9,11 @@ namespace ICD.Connect.Routing.Proxies
 	public abstract class AbstractProxyRouteMidpointControl : AbstractProxyRouteDestinationControl,
 	                                                          IProxyRouteMidpointControl
 	{
+		/// <summary>
+		/// Raised when a route changes.
+		/// </summary>
+		public event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
 		public event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
 		/// <summary>
@@ -27,6 +32,7 @@ namespace ICD.Connect.Routing.Proxies
 		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
+			OnRouteChange = null;
 			OnActiveTransmissionStateChanged = null;
 
 			base.DisposeFinal(disposing);

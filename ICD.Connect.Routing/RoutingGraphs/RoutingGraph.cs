@@ -59,7 +59,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#endregion
 
-		private readonly IcdHashSet<IRouteSwitcherControl> m_SubscribedSwitchers;
+		private readonly IcdHashSet<IRouteMidpointControl> m_SubscribedMidpoints;
 		private readonly IcdHashSet<IRouteDestinationControl> m_SubscribedDestinations;
 		private readonly IcdHashSet<IRouteSourceControl> m_SubscribedSources;
 
@@ -113,7 +113,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// </summary>
 		public RoutingGraph()
 		{
-			m_SubscribedSwitchers = new IcdHashSet<IRouteSwitcherControl>();
+			m_SubscribedMidpoints = new IcdHashSet<IRouteMidpointControl>();
 			m_SubscribedDestinations = new IcdHashSet<IRouteDestinationControl>();
 			m_SubscribedSources = new IcdHashSet<IRouteSourceControl>();
 
@@ -154,7 +154,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="eventArgs"></param>
 		private void ConnectionsOnConnectionsChanged(object sender, EventArgs eventArgs)
 		{
-			SubscribeSwitchers();
+			SubscribeMidpoints();
 			SubscribeDestinations();
 			SubscribeSources();
 
@@ -1373,73 +1373,73 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#endregion
 
-		#region Switcher Callbacks
+		#region Midpoint Callbacks
 
 		/// <summary>
-		/// Subscribes to the switchers found in the connections.
+		/// Subscribes to the midpoints found in the connections.
 		/// </summary>
-		private void SubscribeSwitchers()
+		private void SubscribeMidpoints()
 		{
-			UnsubscribeSwitchers();
+			UnsubscribeMidpoints();
 
-			m_SubscribedSwitchers.AddRange(Connections.SelectMany(c => GetControls(c))
-			                                          .OfType<IRouteSwitcherControl>()
+			m_SubscribedMidpoints.AddRange(Connections.SelectMany(c => GetControls(c))
+			                                          .OfType<IRouteMidpointControl>()
 			                                          .Distinct());
 
-			foreach (IRouteSwitcherControl switcher in m_SubscribedSwitchers)
-				Subscribe(switcher);
+			foreach (IRouteMidpointControl midpoint in m_SubscribedMidpoints)
+				Subscribe(midpoint);
 		}
 
 		/// <summary>
-		/// Unsubscribes from the previously subscribed switchers.
+		/// Unsubscribes from the previously subscribed midpoints.
 		/// </summary>
-		private void UnsubscribeSwitchers()
+		private void UnsubscribeMidpoints()
 		{
-			foreach (IRouteSwitcherControl switcher in m_SubscribedSwitchers)
-				Unsubscribe(switcher);
-			m_SubscribedSwitchers.Clear();
+			foreach (IRouteMidpointControl midpoint in m_SubscribedMidpoints)
+				Unsubscribe(midpoint);
+			m_SubscribedMidpoints.Clear();
 		}
 
 		/// <summary>
-		/// Subscribe to the switcher events.
+		/// Subscribe to the midpoint events.
 		/// </summary>
-		/// <param name="switcher"></param>
-		private void Subscribe(IRouteSwitcherControl switcher)
+		/// <param name="midpoint"></param>
+		private void Subscribe(IRouteMidpointControl midpoint)
 		{
-			if (switcher == null)
+			if (midpoint == null)
 				return;
 
-			switcher.OnRouteChange += SwitcherOnRouteChange;
+			midpoint.OnRouteChange += MidpointOnRouteChange;
 		}
 
 		/// <summary>
-		/// Unsubscribe from the switcher events.
+		/// Unsubscribe from the midpoint events.
 		/// </summary>
-		/// <param name="switcher"></param>
-		private void Unsubscribe(IRouteSwitcherControl switcher)
+		/// <param name="midpoint"></param>
+		private void Unsubscribe(IRouteMidpointControl midpoint)
 		{
-			if (switcher == null)
+			if (midpoint == null)
 				return;
 
-			switcher.OnRouteChange -= SwitcherOnRouteChange;
+			midpoint.OnRouteChange -= MidpointOnRouteChange;
 		}
 
 		/// <summary>
-		/// Called when a switchers routing changes.
+		/// Called when a midpoints routing changes.
 		/// We want to ensure that static routes remain in place after routing changes.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="args"></param>
-		private void SwitcherOnRouteChange(object sender, RouteChangeEventArgs args)
+		private void MidpointOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
-			IRouteSwitcherControl switcher = sender as IRouteSwitcherControl;
-			if (switcher == null)
+			IRouteMidpointControl midpoint = sender as IRouteMidpointControl;
+			if (midpoint == null)
 				return;
 
-			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(switcher, args));
+			OnRouteChanged.Raise(this, new SwitcherRouteChangeEventArgs(midpoint, args));
 
 			// Re-enforce static routes
-			m_StaticRoutes.ReApplyStaticRoutesForSwitcher(switcher);
+			m_StaticRoutes.ReApplyStaticRoutesForMidpoint(midpoint);
 		}
 
 		#endregion
@@ -1457,7 +1457,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_Sources.SetChildren(Enumerable.Empty<ISource>());
 			m_Destinations.SetChildren(Enumerable.Empty<IDestination>());
 
-			SubscribeSwitchers();
+			SubscribeMidpoints();
 			SubscribeDestinations();
 			SubscribeSources();
 
@@ -1503,7 +1503,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_Destinations.SetChildren(destinations);
 			m_Destinations.RebuildCache();
 
-			SubscribeSwitchers();
+			SubscribeMidpoints();
 			SubscribeDestinations();
 			SubscribeSources();
 

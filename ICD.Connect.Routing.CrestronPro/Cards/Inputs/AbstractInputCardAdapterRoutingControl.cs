@@ -30,6 +30,11 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
+		/// <summary>
+		/// Raised when a route changes.
+		/// </summary>
+		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
 		private readonly SwitcherCache m_Cache;
 
 		/// <summary>
@@ -60,6 +65,8 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		{
 			OnSourceDetectionStateChange = null;
 			OnActiveInputsChanged = null;
+			OnActiveTransmissionStateChanged = null;
+			OnRouteChange = null;
 
 			base.DisposeFinal(disposing);
 

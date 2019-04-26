@@ -12,6 +12,11 @@ namespace ICD.Connect.Routing.Devices
 		where TSettings : IDeviceSettings, new()
 	{
 		/// <summary>
+		/// Called when a route changes.
+		/// </summary>
+		public abstract event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
+		/// <summary>
 		/// Raised when the device starts/stops actively transmitting on an output.
 		/// </summary>
 		public abstract event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;

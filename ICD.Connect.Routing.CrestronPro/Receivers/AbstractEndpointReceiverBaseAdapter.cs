@@ -5,6 +5,7 @@ using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Settings;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Routing.Devices;
+using ICD.Connect.Routing.EventArguments;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -31,6 +32,11 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 #endif
 		where TSettings : IEndpointReceiverBaseAdapterSettings, new()
 	{
+		/// <summary>
+		/// Called when a route changes.
+		/// </summary>
+		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
 #if SIMPLSHARP
 		/// <summary>
 		/// Raised when the wrapped scaler changes.
@@ -84,6 +90,11 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
+			OnRouteChange = null;
+#if SIMPLSHARP
+			OnReceiverChanged = null;
+#endif
+
 			base.DisposeFinal(disposing);
 
 #if SIMPLSHARP
