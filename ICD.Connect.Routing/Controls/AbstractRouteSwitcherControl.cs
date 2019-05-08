@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Controls
 {
 	public abstract class AbstractRouteSwitcherControl<T> : AbstractRouteMidpointControl<T>, IRouteSwitcherControl
 		where T : IDeviceBase
 	{
-		/// <summary>
-		/// Raised when a route changes.
-		/// </summary>
-		public abstract event EventHandler<RouteChangeEventArgs> OnRouteChange;
-
 		/// <summary>
 		/// Constructor.
 		/// </summary>

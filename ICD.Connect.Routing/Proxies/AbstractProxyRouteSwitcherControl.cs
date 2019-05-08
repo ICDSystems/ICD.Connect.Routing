@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using ICD.Connect.API.Commands;
-using ICD.Connect.API.Nodes;
-using ICD.Connect.Devices.Proxies.Devices;
+﻿using ICD.Connect.Devices.Proxies.Devices;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.Controls;
-using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Proxies
 {
 	public abstract class AbstractProxyRouteSwitcherControl : AbstractProxyRouteMidpointControl, IProxyRouteSwitcherControl
 	{
-		public event EventHandler<RouteChangeEventArgs> OnRouteChange;
-
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -21,17 +13,6 @@ namespace ICD.Connect.Routing.Proxies
 		protected AbstractProxyRouteSwitcherControl(IProxyDeviceBase parent, int id)
 			: base(parent, id)
 		{
-		}
-
-		/// <summary>
-		/// Override to release resources.
-		/// </summary>
-		/// <param name="disposing"></param>
-		protected override void DisposeFinal(bool disposing)
-		{
-			OnRouteChange = null;
-
-			base.DisposeFinal(disposing);
 		}
 
 		/// <summary>

@@ -43,9 +43,17 @@ namespace ICD.Connect.Routing.Mock.Source
 			: base(parent, id)
 		{
 			m_TransmissionStates = new Dictionary<int, Dictionary<eConnectionType, bool>>();
+		}
 
-			foreach (ConnectorInfo output in GetOutputs())
-				SetActiveTransmissionState(output.Address, output.ConnectionType, true);
+		/// <summary>
+		/// Override to release resources.
+		/// </summary>
+		/// <param name="disposing"></param>
+		protected override void DisposeFinal(bool disposing)
+		{
+			OnActiveTransmissionStateChanged = null;
+
+			base.DisposeFinal(disposing);
 		}
 
 		#region Methods
@@ -60,7 +68,8 @@ namespace ICD.Connect.Routing.Mock.Source
 		/// <returns></returns>
 		public override bool GetActiveTransmissionState(int output, eConnectionType type)
 		{
-			return m_TransmissionStates.ContainsKey(output) && m_TransmissionStates[output].GetDefault(type, false);
+			// Default to true
+			return !m_TransmissionStates.ContainsKey(output) || m_TransmissionStates[output].GetDefault(type, true);
 		}
 
 		/// <summary>

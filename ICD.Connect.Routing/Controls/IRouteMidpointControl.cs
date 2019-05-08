@@ -6,6 +6,7 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Proxies;
 
 namespace ICD.Connect.Routing.Controls
@@ -13,6 +14,11 @@ namespace ICD.Connect.Routing.Controls
 	[ApiClass(typeof(ProxyRouteMidpointControl), typeof(IRouteSourceControl))]
 	public interface IRouteMidpointControl : IRouteSourceControl, IRouteDestinationControl
 	{
+		/// <summary>
+		/// Raised when a route changes.
+		/// </summary>
+		event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
 		/// <summary>
 		/// Gets the input routed to the given output matching the given type.
 		/// </summary>

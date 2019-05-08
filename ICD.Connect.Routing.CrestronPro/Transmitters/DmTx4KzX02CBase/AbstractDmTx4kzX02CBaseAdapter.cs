@@ -1,19 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using ICD.Connect.Misc.CrestronPro.Devices;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
 #endif
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.Connections;
 
-namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kzX02CBase
+namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 {
 #if SIMPLSHARP
 	public abstract class AbstractDmTx4kzX02CBaseAdapter<TTransmitter, TSettings> :
