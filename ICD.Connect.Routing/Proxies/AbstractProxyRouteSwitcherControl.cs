@@ -1,5 +1,9 @@
-﻿using ICD.Connect.Devices.Proxies.Devices;
+﻿using System.Collections.Generic;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
+using ICD.Connect.Devices.Proxies.Devices;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Controls;
 
 namespace ICD.Connect.Routing.Proxies
 {
