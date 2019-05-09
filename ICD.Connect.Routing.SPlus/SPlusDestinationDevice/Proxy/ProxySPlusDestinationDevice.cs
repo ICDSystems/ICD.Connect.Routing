@@ -17,6 +17,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		public event EventHandler<SetVolumeLevelApiEventArgs> OnSetVolumeLevel;
 		public event EventHandler<SetVolumeMuteStateApiEventArgs> OnSetVolumeMuteState;
 		public event EventHandler<VolumeMuteToggleApiEventArgs> OnVolumeMuteToggle;
+		public event EventHandler<ResendActiveInputApiEventArgs> OnResendActiveInput;
 
 		#endregion
 
@@ -76,6 +77,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 							 .SubscribeEvent(SPlusDestinationApi.EVENT_SET_VOLUME_LEVEL)
 							 .SubscribeEvent(SPlusDestinationApi.EVENT_SET_VOLUME_MUTE_STATE)
 							 .SubscribeEvent(SPlusDestinationApi.EVENT_VOLUME_MUTE_TOGGLE)
+							 .SubscribeEvent(SPlusDestinationApi.EVENT_RESEND_ACTIVE_INPUT)
 							 .GetProperty(SPlusDestinationApi.PROPERTY_INPUT_COUNT)
 							 .Complete();
 			RaiseOnRequestShimResync(this);
@@ -106,6 +108,9 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 					break;
 				case SPlusDestinationApi.EVENT_VOLUME_MUTE_TOGGLE:
 					RaiseVolumeMuteToggle();
+					break;
+				case SPlusDestinationApi.EVENT_RESEND_ACTIVE_INPUT:
+					RaiseResendActiveInput();
 					break;
 			}
 		}
@@ -154,6 +159,11 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		private void RaiseVolumeMuteToggle()
 		{
 			OnVolumeMuteToggle.Raise(this, new VolumeMuteToggleApiEventArgs());
+		}
+
+		private void RaiseResendActiveInput()
+		{
+			OnResendActiveInput.Raise(this, new ResendActiveInputApiEventArgs());
 		}
 
 		#endregion

@@ -9,12 +9,16 @@
 		public const string EVENT_SET_VOLUME_LEVEL = "OnSetVolumeLevel";
 		public const string EVENT_SET_VOLUME_MUTE_STATE = "OnSetMuteState";
 		public const string EVENT_VOLUME_MUTE_TOGGLE = "OnMuteToggle";
+		public const string EVENT_RESEND_ACTIVE_INPUT = "OnResendActiveInput";
 
 		public const string EVENT_SET_POWER_STATE_HELP = "Called to send power control actions to the destination through the shim";
 		public const string EVENT_SET_ACTIVE_INPUT_HELP = "Called to set the active input on the destination through the shim";
 		public const string EVENT_SET_VOLUME_LEVEL_HELP = "Called to set the volume level on the destination through the shim";
 		public const string EVENT_SET_VOLUME_MUTE_STATE_HELP = "Called to set the mute state on the destination through the shim";
 		public const string EVENT_VOLUME_MUTE_TOGGLE_HELP = "Called to toggle the mute state on the destination through the shim";
+
+		public const string EVENT_RESEND_ACTIVE_INPUT_HELP =
+			"Called to request the shim to resend the active input to the originator";
 
 		#endregion
 

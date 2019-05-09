@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Devices.Simpl;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs;
@@ -20,21 +21,21 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 		#region Fields
 
-		private SPlusDestinationRouteControl m_RouteControl;
-		private SPlusDestinationPowerControl m_PowerControl;
-		private SPlusDestinationVolumeControl m_VolumeControl;
-
 		#endregion
 
 		#region Properties
+
+		internal SPlusDestinationRouteControl RouteControl { get; private set; }
+		internal SPlusDestinationPowerControl PowerControl { get; private set; }
+		internal SPlusDestinationVolumeControl VolumeControl { get; private set; }
 
 		public int? InputCount
 		{
 			get
 			{
-				if (m_RouteControl == null)
+				if (RouteControl == null)
 					return null;
-				return m_RouteControl.InputCount;
+				return RouteControl.InputCount;
 			}
 		}
 
@@ -52,20 +53,24 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 		public void SetActiveInputFeedback(int? input)
 		{
-			if (m_RouteControl != null)
-				m_RouteControl.SetActiveInputFeedback(input);
+			if (RouteControl == null)
+				return;
+
+			// If we have power contorl, only set active input if powered on
+			if (PowerControl == null || PowerControl.IsPowered)
+				RouteControl.SetActiveInputFeedback(input);
 		}
 
 		public void SetInputDetectedFeedback(int input, bool state)
 		{
-			if (m_RouteControl != null)
-				m_RouteControl.SetInputDetectedFeedback(input, state);
+			if (RouteControl != null)
+				RouteControl.SetInputDetectedFeedback(input, state);
 		}
 
 		public void ResetInputDetectedFeedback(List<int> detectedInputs)
 		{
-			if (m_RouteControl != null)
-				m_RouteControl.ResetInputDetectedFeedback(detectedInputs);
+			if (RouteControl != null)
+				RouteControl.ResetInputDetectedFeedback(detectedInputs);
 		}
 
 		#endregion
@@ -89,14 +94,28 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 		/// </summary>
 		public event EventHandler<PowerControlApiEventArgs> OnSetPowerState;
 
+		public event EventHandler<ResendActiveInputApiEventArgs> OnResendActiveInput;
+
 		#endregion
 
 		#region Methods From Shim
 
 		public void SetPowerStateFeedback(bool state)
 		{
-			if (m_PowerControl != null)
-				m_PowerControl.SetPowerStateFeedback(state);
+			if (PowerControl == null)
+				return;
+			
+			PowerControl.SetPowerStateFeedback(state);
+			
+			// When powering on, request shim to resend active input
+			// When powering off, clear active input
+			if (state)
+				OnResendActiveInput.Raise(this, new ResendActiveInputApiEventArgs());
+			else
+			{
+				if (RouteControl != null)
+					RouteControl.SetActiveInputFeedback(null);
+			}
 		}
 
 		#endregion
@@ -131,14 +150,14 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 		public void SetVolumeLevelFeedback(ushort volume)
 		{
-			if (m_VolumeControl != null)
-				m_VolumeControl.SetVolumeFeedback(volume);
+			if (VolumeControl != null)
+				VolumeControl.SetVolumeFeedback(volume);
 		}
 
 		public void SetVolumeMuteStateFeedback(bool state)
 		{
-			if (m_VolumeControl != null)
-				m_VolumeControl.SetVolumeMuteStateFeedback(state);
+			if (VolumeControl != null)
+				VolumeControl.SetVolumeMuteStateFeedback(state);
 		}
 
 		#endregion
@@ -173,9 +192,9 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 		{
 			base.DisposeFinal(disposing);
 
-			m_RouteControl = null;
-			m_PowerControl = null;
-			m_VolumeControl = null;
+			RouteControl = null;
+			PowerControl = null;
+			VolumeControl = null;
 		}
 
 		#endregion
@@ -191,23 +210,42 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			m_RouteControl = new SPlusDestinationRouteControl(this, ROUTE_CONTROL_ID, settings.InputCount);
-			Controls.Add(m_RouteControl);
-
+			//Note: Order is important - power control must be first
 			if (settings.PowerControl)
 			{
-				m_PowerControl = new SPlusDestinationPowerControl(this, POWER_CONTROL_ID);
-				Controls.Add(m_PowerControl);
+				PowerControl = new SPlusDestinationPowerControl(this, POWER_CONTROL_ID);
+				Controls.Add(PowerControl);
+				Subscribe(PowerControl);
 			}
+
+			RouteControl = new SPlusDestinationRouteControl(this, ROUTE_CONTROL_ID, settings.InputCount);
+			Controls.Add(RouteControl);
+
+			
 			if (settings.VolumeControl)
 			{
-				m_VolumeControl = new SPlusDestinationVolumeControl(this, VOLUME_CONTROL_ID);
-				Controls.Add(m_VolumeControl);
+				VolumeControl = new SPlusDestinationVolumeControl(this, VOLUME_CONTROL_ID);
+				Controls.Add(VolumeControl);
 				if (settings.VolumeMin.HasValue)
-					m_VolumeControl.VolumeRawMin = settings.VolumeMin.Value;
+					VolumeControl.VolumeRawMin = settings.VolumeMin.Value;
 				if (settings.VolumeMax.HasValue)
-					m_VolumeControl.VolumeRawMax = settings.VolumeMax.Value;
+					VolumeControl.VolumeRawMax = settings.VolumeMax.Value;
 			}
+		}
+
+		private void Subscribe(SPlusDestinationPowerControl powerControl)
+		{
+			powerControl.OnIsPoweredChanged += PowerControlOnIsPoweredChanged;
+		}
+
+		private void Unsubscribe(SPlusDestinationPowerControl powerControl)
+		{
+			powerControl.OnIsPoweredChanged -= PowerControlOnIsPoweredChanged;
+		}
+
+		private void PowerControlOnIsPoweredChanged(object sender, PowerDeviceControlPowerStateApiEventArgs powerDeviceControlPowerStateApiEventArgs)
+		{
+			
 		}
 
 		/// <summary>
@@ -218,16 +256,16 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 		{
 			base.CopySettingsFinal(settings);
 
-			if (m_RouteControl != null)
-				settings.InputCount = m_RouteControl.InputCount;
+			if (RouteControl != null)
+				settings.InputCount = RouteControl.InputCount;
 			
-			if (m_PowerControl != null)
+			if (PowerControl != null)
 				settings.PowerControl = true;
-			if (m_VolumeControl != null)
+			if (VolumeControl != null)
 			{
 				settings.VolumeControl = true;
-				settings.VolumeMin = (ushort?)m_VolumeControl.VolumeRawMin;
-				settings.VolumeMax = (ushort?)m_VolumeControl.VolumeRawMax;
+				settings.VolumeMin = (ushort?)VolumeControl.VolumeRawMin;
+				settings.VolumeMax = (ushort?)VolumeControl.VolumeRawMax;
 			}
 		}
 
@@ -238,24 +276,24 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 		{
 			base.ClearSettingsFinal();
 
-			if (m_RouteControl != null)
+			if (RouteControl != null)
 			{
 				Controls.Remove(ROUTE_CONTROL_ID);
-				m_RouteControl.Dispose();
-				m_RouteControl = null;
+				RouteControl.Dispose();
+				RouteControl = null;
 			}
 
-			if (m_PowerControl != null)
+			if (PowerControl != null)
 			{
 				Controls.Remove(POWER_CONTROL_ID);
-				m_PowerControl.Dispose();
-				m_PowerControl = null;
+				PowerControl.Dispose();
+				PowerControl = null;
 			}
-			if (m_VolumeControl != null)
+			if (VolumeControl != null)
 			{
 				Controls.Remove(VOLUME_CONTROL_ID);
-				m_VolumeControl.Dispose();
-				m_VolumeControl = null;
+				VolumeControl.Dispose();
+				VolumeControl = null;
 			}
 		}
 

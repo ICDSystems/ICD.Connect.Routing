@@ -34,7 +34,10 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice
 		event EventHandler<SetVolumeMuteStateApiEventArgs> OnSetVolumeMuteState;
 
 		[ApiEvent(SPlusDestinationApi.EVENT_VOLUME_MUTE_TOGGLE, SPlusDestinationApi.EVENT_VOLUME_MUTE_TOGGLE_HELP)]
-		event EventHandler<VolumeMuteToggleApiEventArgs> OnVolumeMuteToggle; 
+		event EventHandler<VolumeMuteToggleApiEventArgs> OnVolumeMuteToggle;
+
+		[ApiEvent(SPlusDestinationApi.EVENT_RESEND_ACTIVE_INPUT, SPlusDestinationApi.EVENT_RESEND_ACTIVE_INPUT_HELP)]
+		event EventHandler<ResendActiveInputApiEventArgs> OnResendActiveInput;
 
 		#endregion
 

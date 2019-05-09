@@ -20,6 +20,11 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 
 		public int InputCount { get; private set; }
 
+		#region Events
+
+		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+
+		#endregion
 
 		#region Constructor
 		/// <summary>
@@ -34,13 +39,6 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 			m_InputsDetectedHashSet = new IcdHashSet<int>();
 			InputCount = inputCount;
 		}
-
-		#endregion
-
-		#region Events
-
-		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
-
 		#endregion
 
 		#region Methods

@@ -48,7 +48,7 @@ namespace ICD.Connect.Routing.Controls
 		/// <summary>
 		/// Gets the current active input.
 		/// </summary>
-		public int? GetActiveInput(eConnectionType flag)
+		public virtual int? GetActiveInput(eConnectionType flag)
 		{
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentOutOfRangeException("flag");

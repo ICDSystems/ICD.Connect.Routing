@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.SPlusShims;
@@ -38,6 +39,9 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Shim
 
 		[PublicAPI("S+")]
 		public GetInputSyncDelegate GetInputSync { get; set; }
+
+		[PublicAPI("S+")]
+		public GenericDelegate ResendActiveInput { get; set; }
 
 		#endregion
 
@@ -103,6 +107,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Shim
 			originator.OnSetVolumeLevel += OriginatorOnSetVolumeLevel;
 			originator.OnSetVolumeMuteState += OriginatorOnSetVolumeMuteState;
 			originator.OnVolumeMuteToggle += OriginatorOnVolumeMuteToggle;
+			originator.OnResendActiveInput += OriginatorOnResendActiveInput;
 		}
 
 		/// <summary>
@@ -121,6 +126,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Shim
 			originator.OnSetVolumeLevel -= OriginatorOnSetVolumeLevel;
 			originator.OnSetVolumeMuteState -= OriginatorOnSetVolumeMuteState;
 			originator.OnVolumeMuteToggle -= OriginatorOnVolumeMuteToggle;
+			originator.OnResendActiveInput -= OriginatorOnResendActiveInput;
 		}
 
 		private void OriginatorOnSetPowerState(object sender, PowerControlApiEventArgs args)
@@ -159,6 +165,13 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Shim
 		private void OriginatorOnVolumeMuteToggle(object sender, VolumeMuteToggleApiEventArgs args)
 		{
 			var callback = VolumeMuteToggle;
+			if (callback != null)
+				callback();
+		}
+
+		private void OriginatorOnResendActiveInput(object sender, ResendActiveInputApiEventArgs resendActiveInputApiEventArgs)
+		{
+			var callback = ResendActiveInput;
 			if (callback != null)
 				callback();
 		}
