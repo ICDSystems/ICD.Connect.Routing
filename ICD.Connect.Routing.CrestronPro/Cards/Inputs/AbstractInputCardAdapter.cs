@@ -1,4 +1,5 @@
-﻿using ICD.Common.Properties;
+﻿using System;
+using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Settings;
 #if SIMPLSHARP
@@ -186,12 +187,21 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 #if SIMPLSHARP
 		private void SetCard(TSettings settings, IDeviceFactory factory)
 		{
-			TCard card = DmEndpointFactoryUtils.InstantiateCard<TCard>(settings.CresnetId,
-			                                                           settings.CardNumber,
-			                                                           settings.SwitcherId,
-			                                                           factory,
-			                                                           InstantiateCardExternal,
-			                                                           InstantiateCardInternal);
+			TCard card = null;
+
+			try
+			{
+				card = DmEndpointFactoryUtils.InstantiateCard<TCard>(settings.CresnetId,
+				                                                     settings.CardNumber,
+				                                                     settings.SwitcherId,
+				                                                     factory,
+				                                                     InstantiateCardExternal,
+				                                                     InstantiateCardInternal);
+			}
+			catch (Exception e)
+			{
+				Log(eSeverity.Error, "Failed to instantiate {0} - {1}", typeof(TCard).Name, e.Message);
+			}
 
 			SetCard(card, settings.CresnetId, settings.CardNumber, settings.SwitcherId);
 		}
