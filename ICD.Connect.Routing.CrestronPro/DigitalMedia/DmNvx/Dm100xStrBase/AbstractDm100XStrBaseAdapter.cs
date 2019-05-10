@@ -222,7 +222,17 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 			base.ApplySettingsFinal(settings, factory);
 
 #if SIMPLSHARP
-			TStreamer streamer = DmEndpointFactoryUtils.InstantiateStreamer(settings, factory, this);
+			TStreamer streamer = null;
+
+			try
+			{
+				streamer = DmEndpointFactoryUtils.InstantiateStreamer(settings, factory, this);
+			}
+			catch (Exception e)
+			{
+				Log(eSeverity.Error, "Failed to instantiate internal {0} - {1}", typeof(TStreamer).Name, e.Message);
+			}
+
 			SetStreamer(streamer);
 #else
             throw new NotSupportedException();
