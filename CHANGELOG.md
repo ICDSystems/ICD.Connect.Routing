@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [13.5.0] - 2019-05-10
 ### Changed
  - Logging when Crestron input cards, output cards and streamers fail to instantiate
+ - Mock route source controls default to transmitting
+ - OnRouteChanged event moved from IRouteSwitcherControl/Device to IRouteMidpointControl/Device
 
 ## [13.4.1] - 2019-04-19
 ### Added
