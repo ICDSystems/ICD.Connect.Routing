@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Routing.Controls;
+﻿using System;
+using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Routing.Devices;
 using ICD.Connect.Routing.EventArguments;
@@ -11,7 +12,6 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
 using ICD.Common.Utils.Services.Logging;
-using System;
 using ICD.Connect.Misc.CrestronPro.Extensions;
 using ICD.Connect.Routing.CrestronPro.Utils;
 #endif
