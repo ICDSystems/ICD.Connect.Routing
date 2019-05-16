@@ -1,13 +1,13 @@
 ﻿using System;
-using ICD.Common.Properties;
-using ICD.Common.Utils.Services.Logging;
+﻿using ICD.Common.Properties;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Connect.Routing.CrestronPro.Utils;
-using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs

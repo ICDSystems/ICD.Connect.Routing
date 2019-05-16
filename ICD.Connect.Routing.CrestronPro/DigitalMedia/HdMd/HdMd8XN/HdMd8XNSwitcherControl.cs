@@ -7,7 +7,6 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Misc.CrestronPro.Utils;
-using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Connect.Misc.CrestronPro.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;

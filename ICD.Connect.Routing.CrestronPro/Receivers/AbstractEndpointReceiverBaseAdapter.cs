@@ -1,7 +1,5 @@
-﻿using System;
-using ICD.Connect.Routing.Controls;
+﻿using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
-using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Routing.Devices;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Settings.Core;
@@ -9,11 +7,13 @@ using ICD.Connect.Settings.Core;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Receivers;
-using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
 using ICD.Common.Utils.Services.Logging;
+using System;
+using ICD.Connect.Misc.CrestronPro.Extensions;
+using ICD.Connect.Routing.CrestronPro.Utils;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers
