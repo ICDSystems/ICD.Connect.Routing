@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [13.5.1] - 2019-05-16
+### Changed
+ - Failing more gracefully when unable to instantiate a crestron switcher
+
 ## [13.5.0] - 2019-05-10
 ### Changed
  - Logging when Crestron input cards, output cards and streamers fail to instantiate
