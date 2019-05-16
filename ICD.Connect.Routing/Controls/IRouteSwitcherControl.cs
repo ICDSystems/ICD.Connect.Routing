@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Proxies;
+using ICD.Connect.Routing.Telemetry;
+using ICD.Connect.Telemetry.Attributes;
 
 namespace ICD.Connect.Routing.Controls
 {
@@ -14,6 +15,7 @@ namespace ICD.Connect.Routing.Controls
 	/// for routing specific inputs to specific outputs.
 	/// </summary>
 	[ApiClass(typeof(ProxyRouteSwitcherControl), typeof(IRouteMidpointControl))]
+	[ExternalTelemetry("Switcher", typeof(ISwitcherExternalTelemetryProvider))]
 	public interface IRouteSwitcherControl : IRouteMidpointControl
 	{
 		/// <summary>
@@ -39,6 +41,20 @@ namespace ICD.Connect.Routing.Controls
 		bool UsbBreakawayEnabled { get; }
 
 		/// <summary>
+		/// Returns switcher port objects to get details about the input ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		[PublicAPI]
+		IEnumerable<InputPort> GetInputPorts();
+
+		/// <summary>
+		/// Returns switcher port objects to get details about the output ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		[PublicAPI]
+		IEnumerable<OutputPort> GetOutputPorts(); 
+
+		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>
 		/// <param name="info"></param>
@@ -54,47 +70,13 @@ namespace ICD.Connect.Routing.Controls
 		[PublicAPI]
 		bool ClearOutput(int output, eConnectionType type);
 
+		/*
 		/// <summary>
-		/// Gets the Input Id of the switcher's inputs (ie HDMI1, VGA2)
+		/// Returns information about the inputs and outputs of this switcher for telemetry
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
-		IEnumerable<string> GetSwitcherVideoInputIds();
-
-		/// <summary>
-		/// Gets the Input Name of the switcher's inputs (ie Content, Display In)
-		/// </summary>
-		/// <returns></returns>
-		[PublicAPI]
-		IEnumerable<string> GetSwitcherVideoInputNames();
-
-		/// <summary>
-		/// Gets the Input Sync Type of the switcher's inputs (ie HDMI when HDMI Sync is detected, empty when not detected)
-		/// </summary>
-		/// <returns></returns>
-		[PublicAPI]
-		IEnumerable<string> GetSwitcherVideoInputSyncType();
-
-		/// <summary>
-		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
-		/// </summary>
-		/// <returns></returns>
-		[PublicAPI]
-		IEnumerable<string> GetSwitcherVideoInputResolutions();
-
-		/// <summary>
-		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
-		/// </summary>
-		/// <returns></returns>
-		[PublicAPI]
-		IEnumerable<string> GetSwitcherVideoOutputIds();
-
-		/// <summary>
-		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
-		/// </summary>
-		/// <returns></returns>
-		[PublicAPI]
-		IEnumerable<string> GetSwitcherVideoOutputNames();
+		IEnumerable<InputOutputPort> GetPorts();*/
 	}
 
 	/// <summary>

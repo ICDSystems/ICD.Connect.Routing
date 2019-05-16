@@ -481,6 +481,47 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			return m_Cache.GetInputConnectorInfoForOutput(output, type);
 		}
 
+		protected override void InitializeInputPorts()
+		{
+			foreach (ConnectorInfo input in GetInputs())
+			{
+				bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+				inputPorts.Add(input, new InputPort
+				{
+					ConnectionType = input.ConnectionType,
+					InputId = GetInputId(input),
+					InputIdFeedbackSupported = true,
+					VideoInputResolution = supportsVideo ? GetVideoInputResolution(input) : null,
+					VideoInputResolutionFeedbackSupport = supportsVideo,
+					VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+					VideoInputSyncFeedbackSupported = supportsVideo,
+					VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
+					VideoInputSyncTypeFeedbackSupported = supportsVideo
+				});
+			}
+		}
+
+		protected override void InitializeOutputPorts()
+		{
+			foreach (ConnectorInfo output in GetOutputs())
+			{
+				bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+				bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+				outputPorts.Add(output, new OutputPort
+				{
+					ConnectionType = output.ConnectionType,
+					OutputId = GetOutputId(output),
+					OutputIdFeedbackSupport = true,
+					VideoOutputSyncType = supportsVideo ? GetVideoOutputSyncType(output) : null,
+					VideoOutputSyncTypeFeedbackSupport = supportsVideo,
+					VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+					VideoOutputSourceFeedbackSupport = supportsVideo,
+					AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+					AudioOutputSourceFeedbackSupport = supportsAudio
+				});
+			}
+		}
+
 		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>
@@ -578,69 +619,41 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 #endif
 		}
 
-		public override IEnumerable<string> GetSwitcherVideoInputIds()
+		private string GetInputId(ConnectorInfo info)
 		{
 			if (m_Streamer == null)
-				yield break;
-
-			foreach (var address in GetInputs()
-				.Where(index => s_InputConnectors[index.Address].ConnectionType.HasFlag(eConnectionType.Video))
-				.Select(ci => ci.Address))
-			{
-				yield return string.Format("{0} {1}", s_InputConnectorInputTypes[address], address);
-			}
+				return null;
+			
+			return string.Format("{0} {1}", s_InputConnectorInputTypes[info.Address], info);
 		}
 
-		/// <summary>
-		/// Gets the Input Name of the switcher (ie Content, Display In)
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputNames()
+		private bool GetVideoInputSyncState(ConnectorInfo info)
 		{
-			return GetSwitcherVideoInputIds();
+			return GetSignalDetectedState(info.Address, eConnectionType.Video);
 		}
 
-		/// <summary>
-		/// Gets the Input Sync Type of the switcher's inputs (ie HDMI when HDMI Sync is detected, empty when not detected)
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputSyncType()
+		private string GetVideoInputSyncType(ConnectorInfo info)
 		{
 			if(m_Streamer == null)
-				yield break;
+				return null;
 
-			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
-			{
-				bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
-				if (!syncState)
-				{
-					yield return string.Empty;
-					continue;
-				}
+			bool syncState = GetSignalDetectedState(info.Address, eConnectionType.Video);
+			if (!syncState)
+				return string.Empty;
 
-				yield return s_InputConnectorInputTypes[input.Address];
-			}
+			return s_InputConnectorInputTypes[info.Address];
 		}
 
-		/// <summary>
-		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputResolutions()
+		private string GetVideoInputResolution(ConnectorInfo input)
 		{
 			if (m_Streamer == null)
-				yield break;
+				return null;
 
-			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
-			{
 				bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
-				if (!syncState)
-				{
-					yield return string.Empty;
-					continue;
-				}
+			if (!syncState)
+				return string.Empty;
 
-				ushort h; 
+			ushort h; 
 				ushort v;
 				switch (input.Address)
 				{
@@ -662,34 +675,37 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 						break;
 				}
 
-				yield return DmInputOutputUtils.GetResolutionFormatted(h, v);
-			}
+			return DmInputOutputUtils.GetResolutionFormatted(h, v);
+
 		}
 
-		/// <summary>
-		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoOutputIds()
+		private string GetOutputId(ConnectorInfo output)
 		{
 			if (m_Streamer == null)
-				yield break;
+				return null;
 
-			foreach (var address in GetOutputs()
-				.Where(index => s_OutputConnectors[index.Address].ConnectionType.HasFlag(eConnectionType.Video))
-				.Select(ci => ci.Address))
-			{
-				yield return string.Format("{0} {1}", s_OutputConnectorOutputTypes[address], address);
-			}
+			return string.Format("{0} {1}", s_OutputConnectorOutputTypes[output.Address], output.Address);
+
 		}
 
-		/// <summary>
-		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoOutputNames()
+		private string GetVideoOutputSyncType(ConnectorInfo info)
 		{
-			return GetSwitcherVideoOutputIds();
+			if (m_Streamer == null)
+				return null;
+
+			return info.Address == 1 ? m_Streamer.HdmiOut.SyncDetectedFeedback.BoolValue ? "HDMI" : "" : null;
+		}
+
+		private string GetActiveSourceIdName(ConnectorInfo info, eConnectionType type)
+		{
+			if (!EnumUtils.HasSingleFlag(type))
+				throw new InvalidOperationException("Cannot get active source for multiple type flags");
+
+			var activeInput = m_Cache.GetInputConnectorInfoForOutput(info.Address, type);
+			return activeInput != null
+					   ? string.Format("{0} {1}", inputPorts[activeInput.Value].InputId ?? string.Empty,
+									   inputPorts[activeInput.Value].InputName ?? string.Empty)
+					   : null;
 		}
 
 		/// <summary>
@@ -850,6 +866,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					break;
 				 */
 			}
+
+			// Nvx does not have specific event which allows us to see which port, so just update all of them
+			if (DmInputOutputUtils.GetIsEventIdResolutionEventId(args.EventId))
+			{
+				foreach(var input in inputPorts)
+					input.Value.VideoInputResolution = GetVideoInputResolution(input.Key);
+			}
 		}
 
 		/// <summary>
@@ -909,24 +932,37 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 		#region SwitcherCache Callbacks
 
-		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs eventArgs)
+		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
-			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(eventArgs));
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
+			KeyValuePair<ConnectorInfo, InputPort> inputPort = inputPorts.FirstOrDefault(kvp => kvp.Key.Address == args.Input);
+			if (inputPort.Value != null && args.Type.HasFlag(eConnectionType.Video))
+			{
+				inputPort.Value.VideoInputSync = GetVideoInputSyncState(inputPort.Key);
+				inputPort.Value.VideoInputSyncType = GetVideoInputSyncType(inputPort.Key);
+			}
 		}
 
-		private void CacheOnRouteChange(object sender, RouteChangeEventArgs eventArgs)
+		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
-			OnRouteChange.Raise(this, new RouteChangeEventArgs(eventArgs));
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
+			KeyValuePair<ConnectorInfo, OutputPort> outputPort = outputPorts.FirstOrDefault(kvp => kvp.Key.Address == args.Output);
+			if (outputPort.Value == null)
+				return;
+			if (args.Type.HasFlag(eConnectionType.Video))
+				outputPort.Value.VideoOutputSource = GetActiveSourceIdName(outputPort.Key, eConnectionType.Video);
+			if (args.Type.HasFlag(eConnectionType.Audio))
+				outputPort.Value.AudioOutputSource = GetActiveSourceIdName(outputPort.Key, eConnectionType.Audio);
 		}
 
-		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs eventArgs)
+		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
 		{
-			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(eventArgs));
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
 		}
 
-		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs eventArgs)
+		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
 		{
-			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(eventArgs));
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
 		}
 
 		#endregion

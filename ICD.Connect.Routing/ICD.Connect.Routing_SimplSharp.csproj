@@ -71,6 +71,9 @@
   <ItemGroup>
     <Compile Include="CacheStateChangedEventArgs.cs" />
     <Compile Include="Controls\AbstractRouteInputSelectControl.cs" />
+    <Compile Include="Controls\OutputPort.cs" />
+    <Compile Include="Controls\InputOutputPortBase.cs" />
+    <Compile Include="Controls\InputPort.cs" />
     <Compile Include="Controls\RouteSourceControlConsole.cs" />
     <Compile Include="Controls\IRouteInputSelectControl.cs" />
     <Compile Include="Controls\RouteDestinationControl.cs" />

@@ -1165,7 +1165,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 					typeof(Card.DmHdmiOutput), new InputOutputInformation
 					{
 						GetLabel = o => "HDMI", 
-						GetSignalType = o => eConnectionType.Video | eConnectionType.Audio
+						GetSignalType = o => eConnectionType.Video | eConnectionType.Audio,
 					}
 				},
 				{
@@ -1355,6 +1355,17 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		public static bool GetIsOutputUsbOutput(DMOutput output)
 		{
 			return s_OutputInformationByType[output.GetType()].GetSignalType(output).HasFlag(eConnectionType.Usb);
+		}
+
+		public static bool GetIsEventIdResolutionEventId(int eventId)
+		{
+			return eventId == DMInputEventIds.ResolutionEventId
+			       || eventId == DMInputEventIds.HorizontalResolutionFeedbackEventId
+			       || eventId == DMInputEventIds.VerticalResolutionFeedbackEventId
+			       || eventId == DMInputEventIds.EncodingResolutionFeedbackEventId
+			       || eventId == DMInputEventIds.StreamHorizontalResolutionEventId
+			       || eventId == DMInputEventIds.StreamVerticalResolutionEventId
+			       || eventId == DMInputEventIds.AirMediaOutputResolutionEventId;
 		}
 
 		private sealed class InputOutputInformation

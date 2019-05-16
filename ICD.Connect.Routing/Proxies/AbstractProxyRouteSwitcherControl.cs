@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Devices.Proxies.Devices;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Controls;
+using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Proxies
 {
@@ -33,6 +34,24 @@ namespace ICD.Connect.Routing.Proxies
 		public bool UsbBreakawayEnabled { get { return false; } }
 
 		/// <summary>
+		/// Returns switcher port objects to get details about the input ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<InputPort> GetInputPorts()
+		{
+			yield break;
+		}
+
+		/// <summary>
+		/// Returns switcher port objects to get details about the output ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<OutputPort> GetOutputPorts()
+		{
+			yield break;
+		}
+
+		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>
 		/// <param name="info"></param>
@@ -53,56 +72,6 @@ namespace ICD.Connect.Routing.Proxies
 		{
 			// TODO
 			return true;
-		}
-
-		public IEnumerable<string> GetSwitcherVideoInputIds()
-		{
-			return Enumerable.Empty<string>();
-		}
-
-		/// <summary>
-		/// Gets the Input Name of the switcher (ie Content, Display In)
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<string> GetSwitcherVideoInputNames()
-		{
-			return Enumerable.Empty<string>();
-		}
-
-		/// <summary>
-		/// Gets the Input Sync Type of the switcher's inputs (ie HDMI when HDMI Sync is detected, empty when not detected)
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<string> GetSwitcherVideoInputSyncType()
-		{
-			return Enumerable.Empty<string>();
-		}
-
-		/// <summary>
-		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<string> GetSwitcherVideoInputResolutions()
-		{
-			return Enumerable.Empty<string>();
-		}
-
-		/// <summary>
-		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<string> GetSwitcherVideoOutputIds()
-		{
-			return Enumerable.Empty<string>();
-		}
-
-		/// <summary>
-		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
-		/// </summary>
-		/// <returns></returns>
-		public IEnumerable<string> GetSwitcherVideoOutputNames()
-		{
-			return Enumerable.Empty<string>();
 		}
 	}
 }

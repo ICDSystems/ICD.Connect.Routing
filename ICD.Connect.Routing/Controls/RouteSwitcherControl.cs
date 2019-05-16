@@ -151,6 +151,43 @@ namespace ICD.Connect.Routing.Controls
 			return Parent.GetInput(output, type);
 		}
 
+		protected override void InitializeInputPorts()
+		{
+			foreach (ConnectorInfo input in GetInputs())
+			{
+				bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+				inputPorts.Add(input, new InputPort
+				{
+					ConnectionType = input.ConnectionType,
+					InputId = string.Format("NVX Stream {0}", input.Address),
+					InputIdFeedbackSupported = true,
+					VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+					VideoInputSyncFeedbackSupported = supportsVideo,
+					VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
+					VideoInputSyncTypeFeedbackSupported = supportsVideo
+				});
+			}
+		}
+
+		protected override void InitializeOutputPorts()
+		{
+			foreach(ConnectorInfo output in GetOutputs())
+			{
+				bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+				bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+				outputPorts.Add(output, new OutputPort
+				{
+					ConnectionType = output.ConnectionType,
+					OutputId = string.Format("NVX Stream Output {0}", output.Address),
+					OutputIdFeedbackSupport = true,
+					VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+					VideoOutputSourceFeedbackSupport = supportsVideo,
+					AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+					AudioOutputSourceFeedbackSupport = supportsAudio
+				});
+			}
+		}
+		
 		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>
@@ -172,80 +209,23 @@ namespace ICD.Connect.Routing.Controls
 			return Parent.ClearOutput(output, type);
 		}
 
-		/// <summary>
-		/// Gets the Input Id of the switcher's inputs (ie HDMI1, VGA2)
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputIds()
+		private bool GetVideoInputSyncState(ConnectorInfo info)
 		{
-			return GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video))
-			                  .Select(i => string.Format("NVX Stream {0}", i.Address));
+			return GetSignalDetectedState(info.Address, eConnectionType.Video);
 		}
 
-		/// <summary>
-		/// Gets the Input Name of the switcher (ie Content, Display In)
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputNames()
+		private string GetVideoInputSyncType(ConnectorInfo info)
 		{
-			return GetSwitcherVideoInputIds();
+			return GetSignalDetectedState(info.Address, eConnectionType.Video) ? "NVX" : string.Empty;
 		}
 
-		/// <summary>
-		/// Gets the Input Sync Type of the switcher's inputs (ie HDMI when HDMI Sync is detected, empty when not detected)
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputSyncType()
+		private string GetActiveSourceIdName(ConnectorInfo info, eConnectionType type)
 		{
-			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
-			{
-				bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
-				if (!syncState)
-				{
-					yield return string.Empty;
-					continue;
-				}
-
-				yield return "NVX";
-			}
-		}
-
-		/// <summary>
-		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoInputResolutions()
-		{
-			foreach(var input in GetInputs().Where(i=> i.ConnectionType.HasFlag(eConnectionType.Video)))
-			{
-				bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
-				if (!syncState)
-				{
-					yield return string.Empty;
-					continue;
-				}
-
-				yield return "Unknown";
-			}
-		}
-
-		/// <summary>
-		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoOutputIds()
-		{
-			return GetOutputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video))
-			                   .Select(i => string.Format("NVX Stream {0}", i.Address));
-		}
-
-		/// <summary>
-		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<string> GetSwitcherVideoOutputNames()
-		{
-			return GetSwitcherVideoOutputIds();
+			ConnectorInfo? activeInput = Parent.GetInput(info.Address, type);
+			return activeInput != null
+					   ? string.Format("{0} {1}", inputPorts[activeInput.Value].InputId ?? string.Empty,
+									   inputPorts[activeInput.Value].InputName ?? string.Empty)
+					   : null;
 		}
 
 		#endregion
@@ -279,6 +259,12 @@ namespace ICD.Connect.Routing.Controls
 		private void ParentOnRouteChange(object sender, RouteChangeEventArgs eventArgs)
 		{
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(eventArgs));
+			KeyValuePair<ConnectorInfo, OutputPort> outputPort =
+					outputPorts.FirstOrDefault(kvp => kvp.Key.Address == eventArgs.Output);
+			if (eventArgs.Type.HasFlag(eConnectionType.Video))
+				outputPort.Value.VideoOutputSource = GetActiveSourceIdName(outputPort.Key, eConnectionType.Video);
+			if (eventArgs.Type.HasFlag(eConnectionType.Audio))
+				outputPort.Value.AudioOutputSource = GetActiveSourceIdName(outputPort.Key, eConnectionType.Audio);
 		}
 
 		private void ParentOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs eventArgs)
@@ -294,6 +280,10 @@ namespace ICD.Connect.Routing.Controls
 		private void ParentOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs eventArgs)
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(eventArgs));
+
+			KeyValuePair<ConnectorInfo, InputPort> inputPort = inputPorts.FirstOrDefault(kvp => kvp.Key.Address == eventArgs.Input);
+			inputPort.Value.VideoInputSync = eventArgs.State;
+			inputPort.Value.VideoInputSyncType = GetVideoInputSyncType(inputPort.Key);
 		}
 
 		#endregion

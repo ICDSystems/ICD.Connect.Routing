@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
@@ -18,6 +19,10 @@ namespace ICD.Connect.Routing.Controls
 		public event EventHandler<BoolEventArgs> OnAudioBreakawayEnabledChanged;
 		public event EventHandler<BoolEventArgs> OnUsbBreakawayEnabledChanged;
 
+
+		protected Dictionary<ConnectorInfo, InputPort> inputPorts;
+		protected Dictionary<ConnectorInfo, OutputPort> outputPorts; 
+
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -26,6 +31,8 @@ namespace ICD.Connect.Routing.Controls
 		protected AbstractRouteSwitcherControl(T parent, int id)
 			: base(parent, id)
 		{
+			inputPorts = new Dictionary<ConnectorInfo, InputPort>();
+			outputPorts = new Dictionary<ConnectorInfo, OutputPort>();
 		}
 
 		#region Methods
@@ -65,6 +72,37 @@ namespace ICD.Connect.Routing.Controls
 		}
 
 		/// <summary>
+		/// Returns switcher port objects to get details about the input ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<InputPort> GetInputPorts()
+		{
+			if (inputPorts == null)
+			{
+				InitializeInputPorts();
+			}
+
+			return inputPorts != null ? inputPorts.Values : Enumerable.Empty<InputPort>();
+		}
+
+		/// <summary>
+		/// Returns switcher port objects to get details about the output ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<OutputPort> GetOutputPorts()
+		{
+			if (outputPorts == null)
+			{
+				InitializeOutputPorts();
+			}
+
+			return outputPorts != null ? outputPorts.Values : Enumerable.Empty<OutputPort>();
+		}
+
+		protected abstract void InitializeInputPorts();
+		protected abstract void InitializeOutputPorts();
+
+		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>
 		/// <param name="info"></param>
@@ -78,42 +116,6 @@ namespace ICD.Connect.Routing.Controls
 		/// <param name="type"></param>
 		/// <returns>True if successfully cleared.</returns>
 		public abstract bool ClearOutput(int output, eConnectionType type);
-
-		/// <summary>
-		/// Gets the Input Ids of the switcher's inputs (ie HDMI1, VGA2)
-		/// </summary>
-		/// <returns></returns>
-		public abstract IEnumerable<string> GetSwitcherVideoInputIds();
-
-		/// <summary>
-		/// Gets the Input Name of the switcher (ie Content, Display In)
-		/// </summary>
-		/// <returns></returns>
-		public abstract IEnumerable<string> GetSwitcherVideoInputNames();
-
-		/// <summary>
-		/// Gets the Input Sync Type of the switcher's inputs (ie HDMI when HDMI Sync is detected, empty when not detected)
-		/// </summary>
-		/// <returns></returns>
-		public abstract IEnumerable<string> GetSwitcherVideoInputSyncType();
-
-		/// <summary>
-		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
-		/// </summary>
-		/// <returns></returns>
-		public abstract IEnumerable<string> GetSwitcherVideoInputResolutions();
-
-		/// <summary>
-		/// Gets the Output Ids of the switcher's outputs (ie HDMI1, VGA2)
-		/// </summary>
-		/// <returns></returns>
-		public abstract IEnumerable<string> GetSwitcherVideoOutputIds();
-
-		/// <summary>
-		/// Gets the Output Name of the switcher's outputs (ie Content, Display In)
-		/// </summary>
-		/// <returns></returns>
-		public abstract IEnumerable<string> GetSwitcherVideoOutputNames();
 
 		#endregion
 
