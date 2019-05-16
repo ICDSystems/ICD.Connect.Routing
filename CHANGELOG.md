@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+ - Added telemetry features for switchers
+ - Added telemetry features for CrestronControlSystem
+ - Added features for inferring Crestron Input/Output information
+
 ## [13.5.1] - 2019-05-16
 ### Changed
  - Failing more gracefully when unable to instantiate a crestron switcher
