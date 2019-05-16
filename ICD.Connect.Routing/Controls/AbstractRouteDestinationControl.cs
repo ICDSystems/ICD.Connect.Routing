@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Telemetry.EventArguments;
 
 namespace ICD.Connect.Routing.Controls
 {
@@ -20,6 +22,11 @@ namespace ICD.Connect.Routing.Controls
 		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
 		/// </summary>
 		public abstract event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+		
+		/// <summary>
+		/// Raised when the device's video inputs chance sync state. Index indicates which input.
+		/// </summary>
+		public event EventHandler<IndexedBooleanEventArgs> OnVideoInputSyncChanged;
 
 		/// <summary>
 		/// Constructor.

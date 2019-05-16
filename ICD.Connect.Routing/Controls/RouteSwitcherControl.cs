@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Devices;
@@ -169,6 +170,59 @@ namespace ICD.Connect.Routing.Controls
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
 			return Parent.ClearOutput(output, type);
+		}
+
+		public override IEnumerable<string> GetSwitcherVideoInputIds()
+		{
+			return GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video))
+			                  .Select(i => string.Format("NVX Stream {0}", i.Address));
+		}
+
+		/// <summary>
+		/// Gets the Input Name of the switcher (ie Content, Display In)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoInputNames()
+		{
+			return GetSwitcherVideoInputIds();
+		}
+
+		/// <summary>
+		/// Gets the Input Sync Type of the switcher's inputs (ie HDMI when HDMI Sync is detected, empty when not detected)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoInputSyncType()
+		{
+			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
+			{
+				bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
+				if (!syncState)
+				{
+					yield return string.Empty;
+					continue;
+				}
+
+				yield return "NVX";
+			}
+		}
+
+		/// <summary>
+		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoInputResolution()
+		{
+			foreach(var input in GetInputs().Where(i=> i.ConnectionType.HasFlag(eConnectionType.Video)))
+			{
+				bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
+				if (!syncState)
+				{
+					yield return string.Empty;
+					continue;
+				}
+
+				yield return "Unknown";
+			}
 		}
 
 		#endregion

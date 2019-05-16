@@ -53,6 +53,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				{INPUT_SECONDARY_AUDIO_STREAM, new ConnectorInfo(INPUT_SECONDARY_AUDIO_STREAM, eConnectionType.Audio)}
 			};
 
+		private static readonly IcdOrderedDictionary<int, string> s_InputConnectorInputTypes =
+			new IcdOrderedDictionary<int, string>
+			{
+				{INPUT_HDMI_1, "HDMI"},
+				{INPUT_HDMI_2, "HDMI"},
+				{INPUT_ANALOG_AUDIO, "Audio"},
+				{INPUT_STREAM, "Streaming"},
+				{INPUT_SECONDARY_AUDIO_STREAM, "Audio Stream"}
+			};
+
 		private static readonly IcdOrderedDictionary<int, ConnectorInfo> s_OutputConnectors =
 			new IcdOrderedDictionary<int, ConnectorInfo>
 			{
@@ -559,6 +569,92 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 #endif
 		}
 
+		public override IEnumerable<string> GetSwitcherVideoInputIds()
+		{
+			if (m_Streamer == null)
+				yield break;
+
+			foreach (var connectorInfo in GetInputs().Where(info => s_VideoSources.ContainsKey(info.Address)))
+			{
+				yield return string.Format("{0} {1}", s_InputConnectorInputTypes[connectorInfo.Address], connectorInfo.Address);
+			}
+		}
+
+		/// <summary>
+		/// Gets the Input Name of the switcher (ie Content, Display In)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoInputNames()
+		{
+			return GetSwitcherVideoInputIds();
+		}
+
+		/// <summary>
+		/// Gets the Input Sync Type of the switcher's inputs (ie HDMI when HDMI Sync is detected, empty when not detected)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoInputSyncType()
+		{
+			if(m_Streamer == null)
+				yield break;
+
+			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
+			{
+				bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
+				if (!syncState)
+				{
+					yield return string.Empty;
+					continue;
+				}
+
+				yield return s_InputConnectorInputTypes[input.Address];
+			}
+		}
+
+		/// <summary>
+		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoInputResolution()
+		{
+			if (m_Streamer == null)
+				yield break;
+
+			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
+			{
+				bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
+				if (!syncState)
+				{
+					yield return string.Empty;
+					continue;
+				}
+
+				ushort h; 
+				ushort v;
+				switch (input.Address)
+				{
+					case INPUT_HDMI_1:
+						h = m_Streamer.HdmiIn[0].VideoAttributes.HorizontalResolutionFeedback.UShortValue;
+						v = m_Streamer.HdmiIn[0].VideoAttributes.VerticalResolutionFeedback.UShortValue;
+						break;
+					case INPUT_HDMI_2:
+						h = m_Streamer.HdmiIn[1].VideoAttributes.HorizontalResolutionFeedback.UShortValue;
+						v = m_Streamer.HdmiIn[1].VideoAttributes.VerticalResolutionFeedback.UShortValue;
+						break;
+					case INPUT_STREAM:
+						h = m_Streamer.SourceReceive.VideoAttributes.HorizontalResolutionFeedback.UShortValue;
+						v = m_Streamer.SourceReceive.VideoAttributes.VerticalResolutionFeedback.UShortValue;
+						break;
+					default:
+						h = 0;
+						v = 0;
+						break;
+				}
+
+				yield return DmInputOutputUtils.GetResolutionFormatted(h, v);
+			}
+		}
+
 		/// <summary>
 		/// Updates the cache with the active input for the given flag.
 		/// </summary>
@@ -737,6 +833,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			if (audioSource == DmNvxControl.eAudioSource.SecondaryStreamAudio && !secondaryAudioEnabled)
 			{
 				SetActiveInput(null, eConnectionType.Audio);
+
+				AudioBreakawayEnabled = m_NvxControl != null &&
+									m_NvxControl.AudioSourceFeedback != DmNvxControl.eAudioSource.Automatic;
 				return;
 			}
 
@@ -745,6 +844,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				SetActiveInput(audioInput, eConnectionType.Audio);
 			else
 				SetActiveInput(null, eConnectionType.Audio);
+
+			AudioBreakawayEnabled = m_NvxControl != null &&
+									m_NvxControl.AudioSourceFeedback != DmNvxControl.eAudioSource.Automatic;
 		}
 
 		/// <summary>

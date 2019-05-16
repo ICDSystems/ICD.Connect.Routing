@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using Crestron.SimplSharpPro.DM.Cards;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -203,6 +204,81 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 			return m_Cache.SetInputForOutput(output, null, type);
 		}
 
+		public override IEnumerable<string> GetSwitcherVideoInputIds()
+		{
+			if (m_Switcher == null || m_Switcher.Inputs == null)
+				yield break;
+
+			if (m_Switcher == null)
+				yield break;
+
+			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
+			{
+				DMInput dmInput = Parent.GetDmInput(input.Address);
+				yield return string.Format("{0} {1}", DmInputOutputUtils.GetInputTypeStringForInput(dmInput), input.Address);
+			}
+		}
+
+		/// <summary>
+		/// Gets the Input Name of the switcher (ie Content, Display In)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoInputNames()
+		{
+			if (m_Switcher == null)
+				yield break;
+
+			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
+			{
+				DMInput dmInput = Parent.GetDmInput(input.Address);
+				yield return string.Format("{0} {1}", dmInput.NameFeedback.StringValue, input.Address);
+			}
+		}
+
+		/// <summary>
+		/// Gets the Input Sync Type of the switcher's inputs (ie HDMI when HDMI Sync is detected, empty when not detected)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoInputSyncType()
+		{
+			if (m_Switcher == null)
+				yield break;
+
+			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
+			{
+				bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
+				if (!syncState)
+				{
+					yield return string.Empty;
+					continue;
+				}
+
+				yield return DmInputOutputUtils.GetInputTypeStringForInput(Parent.GetDmInput(input.Address));
+			}
+		}
+
+		/// <summary>
+		/// Gets the Input Resolution for the switcher's inputs (ie 1920x1080, or empty for no sync)
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<string> GetSwitcherVideoInputResolution()
+		{
+			if (m_Switcher == null)
+				yield break;
+
+			foreach (var input in GetInputs().Where(i => i.ConnectionType.HasFlag(eConnectionType.Video)))
+			{
+				bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
+				if (!syncState)
+				{
+					yield return string.Empty;
+					continue;
+				}
+
+				yield return DmInputOutputUtils.GetResolutionStringForVideoInput(Parent.GetDmInput(input.Address));
+			}
+		}
+
 		/// <summary>
 		/// Gets the output at the given address.
 		/// </summary>
@@ -395,6 +471,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 			m_Switcher = switcher;
 			Subscribe(m_Switcher);
 
+			UsbBreakawayEnabled = m_Switcher != null && m_Switcher.EnableUSBBreakawayFeedback.BoolValue;
+
 			RebuildCache();
 		}
 
@@ -435,6 +513,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 
 			switcher.DMInputChange += SwitcherOnDmInputChange;
 			switcher.DMOutputChange += SwitcherOnDmOutputChange;
+			switcher.DMSystemChange += SwitcherOnDmSystemChange;
 		}
 
 		/// <summary>
@@ -448,6 +527,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 
 			switcher.DMInputChange -= SwitcherOnDmInputChange;
 			switcher.DMOutputChange -= SwitcherOnDmOutputChange;
+			switcher.DMSystemChange -= SwitcherOnDmSystemChange;
 		}
 
 		/// <summary>
@@ -506,6 +586,17 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 			                                            .FirstOrDefault();
 
 			m_Cache.SetInputForOutput(output, input, type);
+		}
+
+		private void SwitcherOnDmSystemChange(Switch device, DMSystemEventArgs args)
+		{
+			if (m_Switcher == null)
+				return;
+
+			if (args.EventId != DMSystemEventIds.USBBreakawayEventId)
+				return;
+
+			UsbBreakawayEnabled = m_Switcher.EnableUSBBreakawayFeedback.BoolValue;
 		}
 
 		#endregion

@@ -247,6 +247,7 @@
     <Compile Include="DigitalMedia\DmNvx\DmNvxSecondaryStreamSwitcher\DmNvxSecondaryStreamSwitcherDeviceSettings.cs" />
     <Compile Include="DigitalMedia\DmNvx\IDmNvxStreamSwitcherDevice.cs" />
     <Compile Include="DigitalMedia\DmNvx\IDmNvxStreamSwitcherSettings.cs" />
+    <Compile Include="DigitalMedia\DmInputOutputUtils.cs" />
     <Compile Include="DigitalMedia\DmXio\DmXioDirector160\DmXioDirector160Adapter.cs" />
     <Compile Include="DigitalMedia\DmXio\DmXioDirector160\DmXioDirector160AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmXio\DmXioDirector80\DmXioDirector80Adapter.cs" />

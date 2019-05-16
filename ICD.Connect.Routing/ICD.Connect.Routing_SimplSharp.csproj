@@ -101,6 +101,7 @@
     <Compile Include="Endpoints\Sources\CoreSourceCollection.cs" />
     <Compile Include="Endpoints\Destinations\CoreDestinationCollection.cs" />
     <Compile Include="EventArguments\SwitcherRouteChangeEventArgs.cs" />
+    <Compile Include="Telemetry\ISwitcherExternalTelemetryProvider.cs" />
     <Compile Include="PathFinding\AbstractPathFinder.cs" />
     <Compile Include="PathFinding\DefaultPathFinder.cs" />
     <Compile Include="PathFinding\IPathFinder.cs" />
@@ -182,6 +183,8 @@
     <Compile Include="EventArguments\SourceDetectionStateChangeEventArgs.cs" />
     <Compile Include="EventArguments\SourceEventArgs.cs" />
     <Compile Include="EventArguments\TransmissionStateEventArgs.cs" />
+    <Compile Include="Telemetry\SwitcherExternalTelemetryProvider.cs" />
+    <Compile Include="Telemetry\SwitcherTelemetryNames.cs" />
     <Compile Include="Utils\RoutingGraphTableBuilder.cs" />
     <Compile Include="Utils\SwitcherCache.cs" />
     <None Include="Properties\ControlSystem.cfg" />
