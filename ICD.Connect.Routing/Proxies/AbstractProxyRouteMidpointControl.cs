@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Devices.Proxies.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
@@ -9,12 +10,25 @@ namespace ICD.Connect.Routing.Proxies
 	public abstract class AbstractProxyRouteMidpointControl : AbstractProxyRouteDestinationControl,
 	                                                          IProxyRouteMidpointControl
 	{
+		public event EventHandler<BoolEventArgs> OnAudioBreakawayEnabledChanged;
+		public event EventHandler<BoolEventArgs> OnUsbBreakawayEnabledChanged;
+
 		/// <summary>
 		/// Raised when a route changes.
 		/// </summary>
 		public event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		public event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+		/// <summary>
+		/// Describes whether a switcher is breaking away audio.
+		/// </summary>
+		public bool AudioBreakawayEnabled { get { return false; } }
+
+		/// <summary>
+		/// Describes whether a switcher is breaking away USB.
+		/// </summary>
+		public bool UsbBreakawayEnabled { get { return false; } }
 
 		/// <summary>
 		/// Constructor.

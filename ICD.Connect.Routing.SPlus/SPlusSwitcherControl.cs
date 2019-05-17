@@ -131,14 +131,44 @@ namespace ICD.Connect.Routing.SPlus
 
 		#region IRouteSwitcherControl
 
+		protected override InputPort CreateInputPort(ConnectorInfo input)
+		{
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
+			{
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = GetInputId(input),
+				InputIdFeedbackSupported = true,
+				VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported = supportsVideo,
+			};
+		}
+
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
+		{
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
+			{
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = GetOutputId(output),
+				OutputIdFeedbackSupport = true,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
+		}
+
 		/// <summary>
-		/// Performs the given route operation.
+		/// Routes the input to the given output.
 		/// </summary>
 		/// <param name="info"></param>
-		/// <returns></returns>
 		public override bool Route(RouteOperation info)
 		{
-			return RouteCallback != null && RouteCallback(info);
+			return m_Cache.SetInputForOutput(info.LocalOutput, info.LocalInput, info.ConnectionType);
 		}
 
 		/// <summary>
@@ -146,10 +176,24 @@ namespace ICD.Connect.Routing.SPlus
 		/// </summary>
 		/// <param name="output"></param>
 		/// <param name="type"></param>
-		/// <returns>True if successfully cleared.</returns>
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
-			return ClearOutputCallback != null && ClearOutputCallback(output, type);
+			return m_Cache.SetInputForOutput(output, null, type);
+		}
+
+		private string GetInputId(ConnectorInfo info)
+		{
+			return string.Format("s+ Video Input {0}", info.Address);
+		}
+
+		private bool GetVideoInputSyncState(ConnectorInfo info)
+		{
+			return GetSignalDetectedState(info.Address, eConnectionType.Video);
+		}
+
+		private string GetOutputId(ConnectorInfo info)
+		{
+			return string.Format("S+ Video Output {0}", info.Address);
 		}
 
 		/// <summary>
@@ -279,6 +323,12 @@ namespace ICD.Connect.Routing.SPlus
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
+			OutputPort outputPort = GetOutputPort(args.Output);
+			ConnectorInfo info = GetOutput(args.Output);
+			if (args.Type.HasFlag(eConnectionType.Video))
+				outputPort.VideoOutputSource = GetActiveSourceIdName(info, eConnectionType.Video);
+			if (args.Type.HasFlag(eConnectionType.Audio))
+				outputPort.AudioOutputSource = GetActiveSourceIdName(info, eConnectionType.Audio);
 		}
 
 		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
@@ -289,6 +339,10 @@ namespace ICD.Connect.Routing.SPlus
 		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
+
+			InputPort inputPort = GetInputPort(args.Input);
+			ConnectorInfo info = GetInput(args.Input);
+			inputPort.VideoInputSync = args.State;
 		}
 
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Devices;
@@ -150,6 +151,39 @@ namespace ICD.Connect.Routing.Controls
 			return Parent.GetInput(output, type);
 		}
 
+		protected override InputPort CreateInputPort(ConnectorInfo input)
+		{
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
+			{
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = string.Format("NVX Stream {0}", input.Address),
+				InputIdFeedbackSupported = true,
+				VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported = supportsVideo,
+				VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
+				VideoInputSyncTypeFeedbackSupported = supportsVideo
+			};
+		}
+
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
+		{
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
+			{
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = string.Format("NVX Stream Output {0}", output.Address),
+				OutputIdFeedbackSupport = true,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
+		}
+
 		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>
@@ -169,6 +203,16 @@ namespace ICD.Connect.Routing.Controls
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
 			return Parent.ClearOutput(output, type);
+		}
+
+		private bool GetVideoInputSyncState(ConnectorInfo info)
+		{
+			return GetSignalDetectedState(info.Address, eConnectionType.Video);
+		}
+
+		private string GetVideoInputSyncType(ConnectorInfo info)
+		{
+			return GetSignalDetectedState(info.Address, eConnectionType.Video) ? "NVX" : string.Empty;
 		}
 
 		#endregion
@@ -202,6 +246,12 @@ namespace ICD.Connect.Routing.Controls
 		private void ParentOnRouteChange(object sender, RouteChangeEventArgs eventArgs)
 		{
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(eventArgs));
+			OutputPort outputPort = GetOutputPort(eventArgs.Output);
+			ConnectorInfo info = GetOutput(eventArgs.Output);
+			if (eventArgs.Type.HasFlag(eConnectionType.Video))
+				outputPort.VideoOutputSource = GetActiveSourceIdName(info, eConnectionType.Video);
+			if (eventArgs.Type.HasFlag(eConnectionType.Audio))
+				outputPort.AudioOutputSource = GetActiveSourceIdName(info, eConnectionType.Audio);
 		}
 
 		private void ParentOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs eventArgs)
@@ -217,6 +267,11 @@ namespace ICD.Connect.Routing.Controls
 		private void ParentOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs eventArgs)
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(eventArgs));
+
+			InputPort inputPort = GetInputPort(eventArgs.Input);
+			ConnectorInfo info = GetInput(eventArgs.Input);
+			inputPort.VideoInputSync = eventArgs.State;
+			inputPort.VideoInputSyncType = GetVideoInputSyncType(info);
 		}
 
 		#endregion

@@ -5,6 +5,7 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 using Crestron.SimplSharpPro.DM.Endpoints;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
@@ -26,7 +27,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 			get
 			{
 #if SIMPLSHARP
-				return Transmitter.VgaInput.SyncDetectedFeedback.BoolValue;
+				return Transmitter.VgaInput.SyncDetectedFeedback.GetBoolValueOrDefault();
 #else
 				return false;
 #endif

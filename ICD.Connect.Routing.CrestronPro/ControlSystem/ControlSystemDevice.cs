@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.IO;
 using ICD.Common.Utils.Services.Logging;
@@ -10,7 +9,6 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
-using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens;
 using ICD.Connect.Settings;
@@ -18,6 +16,9 @@ using ICD.Connect.Settings;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
+using ICD.Common.Properties;
+using ICD.Connect.Misc.CrestronPro.Extensions;
+using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
@@ -25,7 +26,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 	/// <summary>
 	/// Wraps a CrestronControlSystem to provide a device that can be used as a port provider and a switcher.
 	/// </summary>
-	public sealed class ControlSystemDevice : AbstractDevice<ControlSystemDeviceSettings>, IPortParent, IDmParent
+	public sealed class ControlSystemDevice : AbstractDevice<ControlSystemDeviceSettings>, IPortParent, IDmParent, IControlSystemDevice
 	{
 #if SIMPLSHARP
 		/// <summary>
@@ -376,7 +377,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				if (control == null)
 					return null;
 
-				return control.FrontPanelLockOnFeedback.BoolValue;
+				return control.FrontPanelLockOnFeedback.GetBoolValueOrDefault();
 #else
 				return null;
 #endif
