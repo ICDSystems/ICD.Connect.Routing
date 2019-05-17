@@ -20,6 +20,9 @@ namespace ICD.Connect.Routing.Controls
 		public event EventHandler<BoolEventArgs> OnAudioBreakawayEnabledChanged;
 		public event EventHandler<BoolEventArgs> OnUsbBreakawayEnabledChanged;
 
+		private List<InputPort> m_InputPorts;
+		private List<OutputPort> m_OutputPorts; 
+
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -70,7 +73,14 @@ namespace ICD.Connect.Routing.Controls
 		/// Returns switcher port objects to get details about the input ports on this switcher.
 		/// </summary>
 		/// <returns></returns>
-		public abstract IEnumerable<InputPort> GetInputPorts();
+		public IEnumerable<InputPort> GetInputPorts()
+		{
+			return m_InputPorts ??
+				   (m_InputPorts = GetInputs().Select(input => CreateInputPort(input))
+											  .ToList());
+		}
+
+		protected abstract InputPort CreateInputPort(ConnectorInfo input);
 
 		[NotNull]
 		public InputPort GetInputPort(int address)
@@ -82,7 +92,14 @@ namespace ICD.Connect.Routing.Controls
 		/// Returns switcher port objects to get details about the output ports on this switcher.
 		/// </summary>
 		/// <returns></returns>
-		public abstract IEnumerable<OutputPort> GetOutputPorts();
+		public IEnumerable<OutputPort> GetOutputPorts()
+		{
+			return m_OutputPorts ??
+				   (m_OutputPorts = GetOutputs().Select(output => CreateOutputPort(output))
+												.ToList());
+		}
+
+		protected abstract OutputPort CreateOutputPort(ConnectorInfo output);
 
 		[NotNull]
 		public OutputPort GetOutputPort(int address)

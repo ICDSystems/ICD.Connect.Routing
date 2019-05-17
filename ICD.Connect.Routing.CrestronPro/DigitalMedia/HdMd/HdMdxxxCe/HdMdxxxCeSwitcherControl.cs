@@ -96,49 +96,43 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
-		public override IEnumerable<InputPort> GetInputPorts()
+		protected override InputPort CreateInputPort(ConnectorInfo input)
 		{
-			foreach (ConnectorInfo input in GetInputs())
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
 			{
-				bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
-				yield return new InputPort
-				{
-					Address = input.Address,
-					ConnectionType = input.ConnectionType,
-					InputId = GetInputId(input),
-					InputIdFeedbackSupported = true,
-					InputName = GetInputName(input),
-					InputNameFeedbackSupported = true,
-					VideoInputResolution = supportsVideo ? GetVideoInputResolution(input) : null,
-					VideoInputResolutionFeedbackSupport = supportsVideo,
-					VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
-					VideoInputSyncFeedbackSupported = supportsVideo,
-					VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
-					VideoInputSyncTypeFeedbackSupported = supportsVideo
-				};
-			}
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = GetInputId(input),
+				InputIdFeedbackSupported = true,
+				InputName = GetInputName(input),
+				InputNameFeedbackSupported = true,
+				VideoInputResolution = supportsVideo ? GetVideoInputResolution(input) : null,
+				VideoInputResolutionFeedbackSupport = supportsVideo,
+				VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported = supportsVideo,
+				VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
+				VideoInputSyncTypeFeedbackSupported = supportsVideo
+			};
 		}
 
-		public override IEnumerable<OutputPort> GetOutputPorts()
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
 		{
-			foreach (ConnectorInfo output in GetOutputs())
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
 			{
-				bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
-				bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
-				yield return new OutputPort
-				{
-					Address = output.Address,
-					ConnectionType = output.ConnectionType,
-					OutputId = GetOutputId(output),
-					OutputIdFeedbackSupport = true,
-					OutputName = GetOutputName(output),
-					OutputNameFeedbackSupport = true,
-					VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
-					VideoOutputSourceFeedbackSupport = supportsVideo,
-					AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
-					AudioOutputSourceFeedbackSupport = supportsAudio
-				};
-			}
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = GetOutputId(output),
+				OutputIdFeedbackSupport = true,
+				OutputName = GetOutputName(output),
+				OutputNameFeedbackSupport = true,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
 		}
 
 		/// <summary>

@@ -151,45 +151,39 @@ namespace ICD.Connect.Routing.Controls
 			return Parent.GetInput(output, type);
 		}
 
-		public override IEnumerable<InputPort> GetInputPorts()
+		protected override InputPort CreateInputPort(ConnectorInfo input)
 		{
-			foreach (ConnectorInfo input in GetInputs())
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
 			{
-				bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
-				yield return new InputPort
-				{
-					Address = input.Address,
-					ConnectionType = input.ConnectionType,
-					InputId = string.Format("NVX Stream {0}", input.Address),
-					InputIdFeedbackSupported = true,
-					VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
-					VideoInputSyncFeedbackSupported = supportsVideo,
-					VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
-					VideoInputSyncTypeFeedbackSupported = supportsVideo
-				};
-			}
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = string.Format("NVX Stream {0}", input.Address),
+				InputIdFeedbackSupported = true,
+				VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported = supportsVideo,
+				VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
+				VideoInputSyncTypeFeedbackSupported = supportsVideo
+			};
 		}
 
-		public override IEnumerable<OutputPort> GetOutputPorts()
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
 		{
-			foreach(ConnectorInfo output in GetOutputs())
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
 			{
-				bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
-				bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
-				yield return new OutputPort
-				{
-					Address = output.Address,
-					ConnectionType = output.ConnectionType,
-					OutputId = string.Format("NVX Stream Output {0}", output.Address),
-					OutputIdFeedbackSupport = true,
-					VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
-					VideoOutputSourceFeedbackSupport = supportsVideo,
-					AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
-					AudioOutputSourceFeedbackSupport = supportsAudio
-				};
-			}
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = string.Format("NVX Stream Output {0}", output.Address),
+				OutputIdFeedbackSupport = true,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
 		}
-		
+
 		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>

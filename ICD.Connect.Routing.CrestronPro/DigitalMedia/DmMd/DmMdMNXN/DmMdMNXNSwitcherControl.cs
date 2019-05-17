@@ -16,7 +16,7 @@ using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 {
-// ReSharper disable once InconsistentNaming
+	// ReSharper disable once InconsistentNaming
 	public sealed class DmMdMNXNSwitcherControl : AbstractRouteSwitcherControl<IDmMdMNXNAdapter>
 	{
 		/// <summary>
@@ -41,7 +41,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 
 		private readonly SwitcherCache m_Cache;
 
-		[CanBeNull] private DmMDMnxn m_Switcher;
+		[CanBeNull]
+		private DmMDMnxn m_Switcher;
 
 		/// <summary>
 		/// Constructor.
@@ -90,56 +91,50 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(t => GetSignalDetectedState(input, t))
-				                .Unanimous(false);
+								.Select(t => GetSignalDetectedState(input, t))
+								.Unanimous(false);
 			}
 
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
-		public override IEnumerable<InputPort> GetInputPorts()
+		protected override InputPort CreateInputPort(ConnectorInfo input)
 		{
-			foreach (ConnectorInfo input in GetInputs())
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
 			{
-				bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
-				yield return new InputPort
-				{
-					Address = input.Address,
-					ConnectionType = input.ConnectionType,
-					InputId = GetInputId(input),
-					InputIdFeedbackSupported = true,
-					InputName = GetInputName(input),
-					InputNameFeedbackSupported = true,
-					VideoInputResolution = supportsVideo ? GetVideoInputResolution(input) : null,
-					VideoInputResolutionFeedbackSupport = supportsVideo,
-					VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
-					VideoInputSyncFeedbackSupported = supportsVideo,
-					VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
-					VideoInputSyncTypeFeedbackSupported = supportsVideo
-				};
-			}
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = GetInputId(input),
+				InputIdFeedbackSupported = true,
+				InputName = GetInputName(input),
+				InputNameFeedbackSupported = true,
+				VideoInputResolution = supportsVideo ? GetVideoInputResolution(input) : null,
+				VideoInputResolutionFeedbackSupport = supportsVideo,
+				VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported = supportsVideo,
+				VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
+				VideoInputSyncTypeFeedbackSupported = supportsVideo
+			};
 		}
 
-		public override IEnumerable<OutputPort> GetOutputPorts()
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
 		{
-			foreach (ConnectorInfo output in GetOutputs())
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
 			{
-				bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
-				bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
-				yield return new OutputPort
-				{
-					Address = output.Address,
-					ConnectionType = output.ConnectionType,
-					OutputId = GetOutputId(output),
-					OutputIdFeedbackSupport = true,
-					OutputName = GetOutputName(output),
-					OutputNameFeedbackSupport = true,
-					VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
-					VideoOutputSourceFeedbackSupport = supportsVideo,
-					AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
-					AudioOutputSourceFeedbackSupport = supportsAudio
-				};
-			}
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = GetOutputId(output),
+				OutputIdFeedbackSupport = true,
+				OutputName = GetOutputName(output),
+				OutputNameFeedbackSupport = true,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
 		}
 
 		/// <summary>
@@ -159,9 +154,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(t => this.Route(input, output, t))
+								.Select(t => this.Route(input, output, t))
 								.ToArray()
-				                .Unanimous(false);
+								.Unanimous(false);
 			}
 
 			DMOutput switcherOutput = m_Switcher.Outputs[(uint)output];
@@ -178,7 +173,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 					break;
 
 				default:
-// ReSharper disable once NotResolvedInText
+					// ReSharper disable once NotResolvedInText
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 
@@ -199,9 +194,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(t => ClearOutput(output, t))
+								.Select(t => ClearOutput(output, t))
 								.ToArray()
-				                .Unanimous(false);
+								.Unanimous(false);
 			}
 
 			DMOutput switcherOutput = m_Switcher.Outputs[(uint)output];
@@ -320,7 +315,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 			int outputs = m_Switcher == null ? 0 : m_Switcher.NumberOfOutputs;
 
 			return Enumerable.Range(1, outputs)
-			                 .Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
+							 .Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
 		}
 
 		/// <summary>
@@ -381,7 +376,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 			int inputs = m_Switcher == null ? 0 : m_Switcher.NumberOfInputs;
 
 			return Enumerable.Range(1, inputs)
-			                 .Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
+							 .Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
 		}
 
 		#endregion
@@ -402,8 +397,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-				                .Select(t => GetSignalDetectedFeedback(input, t))
-				                .Unanimous(false);
+								.Select(t => GetSignalDetectedFeedback(input, t))
+								.Unanimous(false);
 			}
 
 			DMInput switcherInput = m_Switcher.Inputs[(uint)input];
@@ -623,7 +618,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 
 			int output = (int)args.Number;
 			int? input = GetInputsFeedback(output, type).Select(c => (int?)c.Address)
-			                                            .FirstOrDefault();
+														.FirstOrDefault();
 
 			m_Cache.SetInputForOutput(output, input, type);
 		}
