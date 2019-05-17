@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [13.6.0] - 2019-05-17
 ### Added
  - Added telemetry features for switchers
  - Added telemetry features for CrestronControlSystem
