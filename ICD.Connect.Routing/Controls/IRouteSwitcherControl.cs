@@ -19,28 +19,6 @@ namespace ICD.Connect.Routing.Controls
 	public interface IRouteSwitcherControl : IRouteMidpointControl
 	{
 		/// <summary>
-		/// Raised when the switcher enables or disables audio breakaway.
-		/// </summary>
-		event EventHandler<BoolEventArgs> OnAudioBreakawayEnabledChanged;
-
-		/// <summary>
-		/// Raised when the switcher enables or disables USB breakaway.
-		/// </summary>
-		event EventHandler<BoolEventArgs> OnUsbBreakawayEnabledChanged;
-
-		/// <summary>
-		/// Describes whether a switcher is breaking away audio.
-		/// </summary>
-		[PublicAPI]
-		bool AudioBreakawayEnabled { get; }
-
-		/// <summary>
-		/// Describes whether a switcher is breaking away USB.
-		/// </summary>
-		[PublicAPI]
-		bool UsbBreakawayEnabled { get; }
-
-		/// <summary>
 		/// Returns switcher port objects to get details about the input ports on this switcher.
 		/// </summary>
 		/// <returns></returns>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.Routing.Connections;
@@ -15,9 +16,31 @@ namespace ICD.Connect.Routing.Controls
 	public interface IRouteMidpointControl : IRouteSourceControl, IRouteDestinationControl
 	{
 		/// <summary>
+		/// Raised when the switcher enables or disables audio breakaway.
+		/// </summary>
+		event EventHandler<BoolEventArgs> OnAudioBreakawayEnabledChanged;
+
+		/// <summary>
+		/// Raised when the switcher enables or disables USB breakaway.
+		/// </summary>
+		event EventHandler<BoolEventArgs> OnUsbBreakawayEnabledChanged;
+
+		/// <summary>
 		/// Raised when a route changes.
 		/// </summary>
 		event EventHandler<RouteChangeEventArgs> OnRouteChange;
+
+		/// <summary>
+		/// Describes whether a switcher is breaking away audio.
+		/// </summary>
+		[PublicAPI]
+		bool AudioBreakawayEnabled { get; }
+
+		/// <summary>
+		/// Describes whether a switcher is breaking away USB.
+		/// </summary>
+		[PublicAPI]
+		bool UsbBreakawayEnabled { get; }
 
 		/// <summary>
 		/// Gets the input routed to the given output matching the given type.

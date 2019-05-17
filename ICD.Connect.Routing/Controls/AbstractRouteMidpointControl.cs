@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
+using ICD.Common.Utils.EventArguments;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
@@ -13,6 +15,9 @@ namespace ICD.Connect.Routing.Controls
 	public abstract class AbstractRouteMidpointControl<T> : AbstractRouteDestinationControl<T>, IRouteMidpointControl
 		where T : IDeviceBase
 	{
+		public event EventHandler<BoolEventArgs> OnAudioBreakawayEnabledChanged;
+		public event EventHandler<BoolEventArgs> OnUsbBreakawayEnabledChanged;
+
 		/// <summary>
 		/// Raised when a route changes.
 		/// </summary>
@@ -22,6 +27,43 @@ namespace ICD.Connect.Routing.Controls
 		/// Raised when the device starts/stops actively transmitting on an output.
 		/// </summary>
 		public abstract event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+
+		private bool m_AudioBreakawayEnabled;
+		private bool m_UsbBreakawayEnabled;
+
+		/// <summary>
+		/// Describes whether a switcher is breaking away audio.
+		/// </summary>
+		public bool AudioBreakawayEnabled
+		{
+			get { return m_AudioBreakawayEnabled; }
+			protected set
+			{
+				if (m_AudioBreakawayEnabled == value)
+					return;
+
+				m_AudioBreakawayEnabled = value;
+
+				OnAudioBreakawayEnabledChanged.Raise(this, new BoolEventArgs(m_AudioBreakawayEnabled));
+			}
+		}
+
+		/// <summary>
+		/// Describes whether a switcher is breaking away audio.
+		/// </summary>
+		public bool UsbBreakawayEnabled
+		{
+			get { return m_UsbBreakawayEnabled; }
+			protected set
+			{
+				if (m_UsbBreakawayEnabled == value)
+					return;
+
+				m_UsbBreakawayEnabled = value;
+
+				OnUsbBreakawayEnabledChanged.Raise(this, new BoolEventArgs(m_UsbBreakawayEnabled));
+			}
+		}
 
 		/// <summary>
 		/// Constructor.

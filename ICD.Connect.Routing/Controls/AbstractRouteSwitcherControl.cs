@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
-using ICD.Common.Utils.EventArguments;
-using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
@@ -14,12 +11,6 @@ namespace ICD.Connect.Routing.Controls
 	public abstract class AbstractRouteSwitcherControl<T> : AbstractRouteMidpointControl<T>, IRouteSwitcherControl
 		where T : IDeviceBase
 	{
-		private bool m_AudioBreakawayEnabled;
-		private bool m_UsbBreakawayEnabled;
-
-		public event EventHandler<BoolEventArgs> OnAudioBreakawayEnabledChanged;
-		public event EventHandler<BoolEventArgs> OnUsbBreakawayEnabledChanged;
-
 		private List<InputPort> m_InputPorts;
 		private List<OutputPort> m_OutputPorts; 
 
@@ -34,40 +25,6 @@ namespace ICD.Connect.Routing.Controls
 		}
 
 		#region Methods
-
-		/// <summary>
-		/// Describes whether a switcher is breaking away audio.
-		/// </summary>
-		public bool AudioBreakawayEnabled
-		{
-			get { return m_AudioBreakawayEnabled; }
-			protected set
-			{
-				if (m_AudioBreakawayEnabled == value)
-					return;
-
-				m_AudioBreakawayEnabled = value;
-
-				OnAudioBreakawayEnabledChanged.Raise(this, new BoolEventArgs(m_AudioBreakawayEnabled));
-			}
-		}
-
-		/// <summary>
-		/// Describes whether a switcher is breaking away audio.
-		/// </summary>
-		public bool UsbBreakawayEnabled
-		{
-			get { return m_UsbBreakawayEnabled; }
-			protected set
-			{
-				if (m_UsbBreakawayEnabled == value)
-					return;
-
-				m_UsbBreakawayEnabled = value;
-
-				OnUsbBreakawayEnabledChanged.Raise(this, new BoolEventArgs(m_UsbBreakawayEnabled));
-			}
-		}
 
 		/// <summary>
 		/// Returns switcher port objects to get details about the input ports on this switcher.

@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using ICD.Common.Utils.EventArguments;
+﻿using System.Collections.Generic;
 using ICD.Connect.Devices.Proxies.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
-using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Proxies
 {
 	public abstract class AbstractProxyRouteSwitcherControl : AbstractProxyRouteMidpointControl, IProxyRouteSwitcherControl
 	{
-		public event EventHandler<BoolEventArgs> OnAudioBreakawayEnabledChanged;
-		public event EventHandler<BoolEventArgs> OnUsbBreakawayEnabledChanged;
-
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -22,16 +16,6 @@ namespace ICD.Connect.Routing.Proxies
 			: base(parent, id)
 		{
 		}
-
-		/// <summary>
-		/// Describes whether a switcher is breaking away audio.
-		/// </summary>
-		public bool AudioBreakawayEnabled { get { return false; } }
-
-		/// <summary>
-		/// Describes whether a switcher is breaking away USB.
-		/// </summary>
-		public bool UsbBreakawayEnabled { get { return false; } }
 
 		/// <summary>
 		/// Returns switcher port objects to get details about the input ports on this switcher.
