@@ -8,10 +8,9 @@ using ICD.Connect.API.Nodes;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
-#else
-using System;
-#endif
 using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
+using ICD.Connect.Misc.CrestronPro.Extensions;
+#endif
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 using eButtonState = ICD.Connect.Misc.Keypads.eButtonState;
 
@@ -155,7 +154,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.ProximityRangeFeedBack.UShortValue;
+				return TouchScreen.ProximityRangeFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -171,7 +170,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.ProximityThresholdFeedBack.UShortValue;
+				return TouchScreen.ProximityThresholdFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif

@@ -1,12 +1,13 @@
 using System.Collections.Generic;
-using ICD.Common.Utils;
-using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
+using ICD.Common.Utils;
+using ICD.Common.Utils.Extensions;
+using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 using System;
 using ICD.Connect.Misc.Keypads;
@@ -92,7 +93,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.ActiveBrightnessFeedBack.UShortValue;
+				return TouchScreen.ActiveBrightnessFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -108,7 +109,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.StandbyBrightnessFeedBack.UShortValue;
+				return TouchScreen.StandbyBrightnessFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -123,7 +124,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.ActiveTimeoutFeedBack.UShortValue;
+				return TouchScreen.ActiveTimeoutFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -138,7 +139,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.StandbyTimeoutFeedBack.UShortValue;
+				return TouchScreen.StandbyTimeoutFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -154,7 +155,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.LEDBrightnessFeedBack.UShortValue;
+				return TouchScreen.LEDBrightnessFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -170,7 +171,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.AmbientLightThresholdForAutoBrightnessAdjustmentFeedBack.UShortValue;
+				return TouchScreen.AmbientLightThresholdForAutoBrightnessAdjustmentFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -186,7 +187,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.ActiveModeAutoBrightnessLowLevelFeedBack.UShortValue;
+				return TouchScreen.ActiveModeAutoBrightnessLowLevelFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -202,7 +203,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.ActiveModeAutoBrightnessHighLevelFeedBack.UShortValue;
+				return TouchScreen.ActiveModeAutoBrightnessHighLevelFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -218,7 +219,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.StandbyModeAutoBrightnessLowLevelFeedBack.UShortValue;
+				return TouchScreen.StandbyModeAutoBrightnessLowLevelFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -234,7 +235,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.StandbyModeAutoBrightnessHighLevelFeedBack.UShortValue;
+				return TouchScreen.StandbyModeAutoBrightnessHighLevelFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif
@@ -250,7 +251,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get
 			{
 #if SIMPLSHARP
-				return TouchScreen.AmbientLightLevelFeedBack.UShortValue;
+				return TouchScreen.AmbientLightLevelFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
 #endif

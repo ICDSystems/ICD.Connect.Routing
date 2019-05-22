@@ -71,6 +71,9 @@
   <ItemGroup>
     <Compile Include="CacheStateChangedEventArgs.cs" />
     <Compile Include="Controls\AbstractRouteInputSelectControl.cs" />
+    <Compile Include="Controls\OutputPort.cs" />
+    <Compile Include="Controls\InputOutputPortBase.cs" />
+    <Compile Include="Controls\InputPort.cs" />
     <Compile Include="Controls\RouteSourceControlConsole.cs" />
     <Compile Include="Controls\IRouteInputSelectControl.cs" />
     <Compile Include="Controls\RouteDestinationControl.cs" />
@@ -101,6 +104,7 @@
     <Compile Include="Endpoints\Sources\CoreSourceCollection.cs" />
     <Compile Include="Endpoints\Destinations\CoreDestinationCollection.cs" />
     <Compile Include="EventArguments\SwitcherRouteChangeEventArgs.cs" />
+    <Compile Include="Telemetry\ISwitcherExternalTelemetryProvider.cs" />
     <Compile Include="PathFinding\AbstractPathFinder.cs" />
     <Compile Include="PathFinding\DefaultPathFinder.cs" />
     <Compile Include="PathFinding\IPathFinder.cs" />
@@ -182,6 +186,8 @@
     <Compile Include="EventArguments\SourceDetectionStateChangeEventArgs.cs" />
     <Compile Include="EventArguments\SourceEventArgs.cs" />
     <Compile Include="EventArguments\TransmissionStateEventArgs.cs" />
+    <Compile Include="Telemetry\SwitcherExternalTelemetryProvider.cs" />
+    <Compile Include="Telemetry\SwitcherTelemetryNames.cs" />
     <Compile Include="Utils\RoutingGraphTableBuilder.cs" />
     <Compile Include="Utils\SwitcherCache.cs" />
     <None Include="Properties\ControlSystem.cfg" />
@@ -206,6 +212,10 @@
     <ProjectReference Include="..\..\ICD.Connect.Settings\ICD.Connect.Settings\ICD.Connect.Settings_SimplSharp.csproj">
       <Project>{5B84EB3C-1C3A-4C4D-98C2-69F67CF51D5A}</Project>
       <Name>ICD.Connect.Settings_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Telemetry\ICD.Connect.Telemetry\ICD.Connect.Telemetry_SimplSharp.csproj">
+      <Project>{9512C0A5-F966-4AC6-9668-62C6F343B0CD}</Project>
+      <Name>ICD.Connect.Telemetry_SimplSharp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />

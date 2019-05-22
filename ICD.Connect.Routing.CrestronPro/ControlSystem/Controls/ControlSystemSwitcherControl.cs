@@ -4,14 +4,16 @@ using System.Collections.Generic;
 using System.Linq;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 using ICD.Connect.Misc.CrestronPro.Utils;
-using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 
@@ -77,7 +79,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			SetControlSystem(null);
 		}
 
-#region Routing
+		#region Routing
 
 		/// <summary>
 		/// Returns true if a signal is detected at the given input.
@@ -97,6 +99,45 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
+		protected override InputPort CreateInputPort(ConnectorInfo input)
+		{
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
+			{
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = GetInputId(input),
+				InputIdFeedbackSupported = true,
+				InputName = GetInputName(input),
+				InputNameFeedbackSupported = true,
+				VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported = supportsVideo,
+				VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
+				VideoInputSyncTypeFeedbackSupported = supportsVideo,
+				VideoInputResolution = supportsVideo ? GetVideoInputResolution(input) : null,
+				VideoInputResolutionFeedbackSupport = supportsVideo
+			};
+		}
+
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
+		{
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
+			{
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = GetOutputId(output),
+				OutputIdFeedbackSupport = true,
+				OutputName = GetOutputName(output),
+				OutputNameFeedbackSupport = true,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
+		}
+
 		/// <summary>
 		/// Routes the input to the given output.
 		/// </summary>
@@ -112,7 +153,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
 				                .Select(t => this.Route(input, output, t))
-								.ToArray()
+				                .ToArray()
 				                .Unanimous(false);
 			}
 
@@ -139,7 +180,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 							return false;
 						}
 					}
-					
+
 					break;
 
 				case eConnectionType.Video:
@@ -170,7 +211,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
 				                .Select(t => ClearOutput(output, t))
-								.ToArray()
+				                .ToArray()
 				                .Unanimous(false);
 			}
 
@@ -200,7 +241,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 							return false;
 						}
 					}
-					
+
 					break;
 
 				case eConnectionType.Usb:
@@ -247,10 +288,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
 			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherOutputs
-                                             ? (Parent.ControlSystem.SwitcherOutputs as ReadOnlyCollection<uint, ICardInputOutputType>).Select(kvp => (int)kvp.Key)
+				                             ? (Parent.ControlSystem.SwitcherOutputs as
+				                                ReadOnlyCollection<uint, ICardInputOutputType>).Select(kvp => (int)kvp.Key)
 				                             : Enumerable.Empty<int>();
 
-			return addresses.Select(i => GetOutput(i)).Where(c => c.ConnectionType != eConnectionType.None);
+			return addresses.Order().Select(i => GetOutput(i)).Where(c => c.ConnectionType != eConnectionType.None);
 		}
 
 		/// <summary>
@@ -294,10 +336,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
 			IEnumerable<int> addresses = Parent.ControlSystem.SupportsSwitcherInputs
-                                             ? (Parent.ControlSystem.SwitcherInputs as ReadOnlyCollection<uint, ICardInputOutputType>).Select(kvp => (int)kvp.Key)
+				                             ? (Parent.ControlSystem.SwitcherInputs as
+				                                ReadOnlyCollection<uint, ICardInputOutputType>).Select(kvp => (int)kvp.Key)
 				                             : Enumerable.Empty<int>();
 
-			return addresses.Select(i => GetInput(i)).Where(c => c.ConnectionType != eConnectionType.None);
+			return addresses.Order().Select(i => GetInput(i)).Where(c => c.ConnectionType != eConnectionType.None);
 		}
 
 		/// <summary>
@@ -311,9 +354,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			return inputs != null && inputs.Contains((uint)input);
 		}
 
-#endregion
+		#endregion
 
-#region Private Methods
+		#region Private Methods
 
 		/// <summary>
 		/// Returns true if a signal is detected at the given input.
@@ -336,7 +379,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			switch (type)
 			{
 				case eConnectionType.Video:
-					return switcherInput.VideoDetectedFeedback.Type == eSigType.Bool && switcherInput.VideoDetectedFeedback.BoolValue;
+					return switcherInput.VideoDetectedFeedback.Type == eSigType.Bool && switcherInput.VideoDetectedFeedback.GetBoolValueOrDefault();
 
 				case eConnectionType.Audio:
 					// No way of detecting audio?
@@ -484,13 +527,22 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			m_SubscribedControlSystem = controlSystem;
 			Subscribe(m_SubscribedControlSystem);
 
+			// If usb and audio breakaway are supported, always enable them
 			if (m_SubscribedControlSystem != null && m_SubscribedControlSystem.SystemControl != null)
 			{
-				if (m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool)
+				if (m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported &&
+				    m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool)
+				{
 					m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.BoolValue = true;
+					AudioBreakawayEnabled = true;
+				}
 
-				if (m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool)
+				if (m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported &&
+				    m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool)
+				{
 					m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.BoolValue = true;
+					UsbBreakawayEnabled = true;
+				}
 			}
 
 			RebuildCache();
@@ -518,9 +570,126 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			}
 		}
 
-#endregion
+		private string GetInputId(ConnectorInfo info)
+		{
+			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SwitcherInputs == null)
+				return null;
 
-#region CrestronControlSystem Callbacks
+			DMInput dmInput = Parent.GetDmInput(info.Address);
+
+			return string.Format("{0} {1}", DmInputOutputUtils.GetInputTypeStringForInput(dmInput), info.Address);
+		}
+
+		private string GetInputName(ConnectorInfo info)
+		{
+			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SwitcherInputs == null)
+				return null;
+
+			DMInput dmInput = Parent.GetDmInput(info.Address);
+			return dmInput.NameFeedback.Type == eSigType.NA ? null : dmInput.NameFeedback.GetSerialValueOrDefault();
+		}
+
+		private string GetVideoInputSyncType(ConnectorInfo info)
+		{
+			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SwitcherInputs == null)
+				return null;
+
+			bool syncState = GetSignalDetectedState(info.Address, eConnectionType.Video);
+			if (!syncState)
+				return string.Empty;
+
+			DMInput dmInput = Parent.GetDmInput(info.Address);
+
+			if (dmInput.CardInputOutputType == eCardInputOutputType.Dmps3HdmiVgaInput)
+			{
+				Card.Dmps3HdmiVgaInput castInput = dmInput as Card.Dmps3HdmiVgaInput;
+				if (castInput == null)
+					return string.Empty;
+
+				if (castInput.HdmiSyncDetected.GetBoolValueOrDefault())
+					return "HDMI";
+
+				if (castInput.VgaSyncDetectedFeedback.GetBoolValueOrDefault())
+					return "VGA";
+
+				return string.Empty;
+			}
+
+			if (dmInput.CardInputOutputType == eCardInputOutputType.Dmps3HdmiVgaBncInput)
+			{
+				Card.Dmps3HdmiVgaBncInput castInput = dmInput as Card.Dmps3HdmiVgaBncInput;
+				if (castInput == null)
+					return string.Empty;
+
+				if (castInput.HdmiSyncDetected.GetBoolValueOrDefault())
+					return "HDMI";
+
+				if (castInput.VgaSyncDetectedFeedback.GetBoolValueOrDefault())
+					return "VGA";
+
+				if (castInput.BncSyncDetected.GetBoolValueOrDefault())
+					return "BNC";
+
+				return string.Empty;
+			}
+
+			return DmInputOutputUtils.GetInputTypeStringForInput(dmInput);
+		}
+
+		private bool GetVideoInputSyncState(ConnectorInfo info)
+		{
+			return GetSignalDetectedState(info.Address, eConnectionType.Video);
+		}
+
+		private string GetVideoInputResolution(ConnectorInfo info)
+		{
+			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SwitcherInputs == null)
+				return null;
+
+			bool syncState = GetSignalDetectedState(info.Address, eConnectionType.Video);
+			if (!syncState)
+			{
+				return string.Empty;
+			}
+
+			DMInput dmInput = Parent.GetDmInput(info.Address);
+
+			return DmInputOutputUtils.GetResolutionStringForVideoInput(dmInput);
+		}
+
+		private string GetOutputId(ConnectorInfo info)
+		{
+			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SwitcherInputs == null)
+				return null;
+
+			DMOutput dmOutput = Parent.GetDmOutput(info.Address);
+
+			return string.Format("{0} {1}", DmInputOutputUtils.GetOutputTypeStringForOutput(dmOutput), info.Address);
+		}
+
+		private string GetOutputName(ConnectorInfo info)
+		{
+			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SwitcherInputs == null)
+				return null;
+
+			DMOutput dmOutput = Parent.GetDmOutput(info.Address);
+
+			return dmOutput.NameFeedback.GetSerialValueOrDefault();
+		}
+
+		private string GetAudioOutputName(ConnectorInfo info)
+		{
+			if (m_SubscribedControlSystem == null || m_SubscribedControlSystem.SwitcherInputs == null)
+				return null;
+
+			DMOutput dmOutput = Parent.GetDmOutput(info.Address);
+
+			return string.Format("{0} {1}", dmOutput.NameFeedback.GetSerialValueOrDefault(), info.Address);
+		}
+
+		#endregion
+
+		#region CrestronControlSystem Callbacks
 
 		/// <summary>
 		/// Subscribe to the ControlSystem events.
@@ -576,6 +745,13 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 				SourceDetectionChange((int)args.Number, flag);
+
+			if (DmInputOutputUtils.GetIsEventIdResolutionEventId(args.EventId))
+			{
+				InputPort input = GetInputPort((int)(args.Number));
+				ConnectorInfo info = GetInput((int)(args.Number));
+				input.VideoInputResolution = GetVideoInputResolution(info);
+			}
 		}
 
 		/// <summary>
@@ -663,13 +839,19 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			}
 		}
 
-#endregion
+		#endregion
 
-#region Cache Callbacks
+		#region Cache Callbacks
 
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
+			OutputPort outputPort = GetOutputPort(args.Output);
+			ConnectorInfo info = GetOutput(args.Output);
+			if (args.Type.HasFlag(eConnectionType.Video))
+				outputPort.VideoOutputSource = GetActiveSourceIdName(info, eConnectionType.Video);
+			if (args.Type.HasFlag(eConnectionType.Audio))
+				outputPort.AudioOutputSource = GetActiveSourceIdName(info, eConnectionType.Audio);
 		}
 
 		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
@@ -680,6 +862,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
+
+			InputPort inputPort = GetInputPort(args.Input);
+			ConnectorInfo info = GetInput(args.Input);
+			inputPort.VideoInputSync = args.State;
+			inputPort.VideoInputSyncType = GetVideoInputSyncType(info);
 		}
 
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
@@ -687,9 +874,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
 		}
 
-#endregion
+		#endregion
 
-#region Console
+		#region Console
 
 		/// <summary>
 		/// Calls the delegate for each console status item.
@@ -703,16 +890,18 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				return;
 
 			addRow("Audio Breakaway",
-                   m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool
-				       ? m_SubscribedControlSystem.SystemControl.EnableAudioBreakawayFeedback.BoolValue.ToString()
+			       m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported &&
+			       m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool
+				       ? m_SubscribedControlSystem.SystemControl.EnableAudioBreakawayFeedback.GetBoolValueOrDefault().ToString()
 				       : "Not Supported");
 			addRow("USB Breakaway",
-                   m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported && m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool
-				       ? m_SubscribedControlSystem.SystemControl.EnableUSBBreakawayFeedback.BoolValue.ToString()
+			       m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported &&
+			       m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool
+				       ? m_SubscribedControlSystem.SystemControl.EnableUSBBreakawayFeedback.GetBoolValueOrDefault().ToString()
 				       : "Not Supported");
 		}
 
-#endregion
+		#endregion
 	}
 }
 

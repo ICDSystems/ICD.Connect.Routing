@@ -223,6 +223,51 @@ namespace ICD.Connect.Routing.Extron.Controls
 			return m_Cache.GetInputConnectorInfoForOutput(output, type);
 		}
 
+		protected override InputPort CreateInputPort(ConnectorInfo input)
+		{
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
+			{
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = input.Address.ToString(),
+				InputIdFeedbackSupported = true,
+				VideoInputSync =
+					supportsVideo &&
+					GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported =
+					supportsVideo
+			};
+		}
+
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
+		{
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
+			{
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = output.Address.ToString(),
+				OutputIdFeedbackSupport = true,
+				VideoOutputSource =
+					supportsVideo
+						? GetActiveSourceIdName(output, eConnectionType.Video)
+						: null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource =
+					supportsAudio
+						? GetActiveSourceIdName(output, eConnectionType.Audio)
+						: null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
+		}
+
+		private bool GetVideoInputSyncState(ConnectorInfo info)
+		{
+			return m_Cache.GetSourceDetectedState(info.Address, eConnectionType.Video);
+		}
+
 		/// <summary>
 		/// Performs the given RouteOperation on this switcher.
 		/// </summary>

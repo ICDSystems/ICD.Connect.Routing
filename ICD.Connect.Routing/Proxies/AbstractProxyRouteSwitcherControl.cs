@@ -1,5 +1,7 @@
-﻿using ICD.Connect.Devices.Proxies.Devices;
+﻿using System.Collections.Generic;
+using ICD.Connect.Devices.Proxies.Devices;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Controls;
 
 namespace ICD.Connect.Routing.Proxies
 {
@@ -13,6 +15,24 @@ namespace ICD.Connect.Routing.Proxies
 		protected AbstractProxyRouteSwitcherControl(IProxyDeviceBase parent, int id)
 			: base(parent, id)
 		{
+		}
+
+		/// <summary>
+		/// Returns switcher port objects to get details about the input ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<InputPort> GetInputPorts()
+		{
+			yield break;
+		}
+
+		/// <summary>
+		/// Returns switcher port objects to get details about the output ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<OutputPort> GetOutputPorts()
+		{
+			yield break;
 		}
 
 		/// <summary>

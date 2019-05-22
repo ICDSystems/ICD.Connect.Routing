@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -9,6 +8,8 @@ using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Streaming;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
+using ICD.Common.Properties;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
@@ -53,6 +54,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				{INPUT_SECONDARY_AUDIO_STREAM, new ConnectorInfo(INPUT_SECONDARY_AUDIO_STREAM, eConnectionType.Audio)}
 			};
 
+		private static readonly IcdOrderedDictionary<int, string> s_InputConnectorInputTypes =
+			new IcdOrderedDictionary<int, string>
+			{
+				{INPUT_HDMI_1, "HDMI"},
+				{INPUT_HDMI_2, "HDMI"},
+				{INPUT_ANALOG_AUDIO, "Audio"},
+				{INPUT_STREAM, "Streaming"},
+				{INPUT_SECONDARY_AUDIO_STREAM, "Audio Stream"}
+			};
+
 		private static readonly IcdOrderedDictionary<int, ConnectorInfo> s_OutputConnectors =
 			new IcdOrderedDictionary<int, ConnectorInfo>
 			{
@@ -60,6 +71,15 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				{OUTPUT_ANALOG_AUDIO, new ConnectorInfo(OUTPUT_ANALOG_AUDIO, eConnectionType.Audio)},
 				{OUTPUT_STREAM, new ConnectorInfo(OUTPUT_STREAM, eConnectionType.Audio | eConnectionType.Video)},
 				{OUTPUT_SECONDARY_AUDIO_STREAM, new ConnectorInfo(OUTPUT_SECONDARY_AUDIO_STREAM, eConnectionType.Audio)}
+			};
+
+		private static readonly IcdOrderedDictionary<int, string> s_OutputConnectorOutputTypes =
+			new IcdOrderedDictionary<int, string>
+			{
+				{OUTPUT_HDMI, "HDMI"},
+				{OUTPUT_ANALOG_AUDIO, "Audio"},
+				{OUTPUT_STREAM, "Streaming"},
+				{OUTPUT_SECONDARY_AUDIO_STREAM, "Audio Stream"}
 			};
 
 #if SIMPLSHARP
@@ -462,6 +482,43 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			return m_Cache.GetInputConnectorInfoForOutput(output, type);
 		}
 
+		protected override InputPort CreateInputPort(ConnectorInfo input)
+		{
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
+			{
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = GetInputId(input),
+				InputIdFeedbackSupported = true,
+				VideoInputResolution = supportsVideo ? GetVideoInputResolution(input) : null,
+				VideoInputResolutionFeedbackSupport = supportsVideo,
+				VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported = supportsVideo,
+				VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
+				VideoInputSyncTypeFeedbackSupported = supportsVideo
+			};
+		}
+
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
+		{
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
+			{
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = GetOutputId(output),
+				OutputIdFeedbackSupport = true,
+				VideoOutputSyncType = supportsVideo ? GetVideoOutputSyncType(output) : null,
+				VideoOutputSyncTypeFeedbackSupport = supportsVideo,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
+		}
+
 		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>
@@ -554,6 +611,80 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				default:
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		private string GetInputId(ConnectorInfo info)
+		{
+			return string.Format("{0} {1}", s_InputConnectorInputTypes[info.Address], info);
+		}
+
+		private bool GetVideoInputSyncState(ConnectorInfo info)
+		{
+			return GetSignalDetectedState(info.Address, eConnectionType.Video);
+		}
+
+		private string GetVideoInputSyncType(ConnectorInfo info)
+		{
+			bool syncState = GetSignalDetectedState(info.Address, eConnectionType.Video);
+			if (!syncState)
+				return string.Empty;
+
+			return s_InputConnectorInputTypes[info.Address];
+		}
+
+		private string GetVideoInputResolution(ConnectorInfo input)
+		{
+#if SIMPLSHARP
+			if (m_Streamer == null)
+				return null;
+
+				bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
+			if (!syncState)
+				return string.Empty;
+
+			ushort h; 
+				ushort v;
+				switch (input.Address)
+				{
+					case INPUT_HDMI_1:
+						h = m_Streamer.HdmiIn[0].VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+						v = m_Streamer.HdmiIn[0].VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
+						break;
+					case INPUT_HDMI_2:
+						h = m_Streamer.HdmiIn[1].VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+						v = m_Streamer.HdmiIn[1].VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
+						break;
+					case INPUT_STREAM:
+						h = m_Streamer.SourceReceive.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
+						v = m_Streamer.SourceReceive.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
+						break;
+					default:
+						h = 0;
+						v = 0;
+						break;
+				}
+
+			return DmInputOutputUtils.GetResolutionFormatted(h, v);
+#else
+			throw new NotSupportedException();
+#endif
+		}
+
+		private string GetOutputId(ConnectorInfo output)
+		{
+			return string.Format("{0} {1}", s_OutputConnectorOutputTypes[output.Address], output.Address);
+		}
+
+		private string GetVideoOutputSyncType(ConnectorInfo info)
+		{
+#if SIMPLSHARP
+			if (m_Streamer == null)
+				return null;
+
+			return info.Address == 1 ? m_Streamer.HdmiOut.SyncDetectedFeedback.GetBoolValueOrDefault() ? "HDMI" : "" : null;
 #else
 			throw new NotSupportedException();
 #endif
@@ -677,7 +808,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					SecondaryAudioMulticastAddress =
 						m_Streamer == null
 							? null
-							: m_Streamer.SecondaryAudio.MulticastAddressFeedback.StringValue;
+							: m_Streamer.SecondaryAudio.MulticastAddressFeedback.GetSerialValueOrDefault();
 					break;
 			}
 		}
@@ -695,14 +826,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					ServerUrl =
 						m_NvxControl == null
 							? null
-							: m_NvxControl.ServerUrlFeedback.StringValue;
+							: m_NvxControl.ServerUrlFeedback.GetSerialValueOrDefault();
 					break;
 
 				case DMInputEventIds.MulticastAddressEventId:
 					MulticastAddress =
 						m_NvxControl == null
 							? null
-							: m_NvxControl.MulticastAddressFeedback.StringValue;
+							: m_NvxControl.MulticastAddressFeedback.GetSerialValueOrDefault();
 					break;
 
 				case DMInputEventIds.AudioSourceEventId:
@@ -729,6 +860,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					break;
 				 */
 			}
+
+			// Nvx does not have specific event which allows us to see which port, so just update all of them
+			if (DmInputOutputUtils.GetIsEventIdResolutionEventId(args.EventId))
+			{
+				foreach (InputPort input in GetInputPorts())
+				{
+					ConnectorInfo info = GetInput(input.Address);
+					input.VideoInputResolution = GetVideoInputResolution(info);
+				}
+			}
 		}
 
 		/// <summary>
@@ -749,6 +890,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			if (audioSource == DmNvxControl.eAudioSource.SecondaryStreamAudio && !secondaryAudioEnabled)
 			{
 				SetActiveInput(null, eConnectionType.Audio);
+
+				AudioBreakawayEnabled = m_NvxControl != null &&
+									m_NvxControl.AudioSourceFeedback != DmNvxControl.eAudioSource.Automatic;
 				return;
 			}
 
@@ -757,6 +901,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				SetActiveInput(audioInput, eConnectionType.Audio);
 			else
 				SetActiveInput(null, eConnectionType.Audio);
+
+			AudioBreakawayEnabled = m_NvxControl != null &&
+									m_NvxControl.AudioSourceFeedback != DmNvxControl.eAudioSource.Automatic;
 		}
 
 		/// <summary>
@@ -782,24 +929,35 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 		#region SwitcherCache Callbacks
 
-		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs eventArgs)
+		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
-			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(eventArgs));
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
+
+			InputPort inputPort = GetInputPort(args.Input);
+			ConnectorInfo info = GetInput(args.Input);
+			inputPort.VideoInputSync = args.State;
+			inputPort.VideoInputSyncType = GetVideoInputSyncType(info);
 		}
 
-		private void CacheOnRouteChange(object sender, RouteChangeEventArgs eventArgs)
+		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
-			OnRouteChange.Raise(this, new RouteChangeEventArgs(eventArgs));
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
+			OutputPort outputPort = GetOutputPort(args.Output);
+			ConnectorInfo info = GetOutput(args.Output);
+			if (args.Type.HasFlag(eConnectionType.Video))
+				outputPort.VideoOutputSource = GetActiveSourceIdName(info, eConnectionType.Video);
+			if (args.Type.HasFlag(eConnectionType.Audio))
+				outputPort.AudioOutputSource = GetActiveSourceIdName(info, eConnectionType.Audio);
 		}
 
-		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs eventArgs)
+		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
 		{
-			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(eventArgs));
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
 		}
 
-		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs eventArgs)
+		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
 		{
-			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(eventArgs));
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
 		}
 
 		#endregion

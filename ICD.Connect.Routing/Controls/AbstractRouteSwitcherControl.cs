@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using ICD.Common.Properties;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
@@ -9,6 +11,9 @@ namespace ICD.Connect.Routing.Controls
 	public abstract class AbstractRouteSwitcherControl<T> : AbstractRouteMidpointControl<T>, IRouteSwitcherControl
 		where T : IDeviceBase
 	{
+		private List<InputPort> m_InputPorts;
+		private List<OutputPort> m_OutputPorts; 
+
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -20,6 +25,54 @@ namespace ICD.Connect.Routing.Controls
 		}
 
 		#region Methods
+
+		/// <summary>
+		/// Returns switcher port objects to get details about the input ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<InputPort> GetInputPorts()
+		{
+			return m_InputPorts ??
+				   (m_InputPorts = GetInputs().Select(input => CreateInputPort(input))
+											  .ToList());
+		}
+
+		protected abstract InputPort CreateInputPort(ConnectorInfo input);
+
+		[NotNull]
+		public InputPort GetInputPort(int address)
+		{
+			return GetInputPorts().First(i => i.Address == address);
+		}
+
+		/// <summary>
+		/// Returns switcher port objects to get details about the output ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		public IEnumerable<OutputPort> GetOutputPorts()
+		{
+			return m_OutputPorts ??
+				   (m_OutputPorts = GetOutputs().Select(output => CreateOutputPort(output))
+												.ToList());
+		}
+
+		protected abstract OutputPort CreateOutputPort(ConnectorInfo output);
+
+		[NotNull]
+		public OutputPort GetOutputPort(int address)
+		{
+			return GetOutputPorts().First(o => o.Address == address);
+		}
+
+		protected string GetActiveSourceIdName(ConnectorInfo info, eConnectionType type)
+		{
+			ConnectorInfo? activeInput = GetInput(info.Address, type);
+			if (activeInput == null)
+				return null;
+
+			InputPort port = GetInputPort(activeInput.Value.Address);
+			return string.Format("{0} {1}", port.InputId, port.InputName);
+		}
 
 		/// <summary>
 		/// Performs the given route operation.

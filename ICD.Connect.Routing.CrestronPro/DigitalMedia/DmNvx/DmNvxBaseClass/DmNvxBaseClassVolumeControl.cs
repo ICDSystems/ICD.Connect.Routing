@@ -1,8 +1,4 @@
-﻿using ICD.Connect.Audio.Console.Mute;
-using ICD.Connect.Audio.Controls.Mute;
-using ICD.Connect.Audio.Controls.Volume;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
-#if SIMPLSHARP
+﻿#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using Crestron.SimplSharpPro;
@@ -12,6 +8,11 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Audio.Console.Mute;
+using ICD.Connect.Audio.Controls.Mute;
+using ICD.Connect.Audio.Controls.Volume;
+using ICD.Connect.Misc.CrestronPro.Extensions;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 {
@@ -36,7 +37,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			{
 				return m_NvxControl == null
 					       ? 0.0f
-					       : m_NvxControl.AnalogAudioOutputVolumeFeedback.ShortValue / 10.0f;
+					       : m_NvxControl.AnalogAudioOutputVolumeFeedback.GetShortValueOrDefault() / 10.0f;
 			}
 		}
 
@@ -55,7 +56,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <summary>
 		/// Gets the muted state.
 		/// </summary>
-		public bool VolumeIsMuted { get { return m_NvxControl != null && m_NvxControl.AudioMutedFeedback.BoolValue; } }
+		public bool VolumeIsMuted { get { return m_NvxControl != null && m_NvxControl.AudioMutedFeedback.GetBoolValueOrDefault(); } }
 
 #endregion
 

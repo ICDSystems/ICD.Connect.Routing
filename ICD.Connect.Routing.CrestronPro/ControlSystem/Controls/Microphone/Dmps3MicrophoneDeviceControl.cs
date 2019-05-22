@@ -2,6 +2,7 @@
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #else
 using System;
 #endif
@@ -132,9 +133,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 			if (device != m_Microphone)
 				return;
 
-			IsMuted = m_Microphone.MuteOnFeedBack.BoolValue;
-			PhantomPower = m_Microphone.PhantomPowerOnFeedBack.BoolValue;
-			GainLevel = m_Microphone.GainFeedBack.ShortValue / 10.0f;
+			IsMuted = m_Microphone.MuteOnFeedBack.GetBoolValueOrDefault();
+			PhantomPower = m_Microphone.PhantomPowerOnFeedBack.GetBoolValueOrDefault();
+			GainLevel = m_Microphone.GainFeedBack.GetShortValueOrDefault() / 10.0f;
 		}
 #endif
 

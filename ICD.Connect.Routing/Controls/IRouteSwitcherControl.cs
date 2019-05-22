@@ -1,8 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Properties;
+using ICD.Common.Utils.EventArguments;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Proxies;
+using ICD.Connect.Routing.Telemetry;
+using ICD.Connect.Telemetry.Attributes;
 
 namespace ICD.Connect.Routing.Controls
 {
@@ -11,8 +15,23 @@ namespace ICD.Connect.Routing.Controls
 	/// for routing specific inputs to specific outputs.
 	/// </summary>
 	[ApiClass(typeof(ProxyRouteSwitcherControl), typeof(IRouteMidpointControl))]
+	[ExternalTelemetry("Switcher", typeof(SwitcherExternalTelemetryProvider))]
 	public interface IRouteSwitcherControl : IRouteMidpointControl
 	{
+		/// <summary>
+		/// Returns switcher port objects to get details about the input ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		[PublicAPI]
+		IEnumerable<InputPort> GetInputPorts();
+
+		/// <summary>
+		/// Returns switcher port objects to get details about the output ports on this switcher.
+		/// </summary>
+		/// <returns></returns>
+		[PublicAPI]
+		IEnumerable<OutputPort> GetOutputPorts(); 
+
 		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>
@@ -28,6 +47,14 @@ namespace ICD.Connect.Routing.Controls
 		/// <returns>True if successfully cleared.</returns>
 		[PublicAPI]
 		bool ClearOutput(int output, eConnectionType type);
+
+		/*
+		/// <summary>
+		/// Returns information about the inputs and outputs of this switcher for telemetry
+		/// </summary>
+		/// <returns></returns>
+		[PublicAPI]
+		IEnumerable<InputOutputPort> GetPorts();*/
 	}
 
 	/// <summary>

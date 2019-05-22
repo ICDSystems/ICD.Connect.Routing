@@ -28,6 +28,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.6.0] - 2019-05-17
+### Added
+ - Added telemetry features for switchers
+ - Added telemetry features for CrestronControlSystem
+ - Added features for inferring Crestron Input/Output information
+
+## [13.5.1] - 2019-05-16
+### Changed
+ - Failing more gracefully when unable to instantiate a crestron switcher
+
 ## [13.5.0] - 2019-05-10
 ### Changed
  - Logging when Crestron input cards, output cards and streamers fail to instantiate
