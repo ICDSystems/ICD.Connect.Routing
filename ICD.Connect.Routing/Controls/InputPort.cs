@@ -152,8 +152,22 @@ namespace ICD.Connect.Routing.Controls
 			set { m_VideoInputResolutionFeedbackSupported = value; }
 		}
 
-
-
 		#endregion
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public InputPort()
+		{
+		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="connector"></param>
+		public InputPort(ConnectorInfo connector)
+			: base(connector)
+		{
+		}
 	}
 }
