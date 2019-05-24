@@ -187,6 +187,18 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Controls
 			return m_SwitcherCache.GetInputConnectorInfoForOutput(output, type);
 		}
 
+		protected override InputPort CreateInputPort(ConnectorInfo input)
+		{
+			// todo: Properly implement for telemetry support one day
+			return new InputPort();
+		}
+
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
+		{
+			// todo: Properly implement for telemetry support one day
+			return new OutputPort();
+		}
+
 		/// <summary>
 		/// Performs the given route operation.
 		/// </summary>
