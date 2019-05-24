@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [13.5.2] - 2019-05-24
 ### Added
  - Added Card Parent and Card Address attributes to Crestron input/output card settings
 
