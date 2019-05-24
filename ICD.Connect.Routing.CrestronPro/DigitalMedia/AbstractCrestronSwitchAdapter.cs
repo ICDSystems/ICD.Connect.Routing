@@ -282,7 +282,17 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// <param name="settings"></param>
 		protected virtual void SetSwitcher(TSettings settings)
 		{
-			TSwitcher switcher = InstantiateSwitcher(settings);
+			TSwitcher switcher = null;
+
+			try
+			{
+				switcher = InstantiateSwitcher(settings);
+			}
+			catch (Exception e)
+			{
+				Log(eSeverity.Error, "Failed to instantiate {0} - {1}", typeof(TSwitcher).Name, e.Message);
+			}
+			
 			SetSwitcher(switcher);
 		}
 

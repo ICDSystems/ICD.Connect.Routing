@@ -172,6 +172,8 @@
     <Compile Include="Cards\ICardSettings.cs" />
     <Compile Include="ControlSystem\ControlSystemDevice.cs" />
     <Compile Include="ControlSystem\ControlSystemDeviceSettings.cs" />
+    <Compile Include="ControlSystem\ControlSystemExternalTelemetryNames.cs" />
+    <Compile Include="ControlSystem\ControlSystemExternalTelemetryProvider.cs" />
     <Compile Include="ControlSystem\Controls\Microphone\Dmps3MicrophoneDeviceControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\AbstractControlSystemTouchScreenControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\AbstractMPC3BasicTouchScreenControl.cs" />
@@ -192,6 +194,8 @@
     <Compile Include="ControlSystem\Controls\Dmps3XmlUtils.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Crosspoints\IDmps3Crosspoint.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Dmps3CrosspointVolumeControl.cs" />
+    <Compile Include="ControlSystem\IControlSystemDevice.cs" />
+    <Compile Include="ControlSystem\IControlSystemExternalTelemetryProvider.cs" />
     <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
@@ -246,6 +250,7 @@
     <Compile Include="DigitalMedia\DmNvx\DmNvxSecondaryStreamSwitcher\DmNvxSecondaryStreamSwitcherDeviceSettings.cs" />
     <Compile Include="DigitalMedia\DmNvx\IDmNvxStreamSwitcherDevice.cs" />
     <Compile Include="DigitalMedia\DmNvx\IDmNvxStreamSwitcherSettings.cs" />
+    <Compile Include="DigitalMedia\DmInputOutputUtils.cs" />
     <Compile Include="DigitalMedia\DmXio\DmXioDirector160\DmXioDirector160Adapter.cs" />
     <Compile Include="DigitalMedia\DmXio\DmXioDirector160\DmXioDirector160AdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmXio\DmXioDirector80\DmXioDirector80Adapter.cs" />
@@ -417,6 +422,10 @@
     <ProjectReference Include="..\..\ICD.Connect.Settings\ICD.Connect.Settings\ICD.Connect.Settings_SimplSharp.csproj">
       <Project>{5B84EB3C-1C3A-4C4D-98C2-69F67CF51D5A}</Project>
       <Name>ICD.Connect.Settings_SimplSharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ICD.Connect.Telemetry\ICD.Connect.Telemetry\ICD.Connect.Telemetry_SimplSharp.csproj">
+      <Project>{9512C0A5-F966-4AC6-9668-62C6F343B0CD}</Project>
+      <Name>ICD.Connect.Telemetry_SimplSharp</Name>
     </ProjectReference>
     <ProjectReference Include="..\ICD.Connect.Routing\ICD.Connect.Routing_SimplSharp.csproj">
       <Project>{B0C0CA1C-FA55-4BEA-8A8B-EDB2141C523E}</Project>

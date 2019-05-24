@@ -10,9 +10,10 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		private const string CARD_NUMBER_ELEMENT = "CardNumber";
 		private const string SWITCHER_ID_ELEMENT = "SwitcherId";
 
+		[CardAddressSettingsProperty]
 		public int? CardNumber { get; set; }
 
-		[OriginatorIdSettingsProperty(typeof(ICrestronSwitchAdapter))]
+		[CardParentSettingsProperty(typeof(ICrestronSwitchAdapter))]
 		public int? SwitcherId { get; set; }
 
 		/// <summary>

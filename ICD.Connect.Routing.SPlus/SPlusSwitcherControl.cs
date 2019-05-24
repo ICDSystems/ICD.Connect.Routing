@@ -2,21 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
-using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services;
-using ICD.Connect.API.Commands;
-using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
-using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.EventArguments;
-using ICD.Connect.Routing.RoutingGraphs;
 using ICD.Connect.Routing.Utils;
 
-namespace ICD.Connect.Routing.Mock.Switcher
+namespace ICD.Connect.Routing.SPlus
 {
-	public sealed class MockRouteSwitcherControl : AbstractRouteSwitcherControl<IDeviceBase>
+	public sealed class SPlusSwitcherControl : AbstractRouteSwitcherControl<SPlusSwitcher>
 	{
 		/// <summary>
 		/// Called when a route changes.
@@ -40,39 +34,67 @@ namespace ICD.Connect.Routing.Mock.Switcher
 
 		private readonly SwitcherCache m_Cache;
 
-		private IRoutingGraph m_CachedRoutingGraph;
+		#region S+ Delegates
 
-		/// <summary>
-		/// Gets the routing graph.
-		/// </summary>
-		public IRoutingGraph RoutingGraph
-		{
-			get { return m_CachedRoutingGraph = m_CachedRoutingGraph ?? ServiceProvider.GetService<IRoutingGraph>(); }
-		}
+		public delegate bool SPlusGetSignalDetectedState(int input, eConnectionType type);
+
+		public delegate IEnumerable<ConnectorInfo> SPlusGetInputs();
+
+		public delegate IEnumerable<ConnectorInfo> SPlusGetOutputs();
+
+		public delegate bool SPlusRoute(RouteOperation info);
+
+		public delegate bool SPlusClearOutput(int output, eConnectionType type);
+
+		#endregion
+
+		#region S+ Events
+
+		[PublicAPI("S+")]
+		public SPlusGetSignalDetectedState GetSignalDetectedStateCallback { get; set; }
+
+		[PublicAPI("S+")]
+		public SPlusGetInputs GetInputsCallback { get; set; }
+
+		[PublicAPI("S+")]
+		public SPlusGetOutputs GetOutputsCallback { get; set; }
+
+		[PublicAPI("S+")]
+		public SPlusRoute RouteCallback { get; set; }
+
+		[PublicAPI("S+")]
+		public SPlusClearOutput ClearOutputCallback { get; set; }
+
+		#endregion
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteSwitcherControl(IDeviceBase parent, int id)
+		public SPlusSwitcherControl(SPlusSwitcher parent, int id)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
 			Subscribe(m_Cache);
-			AudioBreakawayEnabled = true;
 		}
 
 		/// <summary>
-		/// Override to release resources.
+		/// Release resources.
 		/// </summary>
 		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
 			OnRouteChange = null;
-			OnActiveInputsChanged = null;
+			OnActiveTransmissionStateChanged = null;
 			OnSourceDetectionStateChange = null;
 			OnActiveInputsChanged = null;
+
+			GetSignalDetectedStateCallback = null;
+			GetInputsCallback = null;
+			GetOutputsCallback = null;
+			RouteCallback = null;
+			ClearOutputCallback = null;
 
 			base.DisposeFinal(disposing);
 
@@ -80,6 +102,34 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		}
 
 		#region Methods
+
+		/// <summary>
+		/// Called to inform the system of a source detection change.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		[PublicAPI("S+")]
+		public void UpdateSourceDetection(int input, eConnectionType type)
+		{
+			bool state = GetSignalDetectedStateCallback != null && GetSignalDetectedStateCallback(input, type);
+			m_Cache.SetSourceDetectedState(input, type, state);
+		}
+
+		/// <summary>
+		/// Called to inform the system of a switcher routing change.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		[PublicAPI("S+")]
+		public void SetInputForOutput(int output, int input, eConnectionType type)
+		{
+			m_Cache.SetInputForOutput(output, input, type);
+		}
+
+		#endregion
+
+		#region IRouteSwitcherControl
 
 		protected override InputPort CreateInputPort(ConnectorInfo input)
 		{
@@ -133,7 +183,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 
 		private string GetInputId(ConnectorInfo info)
 		{
-			return string.Format("Mock Video Input {0}", info.Address);
+			return string.Format("s+ Video Input {0}", info.Address);
 		}
 
 		private bool GetVideoInputSyncState(ConnectorInfo info)
@@ -143,7 +193,38 @@ namespace ICD.Connect.Routing.Mock.Switcher
 
 		private string GetOutputId(ConnectorInfo info)
 		{
-			return string.Format("Mock Video Output {0}", info.Address);
+			return string.Format("S+ Video Output {0}", info.Address);
+		}
+
+		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			return GetInputs().First(c => c.Address == input);
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			return GetInputs().Any(c => c.Address == input);
+		}
+
+		/// <summary>
+		/// Returns the inputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetInputs()
+		{
+			return GetInputsCallback == null
+				       ? Enumerable.Empty<ConnectorInfo>()
+				       : GetInputsCallback();
 		}
 
 		/// <summary>
@@ -153,11 +234,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// <returns></returns>
 		public override ConnectorInfo GetOutput(int address)
 		{
-			Connection connection = RoutingGraph.Connections.GetOutputConnection(new EndpointInfo(Parent.Id, Id, address));
-			if (connection == null)
-				throw new ArgumentOutOfRangeException("address");
-
-			return new ConnectorInfo(connection.Source.Address, connection.ConnectionType);
+			return GetOutputs().First(c => c.Address == address);
 		}
 
 		/// <summary>
@@ -167,7 +244,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// <returns></returns>
 		public override bool ContainsOutput(int output)
 		{
-			return RoutingGraph.Connections.GetOutputConnection(new EndpointInfo(Parent.Id, Id, output)) != null;
+			return GetOutputs().Any(c => c.Address == output);
 		}
 
 		/// <summary>
@@ -176,9 +253,9 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			return RoutingGraph.Connections
-			                   .GetOutputConnections(Parent.Id, Id)
-			                   .Select(c => new ConnectorInfo(c.Source.Address, c.ConnectionType));
+			return GetOutputsCallback == null
+				       ? Enumerable.Empty<ConnectorInfo>()
+				       : GetOutputsCallback();
 		}
 
 		/// <summary>
@@ -205,42 +282,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		}
 
 		/// <summary>
-		/// Gets the input at the given address.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		public override ConnectorInfo GetInput(int input)
-		{
-			Connection connection = RoutingGraph.Connections.GetInputConnection(new EndpointInfo(Parent.Id, Id, input));
-			if (connection == null)
-				throw new ArgumentOutOfRangeException("input");
-
-			return new ConnectorInfo(connection.Destination.Address, connection.ConnectionType);
-		}
-
-		/// <summary>
-		/// Returns true if the destination contains an input at the given address.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		public override bool ContainsInput(int input)
-		{
-			return RoutingGraph.Connections.GetInputConnection(new EndpointInfo(Parent.Id, Id, input)) != null;
-		}
-
-		/// <summary>
-		/// Returns the inputs.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<ConnectorInfo> GetInputs()
-		{
-			return RoutingGraph.Connections
-							   .GetInputConnections(Parent.Id, Id)
-							   .Select(c => new ConnectorInfo(c.Destination.Address, c.ConnectionType));
-		}
-
-		/// <summary>
-		/// Returns true if video is detected at the given input.
+		/// Returns true if a signal is detected at the given input.
 		/// </summary>
 		/// <param name="input"></param>
 		/// <param name="type"></param>
@@ -248,18 +290,6 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
 			return m_Cache.GetSourceDetectedState(input, type);
-		}
-
-		/// <summary>
-		/// Sets the video detected state at the given input.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <param name="type"></param>
-		/// <param name="state"></param>
-		[PublicAPI]
-		public void SetSignalDetectedState(int input, eConnectionType type, bool state)
-		{
-			m_Cache.SetSourceDetectedState(input, type, state);
 		}
 
 		#endregion
@@ -318,34 +348,6 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
 		{
 			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
-		}
-
-		#endregion
-
-		#region Console
-
-		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
-		{
-			foreach (IConsoleCommand command in GetBaseConsoleCommands())
-				yield return command;
-
-			yield return new GenericConsoleCommand<int, eConnectionType, bool>(
-				"SetSignalDetectedState",
-				"<input> <connectionType> <true/false>",
-				(a, b, c) => SetSignalDetectedState(a, b, c));
-			yield return new GenericConsoleCommand<int, int, eConnectionType>(
-				"Route",
-				"Routes the input address to the output address with the given connection type",
-				(a, b, c) => this.Route(a, b, c));
-		}
-
-		/// <summary>
-		/// Workaround for "unverifiable code" warning.
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
-		{
-			return base.GetConsoleCommands();
 		}
 
 		#endregion

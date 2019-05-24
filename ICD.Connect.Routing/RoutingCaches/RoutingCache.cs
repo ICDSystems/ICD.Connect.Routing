@@ -1543,8 +1543,6 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 		private void RoutingGraphOnDestinationInputActiveStateChanged(object sender, EndpointStateEventArgs args)
 		{
-			CacheStateChangedEventArgs cache;
-
 			m_CacheSection.Enter();
 
 			try
@@ -1553,17 +1551,15 @@ namespace ICD.Connect.Routing.RoutingCaches
 				if (!m_EndpointToDestinations.ContainsKey(args.Endpoint))
 					return;
 
-				cache = UpdateDestinationEndpointInputActiveState(args.Endpoint, args.Type, args.State)
-					        ? new CacheStateChangedEventArgs(new[] {args.Endpoint}, args.Type, args.State)
-					        : null;
+				if (!UpdateDestinationEndpointInputActiveState(args.Endpoint, args.Type, args.State))
+					return;
 			}
 			finally
 			{
 				m_CacheSection.Leave();
 			}
 
-			if (cache != null)
-				OnDestinationEndpointActiveChanged.Raise(this, cache);
+			OnDestinationEndpointActiveChanged.Raise(this, new CacheStateChangedEventArgs(new[] {args.Endpoint}, args.Type, args.State));
 		}
 
 		#endregion

@@ -21,6 +21,15 @@ namespace ICD.Connect.Routing.Atlona
 		private const string REGEX_SOURCE_DETECT_SINGLE = @"^InputStatus(\d) (0|1)";
 		private const string REGEX_ROUTING = @"^x(\d)AVx1";
 
+	    private static Dictionary<int, string> s_InputIds = new Dictionary<int, string>
+	    {
+			{1, "HDMI IN 1"},
+			{2, "HDMI IN 2"},
+			{3, "VGA IN"},
+			{4, "DP IN 4"},
+			{5, "HDMI IN 5"}
+	    };
+
 	    /// <summary>
 	    /// Raised when an input source status changes.
 	    /// </summary>
@@ -193,7 +202,48 @@ namespace ICD.Connect.Routing.Atlona
 			return OutputOn ? m_Cache.GetInputConnectorInfoForOutput(output, type) : null;
 		}
 
-		/// <summary>Performs the given route operation.</summary>
+	    protected override InputPort CreateInputPort(ConnectorInfo input)
+	    {
+		    bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+		    return new InputPort
+		    {
+			    Address = input.Address,
+			    ConnectionType = input.ConnectionType,
+			    InputId = GetInputId(input),
+			    InputIdFeedbackSupported = true,
+			    VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+			    VideoInputSyncFeedbackSupported = supportsVideo
+		    };
+	    }
+
+	    protected override OutputPort CreateOutputPort(ConnectorInfo output)
+	    {
+		    bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+		    bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+		    return new OutputPort
+		    {
+			    Address = output.Address,
+			    ConnectionType = output.ConnectionType,
+			    OutputId = "HDMI OUT",
+			    OutputIdFeedbackSupport = true,
+			    VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+			    VideoOutputSourceFeedbackSupport = supportsVideo,
+			    AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+			    AudioOutputSourceFeedbackSupport = supportsAudio
+		    };
+	    }
+
+	    private string GetInputId(ConnectorInfo info)
+	    {
+		    return ContainsInput(info.Address) ? s_InputIds[info.Address] : null;
+	    }
+
+	    private bool GetVideoInputSyncState(ConnectorInfo info)
+	    {
+		    return m_Cache.GetSourceDetectedState(info.Address, eConnectionType.Video);
+	    }
+
+	    /// <summary>Performs the given route operation.</summary>
 		/// <param name="info"></param>
 		/// <returns></returns>
 		public override bool Route(RouteOperation info)

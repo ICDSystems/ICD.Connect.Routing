@@ -7,7 +7,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Misc.CrestronPro.Utils;
-using ICD.Connect.Misc.CrestronPro.Utils.Extensions;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
@@ -95,6 +95,45 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
+		protected override InputPort CreateInputPort(ConnectorInfo input)
+		{
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
+			{
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = GetInputId(input),
+				InputIdFeedbackSupported = true,
+				InputName = GetInputName(input),
+				InputNameFeedbackSupported = true,
+				VideoInputResolution = supportsVideo ? GetVideoInputResolution(input) : null,
+				VideoInputResolutionFeedbackSupport = supportsVideo,
+				VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported = supportsVideo,
+				VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
+				VideoInputSyncTypeFeedbackSupported = supportsVideo
+			};
+		}
+
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
+		{
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
+			{
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = GetOutputId(output),
+				OutputIdFeedbackSupport = true,
+				OutputName = GetOutputName(output),
+				OutputNameFeedbackSupport = true,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
+		}
+
 		/// <summary>
 		/// Routes the input to the given output.
 		/// </summary>
@@ -174,6 +213,71 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 			}
 
 			return m_Cache.SetInputForOutput(output, null, type);
+		}
+
+		private string GetInputId(ConnectorInfo input)
+		{
+			if (m_Switcher == null || m_Switcher.Inputs == null)
+				return null;
+
+			DMInput dmInput = Parent.GetDmInput(input.Address);
+			return string.Format("{0} {1}", DmInputOutputUtils.GetInputTypeStringForInput(dmInput), input.Address);
+		}
+
+		private string GetInputName(ConnectorInfo input)
+		{
+			if (m_Switcher == null)
+				return null;
+			
+			DMInput dmInput = Parent.GetDmInput(input.Address);
+			return dmInput.NameFeedback.GetSerialValueOrDefault();
+		}
+
+		private bool GetVideoInputSyncState(ConnectorInfo info)
+		{
+			return GetSignalDetectedState(info.Address, eConnectionType.Video);
+		}
+
+		private string GetVideoInputSyncType(ConnectorInfo input)
+		{
+			if (m_Switcher == null)
+				return null;
+			
+			bool syncState = GetSignalDetectedState(input.Address, eConnectionType.Video);
+			if (!syncState)
+				return string.Empty;
+
+			return DmInputOutputUtils.GetInputTypeStringForInput(Parent.GetDmInput(input.Address));
+		}
+
+		private string GetVideoInputResolution(ConnectorInfo info)
+		{
+			if (m_Switcher == null)
+				return null;
+
+			bool syncState = GetSignalDetectedState(info.Address, eConnectionType.Video);
+			if (!syncState)
+				return string.Empty;
+                       
+			return DmInputOutputUtils.GetResolutionStringForVideoInput(Parent.GetDmInput(info.Address));
+		}
+
+		private string GetOutputId(ConnectorInfo info)
+		{
+			if (m_Switcher == null || m_Switcher.Outputs == null)
+				return null;
+
+			DMOutput dmOutput = Parent.GetDmOutput(info.Address);
+			return string.Format("{0} {1}", DmInputOutputUtils.GetOutputTypeStringForOutput(dmOutput), info.Address);
+		}
+
+		private string GetOutputName(ConnectorInfo output)
+		{
+			if (m_Switcher == null)
+				return null;
+
+			DMOutput dmOutput = Parent.GetDmOutput(output.Address);
+			return dmOutput.NameFeedback.GetSerialValueOrDefault();
 		}
 
 		/// <summary>
@@ -293,7 +397,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 			switch (type)
 			{
 				case eConnectionType.Video:
-					return switcherInput.VideoDetectedFeedback.BoolValue;
+					return switcherInput.VideoDetectedFeedback.GetBoolValueOrDefault();
 
 				case eConnectionType.Audio:
 					// No way of detecting audio?
@@ -372,6 +476,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 			m_Switcher = switcher;
 			Subscribe(m_Switcher);
 
+			AudioBreakawayEnabled = m_Switcher != null && m_Switcher.EnableAudioBreakawayFeedback.GetBoolValueOrDefault();
+			UsbBreakawayEnabled = m_Switcher != null && m_Switcher.EnableUSBBreakawayFeedback.GetBoolValueOrDefault();
+
 			RebuildCache();
 		}
 
@@ -415,6 +522,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 
 			switcher.DMInputChange += SwitcherOnDmInputChange;
 			switcher.DMOutputChange += SwitcherOnDmOutputChange;
+			switcher.DMSystemChange += SwitcherOnDmSystemChange;
 		}
 
 		/// <summary>
@@ -428,6 +536,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 
 			switcher.DMInputChange -= SwitcherOnDmInputChange;
 			switcher.DMOutputChange -= SwitcherOnDmOutputChange;
+			switcher.DMSystemChange -= SwitcherOnDmSystemChange;
 		}
 
 		/// <summary>
@@ -452,6 +561,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 
 			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(type))
 				SourceDetectionChange((int)args.Number, flag);
+
+			if (DmInputOutputUtils.GetIsEventIdResolutionEventId(args.EventId))
+			{
+				InputPort input = GetInputPort((int)(args.Number));
+				ConnectorInfo info = GetInput((int)(args.Number));
+				input.VideoInputResolution = GetVideoInputResolution(info);
+			}
 		}
 
 		/// <summary>
@@ -488,6 +604,18 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 			m_Cache.SetInputForOutput(output, input, type);
 		}
 
+		private void SwitcherOnDmSystemChange(Switch device, DMSystemEventArgs args)
+		{
+			if (m_Switcher == null)
+				return;
+
+			if (args.EventId == DMSystemEventIds.AudioBreakawayEventId)
+				AudioBreakawayEnabled = m_Switcher.EnableAudioBreakawayFeedback.GetBoolValueOrDefault();
+
+			if (args.EventId == DMSystemEventIds.USBBreakawayEventId)
+				UsbBreakawayEnabled = m_Switcher.EnableUSBBreakawayFeedback.GetBoolValueOrDefault();
+		}
+
 		#endregion
 
 		#region Cache Callbacks
@@ -495,6 +623,12 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
+			OutputPort outputPort = GetOutputPort(args.Output);
+			ConnectorInfo info = GetOutput(args.Output);
+			if (args.Type.HasFlag(eConnectionType.Video))
+				outputPort.VideoOutputSource = GetActiveSourceIdName(info, eConnectionType.Video);
+			if (args.Type.HasFlag(eConnectionType.Audio))
+				outputPort.AudioOutputSource = GetActiveSourceIdName(info, eConnectionType.Audio);
 		}
 
 		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
@@ -505,6 +639,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
+
+			InputPort inputPort = GetInputPort(args.Input);
+			ConnectorInfo info = GetInput(args.Input);
+			inputPort.VideoInputSync = args.State;
+			inputPort.VideoInputSyncType = GetVideoInputSyncType(info);
 		}
 
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)

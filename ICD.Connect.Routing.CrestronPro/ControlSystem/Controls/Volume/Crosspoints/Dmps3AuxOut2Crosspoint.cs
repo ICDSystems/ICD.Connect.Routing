@@ -1,6 +1,7 @@
 ﻿#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #else
 using System;
 #endif
@@ -61,8 +62,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			switch (InputType)
 			{
 				case eDmps3InputType.Codec1:
-					VolumeLevel = Aux2OutputVolumeObject.Codec1LevelFeedback.ShortValue;
-					VolumeIsMuted = Aux2OutputVolumeObject.CodecMute1OnFeedback.BoolValue;
+					VolumeLevel = Aux2OutputVolumeObject.Codec1LevelFeedback.GetShortValueOrDefault();
+					VolumeIsMuted = Aux2OutputVolumeObject.CodecMute1OnFeedback.GetBoolValueOrDefault();
 					break;
 			}
 		}

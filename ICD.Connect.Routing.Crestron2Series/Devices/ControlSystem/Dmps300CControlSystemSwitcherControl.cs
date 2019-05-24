@@ -75,6 +75,11 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			m_Cache.OnRouteChange += CacheOnRouteChange;
 
 			Subscribe(parent);
+
+			// DMPS 2 series is hard coded to always use breakaway in metlife rooms. 
+			// Revisit if some other job decides to use them.
+			AudioBreakawayEnabled = true;
+			UsbBreakawayEnabled = true;
 		}
 
 		/// <summary>
@@ -106,6 +111,40 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			return EnumUtils.GetFlagsExceptNone(type)
 			                .Select(t => m_Cache.GetSourceDetectedState(input, t))
 			                .Unanimous(false);
+		}
+
+		protected override InputPort CreateInputPort(ConnectorInfo input)
+		{
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
+			{
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = GetInputId(input),
+				InputIdFeedbackSupported = true,
+				VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported = supportsVideo,
+				VideoInputSyncType = supportsVideo ? GetVideoInputSyncType(input) : null,
+				VideoInputSyncTypeFeedbackSupported = supportsVideo
+			};
+		}
+
+
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
+		{
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
+			{
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = GetOutputId(output),
+				OutputIdFeedbackSupport = true,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio,
+			};
 		}
 
 		/// <summary>
@@ -326,6 +365,63 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			}
 		}
 
+		private static string GetInputId(ConnectorInfo info)
+		{
+			switch (info.Address)
+			{
+				case 1:
+					return "HDMI 1";
+				case 2:
+					return "HDMI 2";
+				case 3:
+					return "HDMI+VGA 3";
+				case 4:
+					return "HDMI+VGA 4";
+				case 5:
+					return "HDMI+VGA 5";
+				case 6:
+					return "DM 6";
+				case 7:
+					return "DM 7";
+				default:
+					return null;
+			}
+
+		}
+
+		private bool GetVideoInputSyncState(ConnectorInfo info)
+		{
+			return GetSignalDetectedState(info.Address, eConnectionType.Video);
+		}
+
+		private string GetVideoInputSyncType(ConnectorInfo info)
+		{
+			return GetSignalDetectedState(info.Address, eConnectionType.Video) ? "DMPS3 Video" : string.Empty;
+		}
+
+		private static string GetOutputId(ConnectorInfo info)
+		{
+			switch (info.Address)
+			{
+				case 1:
+					return "HDMI 1";
+				case 2:
+					return "HDMI 2";
+				case 3:
+					return "DM 3";
+				case 4:
+					return "DM 4";
+				case 5:
+					return "Program Audio";
+				case 6:
+					return "Aux Audio 1";
+				case 7:
+					return "Aux Audio 2";
+				default:
+					return null;
+			}
+		}
+
 		#region Parent Callbacks
 
 		/// <summary>
@@ -437,6 +533,12 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
 			OnRouteChange.Raise(this, new RouteChangeEventArgs(args));
+			OutputPort outputPort = GetOutputPort(args.Output);
+			ConnectorInfo info = GetOutput(args.Output);
+			if (args.Type.HasFlag(eConnectionType.Video))
+				outputPort.VideoOutputSource = GetActiveSourceIdName(info, eConnectionType.Video);
+			if (args.Type.HasFlag(eConnectionType.Audio))
+				outputPort.AudioOutputSource = GetActiveSourceIdName(info, eConnectionType.Audio);
 		}
 
 		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
@@ -447,6 +549,11 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
+
+			InputPort inputPort = GetInputPort(args.Input);
+			ConnectorInfo info = GetInput(args.Input);
+			inputPort.VideoInputSync = args.State;
+			inputPort.VideoInputSyncType = GetVideoInputSyncType(info);
 		}
 
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
