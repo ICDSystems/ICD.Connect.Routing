@@ -189,14 +189,33 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Controls
 
 		protected override InputPort CreateInputPort(ConnectorInfo input)
 		{
-			// todo: Properly implement for telemetry support one day
-			return new InputPort();
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
+			{
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = GetInputId(input),
+				InputIdFeedbackSupported = true,
+				VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported = supportsVideo,
+			};
 		}
 
 		protected override OutputPort CreateOutputPort(ConnectorInfo output)
 		{
-			// todo: Properly implement for telemetry support one day
-			return new OutputPort();
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
+			{
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = GetOutputId(output),
+				OutputIdFeedbackSupport = true,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
 		}
 
 		/// <summary>
@@ -246,6 +265,20 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Controls
 			return m_SwitcherCache.SetInputForOutput(output, null, type);
 		}
 
+		private string GetInputId(ConnectorInfo info)
+		{
+			return string.Format("s+ Video Input {0}", info.Address);
+		}
+
+		private bool GetVideoInputSyncState(ConnectorInfo info)
+		{
+			return GetSignalDetectedState(info.Address, eConnectionType.Video);
+		}
+
+		private string GetOutputId(ConnectorInfo info)
+		{
+			return string.Format("S+ Video Output {0}", info.Address);
+		}
 
 		#endregion
 
