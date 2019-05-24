@@ -352,5 +352,22 @@ namespace ICD.Connect.Routing.Controls
 		}
 
 		#endregion
+
+		
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public OutputPort()
+		{
+		}
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		/// <param name="connector"></param>
+		public OutputPort(ConnectorInfo connector)
+			: base(connector)
+		{
+		}
 	}
 }
