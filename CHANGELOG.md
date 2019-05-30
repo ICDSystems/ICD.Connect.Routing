@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.7.2] - 2019-05-30
+### Changed
+ - Fixed exceptions on program stop due to clearing switchers
+
 ## [13.7.1] - 2019-05-30
 ### Changed
  - Fixed bug where Input/Output ports were being initialized too early in the switcher lifespan
