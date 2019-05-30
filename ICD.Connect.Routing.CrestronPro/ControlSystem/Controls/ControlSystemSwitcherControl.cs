@@ -55,10 +55,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
-			m_Cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
-			m_Cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
-			m_Cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
-			m_Cache.OnRouteChange += CacheOnRouteChange;
+			Subscribe(m_Cache);
 
 			SetControlSystem(parent.ControlSystem);
 		}
@@ -76,6 +73,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 
 			base.DisposeFinal(disposing);
 
+			Unsubscribe(m_Cache);
 			SetControlSystem(null);
 		}
 
@@ -842,6 +840,22 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		#endregion
 
 		#region Cache Callbacks
+
+		private void Subscribe(SwitcherCache cache)
+		{
+			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
+			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
+			cache.OnRouteChange += CacheOnRouteChange;
+		}
+
+		private void Unsubscribe(SwitcherCache cache)
+		{
+			cache.OnActiveInputsChanged -= CacheOnActiveInputsChanged;
+			cache.OnSourceDetectionStateChange -= CacheOnSourceDetectionStateChange;
+			cache.OnActiveTransmissionStateChanged -= CacheOnActiveTransmissionStateChanged;
+			cache.OnRouteChange -= CacheOnRouteChange;
+		}
 
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{

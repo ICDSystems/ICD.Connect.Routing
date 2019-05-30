@@ -272,11 +272,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
-
-			m_Cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
-			m_Cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
-			m_Cache.OnRouteChange += CacheOnRouteChange;
-			m_Cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+			Subscribe(m_Cache);
 
 #if SIMPLSHARP
 			parent.OnStreamerChanged += ParentOnStreamerChanged;
@@ -306,6 +302,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 #if SIMPLSHARP
 			Parent.OnStreamerChanged -= ParentOnStreamerChanged;
 
+			Unsubscribe(m_Cache);
 			SetStreamer(null);
 #endif
 		}
@@ -916,6 +913,22 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 #endif
 
 		#region SwitcherCache Callbacks
+
+		private void Subscribe(SwitcherCache cache)
+		{
+			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
+			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
+			cache.OnRouteChange += CacheOnRouteChange;
+			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+		}
+
+		private void Unsubscribe(SwitcherCache cache)
+		{
+			cache.OnActiveInputsChanged -= CacheOnActiveInputsChanged;
+			cache.OnActiveTransmissionStateChanged -= CacheOnActiveTransmissionStateChanged;
+			cache.OnRouteChange -= CacheOnRouteChange;
+			cache.OnSourceDetectionStateChange -= CacheOnSourceDetectionStateChange;
+		}
 
 		private void CacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
 		{

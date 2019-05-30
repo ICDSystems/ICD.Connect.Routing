@@ -97,10 +97,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 			m_ConnectorsSection = new SafeCriticalSection();
 
 			m_SwitcherCache = new SwitcherCache();
-			m_SwitcherCache.OnActiveInputsChanged += SwitcherCacheOnActiveInputsChanged;
-			m_SwitcherCache.OnActiveTransmissionStateChanged += SwitcherCacheOnActiveTransmissionStateChanged;
-			m_SwitcherCache.OnRouteChange += SwitcherCacheOnRouteChange;
-			m_SwitcherCache.OnSourceDetectionStateChange += SwitcherCacheOnSourceDetectionStateChange;
+			Subscribe(m_SwitcherCache);
 
 			Controls.Add(new RouteSwitcherControl(this, 0));
 		}
@@ -117,6 +114,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 			OnRouteChange = null;
 
 			base.DisposeFinal(disposing);
+
+			Unsubscribe(m_SwitcherCache);
 		}
 
 		#region Methods
@@ -359,6 +358,22 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		#endregion
 
 		#region SwitcherCache Callbacks
+
+		private void Subscribe(SwitcherCache cache)
+		{
+			cache.OnActiveInputsChanged += SwitcherCacheOnActiveInputsChanged;
+			cache.OnActiveTransmissionStateChanged += SwitcherCacheOnActiveTransmissionStateChanged;
+			cache.OnRouteChange += SwitcherCacheOnRouteChange;
+			cache.OnSourceDetectionStateChange += SwitcherCacheOnSourceDetectionStateChange;
+		}
+
+		private void Unsubscribe(SwitcherCache cache)
+		{
+			cache.OnActiveInputsChanged -= SwitcherCacheOnActiveInputsChanged;
+			cache.OnActiveTransmissionStateChanged -= SwitcherCacheOnActiveTransmissionStateChanged;
+			cache.OnRouteChange -= SwitcherCacheOnRouteChange;
+			cache.OnSourceDetectionStateChange -= SwitcherCacheOnSourceDetectionStateChange;
+		}
 
 		private void SwitcherCacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs eventArgs)
 		{
