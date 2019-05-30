@@ -8,6 +8,7 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Audio.Console.Mute;
 using ICD.Connect.Audio.Controls.Mute;
 using ICD.Connect.Audio.Controls.Volume;
+using ICD.Connect.Audio.EventArguments;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
@@ -17,7 +18,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 		/// <summary>
 		/// Raised when the mute state changes.
 		/// </summary>
-		public event EventHandler<BoolEventArgs> OnMuteStateChanged;
+		public event EventHandler<MuteDeviceMuteStateChangedApiEventArgs> OnMuteStateChanged;
 
 		private readonly string m_Name;
 		private readonly IDmps3Crosspoint m_Crosspoint;
@@ -164,7 +165,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 		private void CrosspointOnMuteStateChanged(object sender, BoolEventArgs e)
 		{
 			Log(eSeverity.Informational, "Mute changed: Mute={0}", e.Data);
-			OnMuteStateChanged.Raise(this, new BoolEventArgs(e.Data));
+			OnMuteStateChanged.Raise(this, new MuteDeviceMuteStateChangedApiEventArgs(e.Data));
 		}
 
 		#endregion

@@ -3,6 +3,7 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Audio.Controls.Mute;
 using ICD.Connect.Audio.Controls.Volume;
+using ICD.Connect.Audio.EventArguments;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 {
@@ -83,7 +84,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 			Parent.SetVolumeMuteState(mute);
 		}
 
-		public event EventHandler<BoolEventArgs> OnMuteStateChanged;
+		public event EventHandler<MuteDeviceMuteStateChangedApiEventArgs> OnMuteStateChanged;
 
 		/// <summary>
 		/// Gets the muted state.
@@ -97,7 +98,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 					return;
 				m_VolumeIsMuted = value;
 
-				OnMuteStateChanged.Raise(this, new BoolEventArgs(value));
+				OnMuteStateChanged.Raise(this, new MuteDeviceMuteStateChangedApiEventArgs(value));
 			}
 		}
 

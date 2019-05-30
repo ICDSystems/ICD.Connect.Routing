@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Audio.EventArguments;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using Crestron.SimplSharpPro;
@@ -24,7 +25,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <summary>
 		/// Raised when the mute state changes.
 		/// </summary>
-		public event EventHandler<BoolEventArgs> OnMuteStateChanged;
+		public event EventHandler<MuteDeviceMuteStateChangedApiEventArgs> OnMuteStateChanged;
 
 #region Properties
 
@@ -195,7 +196,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					break;
 
 				case DMInputEventIds.AudioMuteEventId:
-					OnMuteStateChanged.Raise(this, new BoolEventArgs(VolumeIsMuted));
+					OnMuteStateChanged.Raise(this, new MuteDeviceMuteStateChangedApiEventArgs(VolumeIsMuted));
 					break;
 			}
 		}
