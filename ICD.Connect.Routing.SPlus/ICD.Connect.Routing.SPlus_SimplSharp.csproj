@@ -82,8 +82,10 @@
     <Compile Include="SPlusDestinationDevice\EventArgs\SetVolumeLevelApiEventArgs.cs" />
     <Compile Include="SPlusDestinationDevice\EventArgs\VolumeMuteToggleApiEventArgs.cs" />
     <Compile Include="SPlusDestinationDevice\ISPlusDestinationDevice.cs" />
+    <Compile Include="SPlusDestinationDevice\Proxy\IProxySPlusDestinationDevice.cs" />
     <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationDevice.cs" />
     <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationDeviceSettings.cs" />
+    <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationVolumeControl.cs" />
     <Compile Include="SPlusDestinationDevice\Proxy\SPlusDestinationApi.cs" />
     <Compile Include="SPlusDestinationDevice\Shim\SPlusDestinationShim.cs" />
     <Compile Include="SPlusDestinationDevice\Device\SPlusDestinationDeviceSettings.cs" />

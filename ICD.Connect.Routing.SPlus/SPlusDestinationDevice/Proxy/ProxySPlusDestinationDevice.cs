@@ -8,7 +8,7 @@ using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 {
-	public sealed class ProxySPlusDestinationDevice : AbstractSimplProxyDevice<ProxySPlusDestinationDeviceSettings>, ISPlusDestinationDevice
+	public sealed class ProxySPlusDestinationDevice : AbstractSimplProxyDevice<ProxySPlusDestinationDeviceSettings>, ISPlusDestinationDevice, IProxySPlusDestinationDevice
 	{
 		#region Events
 
