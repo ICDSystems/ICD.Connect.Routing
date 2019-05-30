@@ -50,10 +50,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 			: base(parent, 0)
 		{
 			m_Cache = new SwitcherCache();
-			m_Cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
-			m_Cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
-			m_Cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
-			m_Cache.OnRouteChange += CacheOnRouteChange;
+			Subscribe(m_Cache);
 
 			Subscribe(parent);
 			SetSwitcher(parent.Switcher);
@@ -72,6 +69,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 			base.DisposeFinal(disposing);
 
 			// Unsubscribe and unregister.
+			Unsubscribe(m_Cache);
 			Unsubscribe(Parent);
 			SetSwitcher(null);
 		}
@@ -526,6 +524,22 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 		#endregion
 
 		#region Cache Callbacks
+
+		private void Subscribe(SwitcherCache cache)
+		{
+			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
+			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
+			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
+			cache.OnRouteChange += CacheOnRouteChange;
+		}
+
+		private void Unsubscribe(SwitcherCache cache)
+		{
+			cache.OnActiveInputsChanged -= CacheOnActiveInputsChanged;
+			cache.OnSourceDetectionStateChange -= CacheOnSourceDetectionStateChange;
+			cache.OnActiveTransmissionStateChanged -= CacheOnActiveTransmissionStateChanged;
+			cache.OnRouteChange -= CacheOnRouteChange;
+		}
 
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
 		{
