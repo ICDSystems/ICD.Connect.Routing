@@ -32,7 +32,7 @@ namespace ICD.Connect.Routing.Controls
 		/// <returns></returns>
 		public IEnumerable<InputPort> GetInputPorts()
 		{
-			if (m_InputPorts == null || !m_InputPorts.Any())
+			if (m_InputPorts == null || m_InputPorts.Count == 0)
 				m_InputPorts = GetInputs().Select(input => CreateInputPort(input))
 				                            .ToList();
 			return m_InputPorts.ToList();
@@ -52,7 +52,7 @@ namespace ICD.Connect.Routing.Controls
 		/// <returns></returns>
 		public IEnumerable<OutputPort> GetOutputPorts()
 		{
-			if (m_OutputPorts == null || !m_OutputPorts.Any())
+			if (m_OutputPorts == null || m_OutputPorts.Count == 0)
 				m_OutputPorts = GetOutputs().Select(output => CreateOutputPort(output))
 				                            .ToList();
 			return m_OutputPorts.ToList();
