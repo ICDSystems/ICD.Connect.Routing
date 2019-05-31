@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.SPlusShims;
@@ -129,14 +128,14 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Shim
 			originator.OnResendActiveInput -= OriginatorOnResendActiveInput;
 		}
 
-		private void OriginatorOnSetPowerState(object sender, PowerControlApiEventArgs args)
+		private void OriginatorOnSetPowerState(object sender, PowerControlEventArgs args)
 		{
 			var callback = SetPowerState;
 			if (callback != null)
 				callback(args.Data.ToUShort());
 		}
 
-		private void OriginatorOnSetActiveInput(object sender, SetActiveInputApiEventArgs args)
+		private void OriginatorOnSetActiveInput(object sender, SetActiveInputEventArgs args)
 		{
 			var callback = SetActiveInput;
 			if (callback == null)
@@ -148,28 +147,28 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Shim
 				callback(0);
 		}
 
-		private void OriginatorOnSetVolumeLevel(object sender, SetVolumeLevelApiEventArgs args)
+		private void OriginatorOnSetVolumeLevel(object sender, SetVolumeLevelEventArgs args)
 		{
 			var callback = SetVolumeLevel;
 			if (callback != null)
 				callback(args.Data);
 		}
 
-		private void OriginatorOnSetVolumeMuteState(object sender, SetVolumeMuteStateApiEventArgs args)
+		private void OriginatorOnSetVolumeMuteState(object sender, SetVolumeMuteStateEventArgs args)
 		{
 			var callback = SetVolumeMuteState;
 			if (callback != null)
 				callback(args.Data.ToUShort());
 		}
 
-		private void OriginatorOnVolumeMuteToggle(object sender, VolumeMuteToggleApiEventArgs args)
+		private void OriginatorOnVolumeMuteToggle(object sender, VolumeMuteToggleEventArgs args)
 		{
 			var callback = VolumeMuteToggle;
 			if (callback != null)
 				callback();
 		}
 
-		private void OriginatorOnResendActiveInput(object sender, ResendActiveInputApiEventArgs resendActiveInputApiEventArgs)
+		private void OriginatorOnResendActiveInput(object sender, ResendActiveInputEventArgs resendActiveInputEventArgs)
 		{
 			var callback = ResendActiveInput;
 			if (callback != null)

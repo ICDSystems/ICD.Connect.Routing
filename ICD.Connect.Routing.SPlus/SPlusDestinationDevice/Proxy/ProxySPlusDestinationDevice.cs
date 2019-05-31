@@ -1,171 +1,104 @@
-﻿using System;
-using System.Collections.Generic;
-using ICD.Common.Utils.Extensions;
-using ICD.Connect.API;
-using ICD.Connect.API.Info;
+﻿using ICD.Connect.Devices.Proxies.Controls;
 using ICD.Connect.Devices.Simpl;
-using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 {
-	public sealed class ProxySPlusDestinationDevice : AbstractSimplProxyDevice<ProxySPlusDestinationDeviceSettings>, ISPlusDestinationDevice, IProxySPlusDestinationDevice
+	public sealed class ProxySPlusDestinationDevice : AbstractSimplProxyDevice<ProxySPlusDestinationDeviceSettings>, IProxySPlusDestinationDevice
 	{
-		#region Events
+		#region Consts
 
-		public event EventHandler<PowerControlApiEventArgs> OnSetPowerState;
-		public event EventHandler<SetActiveInputApiEventArgs> OnSetActiveInput;
-		public event EventHandler<SetVolumeLevelApiEventArgs> OnSetVolumeLevel;
-		public event EventHandler<SetVolumeMuteStateApiEventArgs> OnSetVolumeMuteState;
-		public event EventHandler<VolumeMuteToggleApiEventArgs> OnVolumeMuteToggle;
-		public event EventHandler<ResendActiveInputApiEventArgs> OnResendActiveInput;
+		private const int ROUTE_CONTROL_ID = 0;
+		private const int POWER_CONTROL_ID = 1;
+		private const int VOLUME_CONTROL_ID = 2;
+
+		#endregion
+
+		#region Fields
 
 		#endregion
 
 		#region Properties
-		
-		public int? InputCount { get; private set; }
+
+		internal ProxySPlusDestinationRouteControl RouteControl { get; private set; }
+		internal ProxyPowerDeviceControl PowerControl { get; private set; }
+		internal ProxySPlusDestinationVolumeControl VolumeControl { get; private set; }
 
 		#endregion
 
-		#region Methods
-
-		public void SetPowerStateFeedback(bool state)
-		{
-			CallMethod(SPlusDestinationApi.METHOD_SET_POWER_STATE_FEEDBACK, state);
-		}
-
-		public void SetActiveInputFeedback(int? input)
-		{
-			CallMethod(SPlusDestinationApi.METHOD_SET_ACTIVE_INPUT_FEEDBACK, input);
-		}
-
-		public void SetInputDetectedFeedback(int input, bool state)
-		{
-			CallMethod(SPlusDestinationApi.METHOD_SET_INPUT_DETECTED_FEEDBACK, input, state);
-		}
-
-		public void ResetInputDetectedFeedback(List<int> detectedInputs)
-		{
-			CallMethod(SPlusDestinationApi.METHOD_RESET_INPUT_DETECTED_FEEDBACK, detectedInputs);
-		}
-
-		public void SetVolumeLevelFeedback(ushort volume)
-		{
-			CallMethod(SPlusDestinationApi.METHOD_SET_VOLUME_LEVEL_FEEDBACK, volume);
-		}
-
-		public void SetVolumeMuteStateFeedback(bool state)
-		{
-			CallMethod(SPlusDestinationApi.METHOD_SET_VOLUME_MUTE_STATE_FEEDBACK, state);
-		}
-
-		#endregion
-
-		#region API
+		#region Settings
 
 		/// <summary>
-		/// Override to build initialization commands on top of the current class info.
+		/// Override to apply settings to the instance.
 		/// </summary>
-		/// <param name="command"></param>
-		protected override void Initialize(ApiClassInfo command)
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		protected override void ApplySettingsFinal(ProxySPlusDestinationDeviceSettings settings, IDeviceFactory factory)
 		{
-			base.Initialize(command);
+			base.ApplySettingsFinal(settings, factory);
+
+			//Note: Order is important - power control must be first
+			if (settings.PowerControl)
+			{
+				PowerControl = new ProxyPowerDeviceControl(this, POWER_CONTROL_ID);
+				Controls.Add(PowerControl);
+			}
+
+			RouteControl = new ProxySPlusDestinationRouteControl(this, ROUTE_CONTROL_ID, settings.InputCount);
+			Controls.Add(RouteControl);
+
+
+			if (settings.VolumeControl)
+			{
+				VolumeControl = new ProxySPlusDestinationVolumeControl(this, VOLUME_CONTROL_ID);
+				Controls.Add(VolumeControl);
+			}
+		}
+
+		/// <summary>
+		/// Override to apply properties to the settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		protected override void CopySettingsFinal(ProxySPlusDestinationDeviceSettings settings)
+		{
+			base.CopySettingsFinal(settings);
+
 			
-			ApiCommandBuilder.UpdateCommand(command)
-							 .SubscribeEvent(SPlusDestinationApi.EVENT_SET_ACTIVE_INPUT)
-							 .SubscribeEvent(SPlusDestinationApi.EVENT_SET_POWER_STATE)
-							 .SubscribeEvent(SPlusDestinationApi.EVENT_SET_VOLUME_LEVEL)
-							 .SubscribeEvent(SPlusDestinationApi.EVENT_SET_VOLUME_MUTE_STATE)
-							 .SubscribeEvent(SPlusDestinationApi.EVENT_VOLUME_MUTE_TOGGLE)
-							 .SubscribeEvent(SPlusDestinationApi.EVENT_RESEND_ACTIVE_INPUT)
-							 .GetProperty(SPlusDestinationApi.PROPERTY_INPUT_COUNT)
-							 .Complete();
-			RaiseOnRequestShimResync(this);
+			if (PowerControl != null)
+				settings.PowerControl = true;
+			if (VolumeControl != null)
+				settings.VolumeControl = true;
 		}
 
 		/// <summary>
-		/// Updates the proxy with event feedback info.
+		/// Override to clear the instance settings.
 		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="result"></param>
-		protected override void ParseEvent(string name, ApiResult result)
+		protected override void ClearSettingsFinal()
 		{
-			base.ParseEvent(name, result);
+			base.ClearSettingsFinal();
 
-			switch (name)
+			if (RouteControl != null)
 			{
-				case SPlusDestinationApi.EVENT_SET_POWER_STATE:
-					RaiseSetPowerState(result.GetValue<bool>());
-					break;
-				case SPlusDestinationApi.EVENT_SET_ACTIVE_INPUT:
-					RaiseSetActiveInput(result.GetValue<int?>());
-					break;
-				case SPlusDestinationApi.EVENT_SET_VOLUME_LEVEL:
-					RaiseSetVolumeLevel(result.GetValue<ushort>());
-					break;
-				case SPlusDestinationApi.EVENT_SET_VOLUME_MUTE_STATE:
-					RaiseSetVolumeMuteState(result.GetValue<bool>());
-					break;
-				case SPlusDestinationApi.EVENT_VOLUME_MUTE_TOGGLE:
-					RaiseVolumeMuteToggle();
-					break;
-				case SPlusDestinationApi.EVENT_RESEND_ACTIVE_INPUT:
-					RaiseResendActiveInput();
-					break;
+				Controls.Remove(ROUTE_CONTROL_ID);
+				RouteControl.Dispose();
+				RouteControl = null;
 			}
-		}
 
-		/// <summary>
-		/// Updates the proxy with a property result.
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="result"></param>
-		protected override void ParseProperty(string name, ApiResult result)
-		{
-			base.ParseProperty(name, result);
-
-			switch (name)
+			if (PowerControl != null)
 			{
-				case SPlusDestinationApi.PROPERTY_INPUT_COUNT:
-					InputCount = result.GetValue<int?>();
-					break;
+				Controls.Remove(POWER_CONTROL_ID);
+				PowerControl.Dispose();
+				PowerControl = null;
+			}
+			if (VolumeControl != null)
+			{
+				Controls.Remove(VOLUME_CONTROL_ID);
+				VolumeControl.Dispose();
+				VolumeControl = null;
 			}
 		}
 
 		#endregion
 
-		#region Private Methods
-
-		private void RaiseSetPowerState(bool state)
-		{
-			OnSetPowerState.Raise(this, new PowerControlApiEventArgs(state));
-		}
-
-		private void RaiseSetActiveInput(int? activeInput)
-		{
-			OnSetActiveInput.Raise(this, new SetActiveInputApiEventArgs(activeInput));
-		}
-
-		private void RaiseSetVolumeLevel(ushort volume)
-		{
-			OnSetVolumeLevel.Raise(this, new SetVolumeLevelApiEventArgs(volume));
-		}
-
-		private void RaiseSetVolumeMuteState(bool state)
-		{
-			OnSetVolumeMuteState.Raise(this, new SetVolumeMuteStateApiEventArgs(state));
-		}
-
-		private void RaiseVolumeMuteToggle()
-		{
-			OnVolumeMuteToggle.Raise(this, new VolumeMuteToggleApiEventArgs());
-		}
-
-		private void RaiseResendActiveInput()
-		{
-			OnResendActiveInput.Raise(this, new ResendActiveInputApiEventArgs());
-		}
-
-		#endregion
 	}
 }

@@ -45,7 +45,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 		#region Events to Shim
 
-		public event EventHandler<SetActiveInputApiEventArgs> OnSetActiveInput;
+		public event EventHandler<SetActiveInputEventArgs> OnSetActiveInput;
 
 		#endregion
 
@@ -79,7 +79,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 		internal void SetActiveInput(int? input)
 		{
-			OnSetActiveInput.Raise(this, new SetActiveInputApiEventArgs(input));
+			OnSetActiveInput.Raise(this, new SetActiveInputEventArgs(input));
 		}
 
 		#endregion
@@ -92,9 +92,9 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 		/// <summary>
 		/// Event to send power control actions to the shim
 		/// </summary>
-		public event EventHandler<PowerControlApiEventArgs> OnSetPowerState;
+		public event EventHandler<PowerControlEventArgs> OnSetPowerState;
 
-		public event EventHandler<ResendActiveInputApiEventArgs> OnResendActiveInput;
+		public event EventHandler<ResendActiveInputEventArgs> OnResendActiveInput;
 
 		#endregion
 
@@ -110,7 +110,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 			// When powering on, request shim to resend active input
 			// When powering off, clear active input
 			if (state)
-				OnResendActiveInput.Raise(this, new ResendActiveInputApiEventArgs());
+				OnResendActiveInput.Raise(this, new ResendActiveInputEventArgs());
 			else
 			{
 				if (RouteControl != null)
@@ -124,12 +124,12 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 		internal void PowerOn()
 		{
-			OnSetPowerState.Raise(this, new PowerControlApiEventArgs(true));
+			OnSetPowerState.Raise(this, new PowerControlEventArgs(true));
 		}
 
 		internal void PowerOff()
 		{
-			OnSetPowerState.Raise(this, new PowerControlApiEventArgs(false));
+			OnSetPowerState.Raise(this, new PowerControlEventArgs(false));
 		}
 
 		#endregion
@@ -138,11 +138,11 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 		#region Volume Control
 		#region Events to Shim
 
-		public event EventHandler<SetVolumeLevelApiEventArgs> OnSetVolumeLevel;
+		public event EventHandler<SetVolumeLevelEventArgs> OnSetVolumeLevel;
 
-		public event EventHandler<SetVolumeMuteStateApiEventArgs> OnSetVolumeMuteState;
+		public event EventHandler<SetVolumeMuteStateEventArgs> OnSetVolumeMuteState;
 
-		public event EventHandler<VolumeMuteToggleApiEventArgs> OnVolumeMuteToggle;
+		public event EventHandler<VolumeMuteToggleEventArgs> OnVolumeMuteToggle;
 
 		#endregion
 
@@ -166,17 +166,17 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 		internal void SetVolumeLevel(ushort volume)
 		{
-			OnSetVolumeLevel.Raise(this, new SetVolumeLevelApiEventArgs(volume));
+			OnSetVolumeLevel.Raise(this, new SetVolumeLevelEventArgs(volume));
 		}
 
 		internal void SetVolumeMuteState(bool state)
 		{
-			OnSetVolumeMuteState.Raise(this, new SetVolumeMuteStateApiEventArgs(state));
+			OnSetVolumeMuteState.Raise(this, new SetVolumeMuteStateEventArgs(state));
 		}
 
 		internal void VolumeMuteToggle()
 		{
-			OnVolumeMuteToggle.Raise(this, new VolumeMuteToggleApiEventArgs());
+			OnVolumeMuteToggle.Raise(this, new VolumeMuteToggleEventArgs());
 		}
 
 		#endregion

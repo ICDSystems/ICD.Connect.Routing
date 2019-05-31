@@ -1,5 +1,6 @@
 ﻿using System;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.API;
 using ICD.Connect.API.Info;
 using ICD.Connect.Audio.Controls.Mute;
 using ICD.Connect.Audio.Controls.Volume;
@@ -7,12 +8,12 @@ using ICD.Connect.Audio.EventArguments;
 using ICD.Connect.Audio.Proxies.Controls.Mute;
 using ICD.Connect.Audio.Proxies.Controls.Volume;
 using ICD.Connect.Devices.Proxies.Controls;
-using ICD.Connect.Devices.Proxies.Devices;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 {
 	public sealed class ProxySPlusDestinationVolumeControl : AbstractProxyDeviceControl, IVolumeLevelDeviceControl, IVolumeMuteFeedbackDeviceControl
 	{
+		private const double TOLERANCE = 0.001;
 
 		#region Events
 
@@ -25,6 +26,13 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 		private bool m_VolumeIsMuted;
 
+		private float? m_MaxVolume;
+
+		private float? m_MinVolume;
+		private float m_VolumePosition;
+		private string m_VolumeString;
+		private float m_VolumeLevel;
+
 		#endregion
 
 		#region Properties
@@ -32,29 +40,59 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// <summary>
 		/// Gets the current volume positon, 0 - 1
 		/// </summary>
-		public float VolumePosition { get { throw new NotImplementedException(); } }
+		public float VolumePosition { get { return m_VolumePosition; }
+			private set
+			{
+				if (Math.Abs(m_VolumePosition - value) < TOLERANCE)
+					return;
+
+				m_VolumePosition = value;
+
+				RaiseOnVolumeChanged();
+			} }
 
 		/// <summary>
 		/// Gets the current volume, in string representation
 		/// </summary>
-		public string VolumeString { get { throw new NotImplementedException(); } }
+		public string VolumeString { get { return m_VolumeString; }
+			private set
+			{
+				if (m_VolumeString == value)
+					return;
+
+				m_VolumeString = value;
+
+				RaiseOnVolumeChanged();
+			} }
 
 		/// <summary>
 		/// Gets the current volume, in the parent device's format
 		/// </summary>
-		public float VolumeLevel { get { throw new NotImplementedException(); } }
+		public float VolumeLevel
+		{
+			get { return m_VolumeLevel; }
+			private set
+			{
+				if (Math.Abs(m_VolumeLevel - value) < TOLERANCE)
+					return;
+
+				m_VolumeLevel = value;
+
+				RaiseOnVolumeChanged();
+			}
+		}
 
 		/// <summary>
 		/// VolumeLevelMaxRange is the best max volume we have for the control
 		/// either the Max from the control or the absolute max for the control
 		/// </summary>
-		public float VolumeLevelMaxRange { get { throw new NotImplementedException(); } }
+		public float VolumeLevelMaxRange { get { return m_MaxVolume ?? float.MaxValue; } }
 
 		/// <summary>
 		/// VolumeLevelMinRange is the best min volume we have for the control
 		/// either the Min from the control or the absolute min for the control
 		/// </summary>
-		public float VolumeLevelMinRange { get { throw new NotImplementedException(); } }
+		public float VolumeLevelMinRange { get { return m_MinVolume ?? float.MinValue; } }
 
 		/// <summary>
 		/// Gets the muted state.
@@ -74,7 +112,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public ProxySPlusDestinationVolumeControl(IProxyDeviceBase parent, int id) : base(parent, id)
+		public ProxySPlusDestinationVolumeControl(IProxySPlusDestinationDevice parent, int id) : base(parent, id)
 		{
 		}
 
@@ -86,7 +124,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// <param name="decrement"></param>
 		public void VolumePositionRampDown(float decrement)
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_RAMP_POSITION_DOWN, decrement);
 		}
 
 		/// <summary>
@@ -95,7 +133,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// <param name="increment"></param>
 		public void VolumePositionRampUp(float increment)
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_RAMP_POSITION_UP, increment);
 		}
 
 		/// <summary>
@@ -104,7 +142,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// <param name="position"></param>
 		public void SetVolumePosition(float position)
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeLevelDeviceControlApi.METHOD_SET_VOLUME_POSITION, position);
 		}
 
 		/// <summary>
@@ -112,7 +150,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// </summary>
 		public void VolumeRampStop()
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeRampDeviceControlApi.METHOD_VOLUME_RAMP_STOP);
 		}
 
 		/// <summary>
@@ -121,7 +159,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// </summary>
 		public void VolumeRampDown()
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeRampDeviceControlApi.METHOD_VOLUME_RAMP_DOWN);
 		}
 
 		/// <summary>
@@ -130,7 +168,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// </summary>
 		public void VolumeRampUp()
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeRampDeviceControlApi.METHOD_VOLUME_RAMP_UP);
 		}
 
 		/// <summary>
@@ -139,7 +177,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// </summary>
 		public void VolumeDecrement()
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeRampDeviceControlApi.METHOD_VOLUME_DECREMENT);
 		}
 
 		/// <summary>
@@ -148,7 +186,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// </summary>
 		public void VolumeIncrement()
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeRampDeviceControlApi.METHOD_VOLUME_INCREMENT);
 		}
 
 		/// <summary>
@@ -157,7 +195,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// <param name="volume"></param>
 		public void SetVolumeLevel(float volume)
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeLevelDeviceControlApi.METHOD_SET_VOLUME_LEVEL, volume);
 		}
 
 		/// <summary>
@@ -165,7 +203,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// </summary>
 		public void VolumeLevelIncrement(float incrementValue)
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_INCREMENT, incrementValue);
 		}
 
 		/// <summary>
@@ -173,7 +211,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// </summary>
 		public void VolumeLevelDecrement(float decrementValue)
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_DECREMENT, decrementValue);
 		}
 
 		/// <summary>
@@ -181,7 +219,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// </summary>
 		public void VolumeMuteToggle()
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeMuteBasicDeviceControlApi.METHOD_VOLUME_MUTE_TOGGLE);
 		}
 
 		/// <summary>
@@ -190,12 +228,31 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// <param name="mute"></param>
 		public void SetVolumeMute(bool mute)
 		{
-			throw new NotImplementedException();
+			CallMethod(VolumeMuteDeviceControlApi.METHOD_SET_VOLUME_MUTE, mute);
 		}
 
 		#endregion
 
 		#region API
+
+		/// <summary>
+		/// Override to build initialization commands on top of the current class info.
+		/// </summary>
+		/// <param name="command"></param>
+		protected override void Initialize(ApiClassInfo command)
+		{
+			base.Initialize(command);
+
+			ApiCommandBuilder.UpdateCommand(command)
+			                 .SubscribeEvent(VolumeLevelDeviceControlApi.EVENT_VOLUME_CHANGED)
+			                 .SubscribeEvent(VolumeMuteFeedbackDeviceControlApi.EVENT_MUTE_STATE_CHANGED)
+							 .GetProperty(VolumeRawLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MAX_RANGE)
+							 .GetProperty(VolumeRawLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MIN_RANGE)
+							 .GetProperty(VolumeLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL)
+							 .GetProperty(VolumeLevelDeviceControlApi.PROPERTY_VOLUME_POSITION)
+							 .GetProperty(VolumeLevelDeviceControlApi.PROPERTY_VOLUME_STRING)
+			                 .Complete();
+		}
 
 		/// <summary>
 		/// Updates the proxy with event feedback info.
@@ -209,22 +266,13 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 			switch (name)
 			{
 				case VolumeLevelDeviceControlApi.EVENT_VOLUME_CHANGED:
-					RaiseVolumeChanged(result.GetValue<VolumeChangeState>());
+					HandleVolumeChangeEvent(result.GetValue<VolumeChangeState>());
 					break;
 				case VolumeMuteFeedbackDeviceControlApi.EVENT_MUTE_STATE_CHANGED:
 					VolumeIsMuted = result.GetValue<bool>();
 					break;
 
 			}
-		}
-
-		/// <summary>
-		/// Override to build initialization commands on top of the current class info.
-		/// </summary>
-		/// <param name="command"></param>
-		protected override void Initialize(ApiClassInfo command)
-		{
-			base.Initialize(command);
 		}
 
 		/// <summary>
@@ -238,7 +286,21 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 			switch (name)
 			{
-				
+				case VolumeRawLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MAX_RANGE:
+					m_MaxVolume = result.GetValue<float>();
+					break;
+				case VolumeRawLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MIN_RANGE:
+					m_MinVolume = result.GetValue<float>();
+					break;
+				case VolumeLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL:
+					VolumeLevel = result.GetValue<float>();
+					break;
+				case VolumeLevelDeviceControlApi.PROPERTY_VOLUME_POSITION:
+					VolumePosition = result.GetValue<float>();
+					break;
+				case VolumeLevelDeviceControlApi.PROPERTY_VOLUME_STRING:
+					VolumeString = result.GetValue<string>();
+					break;
 			}
 		}
 
@@ -246,14 +308,28 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 		#region Private Methods
 
-		private void RaiseVolumeChanged(VolumeChangeState state)
+		private void RaiseOnVolumeChanged()
 		{
-			OnVolumeChanged.Raise(this, new VolumeDeviceVolumeChangedEventArgs(state));
+			OnVolumeChanged.Raise(this, new VolumeDeviceVolumeChangedEventArgs(VolumeLevel,VolumePosition, VolumeString));
 		}
 
-		private void RaiseMuteStateChanged(bool state)
+		private void HandleVolumeChangeEvent(VolumeChangeState volumeState)
 		{
-			OnMuteStateChanged.Raise(this, new MuteDeviceMuteStateChangedApiEventArgs(state));
+			bool changed = false;
+			changed |= Math.Abs(volumeState.VolumePosition - VolumePosition) < TOLERANCE;
+			changed |= Math.Abs(volumeState.VolumeRaw - VolumeLevel) < TOLERANCE;
+			changed |= volumeState.VolumeString.Equals(VolumeString);
+
+			if (!changed)
+				return;
+
+			VolumePosition = volumeState.VolumePosition;
+			VolumeLevel = volumeState.VolumeRaw;
+			VolumeString = volumeState.VolumeString;
+
+			OnVolumeChanged.Raise(this, new VolumeDeviceVolumeChangedEventArgs(volumeState));
+
+
 		}
 
 		#endregion
