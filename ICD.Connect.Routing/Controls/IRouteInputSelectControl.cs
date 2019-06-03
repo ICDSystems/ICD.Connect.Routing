@@ -1,4 +1,6 @@
-﻿using ICD.Connect.Routing.Connections;
+﻿using ICD.Connect.API.Attributes;
+using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Proxies;
 
 namespace ICD.Connect.Routing.Controls
 {
@@ -12,6 +14,7 @@ namespace ICD.Connect.Routing.Controls
 		/// </summary>
 		/// <param name="input"></param>
 		/// <param name="type"></param>
+		[ApiMethod(RouteInputSelectControlApi.METHOD_SET_ACTIVE_INPUT,RouteInputSelectControlApi.HELP_METHOD_SET_ACTIVE_INPUT)]
 		void SetActiveInput(int? input, eConnectionType type);
 
 		/// <summary>

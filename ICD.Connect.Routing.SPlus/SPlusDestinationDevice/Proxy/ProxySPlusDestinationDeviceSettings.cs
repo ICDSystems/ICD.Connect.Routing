@@ -11,6 +11,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 		private const string POWER_CONTROL_ELEMENT = "PowerControl";
 		private const string VOLUME_CONTROL_ELEMENT = "VolumeControl";
+		private const string INPUT_COUNT_ELEMENT = "InputCount";
 
 		#endregion
 
@@ -19,6 +20,8 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		public bool PowerControl { get; set; }
 
 		public bool VolumeControl { get; set; }
+
+		public int InputCount { get; set; }
 
 		#endregion
 
@@ -34,6 +37,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 			PowerControl = XmlUtils.TryReadChildElementContentAsBoolean(xml, POWER_CONTROL_ELEMENT) ?? false;
 			VolumeControl = XmlUtils.TryReadChildElementContentAsBoolean(xml, VOLUME_CONTROL_ELEMENT) ?? false;
+			InputCount = XmlUtils.TryReadChildElementContentAsInt(xml, INPUT_COUNT_ELEMENT) ?? 1;
 		}
 
 		/// <summary>
@@ -46,6 +50,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 			writer.WriteElementString(POWER_CONTROL_ELEMENT, IcdXmlConvert.ToString(PowerControl));
 			writer.WriteElementString(VOLUME_CONTROL_ELEMENT, IcdXmlConvert.ToString(VolumeControl));
+			writer.WriteElementString(INPUT_COUNT_ELEMENT, IcdXmlConvert.ToString(InputCount));
 		}
 
 		#endregion

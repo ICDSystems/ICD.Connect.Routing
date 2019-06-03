@@ -84,6 +84,9 @@
     <Compile Include="Controls\RouteSwitcherControlConsole.cs" />
     <Compile Include="Controls\RouteSourceControl.cs" />
     <Compile Include="Endpoints\Sources\ISourceBase.cs" />
+    <Compile Include="EventArguments\InputStateChangeData.cs" />
+    <Compile Include="Proxies\RouteDestinationControlApi.cs" />
+    <Compile Include="Proxies\RouteInputSelectControlApi.cs" />
     <Compile Include="SourceEndpointActiveChangedEventArgs.cs" />
     <Compile Include="Devices\AbstractRouteDestinationDevice.cs" />
     <Compile Include="Devices\AbstractRouteDevice.cs" />

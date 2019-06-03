@@ -1,10 +1,10 @@
 ﻿using ICD.Connect.Devices.Proxies.Controls;
-using ICD.Connect.Devices.Simpl;
+using ICD.Connect.Devices.Proxies.Devices;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 {
-	public sealed class ProxySPlusDestinationDevice : AbstractSimplProxyDevice<ProxySPlusDestinationDeviceSettings>, IProxySPlusDestinationDevice
+	public sealed class ProxySPlusDestinationDevice : AbstractProxyDevice<ProxySPlusDestinationDeviceSettings>, IProxySPlusDestinationDevice
 	{
 		#region Consts
 
@@ -63,7 +63,9 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		{
 			base.CopySettingsFinal(settings);
 
-			
+			if (RouteControl != null)
+				settings.InputCount = RouteControl.InputCount;
+
 			if (PowerControl != null)
 				settings.PowerControl = true;
 			if (VolumeControl != null)

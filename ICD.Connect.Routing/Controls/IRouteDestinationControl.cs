@@ -19,11 +19,13 @@ namespace ICD.Connect.Routing.Controls
 		/// <summary>
 		/// Raised when an input source status changes.
 		/// </summary>
+		[ApiEvent(RouteDestinationControlApi.EVENT_SOURCE_DETECTION_STATE_CHANGE, RouteDestinationControlApi.HELP_EVENT_SOURCE_DETECTION_STATE_CHANGE)]
 		event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 
 		/// <summary>
 		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
 		/// </summary>
+		[ApiEvent(RouteDestinationControlApi.EVENT_ACTIVE_INPUTS_CHANGED, RouteDestinationControlApi.HELP_EVENT_ACTIVE_INPUTS_CHANGED)]
 		event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
 		/// <summary>

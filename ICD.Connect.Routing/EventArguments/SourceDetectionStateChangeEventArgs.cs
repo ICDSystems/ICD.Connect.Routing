@@ -1,36 +1,35 @@
-﻿using System;
-using ICD.Common.Properties;
+﻿using ICD.Common.Properties;
 using ICD.Common.Utils;
+using ICD.Connect.API.EventArguments;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Proxies;
 
 namespace ICD.Connect.Routing.EventArguments
 {
 	/// <summary>
 	/// Used in input source detection state change events.
 	/// </summary>
-	public sealed class SourceDetectionStateChangeEventArgs : EventArgs
+	public sealed class SourceDetectionStateChangeEventArgs : AbstractGenericApiEventArgs<InputStateChangeData>
 	{
-		private readonly int m_Input;
-		private readonly eConnectionType m_Type;
-		private readonly bool m_State;
+		
 
 		/// <summary>
 		/// The input address.
 		/// </summary>
 		[PublicAPI]
-		public int Input { get { return m_Input; } }
+		public int Input { get { return Data.Input; } }
 
 		/// <summary>
 		/// The input type.
 		/// </summary>
 		[PublicAPI]
-		public eConnectionType Type { get { return m_Type; } }
+		public eConnectionType Type { get { return Data.Type; } }
 
 		/// <summary>
 		/// The video detected state.
 		/// </summary>
 		[PublicAPI]
-		public bool State { get { return m_State; } }
+		public bool State { get { return Data.State; } }
 
 		/// <summary>
 		/// Constructor.
@@ -38,11 +37,8 @@ namespace ICD.Connect.Routing.EventArguments
 		/// <param name="input"></param>
 		/// <param name="type"></param>
 		/// <param name="state"></param>
-		public SourceDetectionStateChangeEventArgs(int input, eConnectionType type, bool state)
+		public SourceDetectionStateChangeEventArgs(int input, eConnectionType type, bool state):base(RouteDestinationControlApi.EVENT_SOURCE_DETECTION_STATE_CHANGE,new InputStateChangeData(input, type, state))
 		{
-			m_Input = input;
-			m_Type = type;
-			m_State = state;
 		}
 
 		/// <summary>
@@ -62,9 +58,9 @@ namespace ICD.Connect.Routing.EventArguments
 		{
 			ReprBuilder builder = new ReprBuilder(this);
 
-			builder.AppendProperty("Input", m_Input);
-			builder.AppendProperty("Type", m_Type);
-			builder.AppendProperty("State", m_State);
+			builder.AppendProperty("Input", Input);
+			builder.AppendProperty("Type", Type);
+			builder.AppendProperty("State", State);
 
 			return builder.ToString();
 		}

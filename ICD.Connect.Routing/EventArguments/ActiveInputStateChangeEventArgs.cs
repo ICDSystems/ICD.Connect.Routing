@@ -1,29 +1,26 @@
-﻿using System;
-using ICD.Common.Utils;
+﻿using ICD.Common.Utils;
+using ICD.Connect.API.EventArguments;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Proxies;
 
 namespace ICD.Connect.Routing.EventArguments
 {
-	public sealed class ActiveInputStateChangeEventArgs : EventArgs
+	public sealed class ActiveInputStateChangeEventArgs : AbstractGenericApiEventArgs<InputStateChangeData>
 	{
-		private readonly int m_Input;
-		private readonly eConnectionType m_Type;
-		private readonly bool m_Active;
-
 		/// <summary>
 		/// Gets the input that is now active/inactive.
 		/// </summary>
-		public int Input { get { return m_Input; } }
+		public int Input { get { return Data.Input; } }
 
 		/// <summary>
 		/// Gets the connection type for the input.
 		/// </summary>
-		public eConnectionType Type { get { return m_Type; } }
+		public eConnectionType Type { get { return Data.Type; } }
 
 		/// <summary>
 		/// Gets the active state of the input.
 		/// </summary>
-		public bool Active { get { return m_Active; } }
+		public bool Active { get { return Data.State; } }
 
 		/// <summary>
 		/// Constructor.
@@ -32,10 +29,8 @@ namespace ICD.Connect.Routing.EventArguments
 		/// <param name="type"></param>
 		/// <param name="active"></param>
 		public ActiveInputStateChangeEventArgs(int input, eConnectionType type, bool active)
+			: base(RouteDestinationControlApi.EVENT_ACTIVE_INPUTS_CHANGED, new InputStateChangeData(input, type, active))
 		{
-			m_Input = input;
-			m_Type = type;
-			m_Active = active;
 		}
 
 		/// <summary>
@@ -55,9 +50,9 @@ namespace ICD.Connect.Routing.EventArguments
 		{
 			ReprBuilder builder = new ReprBuilder(this);
 
-			builder.AppendProperty("Input", m_Input);
-			builder.AppendProperty("Type", m_Type);
-			builder.AppendProperty("Active", m_Active);
+			builder.AppendProperty("Input", Input);
+			builder.AppendProperty("Type", Type);
+			builder.AppendProperty("Active", Active);
 
 			return builder.ToString();
 		}
