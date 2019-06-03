@@ -215,6 +215,95 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, eConnectionType.Audio | eConnectionType.Video, state));
 		}
 
+		private void HandleGetRouteState(RouteState.RouteState routeState)
+		{
+			HandleGetRouteStateInputDetect(routeState);
+			HandleGetRouteStateActiveInput(routeState);
+		}
+
+		private void HandleGetRouteStateActiveInput(RouteState.RouteState routeState)
+		{
+			// todo: Don't double-event types that have the same input active
+
+			List<ActiveInputStateChangeEventArgs> changes = new List<ActiveInputStateChangeEventArgs>();
+
+			m_ActiveInputsSection.Enter();
+			try
+			{
+				List<eConnectionType> currentKeys = m_ActiveInputs.Keys.ToList();
+				List<eConnectionType> newKeys = routeState.InputsActive.Keys.ToList();
+
+
+				// Types that are no longer active
+				foreach (eConnectionType oldType in currentKeys.Except(newKeys))
+				{
+					if (!m_ActiveInputs[oldType].HasValue)
+						continue;
+
+					int? oldInput = m_ActiveInputs[oldType].Value;
+					if (oldInput == null)
+						continue;
+					changes.Add(new ActiveInputStateChangeEventArgs(oldInput.Value,oldType,false));
+					m_ActiveInputs[oldType] = null;
+				}
+
+				//Possible new active types
+				foreach (eConnectionType newType in newKeys)
+				{
+					int? oldValue;
+					if (m_ActiveInputs.TryGetValue(newType, out oldValue))
+					{
+						if (!oldValue.HasValue || oldValue == routeState.InputsActive[newType])
+							continue;
+						changes.Add(new ActiveInputStateChangeEventArgs(oldValue.Value, newType, false));
+					}
+
+					var newInput = routeState.InputsActive[newType];
+
+					m_ActiveInputs[newType] = newInput;
+					if (newInput.HasValue)
+						changes.Add(new ActiveInputStateChangeEventArgs(newInput.Value, newType, true));
+				}
+			}
+			finally
+			{
+				m_ActiveInputsSection.Leave();
+			}
+
+			foreach (ActiveInputStateChangeEventArgs change in changes)
+			{
+				OnActiveInputsChanged.Raise(this, change);
+			}
+		}
+
+		private void HandleGetRouteStateInputDetect(RouteState.RouteState routeState)
+		{
+			IEnumerable<int> noLongerDetected;
+			IEnumerable<int> newDetected;
+
+			m_InputsDetectedCriticalSection.Enter();
+			try
+			{
+				noLongerDetected = m_InputsDetectedHashSet.Except(routeState.InputsDetected);
+				newDetected = routeState.InputsDetected.Except(m_InputsDetectedHashSet);
+
+				m_InputsDetectedHashSet.Clear();
+				m_InputsDetectedHashSet.AddRange(routeState.InputsDetected);
+			}
+			finally
+			{
+				m_InputsDetectedCriticalSection.Leave();
+			}
+
+			foreach (var input in noLongerDetected)
+				OnSourceDetectionStateChange.Raise(this,
+				                                   new SourceDetectionStateChangeEventArgs(input,
+				                                                                           eConnectionType.Audio |
+				                                                                           eConnectionType.Video, false));
+			foreach (var input in newDetected)
+				OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, eConnectionType.Audio| eConnectionType.Video, true));
+		}
+
 		#endregion
 
 		#region API
@@ -240,6 +329,23 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		}
 
 		/// <summary>
+		/// Updates the proxy with a method result.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="result"></param>
+		protected override void ParseMethod(string name, ApiResult result)
+		{
+			base.ParseMethod(name, result);
+
+			switch (name)
+			{
+				case SPlusDestinationRouteControlApi.METHOD_GET_CURRENT_ROUTE_STATE:
+					HandleGetRouteState(result.GetValue<RouteState.RouteState>());
+					break;
+			}
+		}
+
+		/// <summary>
 		/// Override to build initialization commands on top of the current class info.
 		/// </summary>
 		/// <param name="command"></param>
@@ -250,6 +356,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 			ApiCommandBuilder.UpdateCommand(command)
 			                 .SubscribeEvent(RouteDestinationControlApi.EVENT_ACTIVE_INPUTS_CHANGED)
 			                 .SubscribeEvent(RouteDestinationControlApi.EVENT_SOURCE_DETECTION_STATE_CHANGE)
+							 .CallMethod(SPlusDestinationRouteControlApi.METHOD_GET_CURRENT_ROUTE_STATE)
 			                 .Complete();
 		}
 

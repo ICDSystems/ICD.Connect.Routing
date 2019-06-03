@@ -4,11 +4,13 @@ using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.API.Attributes;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 {
@@ -94,6 +96,29 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 		public override void SetActiveInput(int? input, eConnectionType type)
 		{
 			Parent.SetActiveInput(input);
+		}
+
+		[ApiMethod(SPlusDestinationRouteControlApi.METHOD_GET_CURRENT_ROUTE_STATE, SPlusDestinationRouteControlApi.HELP_GET_CURRENT_ROUTE_STATE)]
+		public RouteState.RouteState GetCurrentRouteState()
+		{
+			RouteState.RouteState routeState = new RouteState.RouteState();
+
+			//Inputs Detected
+			int[] inputsDetected = {};
+			m_InputsDetectedCriticalSection.Execute(
+			                                        () =>
+			                                        inputsDetected =
+			                                        m_InputsDetectedHashSet.ToArray(m_InputsDetectedHashSet.Count));
+			if (inputsDetected != null)
+			routeState.InputsDetected = inputsDetected;
+
+			//Inputs Active
+
+			routeState.InputsActive = GetActiveInputs().ToDictionary();
+
+
+			return routeState;
+
 		}
 
 		#endregion

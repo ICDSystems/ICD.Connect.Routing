@@ -66,6 +66,15 @@ namespace ICD.Connect.Routing.Controls
 			}
 		}
 
+		public virtual IEnumerable<KeyValuePair<eConnectionType, int?>> GetActiveInputs()
+		{
+			IEnumerable<KeyValuePair<eConnectionType, int?>> activeInputs = null;
+
+			m_ActiveInputsSection.Execute(() => activeInputs = m_ActiveInputs.ToArray(m_ActiveInputs.Count));
+
+			return activeInputs;
+		}
+
 		/// <summary>
 		/// Sets the current active input.
 		/// </summary>

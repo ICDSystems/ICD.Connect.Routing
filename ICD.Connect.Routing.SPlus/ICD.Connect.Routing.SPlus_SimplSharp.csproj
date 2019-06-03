@@ -89,9 +89,12 @@
     <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationRouteControl.cs" />
     <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationVolumeControl.cs" />
     <Compile Include="SPlusDestinationDevice\Proxy\SPlusDestinationPowerControlApi.cs" />
+    <Compile Include="SPlusDestinationDevice\Proxy\SPlusDestinationRouteControlApi.cs" />
+    <Compile Include="SPlusDestinationDevice\RouteState\RouteStateConverter.cs" />
     <Compile Include="SPlusDestinationDevice\Shim\SPlusDestinationShim.cs" />
     <Compile Include="SPlusDestinationDevice\Device\SPlusDestinationDeviceSettings.cs" />
     <Compile Include="SPlusDestinationDevice\Device\SPlusDestinationDevice.cs" />
+    <Compile Include="SPlusDestinationDevice\RouteState\RouteState.cs" />
     <Compile Include="SPlusSwitcher\Device\SPlusSwitcherDevice.cs" />
     <Compile Include="SPlusSwitcher\Controls\SPlusSwitcherControl.cs" />
     <Compile Include="SPlusSwitcher\Device\SPlusSwitcherDeviceSettings.cs" />
