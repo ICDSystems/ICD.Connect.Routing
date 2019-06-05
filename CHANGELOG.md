@@ -5,7 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-
+### Changed
+ - Refactor: GetUptimes now return a timespan so they must be munged into a string
 ## [13.7.2] - 2019-05-30
 ### Changed
  - Fixed exceptions on program stop due to clearing switchers
