@@ -5,8 +5,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [13.7.3] - 2019-06-05
 ### Changed
- - Refactor: GetUptimes now return a timespan so they must be munged into a string
+ - Program/Processor uptimes are formatted for telemetry
+
 ## [13.7.2] - 2019-05-30
 ### Changed
  - Fixed exceptions on program stop due to clearing switchers
