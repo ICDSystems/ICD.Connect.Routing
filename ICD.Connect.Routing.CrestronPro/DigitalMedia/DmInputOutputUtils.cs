@@ -15,7 +15,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
 	public static class DmInputOutputUtils
 	{
-#region Input Information
+        #region Input Information
 		private static readonly Dictionary<Type, InputOutputInformation> s_InputInformationByType =
 			new Dictionary<Type, InputOutputInformation>
 			{
