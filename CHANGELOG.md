@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [13.7.3] - 2019-06-05
+### Changed
+ - Program/Processor uptimes are formatted for telemetry
+
 ## [13.7.2] - 2019-05-30
 ### Changed
  - Fixed exceptions on program stop due to clearing switchers

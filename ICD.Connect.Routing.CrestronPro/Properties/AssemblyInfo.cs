@@ -4,4 +4,4 @@ using System.Reflection;
 [assembly: AssemblyCompany("ICD Systems")]
 [assembly: AssemblyProduct("ICD.Connect.Routing.CrestronPro")]
 [assembly: AssemblyCopyright("Copyright © ICD Systems 2019")]
-[assembly: AssemblyVersion("13.7.2.0")]
+[assembly: AssemblyVersion("13.7.3.0")]
