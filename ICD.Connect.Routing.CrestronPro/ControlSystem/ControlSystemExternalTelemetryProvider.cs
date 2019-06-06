@@ -25,7 +25,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		private const string PROGRAMMER_NAME = "ICD Systems";
 		private const string SYSTEM_NAME = "Metlife.RoomOS";
 
-		public event EventHandler OnRequestTelemetryRebuild;
 		public event EventHandler<BoolEventArgs> OnDhcpStatusChanged;
 		public event EventHandler<StringEventArgs> OnProcessorIpAddressChanged;
 		public event EventHandler<StringEventArgs> OnProcessorHostnameChanged;
