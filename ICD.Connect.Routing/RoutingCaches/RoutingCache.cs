@@ -699,8 +699,6 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 			try
 			{
-				m_MidpointCache.Clear();
-
 				foreach (Connection connection in m_RoutingGraph.Connections)
 				{
 					IRouteMidpointControl midpoint = m_RoutingGraph.GetSourceControl(connection) as IRouteMidpointControl;
@@ -732,9 +730,6 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 			try
 			{
-				m_SourceToEndpoints.Clear();
-				m_EndpointToSources.Clear();
-
 				eConnectionType all = EnumUtils.GetFlagsAllValue<eConnectionType>();
 
 				foreach (ISource source in m_RoutingGraph.Sources)
@@ -761,6 +756,18 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 				foreach (EndpointInfo endpoint in m_EndpointToSources.Keys)
 					UpdateSourceEndpoint(endpoint);
+
+				foreach (Connection connection in m_RoutingGraph.Connections)
+				{
+					IRouteSourceControl sourceControl = m_RoutingGraph.GetSourceControl(connection);
+					ConnectorInfo outputConnector = sourceControl.GetOutput(connection.Source.Address);
+
+					foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(outputConnector.ConnectionType))
+					{
+						bool transmission = sourceControl.GetActiveTransmissionState(outputConnector.Address, flag);
+						UpdateSourceEndpointTransmissionState(connection.Source, flag, transmission);
+					}
+				}
 			}
 			finally
 			{
@@ -777,9 +784,6 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 			try
 			{
-				m_EndpointToDestinations.Clear();
-				m_DestinationToEndpoints.Clear();
-
 				eConnectionType all = EnumUtils.GetFlagsAllValue<eConnectionType>();
 
 				foreach (IDestination destination in m_RoutingGraph.Destinations)
@@ -806,6 +810,21 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 				foreach (EndpointInfo endpoint in m_EndpointToDestinations.Keys)
 					UpdateDestinationEndpoint(endpoint);
+
+				foreach (Connection connection in m_RoutingGraph.Connections)
+				{
+					IRouteDestinationControl destinationControl = m_RoutingGraph.GetDestinationControl(connection);
+					ConnectorInfo inputConnector = destinationControl.GetInput(connection.Destination.Address);
+
+					foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(inputConnector.ConnectionType))
+					{
+						bool detected = destinationControl.GetSignalDetectedState(inputConnector.Address, flag);
+						UpdateSourceEndpointDetectionState(connection.Source, flag, detected);
+
+						bool active = destinationControl.GetInputActiveState(inputConnector.Address, flag);
+						UpdateDestinationEndpointInputActiveState(connection.Destination, flag, active);
+					}
+				}
 			}
 			finally
 			{
@@ -822,9 +841,6 @@ namespace ICD.Connect.Routing.RoutingCaches
 
 			try
 			{
-				m_DestinationEndpointToSourceEndpointCache.Clear();
-				m_SourceEndpointToDestinationEndpointCache.Clear();
-
 				foreach (
 					EndpointInfo destinationEndpoint in m_RoutingGraph.Connections.Select(c => c.Destination).Distinct())
 				{
