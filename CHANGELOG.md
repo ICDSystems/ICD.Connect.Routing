@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Better handling cases where a DMPS3 crosspoint may return a null mixer
+
 ## [13.8.0] - 2019-06-07
 ### Added
  - RoutingCache initializes source transmission, source detection and destination active states
