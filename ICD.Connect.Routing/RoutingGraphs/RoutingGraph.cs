@@ -948,15 +948,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			}
 		}
 
-		/// <summary>
-		/// Searches for switchers currently routing the source to the destination and unroutes them.
-		/// </summary>
-		/// <param name="source"></param>
-		/// <param name="destination"></param>
-		/// <param name="type"></param>
-		/// <param name="roomId"></param>
-		/// <returns>False if the devices could not be unrouted.</returns>
-		private void Unroute(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId)
+		public override void Unroute(EndpointInfo source, EndpointInfo destination, eConnectionType type, int roomId)
 		{
 			foreach (Connection[] path in FindActivePaths(source, destination, type, false, false))
 				Unroute(path, type, roomId);
