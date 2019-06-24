@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
- - Added OSD UnRouting on Room Uncombine
+ - Added Overload method to unroute connections based on their endpoint info
 
 ## [14.2.1] - 2019-05-30
 ### Changed
