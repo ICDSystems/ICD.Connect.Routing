@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
  - Added Overload method to unroute connections based on their endpoint info
+ - Added features for efficiently determining if there is a path from a given source to destination
 
 ## [14.2.1] - 2019-05-30
 ### Changed

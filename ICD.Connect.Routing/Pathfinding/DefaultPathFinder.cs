@@ -38,6 +38,8 @@ namespace ICD.Connect.Routing.PathFinding
 			m_RoomId = roomId;
 		}
 
+		#region Methods 
+
 		/// <summary>
 		/// Returns the best paths for the given builder queries.
 		/// </summary>
@@ -49,6 +51,91 @@ namespace ICD.Connect.Routing.PathFinding
 				throw new ArgumentNullException("queries");
 
 			return queries.SelectMany(q => FindPaths(q));
+		}
+
+		/// <summary>
+		/// Returns true if there is a valid path for all of the defined queries.
+		/// </summary>
+		/// <param name="queries"></param>
+		/// <returns></returns>
+		public override bool HasPaths(IEnumerable<PathBuilderQuery> queries)
+		{
+			if (queries == null)
+				throw new ArgumentNullException("queries");
+
+			return queries.All(q => HasPaths(q));
+		}
+
+		#endregion
+
+		#region Private Methods
+
+		/// <summary>
+		/// Returns true if there is a valid path for the given query.
+		/// </summary>
+		/// <param name="query"></param>
+		/// <returns></returns>
+		private bool HasPaths(PathBuilderQuery query)
+		{
+			if (query == null)
+				throw new ArgumentNullException("query");
+
+			EndpointInfo[] source = query.GetStart().ToArray();
+			EndpointInfo[][] destinations = query.GetEnds().ToArray();
+
+			foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(query.Type))
+			{
+				if (!HasPaths(source, destinations, flag))
+					return false;
+			}
+
+			return true;
+		}
+
+		/// <summary>
+		/// Returns true if there is a valid path from the source to each destination.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinations"></param>
+		/// <param name="flag"></param>
+		/// <returns></returns>
+		private bool HasPaths(EndpointInfo[] source, EndpointInfo[][] destinations, eConnectionType flag)
+		{
+			if (source == null)
+				throw new ArgumentNullException("source");
+
+			if (destinations == null)
+				throw new ArgumentNullException("destinations");
+
+			if (!EnumUtils.HasSingleFlag(flag))
+				throw new ArgumentException("Connection type has multiple flags", "flag");
+
+			foreach (EndpointInfo[] destination in destinations)
+			{
+				bool destinationHasPath = false;
+
+				foreach (EndpointInfo destinationEndpoint in destination)
+				{
+					foreach (EndpointInfo sourceEndpoint in source)
+					{
+						Connection outputConnection =
+							m_Connections.GetOutputConnection(sourceEndpoint, destinationEndpoint, flag);
+						if (outputConnection == null)
+							continue;
+
+						destinationHasPath = true;
+						break;
+					}
+
+					if (destinationHasPath)
+						break;
+				}
+
+				if (!destinationHasPath)
+					return false;
+			}
+
+			return true;
 		}
 
 		/// <summary>
@@ -161,14 +248,14 @@ namespace ICD.Connect.Routing.PathFinding
 		/// </summary>
 		/// <param name="source"></param>
 		/// <param name="finalDestinations"></param>
-		/// <param name="inputConnection"></param>
+		/// <param name="sourceOutputConnection"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
 		private IEnumerable<Connection> GetConnectionChildren(EndpointInfo source, IEnumerable<EndpointInfo> finalDestinations,
-															  Connection inputConnection, eConnectionType flag)
+															  Connection sourceOutputConnection, eConnectionType flag)
 		{
-			if (inputConnection == null)
-				throw new ArgumentNullException("inputConnection");
+			if (sourceOutputConnection == null)
+				throw new ArgumentNullException("sourceOutputConnection");
 
 			if (finalDestinations == null)
 				throw new ArgumentNullException("finalDestinations");
@@ -177,12 +264,14 @@ namespace ICD.Connect.Routing.PathFinding
 				throw new ArgumentException("ConnectionType has multiple flags", "flag");
 
 			return
-				m_Connections.GetOutputConnections(inputConnection.Destination.GetDeviceControlInfo(),
+				m_Connections.GetOutputConnections(sourceOutputConnection.Destination.GetDeviceControlInfo(),
 				                                   finalDestinations,
 				                                   flag)
 				             .Where(c =>
 				                    c.IsAvailableToSourceDevice(source.Device) &&
 				                    c.IsAvailableToRoom(m_RoomId));
 		}
+
+		#endregion
 	}
 }
