@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Added Overload method to unroute connections based on their endpoint info
  - Added features for efficiently determining if there is a path from a given source to destination
 
+### Removed
+ - Removed error logging from the DefaultPathfinder when failing to find a path; should be handled by consumers
+
 ## [14.2.1] - 2019-05-30
 ### Changed
  - RoutingCache fix for potential infinite recursion

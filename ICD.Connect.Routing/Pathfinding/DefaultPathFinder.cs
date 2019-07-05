@@ -2,10 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
-using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services;
-using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.RoutingGraphs;
@@ -14,16 +11,8 @@ namespace ICD.Connect.Routing.PathFinding
 {
 	public sealed class DefaultPathFinder : AbstractPathFinder
 	{
-		private readonly IRoutingGraph m_RoutingGraph;
 		private readonly IConnectionsCollection m_Connections;
 		private readonly int m_RoomId;
-
-		private ILoggerService m_CachedLogger;
-
-		public ILoggerService Logger
-		{
-			get { return m_CachedLogger = m_CachedLogger ?? ServiceProvider.TryGetService<ILoggerService>(); }
-		}
 
 		/// <summary>
 		/// Constructor.
@@ -33,8 +22,7 @@ namespace ICD.Connect.Routing.PathFinding
 			if (routingGraph == null)
 				throw new ArgumentNullException("routingGraph");
 
-			m_RoutingGraph = routingGraph;
-			m_Connections = m_RoutingGraph.Connections;
+			m_Connections = routingGraph.Connections;
 			m_RoomId = roomId;
 		}
 
@@ -177,8 +165,6 @@ namespace ICD.Connect.Routing.PathFinding
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("Connection type has multiple flags", "flag");
 
-			IcdHashSet<EndpointInfo[]> notFound = new IcdHashSet<EndpointInfo[]>(destinations);
-
 			// Get the output connections for the source
 			Connection[] sourceConnections =
 				source.Select(e => m_Connections.GetOutputConnection(e, flag))
@@ -199,23 +185,9 @@ namespace ICD.Connect.Routing.PathFinding
 					if (path == null)
 						continue;
 
-					notFound.Remove(destination);
-
 					yield return path;
 					break;
 				}
-			}
-
-			// Log errors
-			foreach (EndpointInfo[] destination in notFound)
-			{
-				string sourceText = EndpointInfo.ArrayRangeFormat(source);
-				string destinationText = EndpointInfo.ArrayRangeFormat(destination);
-
-				string message = string.Format("{0} failed to find {1} path from {2} to {3}", GetType().Name, flag, sourceText,
-											   destinationText);
-
-				Logger.AddEntry(eSeverity.Error, message);
 			}
 		}
 
