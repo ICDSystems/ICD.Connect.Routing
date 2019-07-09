@@ -5,7 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+ - Added Overload method to unroute connections based on their endpoint info
 
+## [14.2.1] - 2019-05-30
 ### Changed
  - RoutingCache fix for potential infinite recursion
 
@@ -27,6 +30,26 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [14.0.0] - 2019-01-10
 ### Added
  - Added port configuration features to routing devices
+
+## [13.8.1] - 2019-06-10
+### Changed
+ - Better handling cases where a DMPS3 crosspoint may return a null mixer
+
+## [13.8.0] - 2019-06-07
+### Added
+ - RoutingCache initializes source transmission, source detection and destination active states
+
+## [13.7.3] - 2019-06-05
+### Changed
+ - Program/Processor uptimes are formatted for telemetry
+
+## [13.7.2] - 2019-05-30
+### Changed
+ - Fixed exceptions on program stop due to clearing switchers
+
+## [13.7.1] - 2019-05-30
+### Changed
+ - Fixed bug where Input/Output ports were being initialized too early in the switcher lifespan
 
 ## [13.7.0] - 2019-05-24
 ### Added

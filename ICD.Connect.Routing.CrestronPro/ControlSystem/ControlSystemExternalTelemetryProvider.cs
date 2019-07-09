@@ -25,7 +25,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		private const string PROGRAMMER_NAME = "ICD Systems";
 		private const string SYSTEM_NAME = "Metlife.RoomOS";
 
-		public event EventHandler OnRequestTelemetryRebuild;
 		public event EventHandler<BoolEventArgs> OnDhcpStatusChanged;
 		public event EventHandler<StringEventArgs> OnProcessorIpAddressChanged;
 		public event EventHandler<StringEventArgs> OnProcessorHostnameChanged;
@@ -44,8 +43,35 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public string ProcessorIpAddress { get { return GetPrimaryIp(); } }
 		public string ProcessorHostname { get { return GetPrimaryHostname(); } }
 		public string ProcessorSerialNumber { get { return ProcessorUtils.ProcessorSerialNumber; } }
-		public string ProcessorUptime { get { return ProcessorUtils.GetSystemUptime(); } }
-		public string ProgramUptime { get { return ProcessorUtils.GetProgramUptime((int)ProgramUtils.ProgramNumber); } }
+
+		public string ProcessorUptime
+		{
+			get
+			{
+				TimeSpan time = ProcessorUtils.GetSystemUptime();
+				return string.Format("{0} days {1:D2}:{2:D2}:{3:D2}.{4:D3}",
+				                     time.Days,
+				                     time.Hours,
+				                     time.Minutes,
+				                     time.Seconds,
+				                     time.Milliseconds);
+			}
+		}
+
+		public string ProgramUptime
+		{
+			get
+			{
+				TimeSpan time = ProcessorUtils.GetProgramUptime();
+				return string.Format("{0} days {1:D2}:{2:D2}:{3:D2}.{4:D3}",
+									 time.Days,
+									 time.Hours,
+									 time.Minutes,
+									 time.Seconds,
+									 time.Milliseconds);
+			}
+		}
+
 		public string ProgrammerName { get { return PROGRAMMER_NAME; } }
 		public string SystemName { get { return SYSTEM_NAME; } }
 		public string ProgramSourceFile { get { return ProgramUtils.ProgramFile; } }
