@@ -1,6 +1,5 @@
 ﻿using System;
 using ICD.Common.Properties;
-using ICD.Common.Utils;
 #if SIMPLSHARP
 using Crestron.SimplSharp.Reflection;
 using Crestron.SimplSharpPro;
