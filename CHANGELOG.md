@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.9.0] - 2019-07-09
+### Added
+ - Added DMC-HD-DSP input card adapter, routing control, and settings
+
 ## [13.8.1] - 2019-06-10
 ### Changed
  - Better handling cases where a DMPS3 crosspoint may return a null mixer
