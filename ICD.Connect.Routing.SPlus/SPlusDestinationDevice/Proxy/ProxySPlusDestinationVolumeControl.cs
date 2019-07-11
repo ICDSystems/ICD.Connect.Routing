@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API;
+using ICD.Connect.API.Commands;
 using ICD.Connect.API.Info;
+using ICD.Connect.API.Nodes;
+using ICD.Connect.Audio.Console.Mute;
+using ICD.Connect.Audio.Console.Volume;
 using ICD.Connect.Audio.Controls.Mute;
 using ICD.Connect.Audio.Controls.Volume;
 using ICD.Connect.Audio.EventArguments;
@@ -330,6 +335,47 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 			OnVolumeChanged.Raise(this, new VolumeDeviceVolumeChangedEventArgs(volumeState));
 
 
+		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			VolumeLevelDeviceControlConsole.BuildConsoleStatus(this, addRow);
+			VolumeMuteFeedbackDeviceControlConsole.BuildConsoleStatus(this, addRow);
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+			foreach (IConsoleCommand command in VolumeLevelDeviceControlConsole.GetConsoleCommands(this))
+				yield return command;
+
+			foreach (IConsoleCommand command in VolumeMuteFeedbackDeviceControlConsole.GetConsoleCommands(this))
+				yield return command;
+		}
+
+		/// <summary>
+		/// Workaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
 		}
 
 		#endregion
