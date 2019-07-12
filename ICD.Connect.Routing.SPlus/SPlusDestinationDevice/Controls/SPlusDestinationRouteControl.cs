@@ -105,12 +105,11 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 
 			//Inputs Detected
 			int[] inputsDetected = {};
-			m_InputsDetectedCriticalSection.Execute(
-			                                        () =>
+			m_InputsDetectedCriticalSection.Execute(() =>
 			                                        inputsDetected =
 			                                        m_InputsDetectedHashSet.ToArray(m_InputsDetectedHashSet.Count));
 			if (inputsDetected != null)
-			routeState.InputsDetected = inputsDetected;
+				routeState.InputsDetected = inputsDetected;
 
 			//Inputs Active
 

@@ -217,12 +217,20 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 		private void HandleGetRouteState(RouteState.RouteState routeState)
 		{
+			if (routeState == null)
+				throw new ArgumentNullException("routeState");
+
 			HandleGetRouteStateInputDetect(routeState);
 			HandleGetRouteStateActiveInput(routeState);
 		}
 
 		private void HandleGetRouteStateActiveInput(RouteState.RouteState routeState)
 		{
+			if (routeState == null)
+				throw new ArgumentNullException("routeState");
+
+			Dictionary<eConnectionType, int?> inputsActive = routeState.InputsActive ?? new Dictionary<eConnectionType, int?>();
+
 			// todo: Don't double-event types that have the same input active
 
 			List<ActiveInputStateChangeEventArgs> changes = new List<ActiveInputStateChangeEventArgs>();
@@ -231,8 +239,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 			try
 			{
 				List<eConnectionType> currentKeys = m_ActiveInputs.Keys.ToList();
-				List<eConnectionType> newKeys = routeState.InputsActive.Keys.ToList();
-
+				List<eConnectionType> newKeys = inputsActive.Keys.ToList();
 
 				// Types that are no longer active
 				foreach (eConnectionType oldType in currentKeys.Except(newKeys))
@@ -253,12 +260,12 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 					int? oldValue;
 					if (m_ActiveInputs.TryGetValue(newType, out oldValue))
 					{
-						if (!oldValue.HasValue || oldValue == routeState.InputsActive[newType])
+						if (!oldValue.HasValue || oldValue == inputsActive[newType])
 							continue;
 						changes.Add(new ActiveInputStateChangeEventArgs(oldValue.Value, newType, false));
 					}
 
-					var newInput = routeState.InputsActive[newType];
+					var newInput = inputsActive[newType];
 
 					m_ActiveInputs[newType] = newInput;
 					if (newInput.HasValue)
@@ -278,17 +285,22 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 		private void HandleGetRouteStateInputDetect(RouteState.RouteState routeState)
 		{
+			if (routeState == null)
+				throw new ArgumentNullException("routeState");
+
 			IEnumerable<int> noLongerDetected;
 			IEnumerable<int> newDetected;
+
+			int[] inputsDetected = routeState.InputsDetected ?? new int[] {};
 
 			m_InputsDetectedCriticalSection.Enter();
 			try
 			{
-				noLongerDetected = m_InputsDetectedHashSet.Except(routeState.InputsDetected);
-				newDetected = routeState.InputsDetected.Except(m_InputsDetectedHashSet);
+				noLongerDetected = m_InputsDetectedHashSet.Except(inputsDetected);
+				newDetected = inputsDetected.Except(m_InputsDetectedHashSet);
 
 				m_InputsDetectedHashSet.Clear();
-				m_InputsDetectedHashSet.AddRange(routeState.InputsDetected);
+				m_InputsDetectedHashSet.AddRange(inputsDetected);
 			}
 			finally
 			{
