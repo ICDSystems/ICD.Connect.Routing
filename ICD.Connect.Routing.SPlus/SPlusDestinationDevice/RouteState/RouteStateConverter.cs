@@ -44,8 +44,6 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.RouteState
 		/// <param name="serializer"></param>
 		protected override void ReadProperty(string property, JsonReader reader, RouteState instance, JsonSerializer serializer)
 		{
-			base.ReadProperty(property, reader, instance, serializer);
-
 			switch (property)
 			{
 				case ATTR_INPUTS_DETECTED:
@@ -53,6 +51,9 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.RouteState
 					break;
 				case ATTR_INPUTS_ACTIVE:
 					instance.InputsActive = serializer.DeserializeDict<eConnectionType, int?>(reader).ToDictionary();
+					break;
+				default:
+					base.ReadProperty(property, reader, instance, serializer);
 					break;
 			}
 		}
