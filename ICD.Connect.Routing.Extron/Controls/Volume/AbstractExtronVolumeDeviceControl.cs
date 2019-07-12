@@ -3,13 +3,14 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Audio.Controls.Mute;
 using ICD.Connect.Audio.Controls.Volume;
+using ICD.Connect.Audio.EventArguments;
 using ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint;
 
 namespace ICD.Connect.Routing.Extron.Controls.Volume
 {
 	public abstract class AbstractExtronVolumeDeviceControl : AbstractVolumeLevelDeviceControl<IDtpCrosspointDevice>, IVolumeMuteFeedbackDeviceControl
 	{
-		public event EventHandler<BoolEventArgs> OnMuteStateChanged;
+		public event EventHandler<MuteDeviceMuteStateChangedApiEventArgs> OnMuteStateChanged;
 
 		private readonly string m_Name;
 		private readonly eExtronVolumeType m_VolumeType;
@@ -49,9 +50,9 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 				if (value == m_IsMuted)
 					return;
 				
-				m_IsMuted = value; 
+				m_IsMuted = value;
 
-				OnMuteStateChanged.Raise(this, new BoolEventArgs(m_IsMuted));
+				OnMuteStateChanged.Raise(this, new MuteDeviceMuteStateChangedApiEventArgs(m_IsMuted));
 			}
 		}
 
