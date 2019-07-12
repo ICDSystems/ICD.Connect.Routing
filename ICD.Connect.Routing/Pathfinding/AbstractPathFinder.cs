@@ -11,5 +11,12 @@ namespace ICD.Connect.Routing.PathFinding
 		/// <param name="queries"></param>
 		/// <returns></returns>
 		public abstract IEnumerable<ConnectionPath> FindPaths(IEnumerable<PathBuilderQuery> queries);
+
+		/// <summary>
+		/// Returns true if there is a valid path for all of the defined queries.
+		/// </summary>
+		/// <param name="queries"></param>
+		/// <returns></returns>
+		public abstract bool HasPaths(IEnumerable<PathBuilderQuery> queries);
 	}
 }

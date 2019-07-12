@@ -149,6 +149,25 @@ namespace ICD.Connect.Routing.PathFinding
 
 			return pathFinder.FindPaths(m_Queries);
 		}
+
+		/// <summary>
+		/// Returns true if there is a valid path for all of the defined queries.
+		/// </summary>
+		/// <param name="pathFinder"></param>
+		/// <returns></returns>
+		public bool HasPaths(IPathFinder pathFinder)
+		{
+			if (pathFinder == null)
+				throw new ArgumentNullException("pathFinder");
+
+			if (m_Current == null)
+				throw new InvalidOperationException();
+
+			m_Queries.Add(m_Current);
+			m_Current = null;
+
+			return pathFinder.HasPaths(m_Queries);
+		}
 	}
 
 	public interface IPathBuilder
@@ -433,5 +452,12 @@ namespace ICD.Connect.Routing.PathFinding
 		/// <param name="pathFinder"></param>
 		/// <returns></returns>
 		IEnumerable<ConnectionPath> With(IPathFinder pathFinder);
+
+		/// <summary>
+		/// Returns true if there is a valid path for all of the defined queries.
+		/// </summary>
+		/// <param name="pathFinder"></param>
+		/// <returns></returns>
+		bool HasPaths(IPathFinder pathFinder);
 	}
 }

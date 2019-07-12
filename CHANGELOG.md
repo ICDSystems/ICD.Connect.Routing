@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
  - Added Overload method to unroute connections based on their endpoint info
+ - Added features for efficiently determining if there is a path from a given source to destination
+
+### Removed
+ - Removed error logging from the DefaultPathfinder when failing to find a path; should be handled by consumers
 
 ## [14.2.1] - 2019-05-30
 ### Changed
@@ -30,6 +34,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [14.0.0] - 2019-01-10
 ### Added
  - Added port configuration features to routing devices
+
+## [13.9.1] - 2019-07-10
+### Changed
+ - Fixed a bug that was causing Crestron DM frame switchers to throw an exception on program stop
+
+## [13.9.0] - 2019-07-09
+### Added
+ - Added DMC-HD-DSP input card adapter, routing control, and settings
 
 ## [13.8.1] - 2019-06-10
 ### Changed
