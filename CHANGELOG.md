@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [13.9.2] - 2019-07-16
 ### Added
  - Added ControlPortParentSettingsProperty attribute to Dmps300CComPort property
 
