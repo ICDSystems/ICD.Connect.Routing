@@ -287,6 +287,9 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 		private void PortOnConnectionStatusChanged(object sender, BoolEventArgs e)
 		{
 			m_SerialBuffer.Clear();
+
+			if (!e.Data)
+				Initialized = false;
 		}
 
 		/// <summary>
