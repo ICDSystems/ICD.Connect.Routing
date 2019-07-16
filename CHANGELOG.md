@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added Overload method to unroute connections based on their endpoint info
  - Added features for efficiently determining if there is a path from a given source to destination
+ 
+### Changed
+ - If an Extron Switcher's port is not connected initialized property is set to false.
 
 ### Removed
  - Removed error logging from the DefaultPathfinder when failing to find a path; should be handled by consumers
@@ -34,6 +37,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [14.0.0] - 2019-01-10
 ### Added
  - Added port configuration features to routing devices
+
+## [13.9.2] - 2019-07-16
+### Added
+ - Added ControlPortParentSettingsProperty attribute to Dmps300CComPort property
 
 ## [13.9.1] - 2019-07-10
 ### Changed
