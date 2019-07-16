@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+ - Added ControlPortParentSettingsProperty attribute to Dmps300CComPort property
+
 ## [13.9.1] - 2019-07-10
 ### Changed
  - Fixed a bug that was causing Crestron DM frame switchers to throw an exception on program stop
