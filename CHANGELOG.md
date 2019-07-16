@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added Overload method to unroute connections based on their endpoint info
  - Added features for efficiently determining if there is a path from a given source to destination
+ 
+### Changed
+ - If an Extron Switcher's port is not connected initialized property is set to false.
 
 ### Removed
  - Removed error logging from the DefaultPathfinder when failing to find a path; should be handled by consumers
