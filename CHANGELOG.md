@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [13.10.0] - 2019-07-17
 ### Added
  - Added Dm-Tx-4kz-X02C Abstract and interfaces
  - Added Dm-Tx-4kz-202C and Dm-Tx-4kz-302C transmitters

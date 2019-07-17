@@ -4,4 +4,5 @@ using System.Reflection;
 [assembly: AssemblyCompany("ICD Systems")]
 [assembly: AssemblyProduct("ICD.Connect.Routing.SPlus")]
 [assembly: AssemblyCopyright("Copyright © ICD Systems 2019")]
-[assembly: AssemblyVersion("13.9.2.0")]
+[assembly: AssemblyVersion("13.10.0.0")]
+
