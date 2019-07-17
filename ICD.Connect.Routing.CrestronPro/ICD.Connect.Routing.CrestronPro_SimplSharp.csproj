@@ -363,6 +363,14 @@
     <Compile Include="Transmitters\DmTx4kX02CBase\AbstractDmTx4kX02CBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx4kX02CBase\IDmTx4kX02CBaseAdapter.cs" />
     <Compile Include="Transmitters\DmTx4kX02CBase\IDmTx4kX02CBaseAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx4kz202C\DmTx4kz202CAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4kz202C\DmTx4kz202CAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx4kz302C\DmTx4kz302CAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4kz302C\DmTx4kz302CAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx4kzX02CBase\AbstractDmTx4kzX02BaseAdapterSettings.cs" />
+    <Compile Include="Transmitters\DmTx4kzX02CBase\AbstractDmTx4kzX02CBaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4kzX02CBase\IDmTx4kzX02CBaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4kzX02CBase\IDmTx4kzX02CBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\IEndpointTransmitterBaseAdapter.cs" />
     <Compile Include="Transmitters\IEndpointTransmitterBaseAdapterSettings.cs" />
     <Compile Include="Utils\DmEndpointFactoryUtils.cs" />
