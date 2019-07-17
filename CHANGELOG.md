@@ -29,6 +29,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.10.0] - 2019-07-17
+### Added
+ - Added Dm-Tx-4kz-X02C Abstract and interfaces
+ - Added Dm-Tx-4kz-202C and Dm-Tx-4kz-302C transmitters
+
 ## [13.9.2] - 2019-07-16
 ### Added
  - Added ControlPortParentSettingsProperty attribute to Dmps300CComPort property
