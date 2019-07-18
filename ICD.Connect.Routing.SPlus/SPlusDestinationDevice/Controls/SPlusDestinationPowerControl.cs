@@ -16,7 +16,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 		/// <summary>
 		/// Powers on the device.
 		/// </summary>
-		public override void PowerOn()
+		protected override void PowerOnFinal()
 		{
 			Parent.PowerOn();
 		}
@@ -24,7 +24,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 		/// <summary>
 		/// Powers off the device.
 		/// </summary>
-		public override void PowerOff()
+		protected override void PowerOffFinal()
 		{
 			Parent.PowerOff();
 		}

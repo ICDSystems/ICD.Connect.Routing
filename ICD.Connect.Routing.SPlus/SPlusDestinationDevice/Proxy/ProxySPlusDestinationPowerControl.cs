@@ -51,9 +51,27 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		}
 
 		/// <summary>
+		/// Powers on the device.
+		/// </summary>
+		/// /// <param name="bypassPrePowerOn">If true, skips the pre power on delegate.</param>
+		public void PowerOn(bool bypassPrePowerOn)
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
 		/// Powers off the device.
 		/// </summary>
 		public void PowerOff()
+		{
+			throw new NotImplementedException();
+		}
+
+		/// <summary>
+		/// Powers off the device.
+		/// </summary>
+		/// <param name="bypassPostPowerOff">If true, skips the post power off delegate.</param>
+		public void PowerOff(bool bypassPostPowerOff)
 		{
 			throw new NotImplementedException();
 		}
