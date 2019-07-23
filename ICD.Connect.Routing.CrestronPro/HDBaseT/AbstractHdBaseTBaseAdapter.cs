@@ -171,8 +171,10 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		/// <returns></returns>
 		public ComPort GetComPort(int address)
 		{
-			string message = string.Format("{0} has no {1}", this, typeof(ComPort).Name);
-			throw new NotSupportedException(message);
+			if (Device == null)
+				throw new InvalidOperationException("No device instantiated");
+
+			return Device.ComPorts[(uint)address];
 		}
 
 		/// <summary>

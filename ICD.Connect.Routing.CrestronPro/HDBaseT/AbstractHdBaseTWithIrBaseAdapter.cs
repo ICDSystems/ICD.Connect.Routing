@@ -22,7 +22,10 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		/// <returns></returns>
 		public override IROutputPort GetIrOutputPort(int address)
 		{
-			throw new NotImplementedException();
+			if (Device == null)
+				throw new InvalidOperationException("No device instantiated");
+
+			return Device.IROutputPorts[(uint)address];
 		}
 #endif
 	}
