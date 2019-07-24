@@ -15,6 +15,15 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 #endif
 	{
 #if SIMPLSHARP
+
+		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public DmTx4K100C1GAdapter()
+		{
+			Controls.Add(new DmTx4K100C1GAdapterRouteMidpointControl(this, 0));
+		}
+
 		/// <summary>
 		/// Instantiates the device with the given settings.
 		/// </summary>

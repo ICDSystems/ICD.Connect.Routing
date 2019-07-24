@@ -306,9 +306,11 @@
     <Compile Include="DigitalMedia\ICrestronSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\ICrestronSwitchAdapterSettings.cs" />
     <Compile Include="HDBaseT\AbstractDmBasedTEndPointAdapter.cs" />
+    <Compile Include="HDBaseT\AbstractDmBasedTEndPointAdapterRouteMidpointControl.cs" />
     <Compile Include="HDBaseT\AbstractHdBaseTBaseAdapter.cs" />
     <Compile Include="HDBaseT\AbstractHdBaseTWithIrBaseAdapter.cs" />
     <Compile Include="HDBaseT\DmRmc4K100C1GAdapter.cs" />
+    <Compile Include="HDBaseT\DmRmc4K100C1GAdapterRouteMidpointControl.cs" />
     <Compile Include="HDBaseT\DmTx4K100C1GAdapter.cs" />
     <Compile Include="IDmEndpoint.cs" />
     <Compile Include="IDmParent.cs" />

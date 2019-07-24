@@ -19,6 +19,8 @@ using ICD.Connect.Misc.CrestronPro.Devices;
 namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 {
 #if SIMPLSHARP
+	public delegate void DeviceChangeCallback(IHdBaseTBaseAdapter sender, HDBaseTBase device);
+
 	public abstract class AbstractHdBaseTBaseAdapter<TDevice, TSettings> : AbstractDevice<TSettings>, IHdBaseTBaseAdapter
 		where TDevice : HDBaseTBase
 #else
@@ -27,8 +29,6 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		where TSettings : IHdBaseTBaseAdapterSettings, new()
 	{
 #if SIMPLSHARP
-		public delegate void DeviceChangeCallback(IHdBaseTBaseAdapter sender, TDevice device);
-
 		/// <summary>
 		/// Raised when the wrapped device changes.
 		/// </summary>
@@ -61,6 +61,11 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 					handler(this, m_Device);
 			}
 		}
+
+		/// <summary>
+		/// Gets the wrapped device.
+		/// </summary>
+		HDBaseTBase IHdBaseTBaseAdapter.Device { get { return Device; } }
 #endif
 
 		#endregion
@@ -416,6 +421,17 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 
 	public interface IHdBaseTBaseAdapter : IDevice, IPortParent
 	{
+#if SIMPLSHARP
+		/// <summary>
+		/// Raised when the wrapped device changes.
+		/// </summary>
+		event DeviceChangeCallback OnDeviceChanged;
+
+		/// <summary>
+		/// Gets the wrapped device.
+		/// </summary>
+		HDBaseTBase Device { get; }
+#endif
 	}
 
 	public interface IHdBaseTBaseAdapterSettings : IDeviceSettings

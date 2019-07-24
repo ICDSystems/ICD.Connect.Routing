@@ -18,6 +18,14 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 	{
 #if SIMPLSHARP
 		/// <summary>
+		/// Constructor.
+		/// </summary>
+		public DmRmc4K100C1GAdapter()
+		{
+			Controls.Add(new DmRmc4K100C1GAdapterRouteMidpointControl(this, 0));
+		}
+
+		/// <summary>
 		/// Instantiates the device with the given settings.
 		/// </summary>
 		/// <param name="settings"></param>
@@ -84,10 +92,6 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 			settings.DmOutputAddress = null;
 #endif
 		}
-
-		#region Console
-
-		#endregion
 	}
 
 	[KrangSettings("DmRmc4k100C1G", typeof(DmRmc4K100C1GAdapter))]
