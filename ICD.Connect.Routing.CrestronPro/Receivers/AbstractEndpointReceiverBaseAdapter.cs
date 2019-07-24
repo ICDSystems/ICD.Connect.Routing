@@ -1,5 +1,4 @@
 ﻿using System;
-using Crestron.SimplSharpPro.DM.Endpoints;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Routing.Devices;
@@ -8,6 +7,7 @@ using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro.DM.Endpoints;
 using Crestron.SimplSharpPro.DM.Endpoints.Receivers;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
@@ -71,12 +71,12 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		}
 
 		EndpointReceiverBase IEndpointReceiverBaseAdapter.Receiver { get { return Receiver; } }
-#endif
 
 		/// <summary>
 		/// Gets the wrapped DMEndpointBase device.
 		/// </summary>
 		public DMEndpointBase Device { get { return Receiver; } }
+#endif
 
 		#endregion
 

@@ -1,6 +1,8 @@
 ﻿using System;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
+#endif
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Settings.Attributes;

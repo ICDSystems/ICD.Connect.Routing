@@ -1,17 +1,17 @@
 ﻿using System;
-using Crestron.SimplSharpPro.DM;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Nodes;
-using ICD.Connect.Misc.CrestronPro.Extensions;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
+using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
