@@ -1,4 +1,6 @@
 ﻿using System;
+using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
@@ -6,7 +8,6 @@ using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Settings.Attributes;
-using ICD.Connect.Settings.Core;
 
 namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 {
@@ -75,6 +76,26 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 
 				return new DmTx4K100C1G((byte)settings.Ipid, input);
 			}
+		}
+
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="io"></param>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override Cec GetCecPort(eInputOuptut io, int address)
+		{
+			if (address != 1)
+				throw new ArgumentOutOfRangeException("address");
+
+			if (io != eInputOuptut.Input)
+				throw new ArgumentException("io");
+
+			if (Device == null)
+				throw new InvalidOperationException("No internal device");
+
+			return Device.StreamCec;
 		}
 #endif
 
