@@ -38,6 +38,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.11.0] - 2019-07-25
+### Added
+ - Added HDBaseT TX and RX devices
+ - Added IDmEndpoint interface to TX and RX devices
+ - Added OriginatorIdSettingsProperty to XiO Director settings property
+
 ## [13.10.0] - 2019-07-17
 ### Added
  - Added Dm-Tx-4kz-X02C Abstract and interfaces

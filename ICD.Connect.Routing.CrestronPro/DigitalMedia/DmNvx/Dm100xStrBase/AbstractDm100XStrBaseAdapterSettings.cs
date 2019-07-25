@@ -2,6 +2,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Devices;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
@@ -24,6 +25,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 
 		public uint? EndpointId { get; set; }
 
+		[OriginatorIdSettingsProperty(typeof(IDmXioDirectorBaseAdapter))]
 		public int? DirectorId { get; set; }
 
 		public uint? DomainId { get; set; }
