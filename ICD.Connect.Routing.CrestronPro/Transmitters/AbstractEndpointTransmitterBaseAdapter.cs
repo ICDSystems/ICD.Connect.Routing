@@ -10,6 +10,7 @@ using ICD.Connect.Routing.EventArguments;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro.DM.Endpoints;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Services.Logging;
@@ -78,6 +79,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		{
 			get { return Transmitter; }
 		}
+
+		/// <summary>
+		/// Gets the wrapped DMEndpointBase device.
+		/// </summary>
+		DMEndpointBase IDmEndpoint.Device { get { return Transmitter; } }
 #endif
 
 		#endregion
