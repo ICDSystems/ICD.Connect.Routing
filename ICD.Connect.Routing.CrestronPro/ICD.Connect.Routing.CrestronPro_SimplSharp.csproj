@@ -312,6 +312,7 @@
     <Compile Include="HDBaseT\DmRmc4K100C1GAdapter.cs" />
     <Compile Include="HDBaseT\DmRmc4K100C1GAdapterRouteMidpointControl.cs" />
     <Compile Include="HDBaseT\DmTx4K100C1GAdapter.cs" />
+    <Compile Include="HDBaseT\DmTx4K100C1GAdapterRouteMidpointControl.cs" />
     <Compile Include="IDmEndpoint.cs" />
     <Compile Include="IDmParent.cs" />
     <Compile Include="KrangPlugin.cs" />
