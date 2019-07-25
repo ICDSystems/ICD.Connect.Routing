@@ -5,8 +5,8 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.CrestronPro.Cards;
+using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
-using ICD.Connect.Settings.Core;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -223,6 +223,18 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		public DigitalInput GetDigitalInputPort(int address)
 		{
 			string message = string.Format("{0} has no {1}", this, typeof(DigitalInput).Name);
+			throw new NotSupportedException(message);
+		}
+
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="io"></param>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public virtual Cec GetCecPort(eInputOuptut io, int address)
+		{
+			string message = string.Format("{0} has no {1}", this, typeof(Cec).Name);
 			throw new NotSupportedException(message);
 		}
 
