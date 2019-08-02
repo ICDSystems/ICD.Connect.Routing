@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Comparers;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Endpoints
@@ -13,6 +16,11 @@ namespace ICD.Connect.Routing.Endpoints
 	                                                                   ISourceDestinationBaseCollection<T>
 		where T : class, ISourceDestinationBase
 	{
+		/// <summary>
+		/// Raised when the disabled state of a source destination base changes.
+		/// </summary>
+		public event EventHandler<SourceDestinationBaseDisabledStateChangedEventArgs> OnSourceDestinationBaseDisabledStateChanged;
+
 		private readonly IcdOrderedDictionary<EndpointInfo, List<T>> m_EndpointCache;
 		private readonly IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, List<T>>> m_EndpointTypeCache;
 		private readonly SafeCriticalSection m_EndpointCacheSection;
@@ -122,6 +130,8 @@ namespace ICD.Connect.Routing.Endpoints
 							childTypeCache.AddSorted(child, m_ChildIdComparer);
 						}
 					}
+
+					Subscribe(child);
 				}
 			}
 			finally
@@ -157,12 +167,32 @@ namespace ICD.Connect.Routing.Endpoints
 								kvp.Value.Remove(child);
 						}
 					}
+
+					Unsubscribe(child);
 				}
 			}
 			finally
 			{
 				m_EndpointCacheSection.Leave();
 			}
+		}
+
+		private void Subscribe(T child)
+		{
+			child.OnDisableStateChanged += ChildOnDisableStateChanged;
+		}
+
+		private void Unsubscribe(T child)
+		{
+			child.OnDisableStateChanged -= ChildOnDisableStateChanged;
+		}
+
+		private void ChildOnDisableStateChanged(object sender, BoolEventArgs args)
+		{
+			OnSourceDestinationBaseDisabledStateChanged
+				.Raise(this,
+				       new SourceDestinationBaseDisabledStateChangedEventArgs((ISourceDestinationBase)sender,
+				                                                              args.Data));
 		}
 	}
 }
