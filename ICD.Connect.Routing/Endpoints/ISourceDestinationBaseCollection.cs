@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.RoutingGraphs;
+using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Endpoints
