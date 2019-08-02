@@ -520,7 +520,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="signalDetected"></param>
 		/// <param name="inputActive"></param>
 		/// <returns></returns>
-		private IEnumerable<Connection[]> FindActivePaths(ISource source, EndpointInfo destination,
+		public override IEnumerable<Connection[]> FindActivePaths(ISource source, EndpointInfo destination,
 		                                                  eConnectionType type,
 		                                                  bool signalDetected, bool inputActive)
 		{
