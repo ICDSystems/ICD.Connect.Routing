@@ -221,6 +221,10 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public abstract IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type,
 		                                                          bool signalDetected, bool inputActive);
 
+		public abstract IEnumerable<Connection[]> FindActivePaths(ISource source, EndpointInfo destinationEndpoint,
+		                                                 eConnectionType type, bool signalDetected,
+		                                                 bool inputActive);
+
 		#endregion
 
 		#region Routing
