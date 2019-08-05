@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [13.12.1] - 2019-08-05
+### Changed
+ - Fixed NVX IPID serialization
+
 ## [13.12.0] - 2019-08-02
 ### Added
  - Adding event to ISourceDestinationBaseCollection for when a source/destination enable/disable state changes
