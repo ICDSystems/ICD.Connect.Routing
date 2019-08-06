@@ -192,6 +192,17 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		IEnumerable<Connection[]> FindActivePaths(EndpointInfo source, eConnectionType type,
 		                                          bool signalDetected, bool inputActive);
 
+		/// <summary>
+		/// Finds all of the active paths to the given destination endpoint.
+		/// </summary>
+		/// <param name="source"></param>
+		/// <param name="destinationEndpoint"></param>
+		/// <param name="type"></param>
+		/// <param name="signalDetected"></param>
+		/// <param name="inputActive"></param>
+		/// <returns></returns>
+		IEnumerable<Connection[]> FindActivePaths(ISource source, EndpointInfo destinationEndpoint, eConnectionType type, bool signalDetected, bool inputActive);
+
 		#endregion
 
 		#region Routing
@@ -344,6 +355,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		IRouteSourceControl GetSourceControl(int device, int control);
 
 		#endregion
+		
 	}
 
 	public static class RoutingGraphExtensions

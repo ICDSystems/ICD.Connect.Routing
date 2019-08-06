@@ -38,6 +38,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.12.1] - 2019-08-05
+### Changed
+ - Fixed NVX IPID serialization
+
+## [13.12.0] - 2019-08-02
+### Added
+ - Adding event to ISourceDestinationBaseCollection for when a source/destination enable/disable state changes
+ - IRoutingGraph exposes FindActivePaths overload
+
 ## [13.11.0] - 2019-07-25
 ### Added
  - Added HDBaseT TX and RX devices

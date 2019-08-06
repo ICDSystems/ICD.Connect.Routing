@@ -59,8 +59,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		#endregion
 
 		private readonly IcdHashSet<IRouteMidpointControl> m_SubscribedMidpoints;
-		private readonly IcdHashSet<IRouteDestinationControl> m_SubscribedDestinations;
-		private readonly IcdHashSet<IRouteSourceControl> m_SubscribedSources;
+		private readonly IcdHashSet<IRouteDestinationControl> m_SubscribedDestinationControls;
+		private readonly IcdHashSet<IRouteSourceControl> m_SubscribedSourceControls;
 
 		private readonly ConnectionsCollection m_Connections;
 		private readonly StaticRoutesCollection m_StaticRoutes;
@@ -113,8 +113,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public RoutingGraph()
 		{
 			m_SubscribedMidpoints = new IcdHashSet<IRouteMidpointControl>();
-			m_SubscribedDestinations = new IcdHashSet<IRouteDestinationControl>();
-			m_SubscribedSources = new IcdHashSet<IRouteSourceControl>();
+			m_SubscribedDestinationControls = new IcdHashSet<IRouteDestinationControl>();
+			m_SubscribedSourceControls = new IcdHashSet<IRouteSourceControl>();
 
 			m_StaticRoutes = new StaticRoutesCollection(this);
 			m_Connections = new ConnectionsCollection(this);
@@ -154,8 +154,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private void ConnectionsOnConnectionsChanged(object sender, EventArgs eventArgs)
 		{
 			SubscribeMidpoints();
-			SubscribeDestinations();
-			SubscribeSources();
+			SubscribeDestinationControls();
+			SubscribeSourceControls();
 
 			m_StaticRoutes.UpdateStaticRoutes();
 
@@ -520,7 +520,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="signalDetected"></param>
 		/// <param name="inputActive"></param>
 		/// <returns></returns>
-		private IEnumerable<Connection[]> FindActivePaths(ISource source, EndpointInfo destination,
+		public override IEnumerable<Connection[]> FindActivePaths(ISource source, EndpointInfo destination,
 		                                                  eConnectionType type,
 		                                                  bool signalDetected, bool inputActive)
 		{
@@ -1185,31 +1185,31 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#endregion
 
-		#region Destination Callbacks
+		#region Destination Control Callbacks
 
 		/// <summary>
 		/// Unsubscribe from the previous destination controls and subscribe to the new destination control events.
 		/// </summary>
-		private void SubscribeDestinations()
+		private void SubscribeDestinationControls()
 		{
-			UnsubscribeDestinations();
+			UnsubscribeDestinationControls();
 
-			m_SubscribedDestinations.AddRange(Connections.SelectMany(c => GetControls(c))
+			m_SubscribedDestinationControls.AddRange(Connections.SelectMany(c => GetControls(c))
 			                                             .OfType<IRouteDestinationControl>()
 			                                             .Distinct());
 
-			foreach (IRouteDestinationControl destination in m_SubscribedDestinations)
+			foreach (IRouteDestinationControl destination in m_SubscribedDestinationControls)
 				Subscribe(destination);
 		}
 
 		/// <summary>
 		/// Unsubscribe from the previous destination control events.
 		/// </summary>
-		private void UnsubscribeDestinations()
+		private void UnsubscribeDestinationControls()
 		{
-			foreach (IRouteDestinationControl destinationControl in m_SubscribedDestinations)
+			foreach (IRouteDestinationControl destinationControl in m_SubscribedDestinationControls)
 				Unsubscribe(destinationControl);
-			m_SubscribedDestinations.Clear();
+			m_SubscribedDestinationControls.Clear();
 		}
 
 		/// <summary>
@@ -1288,31 +1288,31 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#endregion
 
-		#region Source Callbacks
+		#region Source Control Callbacks
 
 		/// <summary>
 		/// Unsubscribe from the previous source controls and subscribe to the current source events.
 		/// </summary>
-		private void SubscribeSources()
+		private void SubscribeSourceControls()
 		{
-			UnsubscribeSources();
+			UnsubscribeSourceControls();
 
-			m_SubscribedSources.AddRange(Connections.SelectMany(c => GetControls(c))
-			                                        .OfType<IRouteSourceControl>()
-			                                        .Distinct());
+			m_SubscribedSourceControls.AddRange(Connections.SelectMany(c => GetControls(c))
+			                                               .OfType<IRouteSourceControl>()
+			                                               .Distinct());
 
-			foreach (IRouteSourceControl source in m_SubscribedSources)
+			foreach (IRouteSourceControl source in m_SubscribedSourceControls)
 				Subscribe(source);
 		}
 
 		/// <summary>
 		/// Unsubscribe from the previous source control events.
 		/// </summary>
-		private void UnsubscribeSources()
+		private void UnsubscribeSourceControls()
 		{
-			foreach (IRouteSourceControl control in m_SubscribedSources)
+			foreach (IRouteSourceControl control in m_SubscribedSourceControls)
 				Unsubscribe(control);
-			m_SubscribedSources.Clear();
+			m_SubscribedSourceControls.Clear();
 		}
 
 		/// <summary>
@@ -1449,8 +1449,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_Destinations.SetChildren(Enumerable.Empty<IDestination>());
 
 			SubscribeMidpoints();
-			SubscribeDestinations();
-			SubscribeSources();
+			SubscribeDestinationControls();
+			SubscribeSourceControls();
 
 			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
 		}
@@ -1495,8 +1495,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_Destinations.RebuildCache();
 
 			SubscribeMidpoints();
-			SubscribeDestinations();
-			SubscribeSources();
+			SubscribeDestinationControls();
+			SubscribeSourceControls();
 
 			m_Cache.RebuildCache();
 
