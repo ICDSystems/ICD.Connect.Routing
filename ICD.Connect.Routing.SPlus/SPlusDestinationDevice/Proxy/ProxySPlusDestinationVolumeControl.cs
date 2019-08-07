@@ -321,9 +321,9 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		private void HandleVolumeChangeEvent(VolumeChangeState volumeState)
 		{
 			bool changed = false;
-			changed |= Math.Abs(volumeState.VolumePosition - VolumePosition) < TOLERANCE;
-			changed |= Math.Abs(volumeState.VolumeRaw - VolumeLevel) < TOLERANCE;
-			changed |= volumeState.VolumeString.Equals(VolumeString);
+			changed |= Math.Abs(volumeState.VolumePosition - VolumePosition) > TOLERANCE;
+			changed |= Math.Abs(volumeState.VolumeRaw - VolumeLevel) > TOLERANCE;
+			changed |= !volumeState.VolumeString.Equals(VolumeString);
 
 			if (!changed)
 				return;
