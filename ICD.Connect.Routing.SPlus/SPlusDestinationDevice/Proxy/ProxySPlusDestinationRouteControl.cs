@@ -5,7 +5,9 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API;
+using ICD.Connect.API.Commands;
 using ICD.Connect.API.Info;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices.Proxies.Controls;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
@@ -370,6 +372,57 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 			                 .SubscribeEvent(RouteDestinationControlApi.EVENT_SOURCE_DETECTION_STATE_CHANGE)
 							 .CallMethod(SPlusDestinationRouteControlApi.METHOD_GET_CURRENT_ROUTE_STATE)
 			                 .Complete();
+		}
+
+		#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			RouteDestinationControlConsole.BuildConsoleStatus(this, addRow);
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommands())
+				yield return command;
+
+			foreach (IConsoleCommand command in RouteDestinationControlConsole.GetConsoleCommands(this))
+				yield return command;
+		}
+
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
+		{
+			return base.GetConsoleCommands();
+		}
+
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
+
+			foreach (IConsoleNodeBase node in RouteDestinationControlConsole.GetConsoleNodes(this))
+				yield return node;
+		}
+
+		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
+		{
+			return base.GetConsoleNodes();
 		}
 
 		#endregion
