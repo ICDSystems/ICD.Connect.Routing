@@ -85,7 +85,6 @@
     <Compile Include="SPlusDestinationDevice\Proxy\IProxySPlusDestinationDevice.cs" />
     <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationDevice.cs" />
     <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationDeviceSettings.cs" />
-    <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationPowerControl.cs" />
     <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationRouteControl.cs" />
     <Compile Include="SPlusDestinationDevice\Proxy\ProxySPlusDestinationVolumeControl.cs" />
     <Compile Include="SPlusDestinationDevice\Proxy\SPlusDestinationPowerControlApi.cs" />
