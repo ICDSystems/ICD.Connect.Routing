@@ -208,7 +208,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// </summary>
 		public void VolumeLevelIncrement(float incrementValue)
 		{
-			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_INCREMENT, incrementValue);
+			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_INCREMENT_STEP, incrementValue);
 		}
 
 		/// <summary>
@@ -216,7 +216,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// </summary>
 		public void VolumeLevelDecrement(float decrementValue)
 		{
-			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_DECREMENT, decrementValue);
+			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_DECREMENT_STEP, decrementValue);
 		}
 
 		/// <summary>
