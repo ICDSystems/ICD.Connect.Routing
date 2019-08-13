@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Simpl;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.Controls;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.EventArgs;
+using ICD.Connect.Routing.SPlus.SPlusSwitcher.State;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
@@ -65,7 +69,32 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 				m_SwitcherControl.ClearCache();
 		}
 
-		#endregion
+		/// <summary>
+		/// Clears the current state and sets the given state on the switcher
+		/// </summary>
+		/// <param name="state"></param>
+		public void SetState(SPlusSwitcherState state)
+		{
+			if (m_SwitcherControl == null)
+				return;
+
+			foreach (ConnectorInfo input in m_SwitcherControl.GetInputs())
+			{
+				m_SwitcherControl.SetSignalDetectedState(input.Address, state.DetectedInputs.Contains(input.Address));
+			}
+
+			foreach (ConnectorInfo output in m_SwitcherControl.GetOutputs())
+			{
+				foreach (
+					eConnectionType layer in EnumUtils.GetFlagsExceptNone(m_SwitcherControl.SwitcherLayers & output.ConnectionType))
+				{
+					int? input = GetInputNullableFromState(state, output.Address, layer);
+					m_SwitcherControl.SetInputForOutput(output.Address, input, layer);
+				}
+			}
+		}
+
+	#endregion
 
 		#endregion
 
@@ -91,6 +120,35 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 		#endregion
 
 		#endregion
+
+		private static int? GetInputNullableFromState(SPlusSwitcherState state, int outputAddress, eConnectionType type)
+		{
+			if (EnumUtils.HasMultipleFlags(type))
+				throw new ArgumentException("type can only have one flag");
+
+			Dictionary<int, int> lookupDict;
+
+			switch (type)
+			{
+				case eConnectionType.Audio:
+					lookupDict = state.AudioOutputRouting;
+					break;
+				case eConnectionType.Video:
+					lookupDict = state.VideoOutputRouting;
+					break;
+				case eConnectionType.Usb:
+					lookupDict = state.UsbOutputRouting;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException("type");
+			}
+
+			int input;
+
+			if (lookupDict.TryGetValue(outputAddress, out input))
+				return input;
+			return null;
+		}
 
 		#region Settings
 

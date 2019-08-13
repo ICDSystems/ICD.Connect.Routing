@@ -18,6 +18,7 @@
 		public const string METHOD_SET_SIGNAL_DETECTED_STATE_FEEDBACK = "SetSignalDetectedStateFeedback";
 		public const string METHOD_SET_INPUT_FOR_OUTPUT_FEEDBACK = "SetInputForOutputFeedback";
 		public const string METHOD_CLEAR_CACHE = "ClearCache";
+		public const string METHOD_SET_STATE = "SetState";
 
 		public const string METHOD_SET_SIGNAL_DETECTED_STATE_FEEDBACK_HELP =
 			"Called for S+ to tell the device of signal detection feedback";
@@ -25,6 +26,8 @@
 			"Called for S+ to tell teh device of routing feedback";
 		public const string METHOD_CLEAR_CACHE_HELP =
 			"Called for S+ to clear the switcher cache";
+		public const string METHOD_SET_STATE_HELP =
+			"Called for S+ to set the swticher state";
 
 		#endregion
 	}

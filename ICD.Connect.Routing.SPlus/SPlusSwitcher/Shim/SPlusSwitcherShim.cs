@@ -5,6 +5,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.SPlusShims;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.EventArgs;
+using ICD.Connect.Routing.SPlus.SPlusSwitcher.State;
 
 namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Shim
 {
@@ -63,6 +64,16 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Shim
 				Originator.ClearCache();
 		}
 
+		[PublicAPI("S+")]
+		public void SetState(ushort[] inputsDetected, ushort[] audioOutFeedback, ushort[] videoOutFeedbak, ushort[] usbOutFeedback)
+		{
+			if (Originator == null)
+				return;
+
+			SPlusSwitcherState state = new SPlusSwitcherState(inputsDetected, audioOutFeedback, videoOutFeedbak, usbOutFeedback);
+			Originator.SetState(state);
+		}
+
 		#endregion
 
 		#endregion
@@ -100,7 +111,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Shim
 
 		private void OriginatorOnSetRoute(object sender, SetRouteApiEventArgs args)
 		{
-			var callback = SetRoute;
+			SetRouteDelegate callback = SetRoute;
 			if (callback == null)
 				return;
 
@@ -115,7 +126,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Shim
 
 		private void OriginatorOnClearRoute(object sender, ClearRouteApiEventArgs args)
 		{
-			var callback = SetRoute;
+			SetRouteDelegate callback = SetRoute;
 			if (callback == null)
 				return;
 

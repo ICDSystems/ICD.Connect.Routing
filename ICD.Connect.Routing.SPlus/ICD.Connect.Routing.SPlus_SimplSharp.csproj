@@ -104,6 +104,8 @@
     <Compile Include="SPlusSwitcher\Proxy\ProxySPlusSwitcherDeviceSettings.cs" />
     <Compile Include="SPlusSwitcher\Proxy\SPlusSwitcherApi.cs" />
     <Compile Include="SPlusSwitcher\Shim\SPlusSwitcherShim.cs" />
+    <Compile Include="SPlusSwitcher\State\SPlusSwitcherState.cs" />
+    <Compile Include="SPlusSwitcher\State\SPlusSwitcherStateConverter.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>

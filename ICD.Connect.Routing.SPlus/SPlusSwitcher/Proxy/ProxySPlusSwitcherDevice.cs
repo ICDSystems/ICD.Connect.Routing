@@ -5,6 +5,7 @@ using ICD.Connect.API.Info;
 using ICD.Connect.Devices.Simpl;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.EventArgs;
+using ICD.Connect.Routing.SPlus.SPlusSwitcher.State;
 
 namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Proxy
 {
@@ -42,6 +43,11 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Proxy
 		public void ClearCache()
 		{
 			CallMethod(SPlusSwitcherApi.METHOD_CLEAR_CACHE);
+		}
+
+		public void SetState(SPlusSwitcherState state)
+		{
+			CallMethod(SPlusSwitcherApi.METHOD_SET_STATE, state);
 		}
 
 		#endregion
