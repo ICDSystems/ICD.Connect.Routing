@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [15.0.0] - 2019-08-15
+### Changed
+ - Substantial changes to facillitate Multi-Krang switchers
+
 ## [14.3.0] - 2019-08-15
 ### Added
  - Added Overload method to unroute connections based on their endpoint info
