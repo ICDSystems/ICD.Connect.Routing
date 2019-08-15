@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [14.3.0] - 2019-08-15
 ### Added
  - Added Overload method to unroute connections based on their endpoint info
  - Added features for efficiently determining if there is a path from a given source to destination
@@ -37,6 +39,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [14.0.0] - 2019-01-10
 ### Added
  - Added port configuration features to routing devices
+
+## [13.12.1] - 2019-08-05
+### Changed
+ - Fixed NVX IPID serialization
+
+## [13.12.0] - 2019-08-02
+### Added
+ - Adding event to ISourceDestinationBaseCollection for when a source/destination enable/disable state changes
+ - IRoutingGraph exposes FindActivePaths overload
 
 ## [13.11.0] - 2019-07-25
 ### Added

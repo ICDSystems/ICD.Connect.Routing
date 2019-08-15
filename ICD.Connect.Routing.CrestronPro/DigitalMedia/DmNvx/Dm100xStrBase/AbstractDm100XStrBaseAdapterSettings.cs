@@ -44,9 +44,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 			base.WriteElements(writer);
 
 			writer.WriteElementString(IPID_ELEMENT, Ipid == null ? null : StringUtils.ToIpIdString((byte)Ipid));
-			writer.WriteElementString(ENDPOINT_ID_ELEMENT, StringUtils.ToString(EndpointId));
-			writer.WriteElementString(DIRECTOR_ID_ELEMENT, StringUtils.ToString(DirectorId));
-			writer.WriteElementString(DOMAIN_ID_ELEMENT, StringUtils.ToString(DomainId));
+			writer.WriteElementString(ENDPOINT_ID_ELEMENT, IcdXmlConvert.ToString(EndpointId));
+			writer.WriteElementString(DIRECTOR_ID_ELEMENT, IcdXmlConvert.ToString(DirectorId));
+			writer.WriteElementString(DOMAIN_ID_ELEMENT, IcdXmlConvert.ToString(DomainId));
 		}
 
 		/// <summary>

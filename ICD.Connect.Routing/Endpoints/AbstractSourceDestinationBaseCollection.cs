@@ -1,11 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Comparers;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings.Originators;
+using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Endpoints
 {
@@ -13,6 +16,11 @@ namespace ICD.Connect.Routing.Endpoints
 	                                                                   ISourceDestinationBaseCollection<T>
 		where T : class, ISourceDestinationBase
 	{
+		/// <summary>
+		/// Raised when the disabled state of a source destination base changes.
+		/// </summary>
+		public event EventHandler<SourceDestinationBaseDisabledStateChangedEventArgs> OnSourceDestinationBaseDisabledStateChanged;
+
 		private readonly IcdOrderedDictionary<EndpointInfo, List<T>> m_EndpointCache;
 		private readonly IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, List<T>>> m_EndpointTypeCache;
 		private readonly SafeCriticalSection m_EndpointCacheSection;
@@ -121,12 +129,60 @@ namespace ICD.Connect.Routing.Endpoints
 							childTypeCache.AddSorted(child, m_ChildIdComparer);
 						}
 					}
+
+					Subscribe(child);
 				}
 			}
 			finally
 			{
 				m_EndpointCacheSection.Leave();
 			}
+		}
+
+		/// <summary>
+		/// Called when children are added to the collection before any events are raised.
+		/// </summary>
+		/// <param name="children"></param>
+		protected override void ChildrenAdded(IEnumerable<T> children)
+		{
+			IList<T> childList = children as IList<T> ?? children.ToArray();
+
+			base.ChildrenRemoved(childList);
+
+			foreach (T child in childList)
+				Subscribe(child);
+		}
+
+		/// <summary>
+		/// Called when children are removed from the collection before any events are raised.
+		/// </summary>
+		/// <param name="children"></param>
+		protected override void ChildrenRemoved(IEnumerable<T> children)
+		{
+			IList<T> childList = children as IList<T> ?? children.ToArray();
+
+			base.ChildrenRemoved(childList);
+
+			foreach (T child in childList)
+				Unsubscribe(child);
+		}
+
+		private void Subscribe(T child)
+		{
+			child.OnDisableStateChanged += ChildOnDisableStateChanged;
+		}
+
+		private void Unsubscribe(T child)
+		{
+			child.OnDisableStateChanged -= ChildOnDisableStateChanged;
+		}
+
+		private void ChildOnDisableStateChanged(object sender, BoolEventArgs args)
+		{
+			OnSourceDestinationBaseDisabledStateChanged
+				.Raise(this,
+				       new SourceDestinationBaseDisabledStateChangedEventArgs((ISourceDestinationBase)sender,
+				                                                              args.Data));
 		}
 	}
 }

@@ -1,12 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings.Originators;
+using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Endpoints
 {
 	public interface ISourceDestinationBaseCollection<T> : IOriginatorCollection<T>
 		where T : class, ISourceDestinationBase
 	{
+		/// <summary>
+		/// Raised when the disabled state of a source destination base changes.
+		/// </summary>
+		event EventHandler<SourceDestinationBaseDisabledStateChangedEventArgs> OnSourceDestinationBaseDisabledStateChanged;
+
 		/// <summary>
 		/// Gets the child with the given endpoint info.
 		/// </summary>
