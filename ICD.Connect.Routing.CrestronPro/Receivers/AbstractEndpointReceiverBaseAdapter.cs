@@ -1,5 +1,6 @@
 ﻿using System;
 using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Settings;
@@ -15,7 +16,6 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
 using ICD.Common.Utils.Services.Logging;
-using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers
@@ -119,67 +119,21 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		public void SetScaler(TReceiver scaler, int? parentId)
 		{
 			Unsubscribe(Receiver);
-			Unregister(Receiver);
+
+			if (Receiver != null)
+				GenericBaseUtils.TearDown(Receiver);
 
 			m_ParentId = parentId;
 			Receiver = scaler;
 
-			Register(Receiver);
+			eDeviceRegistrationUnRegistrationResponse result;
+			if (Receiver != null && !GenericBaseUtils.SetUp(Receiver, this, out result))
+				Log(eSeverity.Error, "Unable to register {0} - {1}", Receiver.GetType().Name, result);
+
 			Subscribe(Receiver);
 
 			UpdateCachedOnlineStatus();
 		}
-
-		/// <summary>
-		/// Unregisters the given scaler.
-		/// </summary>
-		/// <param name="scaler"></param>
-		private void Unregister(TReceiver scaler)
-		{
-			if (scaler == null || !scaler.Registered)
-				return;
-
-			scaler.UnRegister();
-
-			try
-			{
-				scaler.Dispose();
-			}
-			catch
-			{
-			}
-		}
-
-		/// <summary>
-		/// Registers the given scaler and re-registers the DM parent.
-		/// </summary>
-		/// <param name="scaler"></param>
-		private void Register(TReceiver scaler)
-		{
-			if (scaler == null || scaler.Registered)
-				return;
-
-			if (Name != null)
-				scaler.Description = Name;
-
-			eDeviceRegistrationUnRegistrationResponse result = scaler.Register();
-			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-			{
-				Log(eSeverity.Error, "Unable to register {0} - {1}", scaler.GetType().Name, result);
-				return;
-			}
-
-			GenericDevice parent = scaler.Parent as GenericDevice;
-			if (parent == null)
-				return;
-
-			eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
-			if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
-			{
-				Log(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
-			}
-		}
-
 #endif
 
 		#endregion

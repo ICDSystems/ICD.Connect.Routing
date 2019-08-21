@@ -1,6 +1,7 @@
 ﻿using System;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
@@ -125,12 +126,17 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		public void SetTransmitter(TTransmitter transmitter, int? parentId)
 		{
 			Unsubscribe(Transmitter);
-			Unregister(Transmitter);
+
+			if (Transmitter != null)
+				GenericBaseUtils.TearDown(Transmitter);
 
 			m_ParentId = parentId;
 			Transmitter = transmitter;
 
-			Register(Transmitter);
+			eDeviceRegistrationUnRegistrationResponse result;
+			if (Transmitter != null && !GenericBaseUtils.SetUp(Transmitter, this, out result))
+				Log(eSeverity.Error, "Unable to register {0} - {1}", Transmitter.GetType().Name, result);
+
 			Subscribe(Transmitter);
 
 			ConfigureTransmitter(Transmitter);
@@ -173,56 +179,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <param name="transmitter"></param>
 		protected virtual void ConfigureTransmitter(TTransmitter transmitter)
 		{
-		}
-
-		/// <summary>
-		/// Unregisters the given transmitter.
-		/// </summary>
-		/// <param name="transmitter"></param>
-		private void Unregister(TTransmitter transmitter)
-		{
-			if (transmitter == null || !transmitter.Registered)
-				return;
-
-			transmitter.UnRegister();
-
-			try
-			{
-				transmitter.Dispose();
-			}
-			catch
-			{
-			}
-		}
-
-		/// <summary>
-		/// Registers the given transmitter and re-registers the DM parent.
-		/// </summary>
-		/// <param name="transmitter"></param>
-		private void Register(TTransmitter transmitter)
-		{
-			if (transmitter == null || transmitter.Registered)
-				return;
-
-			if (Name != null)
-				transmitter.Description = Name;
-
-			eDeviceRegistrationUnRegistrationResponse result = transmitter.Register();
-			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-			{
-				Log(eSeverity.Error, "Unable to register {0} - {1}", transmitter.GetType().Name, result);
-				return;
-			}
-
-			GenericDevice parent = transmitter.Parent as GenericDevice;
-			if (parent == null)
-				return;
-
-			eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
-			if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
-			{
-				Log(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
-			}
 		}
 #endif
 

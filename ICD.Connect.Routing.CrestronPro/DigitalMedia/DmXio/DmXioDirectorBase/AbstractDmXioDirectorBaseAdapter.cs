@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Settings;
+﻿using ICD.Connect.Misc.CrestronPro.Utils;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using System;
 using Crestron.SimplSharpPro;
@@ -96,11 +97,16 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 		public void SetDirector(TDirector switcher)
 		{
 			Unsubscribe(Director);
-			Unregister(Director);
+
+			if (Director != null)
+				GenericBaseUtils.TearDown(Director);
 
 			Director = switcher;
 
-			Register(Director);
+			eDeviceRegistrationUnRegistrationResponse result;
+			if (Director != null && !GenericBaseUtils.SetUp(Director, this, out result))
+				Log(eSeverity.Error, "Unable to register {0} - {1}", Director.GetType().Name, result);
+
 			Subscribe(Director);
 
 			UpdateCachedOnlineStatus();
@@ -117,43 +123,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 				throw new InvalidOperationException("Wrapped Director is null");
 
 			return m_Director.Domain[id];
-		}
-
-		/// <summary>
-		/// Unregisters the given director.
-		/// </summary>
-		/// <param name="director"></param>
-		private void Unregister(TDirector director)
-		{
-			if (director == null || !director.Registered)
-				return;
-
-			director.UnRegister();
-
-			try
-			{
-				director.Dispose();
-			}
-			catch
-			{
-			}
-		}
-
-		/// <summary>
-		/// Registers the given director.
-		/// </summary>
-		/// <param name="director"></param>
-		private void Register(TDirector director)
-		{
-			if (director == null || director.Registered)
-				return;
-
-			if (Name != null)
-				director.Description = Name;
-
-			eDeviceRegistrationUnRegistrationResponse result = director.Register();
-			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-				Log(eSeverity.Error, "Unable to register {0} - {1}", director.GetType().Name, result);
 		}
 #endif
 

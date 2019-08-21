@@ -4,6 +4,7 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
@@ -11,7 +12,6 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
-using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
@@ -100,68 +100,22 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		public void SetDevice(TDevice device, int? parentId, int? endpointId)
 		{
 			Unsubscribe(Device);
-			Unregister(Device);
+
+			if (Device != null)
+				GenericBaseUtils.TearDown(Device);
 
 			m_ParentId = parentId;
 			m_EndpointId = endpointId;
 			Device = device;
 
-			Register(Device);
+			eDeviceRegistrationUnRegistrationResponse result;
+			if (Device != null && !GenericBaseUtils.SetUp(Device, this, out result))
+				Log(eSeverity.Error, "Unable to register {0} - {1}", Device.GetType().Name, result);
+
 			Subscribe(Device);
 
 			UpdateCachedOnlineStatus();
 		}
-
-		/// <summary>
-		/// Unregisters the given device.
-		/// </summary>
-		/// <param name="device"></param>
-		private void Unregister(TDevice device)
-		{
-			if (device == null || !device.Registered)
-				return;
-
-			device.UnRegister();
-
-			try
-			{
-				device.Dispose();
-			}
-			catch
-			{
-			}
-		}
-
-		/// <summary>
-		/// Registers the given device and re-registers the parent.
-		/// </summary>
-		/// <param name="device"></param>
-		private void Register(TDevice device)
-		{
-			if (device == null || device.Registered)
-				return;
-
-			if (Name != null)
-				device.Description = Name;
-
-			eDeviceRegistrationUnRegistrationResponse result = device.Register();
-			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-			{
-				Log(eSeverity.Error, "Unable to register {0} - {1}", device.GetType().Name, result);
-				return;
-			}
-
-			GenericDevice parent = device.Parent as GenericDevice;
-			if (parent == null)
-				return;
-
-			eDeviceRegistrationUnRegistrationResponse parentResult = parent.ReRegister();
-			if (parentResult != eDeviceRegistrationUnRegistrationResponse.Success)
-			{
-				Log(eSeverity.Error, "Unable to register parent {0} - {1}", parent.GetType().Name, parentResult);
-			}
-		}
-
 #endif
 
 		#endregion

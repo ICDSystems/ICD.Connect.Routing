@@ -3,6 +3,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Settings;
 #if SIMPLSHARP
@@ -87,30 +88,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 			Unsubscribe(Streamer);
 
 			if (Streamer != null)
-			{
-				if (Streamer.Registered)
-					Streamer.UnRegister();
-
-				try
-				{
-					Streamer.Dispose();
-				}
-				catch
-				{
-				}
-			}
+				GenericBaseUtils.TearDown(Streamer);
 
 			Streamer = streamer;
 
-			if (Streamer != null && !Streamer.Registered)
-			{
-				if (Name != null)
-					Streamer.Description = Name;
-
-				eDeviceRegistrationUnRegistrationResponse result = Streamer.Register();
-				if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-					Log(eSeverity.Error, "Unable to register {0} - {1}", Streamer.GetType().Name, result);
-			}
+			eDeviceRegistrationUnRegistrationResponse result;
+			if (Streamer != null && !GenericBaseUtils.SetUp(Streamer, this, out result))
+				Log(eSeverity.Error, "Unable to register {0} - {1}", Streamer.GetType().Name, result);
 
 			Subscribe(Streamer);
 

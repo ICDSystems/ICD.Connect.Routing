@@ -4,6 +4,7 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
+using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -97,53 +98,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		protected void SetSwitcher(TSwitcher switcher)
 		{
 			Unsubscribe(Switcher);
-			Unregister(Switcher);
+
+			if (Switcher != null)
+				GenericBaseUtils.TearDown(Switcher);
 
 			Switcher = switcher;
 
-			Register(Switcher);
-			Subscribe(Switcher);
+			eDeviceRegistrationUnRegistrationResponse result;
+			if (Switcher != null && !GenericBaseUtils.SetUp(Switcher, this, out result))
+				Log(eSeverity.Error, "Unable to register {0} - {1}", Switcher.GetType().Name, result);
 
 			ConfigureSwitcher(Switcher);
 
 			UpdateCachedOnlineStatus();
-		}
-
-		/// <summary>
-		/// Unregisters the given switcher.
-		/// </summary>
-		/// <param name="switcher"></param>
-		private void Unregister(TSwitcher switcher)
-		{
-			if (switcher == null || !switcher.Registered)
-				return;
-
-			switcher.UnRegister();
-
-			try
-			{
-				switcher.Dispose();
-			}
-			catch
-			{
-			}
-		}
-
-		/// <summary>
-		/// Registers the given switcher.
-		/// </summary>
-		/// <param name="switcher"></param>
-		private void Register(TSwitcher switcher)
-		{
-			if (switcher == null || switcher.Registered)
-				return;
-
-			if (Name != null)
-				switcher.Description = Name;
-
-			eDeviceRegistrationUnRegistrationResponse result = switcher.Register();
-			if (result != eDeviceRegistrationUnRegistrationResponse.Success)
-				Log(eSeverity.Error, "Unable to register {0} - {1}", switcher.GetType().Name, result);
 		}
 
 		/// <summary>
