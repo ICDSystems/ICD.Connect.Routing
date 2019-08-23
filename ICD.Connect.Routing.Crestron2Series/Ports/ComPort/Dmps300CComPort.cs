@@ -26,7 +26,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		};
 
 		private readonly IComSpecProperties m_ComSpecProperties;
-		private readonly AsyncTcpClient m_Client;
+		private readonly IcdTcpClient m_Client;
 
 		private readonly ComSpec m_ComSpec;
 
@@ -94,7 +94,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 			m_ComSpec = s_DefaultComSpec.Copy();
 
 			m_ComSpecProperties = new ComSpecProperties();
-			m_Client = new AsyncTcpClient();
+			m_Client = new IcdTcpClient();
 
 			Subscribe(m_Client);
 		}
@@ -168,13 +168,13 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 
 		#region Client Callbacks
 
-		private void Subscribe(AsyncTcpClient client)
+		private void Subscribe(IcdTcpClient client)
 		{
 			client.OnConnectedStateChanged += ClientOnConnectedStateChanged;
 			client.OnSerialDataReceived += ClientOnSerialDataReceived;
 		}
 
-		private void Unsubscribe(AsyncTcpClient client)
+		private void Unsubscribe(IcdTcpClient client)
 		{
 			client.OnConnectedStateChanged -= ClientOnConnectedStateChanged;
 			client.OnSerialDataReceived -= ClientOnSerialDataReceived;

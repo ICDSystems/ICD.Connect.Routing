@@ -18,7 +18,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 	{
 		public event EventHandler<XSigEventArgs> OnSigEvent;
 
-		private readonly AsyncTcpClient m_Client;
+		private readonly IcdTcpClient m_Client;
 		private readonly XSigSerialBuffer m_Buffer;
 		private readonly ConnectionStateManager m_ConnectionStateManager;
 
@@ -41,7 +41,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		/// </summary>
 		protected AbstractDmps300CDevice()
 		{
-            m_Client = new AsyncTcpClient();
+            m_Client = new IcdTcpClient();
 			m_Buffer = new XSigSerialBuffer();
 
 			Subscribe(m_Buffer);

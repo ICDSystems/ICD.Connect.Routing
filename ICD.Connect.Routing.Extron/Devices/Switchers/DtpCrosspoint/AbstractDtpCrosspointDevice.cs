@@ -207,7 +207,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			if (portOffset == null)
 				return null;
 
-			return new AsyncTcpClient
+			return new IcdTcpClient
 			{
 				Address = Address,
 				Port = (ushort)(m_StartingComPort + portOffset)
