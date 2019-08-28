@@ -86,7 +86,41 @@ namespace ICD.Connect.Routing.Endpoints
 			}
 		}
 
-		public void RebuildCache()
+		#region Private Methods
+
+		/// <summary>
+		/// Called when children are added to the collection before any events are raised.
+		/// </summary>
+		/// <param name="children"></param>
+		protected override void ChildrenAdded(IEnumerable<T> children)
+		{
+			IList<T> childList = children as IList<T> ?? children.ToArray();
+
+			base.ChildrenRemoved(childList);
+
+			foreach (T child in childList)
+				Subscribe(child);
+
+			RebuildCache();
+		}
+
+		/// <summary>
+		/// Called when children are removed from the collection before any events are raised.
+		/// </summary>
+		/// <param name="children"></param>
+		protected override void ChildrenRemoved(IEnumerable<T> children)
+		{
+			IList<T> childList = children as IList<T> ?? children.ToArray();
+
+			base.ChildrenRemoved(childList);
+
+			foreach (T child in childList)
+				Unsubscribe(child);
+
+			RebuildCache();
+		}
+
+		private void RebuildCache()
 		{
 			m_EndpointCacheSection.Enter();
 
@@ -139,33 +173,9 @@ namespace ICD.Connect.Routing.Endpoints
 			}
 		}
 
-		/// <summary>
-		/// Called when children are added to the collection before any events are raised.
-		/// </summary>
-		/// <param name="children"></param>
-		protected override void ChildrenAdded(IEnumerable<T> children)
-		{
-			IList<T> childList = children as IList<T> ?? children.ToArray();
+		#endregion
 
-			base.ChildrenRemoved(childList);
-
-			foreach (T child in childList)
-				Subscribe(child);
-		}
-
-		/// <summary>
-		/// Called when children are removed from the collection before any events are raised.
-		/// </summary>
-		/// <param name="children"></param>
-		protected override void ChildrenRemoved(IEnumerable<T> children)
-		{
-			IList<T> childList = children as IList<T> ?? children.ToArray();
-
-			base.ChildrenRemoved(childList);
-
-			foreach (T child in childList)
-				Unsubscribe(child);
-		}
+		#region Child Callbacks
 
 		private void Subscribe(T child)
 		{
@@ -184,5 +194,7 @@ namespace ICD.Connect.Routing.Endpoints
 				       new SourceDestinationBaseDisabledStateChangedEventArgs((ISourceDestinationBase)sender,
 				                                                              args.Data));
 		}
+
+		#endregion
 	}
 }

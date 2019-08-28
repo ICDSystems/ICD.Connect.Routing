@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Removed
  - Removed error logging from the DefaultPathfinder when failing to find a path; should be handled by consumers
 
+## [14.2.2] - 2019-08-28
+### Changed
+ - Routing caches are rebuilt when children are changed
+
 ## [14.2.1] - 2019-05-30
 ### Changed
  - RoutingCache fix for potential infinite recursion
