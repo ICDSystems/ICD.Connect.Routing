@@ -638,7 +638,29 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		#region Caching
 
-		public void RebuildCache()
+		/// <summary>
+		/// Called when children are added to the collection before any events are raised.
+		/// </summary>
+		/// <param name="children"></param>
+		protected override void ChildrenAdded(IEnumerable<Connection> children)
+		{
+			base.ChildrenAdded(children);
+
+			RebuildCache();
+		}
+
+		/// <summary>
+		/// Called when children are removed from the collection before any events are raised.
+		/// </summary>
+		/// <param name="children"></param>
+		protected override void ChildrenRemoved(IEnumerable<Connection> children)
+		{
+			base.ChildrenRemoved(children);
+
+			RebuildCache();
+		}
+
+		private void RebuildCache()
 		{
 			m_ConnectionsSection.Enter();
 
@@ -652,27 +674,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				{
 					// Build the source cache
 					DeviceControlInfo sourceInfo = new DeviceControlInfo(child.Source.Device, child.Source.Control);
-
-					IcdOrderedDictionary<int, Connection> sourceAddressToConnection;
-					if (!m_OutputConnectionLookup.TryGetValue(sourceInfo, out sourceAddressToConnection))
-					{
-						sourceAddressToConnection = new IcdOrderedDictionary<int, Connection>();
-						m_OutputConnectionLookup.Add(sourceInfo, sourceAddressToConnection);
-					}
-
-					sourceAddressToConnection.Add(child.Source.Address, child);
+					m_OutputConnectionLookup.GetOrAddNew(sourceInfo).Add(child.Source.Address, child);
 
 					// Build the destination cache
 					DeviceControlInfo destinationInfo = new DeviceControlInfo(child.Destination.Device, child.Destination.Control);
-
-					IcdOrderedDictionary<int, Connection> destinationAddressToConnection;
-					if (!m_InputConnectionLookup.TryGetValue(destinationInfo, out destinationAddressToConnection))
-					{
-						destinationAddressToConnection = new IcdOrderedDictionary<int, Connection>();
-						m_InputConnectionLookup.Add(destinationInfo, destinationAddressToConnection);
-					}
-
-					destinationAddressToConnection.Add(child.Destination.Address, child);
+					m_InputConnectionLookup.GetOrAddNew(destinationInfo).Add(child.Destination.Address, child);
 				}
 
 				RebuildFilteredConnectionsMap();

@@ -1481,18 +1481,15 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			// Populate the collections before moving on to loading the next types of originators
 			IEnumerable<Connection> connections = GetConnections(settings, factory);
 			m_Connections.SetChildren(connections);
-			m_Connections.RebuildCache();
 
 			IEnumerable<StaticRoute> staticRoutes = GetStaticRoutes(settings, factory);
 			m_StaticRoutes.SetChildren(staticRoutes);
 
 			IEnumerable<ISource> sources = GetSources(settings, factory);
 			m_Sources.SetChildren(sources);
-			m_Sources.RebuildCache();
 
 			IEnumerable<IDestination> destinations = GetDestinations(settings, factory);
 			m_Destinations.SetChildren(destinations);
-			m_Destinations.RebuildCache();
 
 			SubscribeMidpoints();
 			SubscribeDestinationControls();
