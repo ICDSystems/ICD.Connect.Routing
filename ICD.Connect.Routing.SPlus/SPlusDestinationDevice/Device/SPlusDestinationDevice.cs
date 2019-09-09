@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Devices.Simpl;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls;
@@ -57,7 +58,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 				return;
 
 			// If we have power contorl, only set active input if powered on
-			if (PowerControl == null || PowerControl.IsPowered)
+			if (PowerControl == null || PowerControl.PowerState == ePowerState.PowerOn)
 				RouteControl.SetActiveInputFeedback(input);
 		}
 
@@ -100,7 +101,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 		#region Methods From Shim
 
-		public void SetPowerStateFeedback(bool state)
+		public void SetPowerStateFeedback(ePowerState state)
 		{
 			if (PowerControl == null)
 				return;
@@ -109,7 +110,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 			
 			// When powering on, request shim to resend active input
 			// When powering off, clear active input
-			if (state)
+			if (state == ePowerState.PowerOn)
 				OnResendActiveInput.Raise(this, new ResendActiveInputEventArgs());
 			else
 			{
@@ -235,15 +236,15 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 		private void Subscribe(SPlusDestinationPowerControl powerControl)
 		{
-			powerControl.OnIsPoweredChanged += PowerControlOnIsPoweredChanged;
+			powerControl.OnPowerStateChanged += PowerControlOnPowerStateChanged;
 		}
 
 		private void Unsubscribe(SPlusDestinationPowerControl powerControl)
 		{
-			powerControl.OnIsPoweredChanged -= PowerControlOnIsPoweredChanged;
+			powerControl.OnPowerStateChanged -= PowerControlOnPowerStateChanged;
 		}
 
-		private void PowerControlOnIsPoweredChanged(object sender, PowerDeviceControlPowerStateApiEventArgs powerDeviceControlPowerStateApiEventArgs)
+		private void PowerControlOnPowerStateChanged(object sender, PowerDeviceControlPowerStateApiEventArgs powerDeviceControlPowerStateApiEventArgs)
 		{
 			
 		}

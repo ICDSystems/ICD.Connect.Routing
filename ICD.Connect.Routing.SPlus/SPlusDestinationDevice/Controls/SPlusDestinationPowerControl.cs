@@ -32,10 +32,10 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 		/// <summary>
 		/// Sets the power state from the device
 		/// </summary>
-		/// <param name="isPowered"></param>
-		internal void SetPowerStateFeedback(bool isPowered)
+		/// <param name="powerState"></param>
+		internal void SetPowerStateFeedback(ePowerState powerState)
 		{
-			IsPowered = isPowered;
+			PowerState = powerState;
 		}
 	}
 }

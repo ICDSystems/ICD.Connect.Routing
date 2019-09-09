@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.SPlusShims;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs;
 
@@ -50,7 +51,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Shim
 		public void SetPowerStateFeedback(ushort state)
 		{
 			if (Originator != null)
-				Originator.SetPowerStateFeedback(state.ToBool());
+				Originator.SetPowerStateFeedback(state.ToBool() ? ePowerState.PowerOn : ePowerState.PowerOff);
 		}
 
 		[PublicAPI("S+")]
