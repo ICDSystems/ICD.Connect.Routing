@@ -12,16 +12,22 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		private const string STATIC_ROUTES_ELEMENT = "StaticRoutes";
 		private const string SOURCES_ELEMENT = "Sources";
 		private const string DESTINATIONS_ELEMENT = "Destinations";
+		private const string SOURCE_GROUPS_ELEMENT = "SourceGroups";
+		private const string DESTINATION_GROUPS_ELEMENT = "DestinationGroups";
 
 		private const string CONNECTION_ELEMENT = "Connection";
 		private const string STATIC_ROUTE_ELEMENT = "StaticRoute";
 		private const string SOURCE_ELEMENT = "Source";
 		private const string DESTINATION_ELEMENT = "Destination";
+		private const string SOURCE_GROUP_ELEMENT = "SourceGroup";
+		private const string DESTINATION_GROUP_ELEMENT = "DestinationGroup";
 
 		private readonly SettingsCollection m_ConnectionSettings;
 		private readonly SettingsCollection m_StaticRouteSettings;
 		private readonly SettingsCollection m_SourceSettings;
 		private readonly SettingsCollection m_DestinationSettings;
+		private readonly SettingsCollection m_SourceGroupSettings;
+		private readonly SettingsCollection m_DestinationGroupSettings;
 
 		#region Properties
 
@@ -29,6 +35,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		public SettingsCollection StaticRouteSettings { get { return m_StaticRouteSettings; } }
 		public SettingsCollection SourceSettings { get { return m_SourceSettings; } }
 		public SettingsCollection DestinationSettings { get { return m_DestinationSettings; } }
+		public SettingsCollection SourceGroupSettings { get { return m_SourceGroupSettings; } }
+		public SettingsCollection DestinationGroupSettings { get { return m_DestinationGroupSettings; } }
 
 		#endregion
 
@@ -41,6 +49,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_StaticRouteSettings = new SettingsCollection();
 			m_SourceSettings = new SettingsCollection();
 			m_DestinationSettings = new SettingsCollection();
+			m_SourceGroupSettings = new SettingsCollection();
+			m_DestinationGroupSettings = new SettingsCollection();
 		}
 
 		#region Methods
@@ -57,6 +67,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_StaticRouteSettings.ToXml(writer, STATIC_ROUTES_ELEMENT, STATIC_ROUTE_ELEMENT);
 			m_SourceSettings.ToXml(writer, SOURCES_ELEMENT, SOURCE_ELEMENT);
 			m_DestinationSettings.ToXml(writer, DESTINATIONS_ELEMENT, DESTINATION_ELEMENT);
+			m_SourceGroupSettings.ToXml(writer, SOURCE_GROUPS_ELEMENT, SOURCE_GROUP_ELEMENT);
+			m_DestinationGroupSettings.ToXml(writer, DESTINATION_GROUPS_ELEMENT, DESTINATION_GROUP_ELEMENT);
 		}
 
 		/// <summary>
@@ -71,11 +83,15 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			IEnumerable<ISettings> staticRoutes = PluginFactory.GetSettingsFromXml(xml, STATIC_ROUTES_ELEMENT);
 			IEnumerable<ISettings> sources = PluginFactory.GetSettingsFromXml(xml, SOURCES_ELEMENT);
 			IEnumerable<ISettings> destinations = PluginFactory.GetSettingsFromXml(xml, DESTINATIONS_ELEMENT);
+			IEnumerable<ISettings> sourceGroups = PluginFactory.GetSettingsFromXml(xml, SOURCE_GROUPS_ELEMENT);
+			IEnumerable<ISettings> destinationGroups = PluginFactory.GetSettingsFromXml(xml, DESTINATION_GROUPS_ELEMENT);
 
 			AddSettingsLogDuplicates(ConnectionSettings, connections);
 			AddSettingsLogDuplicates(StaticRouteSettings, staticRoutes);
 			AddSettingsLogDuplicates(SourceSettings, sources);
 			AddSettingsLogDuplicates(DestinationSettings, destinations);
+			AddSettingsLogDuplicates(SourceGroupSettings, sourceGroups);
+			AddSettingsLogDuplicates(DestinationGroupSettings, destinationGroups);
 		}
 
 		private void AddSettingsLogDuplicates(SettingsCollection collection, IEnumerable<ISettings> settings)

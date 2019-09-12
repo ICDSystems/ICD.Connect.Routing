@@ -10,6 +10,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		SettingsCollection StaticRouteSettings { get; }
 		SettingsCollection SourceSettings { get; }
 		SettingsCollection DestinationSettings { get; }
+		SettingsCollection SourceGroupSettings { get; }
+		SettingsCollection DestinationGroupSettings { get; }
 
 		#endregion
 	}

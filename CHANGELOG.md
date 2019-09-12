@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
  - Updated IPowerDeviceControls to use PowerState
 
+### Added
+ - Added Source/Destination groups, Source/Destination group collections, and settings
+
 ### Changed
  - Using new GenericBaseUtils to standardize crestron device setup and teardown
 
