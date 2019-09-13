@@ -3,7 +3,7 @@
 namespace ICD.Connect.Routing.Groups.Endpoints.Destinations
 {
 	public abstract class AbstractDestinationGroup<TOriginator, TSettings> :
-		AbstractSourceDestinationBaseGroup<TOriginator, TSettings>, IDestinationGroup<TOriginator>
+		AbstractSourceDestinationBaseGroup<TOriginator, TSettings>, IDestinationGroup
 		where TOriginator : class, IDestination
 		where TSettings : IDestinationGroupSettings, new()
 	{
