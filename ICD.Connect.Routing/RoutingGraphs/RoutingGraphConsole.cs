@@ -149,7 +149,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			bool first = true;
 
-			foreach (ISourceDestinationBase item in group.Items)
+			foreach (IOriginator item in group.GetItems())
 			{
 				string id = first ? group.Id.ToString() : null;
 				string name = first ? group.ToString() : null;
