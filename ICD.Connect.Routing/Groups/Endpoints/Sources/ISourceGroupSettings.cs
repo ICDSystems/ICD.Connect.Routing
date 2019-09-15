@@ -1,6 +1,6 @@
 ﻿namespace ICD.Connect.Routing.Groups.Endpoints.Sources
 {
-	public interface ISourceGroupSettings : ISourceDestinationBaseGroupSettings
+	public interface ISourceGroupSettings : ISourceDestinationGroupCommonSettings
 	{
 	}
 }

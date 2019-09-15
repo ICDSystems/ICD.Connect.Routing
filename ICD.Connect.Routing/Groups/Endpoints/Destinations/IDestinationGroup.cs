@@ -2,7 +2,7 @@
 
 namespace ICD.Connect.Routing.Groups.Endpoints.Destinations
 {
-	public interface IDestinationGroup : ISourceDestinationBaseGroup, IDestinationBase
+	public interface IDestinationGroup : ISourceDestinationGroupCommon, IDestinationBase
 	{
 	}
 }

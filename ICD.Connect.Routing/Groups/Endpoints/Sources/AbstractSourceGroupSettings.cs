@@ -1,6 +1,6 @@
 ﻿namespace ICD.Connect.Routing.Groups.Endpoints.Sources
 {
-	public abstract class AbstractSourceGroupSettings : AbstractSourceDestinationBaseGroupSettings, ISourceGroupSettings
+	public abstract class AbstractSourceGroupSettings : AbstractSourceDestinationGroupCommonSettings, ISourceGroupSettings
 	{
 		protected override string RootElement { get { return "Sources"; } }
 

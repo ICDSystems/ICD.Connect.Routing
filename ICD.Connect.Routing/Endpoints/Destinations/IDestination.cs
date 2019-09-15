@@ -1,6 +1,6 @@
 ﻿namespace ICD.Connect.Routing.Endpoints.Destinations
 {
-	public interface IDestination : ISourceDestinationBase, IDestinationBase
+	public interface IDestination : ISourceDestinationCommon, IDestinationBase
 	{
 	}
 }

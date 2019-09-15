@@ -12,9 +12,9 @@ using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Endpoints
 {
-	public abstract class AbstractSourceDestinationBaseCollection<T> : AbstractOriginatorCollection<T>,
-	                                                                   ISourceDestinationBaseCollection<T>
-		where T : class, ISourceDestinationBase
+	public abstract class AbstractSourceDestinationCommonCollection<T> : AbstractOriginatorCollection<T>,
+	                                                                   ISourceDestinationCommonCollection<T>
+		where T : class, ISourceDestinationCommon
 	{
 		/// <summary>
 		/// Raised when the disabled state of a source destination base changes.
@@ -27,11 +27,10 @@ namespace ICD.Connect.Routing.Endpoints
 
 		private readonly PredicateComparer<T, int> m_ChildIdComparer;
 
-
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		protected AbstractSourceDestinationBaseCollection()
+		protected AbstractSourceDestinationCommonCollection()
 		{
 			m_EndpointCache = new IcdOrderedDictionary<EndpointInfo, List<T>>();
 			m_EndpointTypeCache = new IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, List<T>>>();
@@ -191,7 +190,7 @@ namespace ICD.Connect.Routing.Endpoints
 		{
 			OnSourceDestinationBaseDisabledStateChanged
 				.Raise(this,
-				       new SourceDestinationBaseDisabledStateChangedEventArgs((ISourceDestinationBase)sender,
+				       new SourceDestinationBaseDisabledStateChangedEventArgs((ISourceDestinationCommon)sender,
 				                                                              args.Data));
 		}
 

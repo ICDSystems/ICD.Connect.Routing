@@ -5,10 +5,10 @@ namespace ICD.Connect.Routing.EventArguments
 {
 	public sealed class SourceDestinationBaseDisabledStateChangedEventArgs : EventArgs
 	{
-		public ISourceDestinationBase SourceDestination { get; private set; }
+		public ISourceDestinationCommon SourceDestination { get; private set; }
 		public bool Disabled { get; private set; }
 
-		public SourceDestinationBaseDisabledStateChangedEventArgs(ISourceDestinationBase sourceDestination, bool disbled)
+		public SourceDestinationBaseDisabledStateChangedEventArgs(ISourceDestinationCommon sourceDestination, bool disbled)
 		{
 			SourceDestination = sourceDestination;
 			Disabled = disbled;

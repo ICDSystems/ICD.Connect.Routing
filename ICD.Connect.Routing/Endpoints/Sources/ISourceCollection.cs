@@ -1,6 +1,6 @@
 ﻿namespace ICD.Connect.Routing.Endpoints.Sources
 {
-	public interface ISourceCollection : ISourceDestinationBaseCollection<ISource>
+	public interface ISourceCollection : ISourceDestinationCommonCollection<ISource>
 	{
 	}
 }

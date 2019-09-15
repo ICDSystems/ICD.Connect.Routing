@@ -12,17 +12,13 @@ using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.Endpoints
 {
-	public abstract class AbstractSourceDestinationBaseSettings : AbstractSettings, ISourceDestinationBaseSettings
+	public abstract class AbstractSourceDestinationCommonSettings : AbstractSettings, ISourceDestinationCommonSettings
 	{
-		protected const string DEVICE_ELEMENT = "Device";
+		private const string DEVICE_ELEMENT = "Device";
 		private const string CONTROL_ELEMENT = "Control";
 		private const string ADDRESSES_ELEMENT = "Addresses";
 		private const string ADDRESS_ELEMENT = "Address";
 		private const string CONNECTION_TYPE_ELEMENT = "ConnectionType";
-		private const string ORDER_ELEMENT = "Order";
-		private const string DISABLE_ELEMENT = "Disable";
-
-		private int m_Order = int.MaxValue;
 
 		private readonly IcdHashSet<int> m_Addresses;
 
@@ -44,22 +40,12 @@ namespace ICD.Connect.Routing.Endpoints
 		/// </summary>
 		public eConnectionType ConnectionType { get; set; }
 
-		/// <summary>
-		/// Specifies custom ordering of the instance to the end user.
-		/// </summary>
-		public int Order { get { return m_Order; } set { m_Order = value; } }
-
-		/// <summary>
-		/// Shorthand for disabling an instance in the system.
-		/// </summary>
-		public bool Disable { get; set; }
-
 		#endregion
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		protected AbstractSourceDestinationBaseSettings()
+		protected AbstractSourceDestinationCommonSettings()
 		{
 			m_Addresses = new IcdHashSet<int>();
 		}
@@ -97,12 +83,6 @@ namespace ICD.Connect.Routing.Endpoints
 			XmlUtils.WriteListToXml(writer, GetAddresses().Order(), ADDRESSES_ELEMENT, ADDRESS_ELEMENT);
 
 			writer.WriteElementString(CONNECTION_TYPE_ELEMENT, ConnectionType.ToString());
-
-			if (Order != int.MaxValue)
-				writer.WriteElementString(ORDER_ELEMENT, IcdXmlConvert.ToString(Order));
-
-			if (Disable)
-				writer.WriteElementString(DISABLE_ELEMENT, IcdXmlConvert.ToString(Disable));
 		}
 
 		/// <summary>
@@ -118,8 +98,6 @@ namespace ICD.Connect.Routing.Endpoints
 			ConnectionType =
 				XmlUtils.TryReadChildElementContentAsEnum<eConnectionType>(xml, CONNECTION_TYPE_ELEMENT, true) ??
 				eConnectionType.Audio | eConnectionType.Video;
-			Order = XmlUtils.TryReadChildElementContentAsInt(xml, ORDER_ELEMENT) ?? 0;
-			Disable = XmlUtils.TryReadChildElementContentAsBoolean(xml, DISABLE_ELEMENT) ?? false;
 
 			IEnumerable<int> addresses =
 				XmlUtils.ReadListFromXml(xml, ADDRESSES_ELEMENT, ADDRESS_ELEMENT, e => XmlUtils.ReadElementContentAsInt(e));

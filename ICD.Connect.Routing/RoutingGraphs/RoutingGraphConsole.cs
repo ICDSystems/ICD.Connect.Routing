@@ -133,7 +133,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			return builder.ToString();
 		}
 
-		private static void PrintSourceDestinationBaseGroup(ISourceDestinationBaseGroup group, TableBuilder builder)
+		private static void PrintSourceDestinationBaseGroup(ISourceDestinationGroupCommon group, TableBuilder builder)
 		{
 			if (group == null)
 				throw new ArgumentNullException("group");

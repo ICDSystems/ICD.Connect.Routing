@@ -6,8 +6,8 @@ using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Endpoints
 {
-	public interface ISourceDestinationBaseCollection<T> : IOriginatorCollection<T>
-		where T : class, ISourceDestinationBase
+	public interface ISourceDestinationCommonCollection<T> : IOriginatorCollection<T>
+		where T : class, ISourceDestinationCommon
 	{
 		/// <summary>
 		/// Raised when the disabled state of a source destination base changes.

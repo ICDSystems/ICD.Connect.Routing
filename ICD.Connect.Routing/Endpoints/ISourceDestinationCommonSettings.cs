@@ -4,7 +4,7 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Endpoints
 {
-	public interface ISourceDestinationBaseSettings : ISettings
+	public interface ISourceDestinationCommonSettings : ISettings
 	{
 		/// <summary>
 		/// Gets the endpoint device.
@@ -20,16 +20,6 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Specifies which media types to use for the source.
 		/// </summary>
 		eConnectionType ConnectionType { get; set; }
-
-		/// <summary>
-		/// Specifies custom ordering of the instance to the end user.
-		/// </summary>
-		int Order { get; set; }
-
-		/// <summary>
-		/// Shorthand for disabling an instance in the system.
-		/// </summary>
-		bool Disable { get; set; }
 
 		/// <summary>
 		/// Gets the addresses used by this source/destination.

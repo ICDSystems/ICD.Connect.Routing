@@ -3,17 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
-using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
+using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Routing.Endpoints
 {
-	public abstract class AbstractSourceDestinationBase<TSettings> : AbstractOriginator<TSettings>, ISourceDestinationBase
-		where TSettings : ISourceDestinationBaseSettings, new()
+	public abstract class AbstractSourceDestinationCommon<TSettings> : AbstractOriginator<TSettings>, ISourceDestinationCommon
+		where TSettings : ISourceDestinationCommonSettings, new()
 	{
 		private readonly List<int> m_AddressesOrdered;
 		private readonly List<EndpointInfo> m_EndpointsOrdered;
@@ -23,12 +25,7 @@ namespace ICD.Connect.Routing.Endpoints
 
 		private readonly SafeCriticalSection m_AddressesSection;
 
-		/// <summary>
-		/// Raised when the disable state changes.
-		/// </summary>
-		public event EventHandler<BoolEventArgs> OnDisableStateChanged;
-
-		private bool m_Disable;
+		private ICore m_CachedCore;
 
 		#region Properties
 
@@ -53,33 +50,16 @@ namespace ICD.Connect.Routing.Endpoints
 		public bool Remote { get; set; }
 
 		/// <summary>
-		/// Specifies custom ordering of the instance to the end user.
+		/// Gets the parent core instance.
 		/// </summary>
-		public int Order { get; set; }
-
-		/// <summary>
-		/// Shorthand for disabling an instance in the system.
-		/// </summary>
-		public bool Disable
-		{
-			get { return m_Disable; }
-			set
-			{
-				if (value == m_Disable)
-					return;
-
-				m_Disable = value;
-
-				OnDisableStateChanged.Raise(this, new BoolEventArgs(m_Disable));
-			}
-		}
+		public ICore Core { get { return m_CachedCore = m_CachedCore ?? ServiceProvider.GetService<ICore>(); } }
 
 		#endregion
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
-		protected AbstractSourceDestinationBase()
+		protected AbstractSourceDestinationCommon()
 		{
 			m_AddressesSection = new SafeCriticalSection();
 
@@ -88,17 +68,6 @@ namespace ICD.Connect.Routing.Endpoints
 
 			m_AddressesOrdered = new List<int>();
 			m_EndpointsOrdered = new List<EndpointInfo>();
-		}
-
-		/// <summary>
-		/// Override to release resources.
-		/// </summary>
-		/// <param name="disposing"></param>
-		protected override void DisposeFinal(bool disposing)
-		{
-			OnDisableStateChanged = null;
-
-			base.DisposeFinal(disposing);
 		}
 
 		/// <summary>
@@ -116,6 +85,15 @@ namespace ICD.Connect.Routing.Endpoints
 		}
 
 		#region Methods
+
+		/// <summary>
+		/// Gets the devices for this instance.
+		/// </summary>
+		/// <returns></returns>
+		IEnumerable<IDeviceBase> ISourceDestinationBaseCommon.GetDevices()
+		{
+			yield return Core.Originators.GetChild<IDeviceBase>(Device);
+		}
 
 		/// <summary>
 		/// Gets the addresses used by this source/destination.
