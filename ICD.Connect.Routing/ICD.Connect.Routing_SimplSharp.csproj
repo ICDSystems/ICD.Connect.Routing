@@ -83,6 +83,7 @@
     <Compile Include="Controls\RouteSwitcherControl.cs" />
     <Compile Include="Controls\RouteSwitcherControlConsole.cs" />
     <Compile Include="Controls\RouteSourceControl.cs" />
+    <Compile Include="Endpoints\Destinations\IDestinationBase.cs" />
     <Compile Include="Endpoints\Sources\ISourceBase.cs" />
     <Compile Include="EventArguments\InputStateChangeData.cs" />
     <Compile Include="Groups\Endpoints\AbstractSourceDestinationBaseGroup.cs" />
