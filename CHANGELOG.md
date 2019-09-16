@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [15.1.0] - 2019-09-16
 ### Added
  - Added Source/Destination groups, Source/Destination group collections, and settings
 
