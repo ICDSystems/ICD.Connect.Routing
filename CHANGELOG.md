@@ -5,14 +5,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Changed
- - Updated IPowerDeviceControls to use PowerState
 
 ### Added
  - Added Source/Destination groups, Source/Destination group collections, and settings
 
 ### Changed
  - Using new GenericBaseUtils to standardize crestron device setup and teardown
+ - Updated IPowerDeviceControls to use PowerState
+ 
+### Removed
+ - No longer including control ID in EndpointInfo string representation when 0
 
 ## [15.0.0] - 2019-08-15
 ### Changed

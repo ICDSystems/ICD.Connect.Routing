@@ -61,7 +61,10 @@ namespace ICD.Connect.Routing.Endpoints
 			ReprBuilder builder = new ReprBuilder(this);
 
 			builder.AppendProperty("Device", m_DeviceId);
-			builder.AppendProperty("Control", m_ControlId);
+
+			if (m_ControlId != 0)
+				builder.AppendProperty("Control", m_ControlId);
+
 			builder.AppendProperty("Address", m_Address);
 
 			return builder.ToString();
