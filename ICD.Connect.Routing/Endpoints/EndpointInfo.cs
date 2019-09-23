@@ -95,7 +95,7 @@ namespace ICD.Connect.Routing.Endpoints
 				}
 
 				if (addresses.BinarySearch(endpoint.m_Address) < 0)
-					addresses.AddSorted(endpoint.m_Address);
+					addresses.InsertSorted(endpoint.m_Address);
 			}
 
 			if (deviceControlAddresses.Count == 0)

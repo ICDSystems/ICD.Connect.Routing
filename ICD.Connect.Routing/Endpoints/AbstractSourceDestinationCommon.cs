@@ -130,7 +130,7 @@ namespace ICD.Connect.Routing.Endpoints
 				m_EndpointsOrdered.Clear();
 
 				m_Addresses.AddRange(addresses);
-				m_AddressesOrdered.AddSorted(m_Addresses);
+				m_AddressesOrdered.InsertSorted(m_Addresses);
 
 				foreach (EndpointInfo endpoint in m_AddressesOrdered.Select(i => new EndpointInfo(Device, Control, i)))
 				{

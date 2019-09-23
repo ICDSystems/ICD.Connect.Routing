@@ -140,7 +140,7 @@ namespace ICD.Connect.Routing.Endpoints
 							m_EndpointCache[endpoint] = childCache;
 						}
 
-						childCache.AddSorted(child, m_ChildIdComparer);
+						childCache.InsertSorted(child, m_ChildIdComparer);
 
 						// Add to the typed cache
 						IcdOrderedDictionary<eConnectionType, List<T>> types;
@@ -159,7 +159,7 @@ namespace ICD.Connect.Routing.Endpoints
 								types[combination] = childTypeCache;
 							}
 
-							childTypeCache.AddSorted(child, m_ChildIdComparer);
+							childTypeCache.InsertSorted(child, m_ChildIdComparer);
 						}
 					}
 
