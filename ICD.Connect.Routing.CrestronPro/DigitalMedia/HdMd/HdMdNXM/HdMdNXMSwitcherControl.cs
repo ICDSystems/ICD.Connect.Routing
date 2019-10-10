@@ -42,6 +42,42 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 
 		[CanBeNull] private HdMdNxM m_Switcher;
 
+		private int? m_Inputs;
+
+		private int? m_Outputs;
+
+		public int Inputs
+		{
+			get
+			{
+				if (!m_Inputs.HasValue)
+				{
+					if (m_Switcher == null)
+						return 0;
+
+					m_Inputs = m_Switcher.HdmiInputs.Count;
+				}
+
+				return m_Inputs.Value;
+			}
+		}
+
+		public int Outputs
+		{
+			get
+			{
+				if (!m_Outputs.HasValue)
+				{
+					if (m_Switcher == null)
+						return 0;
+
+					m_Outputs = m_Switcher.HdmiOutputs.Count;
+				}
+
+				return m_Outputs.Value;
+			}
+		}
+
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -278,7 +314,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 		/// <returns></returns>
 		public override bool ContainsInput(int input)
 		{
-			return input >= 1 && input <= 4;
+			return input >= 1 && input <= Inputs;
 		}
 
 		/// <summary>
@@ -300,7 +336,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			return Enumerable.Range(1, 4).Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
+			return Enumerable.Range(1, Inputs).Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
 		}
 
 		/// <summary>
@@ -323,7 +359,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 		/// <returns></returns>
 		public override bool ContainsOutput(int output)
 		{
-			return output >= 1 && output <= 2;
+			return output >= 1 && output <= Outputs;
 		}
 
 		/// <summary>
@@ -332,7 +368,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			return Enumerable.Range(1, 2).Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
+			return Enumerable.Range(1, Outputs).Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
 		}
 
 		/// <summary>
@@ -471,6 +507,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 			switcher.DMInputChange -= SwitcherOnDmInputChange;
 			switcher.DMOutputChange -= SwitcherOnDmOutputChange;
 			switcher.DMSystemChange -= SwitcherOnDmSystemChange;
+
+			m_Inputs = null;
+			m_Outputs = null;
 		}
 
 		/// <summary>
