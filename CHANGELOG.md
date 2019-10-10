@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [13.12.2] - 2019-10-09
+### Changed
+ - Fixed a bug where HdMdMXN Switcher Controls did not properly support 4x1 and 6x2 switchers
+
 ## [13.12.1] - 2019-08-05
 ### Changed
  - Fixed NVX IPID serialization
