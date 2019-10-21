@@ -1,8 +1,8 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
-using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 {
@@ -12,7 +12,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 #if SIMPLSHARP
 	// ReSharper disable once InconsistentNaming
 	public sealed class DmRmc4kScalerCAdapter :
-		AbstractDmRmcScalerCBaseAdapter
+		AbstractDmRmc4KScalerCAdapter
 			<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC, DmRmc4kScalerCAdapterSettings>
 	{
 		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC InstantiateReceiver(byte ipid,
@@ -36,7 +36,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerC
 
 
 #else
-    public sealed class DmRmc4kScalerCAdapter : AbstractDmRmcScalerCAdapter<DmRmc4kScalerCAdapterSettings>
+	// ReSharper disable once InconsistentNaming
+	public sealed class DmRmc4kScalerCAdapter : AbstractDmRmc4kScalerCAdapter<DmRmc4kScalerCAdapterSettings>
     {
     }
 #endif

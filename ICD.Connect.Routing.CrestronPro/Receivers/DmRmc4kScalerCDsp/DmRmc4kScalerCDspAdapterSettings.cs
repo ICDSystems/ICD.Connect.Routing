@@ -1,4 +1,4 @@
-﻿using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
+﻿using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
@@ -8,7 +8,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 	/// </summary>
 	[KrangSettings("DmRmc4kScalerCDsp", typeof(DmRmc4kScalerCDspAdapter))]
 // ReSharper disable once InconsistentNaming
-	public sealed class DmRmc4kScalerCDspAdapterSettings : AbstractDmRmcScalerCBaseAdapterSettings
+	public sealed class DmRmc4kScalerCDspAdapterSettings : AbstractDmRmc4KScalerCAdapterSettings
 	{
 	}
 }

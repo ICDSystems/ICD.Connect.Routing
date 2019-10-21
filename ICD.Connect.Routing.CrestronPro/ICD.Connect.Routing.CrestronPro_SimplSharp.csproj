@@ -328,6 +328,10 @@
     <Compile Include="Receivers\DmRmc200C\DmRmc200CAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc4k100C\DmRmc4k100CAdapter.cs" />
     <Compile Include="Receivers\DmRmc4k100C\DmRmc4k100CAdapterSettings.cs" />
+    <Compile Include="Receivers\AbstractDmRmc4kScalerC\AbstractDmRmc4KScalerCAdapterSettings.cs" />
+    <Compile Include="Receivers\AbstractDmRmc4kScalerC\AbstractDmRmc4KScalerCAdapter.cs" />
+    <Compile Include="Receivers\AbstractDmRmc4kScalerC\IDmRmc4kScalerCAdapter.cs" />
+    <Compile Include="Receivers\AbstractDmRmc4kScalerC\IDmRmc4kScalerCAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc4kz100C\DmRmc4kz100CAdapter.cs" />
     <Compile Include="Receivers\DmRmc4kz100C\DmRmc4kz100CAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc100CBase\AbstractDmRmc100CBaseAdapter.cs" />
@@ -340,10 +344,10 @@
     <Compile Include="Receivers\DmRmc4kScalerCDsp\DmRmc4kScalerCDspAdapterSettings.cs" />
     <Compile Include="Receivers\DmRmc4kScalerC\DmRmc4kScalerCAdapter.cs" />
     <Compile Include="Receivers\DmRmc4kScalerC\DmRmc4kScalerCAdapterSettings.cs" />
-    <Compile Include="Receivers\DmRmcScalerCBase\AbstractDmRmcScalerCBaseAdapter.cs" />
-    <Compile Include="Receivers\DmRmcScalerCBase\AbstractDmRmcScalerCBaseAdapterSettings.cs" />
-    <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapterSettings.cs" />
-    <Compile Include="Receivers\DmRmcScalerCBase\IDmRmcScalerCAdapter.cs" />
+    <Compile Include="Receivers\AbstractDmRmcScalerC\AbstractDmRmcScalerCAdapterSettings.cs" />
+    <Compile Include="Receivers\AbstractDmRmcScalerC\AbstractDmRmcScalerCAdapter.cs" />
+    <Compile Include="Receivers\AbstractDmRmcScalerC\IDmRmcScalerCAdapterSettings.cs" />
+    <Compile Include="Receivers\AbstractDmRmcScalerC\IDmRmcScalerCAdapter.cs" />
     <Compile Include="Receivers\IEndpointReceiverBaseAdapter.cs" />
     <Compile Include="Receivers\IEndpointReceiverBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapterSettings.cs" />
