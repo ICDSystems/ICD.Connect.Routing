@@ -9,13 +9,13 @@ using ICD.Connect.Routing.EventArguments;
 using Crestron.SimplSharpPro;
 #endif
 
-namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase
+namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 {
 	/// <summary>
 	/// DmRmcScalerCAdapter wraps a DmRmcScalerC to provide a routing device.
 	/// </summary>
 #if SIMPLSHARP
-	public abstract class AbstractDmRmcScalerCBaseAdapter<TScaler, TSettings> : AbstractEndpointReceiverBaseAdapter<TScaler, TSettings>,
+	public abstract class AbstractDmRmcScalerCAdapter<TScaler, TSettings> : AbstractEndpointReceiverBaseAdapter<TScaler, TSettings>,
 																			IDmRmcScalerCAdapter
 		where TScaler : Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC
 #else
