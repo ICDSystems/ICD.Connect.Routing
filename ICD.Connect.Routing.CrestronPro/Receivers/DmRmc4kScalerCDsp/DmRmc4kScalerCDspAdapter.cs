@@ -1,5 +1,5 @@
 ﻿using System;
-using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
+using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -13,7 +13,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 #if SIMPLSHARP
 // ReSharper disable once InconsistentNaming
 	public sealed class DmRmc4kScalerCDspAdapter :
-		AbstractDmRmcScalerCBaseAdapter
+		AbstractDmRmc4KScalerCAdapter
 			<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp, DmRmc4kScalerCDspAdapterSettings>
 	{
 		/// <summary>
@@ -52,7 +52,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 	}
 
 #else
-    public sealed class DmRmc4kScalerCDspAdapter : AbstractDmRmcScalerCAdapter<DmRmc4kScalerCDspAdapterSettings>
+    public sealed class DmRmc4kScalerCDspAdapter : AbstractDmRmc4kScalerCAdapter<DmRmc4kScalerCDspAdapterSettings>
     {
     }
 #endif
