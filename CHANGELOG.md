@@ -44,6 +44,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.13.0] - 2019-10-22
+### Changed
+ - Added relay ports to DmRmc4kScalerC's
+ - Refactored Scaler abstracts to not be called "Base"
+
 ## [13.12.2] - 2019-10-09
 ### Changed
  - Fixed a bug where HdMdMXN Switcher Controls did not properly support 4x1 and 6x2 switchers

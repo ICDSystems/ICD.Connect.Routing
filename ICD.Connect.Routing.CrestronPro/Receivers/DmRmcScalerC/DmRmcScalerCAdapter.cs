@@ -1,8 +1,8 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
-using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 {
@@ -11,7 +11,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 	/// </summary>
 #if SIMPLSHARP
 	public sealed class DmRmcScalerCAdapter :
-		AbstractDmRmcScalerCBaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC, DmRmcScalerCAdapterSettings>
+		AbstractDmRmcScalerCAdapter<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC, DmRmcScalerCAdapterSettings>
 	{
 		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC InstantiateReceiver(byte ipid,
 		                                                                                               CrestronControlSystem
