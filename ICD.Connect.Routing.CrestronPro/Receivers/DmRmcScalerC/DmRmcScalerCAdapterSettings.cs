@@ -1,4 +1,4 @@
-﻿using ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerCBase;
+﻿using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
@@ -7,7 +7,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 	/// Settings for the DmRmcScalerCAdapter.
 	/// </summary>
 	[KrangSettings("DmRmcScalerC", typeof(DmRmcScalerCAdapter))]
-	public sealed class DmRmcScalerCAdapterSettings : AbstractDmRmcScalerCBaseAdapterSettings
+	public sealed class DmRmcScalerCAdapterSettings : AbstractDmRmcScalerCAdapterSettings
 	{
 	}
 }
