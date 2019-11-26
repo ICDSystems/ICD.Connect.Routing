@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Fixes for potential null refs in Extron DTP devices
+
 ## [15.2.0] - 2019-11-19
 ### Added
  - Added method to Source and Destination collections for getting items by device id

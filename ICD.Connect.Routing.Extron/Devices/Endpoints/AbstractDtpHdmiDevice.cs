@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices;
@@ -22,9 +23,25 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 
 		private bool m_PortInitialized;
 
+		[CanBeNull]
+		private IDtpCrosspointDevice m_Parent;
+
 		#region Properties
 
-		public IDtpCrosspointDevice Parent { get; private set; }
+		[CanBeNull]
+		public IDtpCrosspointDevice Parent
+		{
+			get { return m_Parent; }
+			private set
+			{
+				if (value == m_Parent)
+					return;
+
+				Unsubscribe(m_Parent);
+				m_Parent = value;
+				Subscribe(m_Parent);
+			}
+		}
 
 		public bool PortInitialized
 		{
@@ -73,36 +90,44 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 
 		#region Methods
 
+		[CanBeNull]
 		public ISerialPort GetSerialInsertionPort()
 		{
-			return Parent.GetSerialInsertionPort(SwitcherAddress, SwitcherInputOutput);
+			return Parent == null ? null : Parent.GetSerialInsertionPort(SwitcherAddress, SwitcherInputOutput);
 		}
 
 		public void InitializeComPort(eComBaudRates baudRate, eComDataBits dataBits, eComParityType parityType, eComStopBits stopBits)
 		{
+			if (Parent == null)
+				throw new InvalidOperationException("Parent is null");
+
 			Parent.SetComPortSpec(SwitcherAddress, SwitcherInputOutput, baudRate, dataBits, parityType, stopBits);
 		}
 
 		protected override bool GetIsOnlineStatus()
 		{
-			if (Parent == null)
-				return false;
-			return Parent.IsOnline;
+			return Parent != null && Parent.IsOnline;
 		}
 
 		#endregion
 
 		#region Parent Callbacks
 
-		protected void Subscribe(IDtpCrosspointDevice parent)
+		protected void Subscribe([CanBeNull] IDtpCrosspointDevice parent)
 		{
+			if (parent == null)
+				return;
+
 			parent.OnIsOnlineStateChanged += ParentOnOnIsOnlineStateChanged;
 			parent.OnPortInitialized += ParentOnOnInputPortInitialized;
 			parent.OnPortComSpecChanged += ParentOnPortComSpecChanged;
 		}
 
-		protected void Unsubscribe(IDtpCrosspointDevice parent)
+		protected void Unsubscribe([CanBeNull] IDtpCrosspointDevice parent)
 		{
+			if (parent == null)
+				return;
+
 			parent.OnIsOnlineStateChanged -= ParentOnOnIsOnlineStateChanged;
 			parent.OnPortInitialized -= ParentOnOnInputPortInitialized;
 			parent.OnPortComSpecChanged -= ParentOnPortComSpecChanged;
@@ -133,25 +158,20 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.DtpSwitch = Parent.Id;
+			settings.DtpSwitch = Parent == null ? (int?)null : Parent.Id;
 		}
 
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			if (settings.DtpSwitch != null)
-				Parent = factory.GetOriginatorById<IDtpCrosspointDevice>(settings.DtpSwitch.Value);
-			if (Parent != null)
-				Subscribe(Parent);
+			Parent = settings.DtpSwitch == null ? null : factory.GetOriginatorById<IDtpCrosspointDevice>(settings.DtpSwitch.Value);
 		}
 
 		protected override void ClearSettingsFinal()
 		{
 			base.ClearSettingsFinal();
 
-			if (Parent != null)
-				Unsubscribe(Parent);
 			Parent = null;
 		}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.IO;
@@ -98,6 +99,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 
 		#region Methods
 
+		[CanBeNull]
 		public ISerialPort GetSerialInsertionPort(int address, eDtpInputOuput inputOutput)
 		{
 			m_DtpPortsSection.Enter();
@@ -202,6 +204,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			            (ushort)stopBits);
 		}
 
+		[CanBeNull]
 		private ISerialPort GetTcpClientForPortOffset(int? portOffset)
 		{
 			if (portOffset == null)
