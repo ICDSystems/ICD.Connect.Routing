@@ -34,7 +34,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		private float? m_MaxVolume;
 
 		private float? m_MinVolume;
-		private float m_VolumePosition;
+		private float m_VolumePercent;
 		private string m_VolumeString;
 		private float m_VolumeLevel;
 
@@ -45,13 +45,13 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// <summary>
 		/// Gets the current volume positon, 0 - 1
 		/// </summary>
-		public float VolumePosition { get { return m_VolumePosition; }
+		public float VolumePercent { get { return m_VolumePercent; }
 			private set
 			{
-				if (Math.Abs(m_VolumePosition - value) < TOLERANCE)
+				if (Math.Abs(m_VolumePercent - value) < TOLERANCE)
 					return;
 
-				m_VolumePosition = value;
+				m_VolumePercent = value;
 
 				RaiseOnVolumeChanged();
 			} }
@@ -91,13 +91,13 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// VolumeLevelMaxRange is the best max volume we have for the control
 		/// either the Max from the control or the absolute max for the control
 		/// </summary>
-		public float VolumeLevelMaxRange { get { return m_MaxVolume ?? float.MaxValue; } }
+		public float VolumeLevelMax { get { return m_MaxVolume ?? float.MaxValue; } }
 
 		/// <summary>
 		/// VolumeLevelMinRange is the best min volume we have for the control
 		/// either the Min from the control or the absolute min for the control
 		/// </summary>
-		public float VolumeLevelMinRange { get { return m_MinVolume ?? float.MinValue; } }
+		public float VolumeLevelMin { get { return m_MinVolume ?? float.MinValue; } }
 
 		/// <summary>
 		/// Gets the muted state.
@@ -127,27 +127,27 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// Starts lowering the volume in steps of the given position, and continues until RampStop is called.
 		/// </summary>
 		/// <param name="decrement"></param>
-		public void VolumePositionRampDown(float decrement)
+		public void VolumePercentRampDown(float decrement)
 		{
-			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_RAMP_POSITION_DOWN, decrement);
+			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_RAMP_PERCENT_DOWN, decrement);
 		}
 
 		/// <summary>
 		/// Starts raising the volume in steps of the given position, and continues until RampStop is called.
 		/// </summary>
 		/// <param name="increment"></param>
-		public void VolumePositionRampUp(float increment)
+		public void VolumePercentRampUp(float increment)
 		{
-			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_RAMP_POSITION_UP, increment);
+			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_RAMP_PERCENT_UP, increment);
 		}
 
 		/// <summary>
 		/// Sets the volume position, from 0-1
 		/// </summary>
-		/// <param name="position"></param>
-		public void SetVolumePosition(float position)
+		/// <param name="percent"></param>
+		public void SetVolumePercent(float percent)
 		{
-			CallMethod(VolumeLevelDeviceControlApi.METHOD_SET_VOLUME_POSITION, position);
+			CallMethod(VolumeLevelDeviceControlApi.METHOD_SET_VOLUME_PERCENT, percent);
 		}
 
 		/// <summary>
@@ -204,22 +204,6 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		}
 
 		/// <summary>
-		/// Increments the volume once.
-		/// </summary>
-		public void VolumeLevelIncrement(float incrementValue)
-		{
-			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_INCREMENT_STEP, incrementValue);
-		}
-
-		/// <summary>
-		/// Decrements the volume once.
-		/// </summary>
-		public void VolumeLevelDecrement(float decrementValue)
-		{
-			CallMethod(VolumeLevelDeviceControlApi.METHOD_VOLUME_LEVEL_DECREMENT_STEP, decrementValue);
-		}
-
-		/// <summary>
 		/// Toggles the current mute state.
 		/// </summary>
 		public void VolumeMuteToggle()
@@ -251,10 +235,10 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 			ApiCommandBuilder.UpdateCommand(command)
 			                 .SubscribeEvent(VolumeLevelDeviceControlApi.EVENT_VOLUME_CHANGED)
 			                 .SubscribeEvent(VolumeMuteFeedbackDeviceControlApi.EVENT_MUTE_STATE_CHANGED)
-							 .GetProperty(VolumeRawLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MAX_RANGE)
-							 .GetProperty(VolumeRawLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MIN_RANGE)
+							 .GetProperty(VolumeLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MAX)
+							 .GetProperty(VolumeLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MIN)
 							 .GetProperty(VolumeLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL)
-							 .GetProperty(VolumeLevelDeviceControlApi.PROPERTY_VOLUME_POSITION)
+							 .GetProperty(VolumeLevelDeviceControlApi.PROPERTY_VOLUME_PERCENT)
 							 .GetProperty(VolumeLevelDeviceControlApi.PROPERTY_VOLUME_STRING)
 			                 .Complete();
 		}
@@ -291,17 +275,17 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 			switch (name)
 			{
-				case VolumeRawLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MAX_RANGE:
+				case VolumeLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MAX:
 					m_MaxVolume = result.GetValue<float>();
 					break;
-				case VolumeRawLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MIN_RANGE:
+				case VolumeLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL_MIN:
 					m_MinVolume = result.GetValue<float>();
 					break;
 				case VolumeLevelDeviceControlApi.PROPERTY_VOLUME_LEVEL:
 					VolumeLevel = result.GetValue<float>();
 					break;
-				case VolumeLevelDeviceControlApi.PROPERTY_VOLUME_POSITION:
-					VolumePosition = result.GetValue<float>();
+				case VolumeLevelDeviceControlApi.PROPERTY_VOLUME_PERCENT:
+					VolumePercent = result.GetValue<float>();
 					break;
 				case VolumeLevelDeviceControlApi.PROPERTY_VOLUME_STRING:
 					VolumeString = result.GetValue<string>();
@@ -315,21 +299,21 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 		private void RaiseOnVolumeChanged()
 		{
-			OnVolumeChanged.Raise(this, new VolumeDeviceVolumeChangedEventArgs(VolumeLevel,VolumePosition, VolumeString));
+			OnVolumeChanged.Raise(this, new VolumeDeviceVolumeChangedEventArgs(VolumeLevel,VolumePercent, VolumeString));
 		}
 
 		private void HandleVolumeChangeEvent(VolumeChangeState volumeState)
 		{
 			bool changed = false;
-			changed |= Math.Abs(volumeState.VolumePosition - VolumePosition) > TOLERANCE;
-			changed |= Math.Abs(volumeState.VolumeRaw - VolumeLevel) > TOLERANCE;
+			changed |= Math.Abs(volumeState.VolumePercent - VolumePercent) > TOLERANCE;
+			changed |= Math.Abs(volumeState.VolumeLevel - VolumeLevel) > TOLERANCE;
 			changed |= !volumeState.VolumeString.Equals(VolumeString);
 
 			if (!changed)
 				return;
 
-			VolumePosition = volumeState.VolumePosition;
-			VolumeLevel = volumeState.VolumeRaw;
+			VolumePercent = volumeState.VolumePercent;
+			VolumeLevel = volumeState.VolumeLevel;
 			VolumeString = volumeState.VolumeString;
 
 			OnVolumeChanged.Raise(this, new VolumeDeviceVolumeChangedEventArgs(volumeState));
