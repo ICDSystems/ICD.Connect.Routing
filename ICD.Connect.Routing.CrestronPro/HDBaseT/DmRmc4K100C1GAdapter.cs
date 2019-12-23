@@ -39,9 +39,6 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 			if (deviceFactory == null)
 				throw new ArgumentNullException("factory");
 
-			if (settings.DmSwitch == null)
-				throw new InvalidOperationException("No DM Parent is configured");
-
 			if (settings.DmEndpoint != null)
 			{
 				IDmEndpoint dmEndpoint = deviceFactory.GetDeviceById((int)settings.DmEndpoint) as IDmEndpoint;
@@ -51,6 +48,9 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 
 				return new DmRmc4K100C1G(dmEndpoint.Device);
 			}
+
+			if (settings.DmSwitch == null)
+				throw new InvalidOperationException("No DM Parent is configured");
 
 			IDmParent dmParent = deviceFactory.GetDeviceById((int)settings.DmSwitch) as IDmParent;
 			if (dmParent == null)
