@@ -42,7 +42,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 			if (!ContainsOutput(address))
 				throw new ArgumentOutOfRangeException("address");
 
-			return new ConnectorInfo(address, eConnectionType.Audio | eConnectionType.Video | eConnectionType.Usb);
+			return new ConnectorInfo(address, eConnectionType.Audio | eConnectionType.Video);
 		}
 
 		#endregion
