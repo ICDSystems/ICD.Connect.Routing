@@ -172,11 +172,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 					break;
 
 				case eDmps3DefaultMute.Muted:
-					control.SetVolumeMute(true);
+					control.SetIsMuted(true);
 					break;
 
 				case eDmps3DefaultMute.Unmuted:
-					control.SetVolumeMute(false);
+					control.SetIsMuted(false);
 					break;
 
 				default:

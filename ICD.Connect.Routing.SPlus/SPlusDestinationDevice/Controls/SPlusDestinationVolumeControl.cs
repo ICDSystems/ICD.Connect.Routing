@@ -1,75 +1,102 @@
 ﻿using System;
-using ICD.Common.Utils.Extensions;
-using ICD.Connect.Audio.Controls.Mute;
 using ICD.Connect.Audio.Controls.Volume;
-using ICD.Connect.Audio.EventArguments;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 {
-	public sealed class SPlusDestinationVolumeControl : AbstractVolumeLevelDeviceControl<Device.SPlusDestinationDevice>, IVolumeMuteFeedbackDeviceControl
+	public sealed class SPlusDestinationVolumeControl : AbstractVolumeDeviceControl<Device.SPlusDestinationDevice>
 	{
+		#region Properties
 
-		private ushort m_VolumeLevel;
-		private bool m_VolumeIsMuted;
+		/// <summary>
+		/// Returns the features that are supported by this volume control.
+		/// </summary>
+		public override eVolumeFeatures SupportedVolumeFeatures
+		{
+			get
+			{
+				return eVolumeFeatures.Mute |
+					   eVolumeFeatures.MuteAssignment |
+					   eVolumeFeatures.MuteFeedback |
+					   eVolumeFeatures.Volume |
+					   eVolumeFeatures.VolumeAssignment |
+					   eVolumeFeatures.VolumeFeedback;
+			}
+		}
+
+		/// <summary>
+		/// Gets the minimum supported volume level.
+		/// </summary>
+		public override float VolumeLevelMin { get { return ushort.MinValue; } }
+
+		/// <summary>
+		/// Gets the maximum supported volume level.
+		/// </summary>
+		public override float VolumeLevelMax { get { return ushort.MaxValue; } }
+
+		#endregion
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="parent">Device this control belongs to</param>
 		/// <param name="id">Id of this control in the device</param>
-		public SPlusDestinationVolumeControl(Device.SPlusDestinationDevice parent, int id) : base(parent, id)
+		public SPlusDestinationVolumeControl(Device.SPlusDestinationDevice parent, int id)
+			: base(parent, id)
 		{
 		}
 
-		#region Volume
-
-		/// <summary>
-		/// Gets the current volume, in the parent device's format
-		/// </summary>
-		public override float VolumeLevel
-		{
-			get { return m_VolumeLevel; }
-		}
-
-		/// <summary>
-		/// Absolute Minimum the raw volume can be
-		/// Used as a last resort for position caculation
-		/// </summary>
-		protected override float VolumeRawMinAbsolute { get { return ushort.MinValue; } }
-
-		/// <summary>
-		/// Absolute Maximum the raw volume can be
-		/// Used as a last resport for position caculation
-		/// </summary>
-		protected override float VolumeRawMaxAbsolute { get { return ushort.MaxValue; } }
+		#region Methods
 
 		/// <summary>
 		/// Sets the raw volume. This will be clamped to the min/max and safety min/max.
 		/// </summary>
-		/// <param name="volume"></param>
-		public override void SetVolumeLevel(float volume)
+		/// <param name="level"></param>
+		public override void SetVolumeLevel(float level)
 		{
-			Parent.SetVolumeLevel((ushort)volume);
+			Parent.SetVolumeLevel((ushort)level);
 		}
 
 		/// <summary>
-		/// Sets the volume feedback, from the shim
+		/// Raises the volume one time
+		/// Amount of the change varies between implementations - typically "1" raw unit
 		/// </summary>
-		/// <param name="volume"></param>
-		internal void SetVolumeFeedback(ushort volume)
+		public override void VolumeIncrement()
 		{
-			m_VolumeLevel = volume;
-			VolumeFeedback(volume);
+			this.SetVolumePercent(this.GetVolumePercent() + 0.01f);
 		}
 
-		#endregion
+		/// <summary>
+		/// Lowers the volume one time
+		/// Amount of the change varies between implementations - typically "1" raw unit
+		/// </summary>
+		public override void VolumeDecrement()
+		{
+			this.SetVolumePercent(this.GetVolumePercent() - 0.01f);
+		}
 
-		#region Mute
+		/// <summary>
+		/// Starts ramping the volume, and continues until stop is called or the timeout is reached.
+		/// If already ramping the current timeout is updated to the new timeout duration.
+		/// </summary>
+		/// <param name="increment">Increments the volume if true, otherwise decrements.</param>
+		/// <param name="timeout"></param>
+		public override void VolumeRamp(bool increment, long timeout)
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Stops any current ramp up/down in progress.
+		/// </summary>
+		public override void VolumeRampStop()
+		{
+			throw new NotSupportedException();
+		}
 
 		/// <summary>
 		/// Toggles the current mute state.
 		/// </summary>
-		public void VolumeMuteToggle()
+		public override void ToggleIsMuted()
 		{
 			Parent.VolumeMuteToggle();
 		}
@@ -78,36 +105,31 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 		/// Sets the mute state.
 		/// </summary>
 		/// <param name="mute"></param>
-		public void SetVolumeMute(bool mute)
+		public override void SetIsMuted(bool mute)
 		{
 			Parent.SetVolumeMuteState(mute);
 		}
 
-		public event EventHandler<MuteDeviceMuteStateChangedApiEventArgs> OnMuteStateChanged;
+		#endregion
+
+		#region Internal Methods
 
 		/// <summary>
-		/// Gets the muted state.
+		/// Sets the volume feedback, from the shim
 		/// </summary>
-		public bool VolumeIsMuted
+		/// <param name="level"></param>
+		internal void SetVolumeFeedback(ushort level)
 		{
-			get { return m_VolumeIsMuted; }
-			private set
-			{
-				if (m_VolumeIsMuted == value)
-					return;
-				m_VolumeIsMuted = value;
-
-				OnMuteStateChanged.Raise(this, new MuteDeviceMuteStateChangedApiEventArgs(value));
-			}
+			VolumeLevel = level;
 		}
 
 		/// <summary>
 		/// Sets the mute state feedback, called from the shim through the device
 		/// </summary>
-		/// <param name="state"></param>
-		internal void SetVolumeMuteStateFeedback(bool state)
+		/// <param name="isMuted"></param>
+		internal void SetVolumeIsMutedFeedback(bool isMuted)
 		{
-			VolumeIsMuted = state;
+			IsMuted = isMuted;
 		}
 
 		#endregion

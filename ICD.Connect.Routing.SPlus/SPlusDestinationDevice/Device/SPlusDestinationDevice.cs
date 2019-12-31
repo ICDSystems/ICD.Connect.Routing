@@ -158,7 +158,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 		public void SetVolumeMuteStateFeedback(bool state)
 		{
 			if (VolumeControl != null)
-				VolumeControl.SetVolumeMuteStateFeedback(state);
+				VolumeControl.SetVolumeIsMutedFeedback(state);
 		}
 
 		#endregion
@@ -222,15 +222,10 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 			RouteControl = new SPlusDestinationRouteControl(this, ROUTE_CONTROL_ID, settings.InputCount);
 			Controls.Add(RouteControl);
 
-			
 			if (settings.VolumeControl)
 			{
 				VolumeControl = new SPlusDestinationVolumeControl(this, VOLUME_CONTROL_ID);
 				Controls.Add(VolumeControl);
-				if (settings.VolumeMin.HasValue)
-					VolumeControl.VolumeRawMin = settings.VolumeMin.Value;
-				if (settings.VolumeMax.HasValue)
-					VolumeControl.VolumeRawMax = settings.VolumeMax.Value;
 			}
 		}
 
@@ -263,11 +258,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 			if (PowerControl != null)
 				settings.PowerControl = true;
 			if (VolumeControl != null)
-			{
 				settings.VolumeControl = true;
-				settings.VolumeMin = (ushort?)VolumeControl.VolumeRawMin;
-				settings.VolumeMax = (ushort?)VolumeControl.VolumeRawMax;
-			}
 		}
 
 		/// <summary>
@@ -286,10 +277,12 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 			if (PowerControl != null)
 			{
+				Unsubscribe(PowerControl);
 				Controls.Remove(POWER_CONTROL_ID);
 				PowerControl.Dispose();
 				PowerControl = null;
 			}
+
 			if (VolumeControl != null)
 			{
 				Controls.Remove(VOLUME_CONTROL_ID);

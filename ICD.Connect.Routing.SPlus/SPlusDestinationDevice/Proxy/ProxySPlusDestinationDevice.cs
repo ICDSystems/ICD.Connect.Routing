@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Devices.Proxies.Controls;
+﻿using ICD.Connect.Audio.Proxies.Controls.Volume;
+using ICD.Connect.Devices.Proxies.Controls;
 using ICD.Connect.Devices.Proxies.Devices;
 using ICD.Connect.Settings;
 
@@ -22,7 +23,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 		internal ProxySPlusDestinationRouteControl RouteControl { get; private set; }
 		internal ProxyPowerDeviceControl PowerControl { get; private set; }
-		internal ProxySPlusDestinationVolumeControl VolumeControl { get; private set; }
+		internal ProxyVolumeDeviceControl VolumeControl { get; private set; }
 
 		#endregion
 
@@ -50,7 +51,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 
 			if (settings.VolumeControl)
 			{
-				VolumeControl = new ProxySPlusDestinationVolumeControl(this, VOLUME_CONTROL_ID);
+				VolumeControl = new ProxyVolumeDeviceControl(this, VOLUME_CONTROL_ID);
 				Controls.Add(VolumeControl);
 			}
 		}

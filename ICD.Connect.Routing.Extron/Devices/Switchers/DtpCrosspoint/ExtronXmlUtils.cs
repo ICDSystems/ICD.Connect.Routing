@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Properties;
 using ICD.Common.Utils.Xml;
 using ICD.Connect.Audio.Controls.Volume;
 using ICD.Connect.Devices.Controls;
@@ -17,7 +18,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 				string type = XmlUtils.GetAttributeAsString(controlElement, "type");
 				string name = XmlUtils.TryReadChildElementContentAsString(controlElement, "Name");
 
-				AbstractVolumeLevelDeviceControl<IDtpCrosspointDevice> control;
+				AbstractVolumeDeviceControl<IDtpCrosspointDevice> control;
 
 				switch (type)
 				{
@@ -32,16 +33,11 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 						throw new FormatException(message);
 				}
 
-				if (control == null)
-					continue;
-
-				control.VolumeRawMin = XmlUtils.TryReadChildElementContentAsFloat(controlElement, "VolumeMin");
-				control.VolumeRawMax = XmlUtils.TryReadChildElementContentAsFloat(controlElement, "VolumeMax");
-
 				yield return control;
 			}
 		}
 
+		[NotNull]
 		private static ExtronVolumeDeviceControl GetVolumeControl(string xml, int id, string name, IDtpCrosspointDevice parent)
 		{
 			eExtronVolumeObject volumeObject =
@@ -50,6 +46,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			return new ExtronVolumeDeviceControl(parent, id, name, volumeObject);
 		}
 
+		[NotNull]
 		private static ExtronGroupVolumeDeviceControl GetGroupVolumeControl(string xml, int id, string name, IDtpCrosspointDevice parent)
 		{
 			eExtronVolumeType volumeType = XmlUtils.ReadChildElementContentAsEnum<eExtronVolumeType>(xml, "VolumeType", true);

@@ -1,65 +1,48 @@
-﻿using ICD.Connect.Audio.EventArguments;
+﻿using ICD.Connect.Audio.Controls.Volume;
 #if SIMPLSHARP
 using System;
-using System.Collections.Generic;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Streaming;
-using ICD.Common.Utils.EventArguments;
-using ICD.Common.Utils.Extensions;
-using ICD.Connect.API.Commands;
-using ICD.Connect.API.Nodes;
-using ICD.Connect.Audio.Console.Mute;
-using ICD.Connect.Audio.Controls.Mute;
-using ICD.Connect.Audio.Controls.Volume;
 using ICD.Connect.Misc.CrestronPro.Extensions;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 {
-	public sealed class DmNvxBaseClassVolumeControl : AbstractVolumeLevelDeviceControl<IDmNvxBaseClassAdapter>, IVolumeMuteFeedbackDeviceControl
+	public sealed class DmNvxBaseClassVolumeControl : AbstractVolumeDeviceControl<IDmNvxBaseClassAdapter>
 	{
 		private Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass m_Streamer;
 		private DmNvxControl m_NvxControl;
 
-		/// <summary>
-		/// Raised when the mute state changes.
-		/// </summary>
-		public event EventHandler<MuteDeviceMuteStateChangedApiEventArgs> OnMuteStateChanged;
-
-#region Properties
+		#region Properties
 
 		/// <summary>
-		/// Gets the current volume, in the parent device's format
+		/// Returns the features that are supported by this volume control.
 		/// </summary>
-		public override float VolumeLevel
+		public override eVolumeFeatures SupportedVolumeFeatures
 		{
 			get
 			{
-				return m_NvxControl == null
-					       ? 0.0f
-					       : m_NvxControl.AnalogAudioOutputVolumeFeedback.GetShortValueOrDefault() / 10.0f;
+				return eVolumeFeatures.Mute |
+					   eVolumeFeatures.MuteAssignment |
+					   eVolumeFeatures.MuteFeedback |
+					   eVolumeFeatures.Volume |
+					   eVolumeFeatures.VolumeAssignment |
+					   eVolumeFeatures.VolumeFeedback;
 			}
 		}
 
 		/// <summary>
-		/// Absolute Minimum the raw volume can be
-		/// Used as a last resort for position caculation
+		/// Gets the minimum supported volume level.
 		/// </summary>
-		protected override float VolumeRawMinAbsolute { get { return -80.0f; } }
+		public override float VolumeLevelMin { get { return -80.0f; } }
 
 		/// <summary>
-		/// Absolute Maximum the raw volume can be
-		/// Used as a last resport for position caculation
+		/// Gets the maximum supported volume level.
 		/// </summary>
-		protected override float VolumeRawMaxAbsolute { get { return 24.0f; } }
+		public override float VolumeLevelMax { get { return 24.0f; } }
 
-		/// <summary>
-		/// Gets the muted state.
-		/// </summary>
-		public bool VolumeIsMuted { get { return m_NvxControl != null && m_NvxControl.AudioMutedFeedback.GetBoolValueOrDefault(); } }
-
-#endregion
+		#endregion
 
 		/// <summary>
 		/// Constructor
@@ -69,8 +52,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		public DmNvxBaseClassVolumeControl(IDmNvxBaseClassAdapter parent, int id)
 			: base(parent, id)
 		{
-			parent.OnStreamerChanged += ParentOnStreamerChanged;
-
 			SetStreamer(parent.Streamer as Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass);
 		}
 
@@ -80,46 +61,21 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <param name="disposing"></param>
 		protected override void DisposeFinal(bool disposing)
 		{
-			OnMuteStateChanged = null;
-
 			base.DisposeFinal(disposing);
-
-			Parent.OnStreamerChanged -= ParentOnStreamerChanged;
 
 			SetStreamer(null);
 		}
 
-#region Methods
-
-		/// <summary>
-		/// Sets the raw volume. This will be clamped to the min/max and safety min/max.
-		/// </summary>
-		/// <param name="volume"></param>
-		public override void SetVolumeLevel(float volume)
-		{
-			if (m_NvxControl == null)
-				throw new InvalidOperationException("Wrapped control is null");
-
-			m_NvxControl.AnalogAudioOutputVolume.ShortValue = (short)(volume * 10.0f);
-		}
-
-		/// <summary>
-		/// Toggles the current mute state.
-		/// </summary>
-		public void VolumeMuteToggle()
-		{
-			bool mute = !VolumeIsMuted;
-			SetVolumeMute(mute);
-		}
+		#region Methods
 
 		/// <summary>
 		/// Sets the mute state.
 		/// </summary>
 		/// <param name="mute"></param>
-		public void SetVolumeMute(bool mute)
+		public override void SetIsMuted(bool mute)
 		{
 			if (m_NvxControl == null)
-				throw new InvalidOperationException("Wrapped control is null");
+				throw new NotSupportedException("Wrapped control is null");
 
 			if (mute)
 				m_NvxControl.AudioMute();
@@ -127,19 +83,95 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				m_NvxControl.AudioUnmute();
 		}
 
-#endregion
+		/// <summary>
+		/// Toggles the current mute state.
+		/// </summary>
+		public override void ToggleIsMuted()
+		{
+			SetIsMuted(!IsMuted);
+		}
 
-#region Streamer Callbacks
+		/// <summary>
+		/// Sets the raw volume. This will be clamped to the min/max and safety min/max.
+		/// </summary>
+		/// <param name="level"></param>
+		public override void SetVolumeLevel(float level)
+		{
+			if (m_NvxControl == null)
+				throw new InvalidOperationException("Wrapped control is null");
+
+			m_NvxControl.AnalogAudioOutputVolume.ShortValue = (short)(level * 10.0f);
+		}
+
+		/// <summary>
+		/// Raises the volume one time
+		/// Amount of the change varies between implementations - typically "1" raw unit
+		/// </summary>
+		public override void VolumeIncrement()
+		{
+			SetVolumeLevel(VolumeLevel + 1);
+		}
+
+		/// <summary>
+		/// Lowers the volume one time
+		/// Amount of the change varies between implementations - typically "1" raw unit
+		/// </summary>
+		public override void VolumeDecrement()
+		{
+			SetVolumeLevel(VolumeLevel - 1);
+		}
+
+		/// <summary>
+		/// Starts ramping the volume, and continues until stop is called or the timeout is reached.
+		/// If already ramping the current timeout is updated to the new timeout duration.
+		/// </summary>
+		/// <param name="increment">Increments the volume if true, otherwise decrements.</param>
+		/// <param name="timeout"></param>
+		public override void VolumeRamp(bool increment, long timeout)
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Stops any current ramp up/down in progress.
+		/// </summary>
+		public override void VolumeRampStop()
+		{
+			throw new NotSupportedException();
+		}
+
+		#endregion
+
+		#region Parent Callbacks
+
+        protected override void Subscribe(IDmNvxBaseClassAdapter parent)
+		{
+			base.Subscribe(parent);
+
+			parent.OnStreamerChanged += ParentOnStreamerChanged;
+		}
+
+		protected override void Unsubscribe(IDmNvxBaseClassAdapter parent)
+		{
+			base.Unsubscribe(parent);
+
+			Parent.OnStreamerChanged -= ParentOnStreamerChanged;
+		}
 
 		/// <summary>
 		/// Called when the parent wrapped streamer instance changes.
 		/// </summary>
 		/// <param name="sender"></param>
 		/// <param name="streamer"></param>
-		private void ParentOnStreamerChanged(IDm100XStrBaseAdapter sender, Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase streamer)
+		private void ParentOnStreamerChanged(IDm100XStrBaseAdapter sender,
+		                                     Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase streamer)
 		{
 			SetStreamer(streamer as Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass);
 		}
+
+		#endregion
+
+		#region Streamer Callbacks
 
 		/// <summary>
 		/// Sets the wrapped streamer instance.
@@ -192,89 +224,20 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			switch (args.EventId)
 			{
 				case DMInputEventIds.VolumeEventId:
-					VolumeFeedback(VolumeLevel);
+					VolumeLevel =
+						m_NvxControl == null
+							? 0.0f
+							: m_NvxControl.AnalogAudioOutputVolumeFeedback.GetShortValueOrDefault() / 10.0f;
 					break;
 
 				case DMInputEventIds.AudioMuteEventId:
-					OnMuteStateChanged.Raise(this, new MuteDeviceMuteStateChangedApiEventArgs(VolumeIsMuted));
+					IsMuted = m_NvxControl != null && m_NvxControl.AudioMutedFeedback.GetBoolValueOrDefault();
 					break;
 			}
 		}
 
-#endregion
-
-#region Console
-
-		/// <summary>
-		/// Calls the delegate for each console status item.
-		/// </summary>
-		/// <param name="addRow"></param>
-		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
-		{
-			base.BuildConsoleStatus(addRow);
-
-			VolumeMuteFeedbackDeviceControlConsole.BuildConsoleStatus(this, addRow);
-			VolumeMuteDeviceControlConsole.BuildConsoleStatus(this, addRow);
-			VolumeMuteBasicDeviceControlConsole.BuildConsoleStatus(this, addRow);
-		}
-
-		/// <summary>
-		/// Gets the child console commands.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
-		{
-			foreach (IConsoleCommand command in GetBaseConsoleCommands())
-				yield return command;
-
-			foreach (IConsoleCommand command in VolumeMuteFeedbackDeviceControlConsole.GetConsoleCommands(this))
-				yield return command;
-
-			foreach (IConsoleCommand command in VolumeMuteDeviceControlConsole.GetConsoleCommands(this))
-				yield return command;
-
-			foreach (IConsoleCommand command in VolumeMuteBasicDeviceControlConsole.GetConsoleCommands(this))
-				yield return command;
-		}
-
-		/// <summary>
-		/// Workaround for "unverifiable code" warning.
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()
-		{
-			return base.GetConsoleCommands();
-		}
-
-		/// <summary>
-		/// Gets the child console nodes.
-		/// </summary>
-		/// <returns></returns>
-		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
-		{
-			foreach (IConsoleNodeBase command in GetBaseConsoleNodes())
-				yield return command;
-
-			foreach (IConsoleNodeBase command in VolumeMuteFeedbackDeviceControlConsole.GetConsoleNodes(this))
-				yield return command;
-
-			foreach (IConsoleNodeBase command in VolumeMuteDeviceControlConsole.GetConsoleNodes(this))
-				yield return command;
-
-			foreach (IConsoleNodeBase command in VolumeMuteBasicDeviceControlConsole.GetConsoleNodes(this))
-				yield return command;
-		}
-
-		/// <summary>
-		/// Workaround for "unverifiable code" warning.
-		/// </summary>
-		/// <returns></returns>
-		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
-		{
-			return base.GetConsoleNodes();
-		}
-
-#endregion
+		#endregion
 	}
 }
+
 #endif
