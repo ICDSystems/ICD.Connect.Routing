@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 			if (!ContainsInput(input))
 				throw new ArgumentOutOfRangeException("input");
 
-			return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video | eConnectionType.Usb);
+			return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
 		}
 
 		/// <summary>

@@ -33,6 +33,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.13.1] - 2019-12-31
+### Changed
+ - Fixed issue where DM HDBaseT endpoints wouldn't instantiate in a point-to-point systems
+ - Removed USB from the DM HDBaseT endpoints, since they don't support USB
+
 ## [13.13.0] - 2019-10-22
 ### Changed
  - Added relay ports to DmRmc4kScalerC's
