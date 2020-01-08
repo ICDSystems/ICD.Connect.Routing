@@ -8,22 +8,6 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 		#region Properties
 
 		/// <summary>
-		/// Returns the features that are supported by this volume control.
-		/// </summary>
-		public override eVolumeFeatures SupportedVolumeFeatures
-		{
-			get
-			{
-				return eVolumeFeatures.Mute |
-					   eVolumeFeatures.MuteAssignment |
-					   eVolumeFeatures.MuteFeedback |
-					   eVolumeFeatures.Volume |
-					   eVolumeFeatures.VolumeAssignment |
-					   eVolumeFeatures.VolumeFeedback;
-			}
-		}
-
-		/// <summary>
 		/// Gets the minimum supported volume level.
 		/// </summary>
 		public override float VolumeLevelMin { get { return ushort.MinValue; } }
@@ -43,6 +27,12 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 		public SPlusDestinationVolumeControl(Device.SPlusDestinationDevice parent, int id)
 			: base(parent, id)
 		{
+			SupportedVolumeFeatures = eVolumeFeatures.Mute |
+			                          eVolumeFeatures.MuteAssignment |
+			                          eVolumeFeatures.MuteFeedback |
+			                          eVolumeFeatures.Volume |
+			                          eVolumeFeatures.VolumeAssignment |
+			                          eVolumeFeatures.VolumeFeedback;
 		}
 
 		#region Methods

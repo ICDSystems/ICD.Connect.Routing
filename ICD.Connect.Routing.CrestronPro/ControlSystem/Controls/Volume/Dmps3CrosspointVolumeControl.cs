@@ -18,22 +18,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 		public override string Name { get { return m_Name; } }
 
 		/// <summary>
-		/// Returns the features that are supported by this volume control.
-		/// </summary>
-		public override eVolumeFeatures SupportedVolumeFeatures
-		{
-			get
-			{
-				return eVolumeFeatures.Mute |
-				       eVolumeFeatures.MuteAssignment |
-				       eVolumeFeatures.MuteFeedback |
-				       eVolumeFeatures.Volume |
-				       eVolumeFeatures.VolumeAssignment |
-				       eVolumeFeatures.VolumeFeedback;
-			}
-		}
-
-		/// <summary>
 		/// Absolute Minimum the raw volume can be
 		/// Used as a last resort for position caculation
 		/// </summary>
@@ -59,6 +43,13 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 		{
 			m_Name = name;
 			m_Crosspoint = crosspoint;
+
+			SupportedVolumeFeatures = eVolumeFeatures.Mute |
+			                          eVolumeFeatures.MuteAssignment |
+			                          eVolumeFeatures.MuteFeedback |
+			                          eVolumeFeatures.Volume |
+			                          eVolumeFeatures.VolumeAssignment |
+			                          eVolumeFeatures.VolumeFeedback;
 
 			Subscribe(m_Crosspoint);
 		}

@@ -17,22 +17,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		#region Properties
 
 		/// <summary>
-		/// Returns the features that are supported by this volume control.
-		/// </summary>
-		public override eVolumeFeatures SupportedVolumeFeatures
-		{
-			get
-			{
-				return eVolumeFeatures.Mute |
-					   eVolumeFeatures.MuteAssignment |
-					   eVolumeFeatures.MuteFeedback |
-					   eVolumeFeatures.Volume |
-					   eVolumeFeatures.VolumeAssignment |
-					   eVolumeFeatures.VolumeFeedback;
-			}
-		}
-
-		/// <summary>
 		/// Gets the minimum supported volume level.
 		/// </summary>
 		public override float VolumeLevelMin { get { return -80.0f; } }
@@ -52,6 +36,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		public DmNvxBaseClassVolumeControl(IDmNvxBaseClassAdapter parent, int id)
 			: base(parent, id)
 		{
+			SupportedVolumeFeatures = eVolumeFeatures.Mute |
+			                          eVolumeFeatures.MuteAssignment |
+			                          eVolumeFeatures.MuteFeedback |
+			                          eVolumeFeatures.Volume |
+			                          eVolumeFeatures.VolumeAssignment |
+			                          eVolumeFeatures.VolumeFeedback;
+
 			SetStreamer(parent.Streamer as Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass);
 		}
 

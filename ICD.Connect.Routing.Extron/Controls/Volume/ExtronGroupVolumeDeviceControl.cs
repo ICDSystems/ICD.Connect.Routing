@@ -14,22 +14,6 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		private readonly int? m_MuteGroupId;
 
 		/// <summary>
-		/// Returns the features that are supported by this volume control.
-		/// </summary>
-		public override eVolumeFeatures SupportedVolumeFeatures
-		{
-			get
-			{
-				return eVolumeFeatures.Mute |
-					   eVolumeFeatures.MuteAssignment |
-					   eVolumeFeatures.MuteFeedback |
-					   eVolumeFeatures.Volume |
-					   eVolumeFeatures.VolumeAssignment |
-					   eVolumeFeatures.VolumeFeedback;
-			}
-		}
-
-		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
@@ -44,6 +28,13 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		{
 			m_VolumeGroupId = volumeGroupId;
 			m_MuteGroupId = muteGroupId;
+
+			SupportedVolumeFeatures = eVolumeFeatures.Mute |
+			                          eVolumeFeatures.MuteAssignment |
+			                          eVolumeFeatures.MuteFeedback |
+			                          eVolumeFeatures.Volume |
+			                          eVolumeFeatures.VolumeAssignment |
+			                          eVolumeFeatures.VolumeFeedback;
 		}
 
 		#region Methods
