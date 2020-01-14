@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Added DmcS2oHdAdapter
  - Added DmcStroAdapter
  - Added misc Crestron input cards
+ - Added IO switcher device that is toggled by a digital output port
 
 ### Changed
  - Reworked volume controls to fit new interfaces
