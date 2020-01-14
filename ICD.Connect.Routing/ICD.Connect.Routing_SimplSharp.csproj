@@ -117,9 +117,9 @@
     <Compile Include="Devices\AbstractRouteMidpointDevice.cs" />
     <Compile Include="Devices\AbstractRouteSourceDevice.cs" />
     <Compile Include="Devices\AbstractRouteSwitcherDevice.cs" />
-    <Compile Include="Devices\GenericSpeakerDestinationControl.cs" />
-    <Compile Include="Devices\GenericSpeakerDevice.cs" />
-    <Compile Include="Devices\GenericSpeakerDeviceSettings.cs" />
+    <Compile Include="Devices\GenericSpeaker\GenericSpeakerDestinationControl.cs" />
+    <Compile Include="Devices\GenericSpeaker\GenericSpeakerDevice.cs" />
+    <Compile Include="Devices\GenericSpeaker\GenericSpeakerDeviceSettings.cs" />
     <Compile Include="Devices\IRouteDestinationDevice.cs" />
     <Compile Include="Devices\IRouteDevice.cs" />
     <Compile Include="Devices\IRouteMidpointDevice.cs" />

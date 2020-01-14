@@ -1,6 +1,6 @@
 ﻿using ICD.Connect.Devices;
 
-namespace ICD.Connect.Routing.Devices
+namespace ICD.Connect.Routing.Devices.GenericSpeaker
 {
 	public sealed class GenericSpeakerDevice : AbstractDevice<GenericSpeakerDeviceSettings>
 	{

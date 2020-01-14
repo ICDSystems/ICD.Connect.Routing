@@ -8,7 +8,7 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.RoutingGraphs;
 
-namespace ICD.Connect.Routing.Devices
+namespace ICD.Connect.Routing.Devices.GenericSpeaker
 {
 	public sealed class GenericSpeakerDestinationControl : AbstractRouteDestinationControl<GenericSpeakerDevice>
 	{
