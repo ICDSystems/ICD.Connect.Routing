@@ -136,6 +136,9 @@
     <Compile Include="Cards\Outputs\AbstractOutputCardAdapter.cs" />
     <Compile Include="Cards\Outputs\AbstractOutputCardSettings.cs" />
     <Compile Include="Cards\Outputs\AbstractOutputCardAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Outputs\Dmc4kzHdo\Dmc4kzHdoAdapter.cs" />
+    <Compile Include="Cards\Outputs\Dmc4kzHdo\Dmc4kzHdoAdapterRoutingControl.cs" />
+    <Compile Include="Cards\Outputs\Dmc4kzHdo\Dmc4kzHdoAdapterSettings.cs" />
     <Compile Include="Cards\Outputs\DmcCoHd\DmcCoHdAdapter.cs" />
     <Compile Include="Cards\Outputs\DmcCoHd\DmcCoHdAdapterRoutingControl.cs" />
     <Compile Include="Cards\Outputs\DmcCoHd\DmcCoHdAdapterSettings.cs" />
