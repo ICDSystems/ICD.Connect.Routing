@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
  - Added Dmc4kzHdoAdapter
+ - Added DmcCatoHdAdapter
+ - Added DmcFoAdapter
+ - Added DmcS2oHdAdapter
+ - Added DmcStroAdapter
 
 ### Changed
  - Reworked volume controls to fit new interfaces
