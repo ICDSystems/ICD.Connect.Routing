@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Added DmcFoAdapter
  - Added DmcS2oHdAdapter
  - Added DmcStroAdapter
+ - Added misc Crestron input cards
 
 ### Changed
  - Reworked volume controls to fit new interfaces
