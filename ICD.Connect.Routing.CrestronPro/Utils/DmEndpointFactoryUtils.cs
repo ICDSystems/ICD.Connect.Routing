@@ -116,7 +116,7 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 
 			try
 			{
-				// DMPS3 4K
+				// DMPS3 4K, 64x and 128x frames
 				return adapter.InstantiateTransmitter(input);
 			}
 			catch (ArgumentException)
@@ -170,7 +170,7 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 
 			try
 			{
-				// DMPS3 4K
+				// DMPS3 4K, 64x and 128x frames
 				return adapter.InstantiateReceiver(output);
 			}
 			catch (ArgumentException)
