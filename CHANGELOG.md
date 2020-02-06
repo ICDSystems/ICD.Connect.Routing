@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [15.2.2] - 2020-02-06
 ### Changed
  - Fixed a bug preventing the instantiation of Crestron HDBaseT DM Transmitters and Receivers
 
