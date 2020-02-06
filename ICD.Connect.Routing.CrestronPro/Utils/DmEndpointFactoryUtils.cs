@@ -119,7 +119,7 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 				// DMPS3 4K
 				return adapter.InstantiateTransmitter(input);
 			}
-			catch (ArgumentException)
+			catch (Exception)
 			{
 				if (settings.Ipid == null)
 					throw new InvalidOperationException("Can't instantiate DM endpoint without IPID");
@@ -173,7 +173,7 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 				// DMPS3 4K
 				return adapter.InstantiateReceiver(output);
 			}
-			catch (ArgumentException)
+			catch (Exception)
 			{
 				if (settings.Ipid == null)
 					throw new InvalidOperationException("Can't instantiate DM endpoint without IPID");

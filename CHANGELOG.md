@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Fixed a bug preventing the instantiation of Crestron HDBaseT DM Transmitters and Receivers
+
 ## [15.2.1] - 2019-12-04
 ### Changed
  - Fixes for potential null refs in Extron DTP devices

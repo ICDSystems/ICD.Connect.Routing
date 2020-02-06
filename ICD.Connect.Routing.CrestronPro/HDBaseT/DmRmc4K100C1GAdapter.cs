@@ -68,7 +68,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 				// DMPS3 4K
 				return new DmRmc4K100C1G(output);
 			}
-			catch (ArgumentException)
+			catch (Exception)
 			{
 				if (settings.Ipid == null)
 					throw new InvalidOperationException("Can't instantiate DM endpoint without IPID");
