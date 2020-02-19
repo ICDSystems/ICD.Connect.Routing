@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using ICD.Common.Utils.EventArguments;
 
 namespace ICD.Connect.Routing.Endpoints
 {
@@ -9,11 +7,6 @@ namespace ICD.Connect.Routing.Endpoints
 	/// </summary>
 	public interface ISourceDestinationCommon : ISourceDestinationBaseCommon
 	{
-		/// <summary>
-		/// Raised when the disable state changes.
-		/// </summary>
-		event EventHandler<BoolEventArgs> OnDisableStateChanged;
-
 		#region Properties
 
 		/// <summary>
@@ -40,12 +33,6 @@ namespace ICD.Connect.Routing.Endpoints
 		/// </summary>
 		/// <returns></returns>
 		IEnumerable<int> GetAddresses();
-
-		/// <summary>
-		/// Gets all of the addresses as endpoint info.
-		/// </summary>
-		/// <returns></returns>
-		IEnumerable<EndpointInfo> GetEndpoints();
 
 		/// <summary>
 		/// Sets the addresses used by this source/destination.

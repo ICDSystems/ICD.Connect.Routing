@@ -54,8 +54,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		{
 			m_Cache = new SwitcherCache();
 			Subscribe(m_Cache);
-
-			Subscribe(parent);
 		}
 
 		/// <summary>
@@ -72,7 +70,6 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 			base.DisposeFinal(disposing);
 
 			Unsubscribe(m_Cache);
-			Unsubscribe(Parent);
 			Unsubscribe(Card);
 		}
 
@@ -207,8 +204,10 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(TParent parent)
+		protected override void Subscribe(TParent parent)
 		{
+			base.Subscribe(parent);
+
 			parent.OnCardChanged += ParentOnCardChanged;
 		}
 
@@ -216,8 +215,10 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(TParent parent)
+		protected override void Unsubscribe(TParent parent)
 		{
+			base.Unsubscribe(parent);
+
 			parent.OnCardChanged -= ParentOnCardChanged;
 		}
 

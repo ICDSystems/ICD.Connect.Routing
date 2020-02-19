@@ -14,41 +14,41 @@ using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Atlona
 {
-    public sealed class AtUhdHdvs300SwitcherControl : AbstractRouteSwitcherControl<AtUhdHdvs300Device>
-    {
+	public sealed class AtUhdHdvs300SwitcherControl : AbstractRouteSwitcherControl<AtUhdHdvs300Device>
+	{
 		private const string REGEX_OUTPUT_ON = @"^x1\$ (on|off)";
 		private const string REGEX_SOURCE_DETECT = @"^^InputStatus (0|1)(0|1)(0|1)(0|1)(0|1)";
 		private const string REGEX_SOURCE_DETECT_SINGLE = @"^InputStatus(\d) (0|1)";
 		private const string REGEX_ROUTING = @"^x(\d)AVx1";
 
-	    private static Dictionary<int, string> s_InputIds = new Dictionary<int, string>
-	    {
+		private static readonly Dictionary<int, string> s_InputIds = new Dictionary<int, string>
+		{
 			{1, "HDMI IN 1"},
 			{2, "HDMI IN 2"},
 			{3, "VGA IN"},
 			{4, "DP IN 4"},
 			{5, "HDMI IN 5"}
-	    };
+		};
 
-	    /// <summary>
-	    /// Raised when an input source status changes.
-	    /// </summary>
-	    public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+		/// <summary>
+		/// Raised when an input source status changes.
+		/// </summary>
+		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 
-	    /// <summary>
-	    /// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
-	    /// </summary>
-	    public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
+		/// <summary>
+		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
+		/// </summary>
+		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 
-	    /// <summary>
-	    /// Raised when the device starts/stops actively transmitting on an output.
-	    /// </summary>
-	    public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
+		/// <summary>
+		/// Raised when the device starts/stops actively transmitting on an output.
+		/// </summary>
+		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 
-	    /// <summary>
-	    /// Called when a route changes.
-	    /// </summary>
-	    public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
+		/// <summary>
+		/// Called when a route changes.
+		/// </summary>
+		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		private readonly SwitcherCache m_Cache;
 
@@ -85,7 +85,6 @@ namespace ICD.Connect.Routing.Atlona
 			m_Cache = new SwitcherCache();
 
 			Subscribe(m_Cache);
-			Subscribe(parent);
 		}
 
 		/// <summary>
@@ -115,30 +114,30 @@ namespace ICD.Connect.Routing.Atlona
 			return m_Cache.GetSourceDetectedState(input, type);
 		}
 
-	    /// <summary>
-	    /// Gets the input at the given address.
-	    /// </summary>
-	    /// <param name="input"></param>
-	    /// <returns></returns>
-	    public override ConnectorInfo GetInput(int input)
-	    {
+		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
 			if (!ContainsInput(input))
 				throw new ArgumentOutOfRangeException("input");
 
 			return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
-	    }
+		}
 
-	    /// <summary>
-	    /// Returns true if the destination contains an input at the given address.
-	    /// </summary>
-	    /// <param name="input"></param>
-	    /// <returns></returns>
-	    public override bool ContainsInput(int input)
-	    {
-		    return input >= 1 && input <= 5;
-	    }
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			return input >= 1 && input <= 5;
+		}
 
-	    /// <summary>
+		/// <summary>
 		/// Returns the inputs.
 		/// </summary>
 		/// <returns></returns>
@@ -147,30 +146,30 @@ namespace ICD.Connect.Routing.Atlona
 			return Enumerable.Range(1, 5).Select(i => new ConnectorInfo(i, eConnectionType.Audio | eConnectionType.Video));
 		}
 
-	    /// <summary>
-	    /// Gets the output at the given address.
-	    /// </summary>
-	    /// <param name="address"></param>
-	    /// <returns></returns>
-	    public override ConnectorInfo GetOutput(int address)
-	    {
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int address)
+		{
 			if (!ContainsOutput(address))
 				throw new ArgumentOutOfRangeException("address");
 
 			return new ConnectorInfo(address, eConnectionType.Audio | eConnectionType.Video);
-	    }
+		}
 
-	    /// <summary>
-	    /// Returns true if the source contains an output at the given address.
-	    /// </summary>
-	    /// <param name="output"></param>
-	    /// <returns></returns>
-	    public override bool ContainsOutput(int output)
-	    {
-		    return output == 1;
-	    }
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return output == 1;
+		}
 
-	    /// <summary>
+		/// <summary>
 		/// Returns the outputs.
 		/// </summary>
 		/// <returns></returns>
@@ -202,48 +201,48 @@ namespace ICD.Connect.Routing.Atlona
 			return OutputOn ? m_Cache.GetInputConnectorInfoForOutput(output, type) : null;
 		}
 
-	    protected override InputPort CreateInputPort(ConnectorInfo input)
-	    {
-		    bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
-		    return new InputPort
-		    {
-			    Address = input.Address,
-			    ConnectionType = input.ConnectionType,
-			    InputId = GetInputId(input),
-			    InputIdFeedbackSupported = true,
-			    VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
-			    VideoInputSyncFeedbackSupported = supportsVideo
-		    };
-	    }
+		protected override InputPort CreateInputPort(ConnectorInfo input)
+		{
+			bool supportsVideo = input.ConnectionType.HasFlag(eConnectionType.Video);
+			return new InputPort
+			{
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = GetInputId(input),
+				InputIdFeedbackSupported = true,
+				VideoInputSync = supportsVideo && GetVideoInputSyncState(input),
+				VideoInputSyncFeedbackSupported = supportsVideo
+			};
+		}
 
-	    protected override OutputPort CreateOutputPort(ConnectorInfo output)
-	    {
-		    bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
-		    bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
-		    return new OutputPort
-		    {
-			    Address = output.Address,
-			    ConnectionType = output.ConnectionType,
-			    OutputId = "HDMI OUT",
-			    OutputIdFeedbackSupport = true,
-			    VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
-			    VideoOutputSourceFeedbackSupport = supportsVideo,
-			    AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
-			    AudioOutputSourceFeedbackSupport = supportsAudio
-		    };
-	    }
+		protected override OutputPort CreateOutputPort(ConnectorInfo output)
+		{
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+			return new OutputPort
+			{
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = "HDMI OUT",
+				OutputIdFeedbackSupport = true,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
+		}
 
-	    private string GetInputId(ConnectorInfo info)
-	    {
-		    return ContainsInput(info.Address) ? s_InputIds[info.Address] : null;
-	    }
+		private string GetInputId(ConnectorInfo info)
+		{
+			return ContainsInput(info.Address) ? s_InputIds[info.Address] : null;
+		}
 
-	    private bool GetVideoInputSyncState(ConnectorInfo info)
-	    {
-		    return m_Cache.GetSourceDetectedState(info.Address, eConnectionType.Video);
-	    }
+		private bool GetVideoInputSyncState(ConnectorInfo info)
+		{
+			return m_Cache.GetSourceDetectedState(info.Address, eConnectionType.Video);
+		}
 
-	    /// <summary>Performs the given route operation.</summary>
+		/// <summary>Performs the given route operation.</summary>
 		/// <param name="info"></param>
 		/// <returns></returns>
 		public override bool Route(RouteOperation info)
@@ -273,7 +272,7 @@ namespace ICD.Connect.Routing.Atlona
 					Route(input);
 					TurnOnOutput(true);
 					return true;
-				
+
 				default:
 					throw new NotSupportedException(string.Format("{0} routing not supported", type));
 			}
@@ -293,9 +292,9 @@ namespace ICD.Connect.Routing.Atlona
 			if (EnumUtils.HasMultipleFlags(type))
 			{
 				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(t => ClearOutput(output, t))
-								.ToArray()
-								.Unanimous(false);
+				                .Select(t => ClearOutput(output, t))
+				                .ToArray()
+				                .Unanimous(false);
 			}
 
 			switch (type)
@@ -339,10 +338,24 @@ namespace ICD.Connect.Routing.Atlona
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(AtUhdHdvs300Device parent)
+		protected override void Subscribe(AtUhdHdvs300Device parent)
 		{
+			base.Subscribe(parent);
+
 			parent.OnResponseReceived += ParentOnOnResponseReceived;
 			parent.OnInitializedChanged += ParentOnOnInitializedChanged;
+		}
+
+		/// <summary>
+		/// Unsubscribe from the parent events.
+		/// </summary>
+		/// <param name="parent"></param>
+		protected override void Unsubscribe(AtUhdHdvs300Device parent)
+		{
+			base.Unsubscribe(parent);
+
+			parent.OnResponseReceived -= ParentOnOnResponseReceived;
+			parent.OnInitializedChanged -= ParentOnOnInitializedChanged;
 		}
 
 		private void ParentOnOnInitializedChanged(object sender, BoolEventArgs boolEventArgs)

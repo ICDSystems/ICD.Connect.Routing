@@ -96,7 +96,6 @@ namespace ICD.Connect.Routing.Extron.Controls
 			m_NumberOfOutputs = numOutputs;
 			m_Breakaway = breakaway;
 
-			Subscribe(parent);
 			Subscribe(m_Cache);
 		}
 
@@ -113,7 +112,6 @@ namespace ICD.Connect.Routing.Extron.Controls
 
 			base.DisposeFinal(disposing);
 
-			Unsubscribe(Parent);
 			Unsubscribe(m_Cache);
 		}
 
@@ -349,14 +347,18 @@ namespace ICD.Connect.Routing.Extron.Controls
 
 		#region Parent Callbacks
 
-		private void Subscribe(IExtronSwitcherDevice parent)
+		protected override void Subscribe(IExtronSwitcherDevice parent)
 		{
+			base.Subscribe(parent);
+
 			parent.OnInitializedChanged += ParentOnOnInitializedChanged;
 			parent.OnResponseReceived += ParentOnOnResponseReceived;
 		}
 
-		private void Unsubscribe(IExtronSwitcherDevice parent)
+		protected override void Unsubscribe(IExtronSwitcherDevice parent)
 		{
+			base.Unsubscribe(parent);
+
 			parent.OnInitializedChanged -= ParentOnOnInitializedChanged;
 			parent.OnResponseReceived -= ParentOnOnResponseReceived;
 		}

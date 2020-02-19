@@ -37,7 +37,6 @@ namespace ICD.Connect.Routing.Controls
 		public RouteMidpointControl(IRouteMidpointDevice parent, int id)
 			: base(parent, id)
 		{
-			Subscribe(parent);
 		}
 
 		/// <summary>
@@ -52,8 +51,6 @@ namespace ICD.Connect.Routing.Controls
 			OnActiveTransmissionStateChanged = null;
 
 			base.DisposeFinal(disposing);
-
-			Unsubscribe(Parent);
 		}
 
 		#region Methods
@@ -158,8 +155,10 @@ namespace ICD.Connect.Routing.Controls
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(IRouteMidpointDevice parent)
+		protected override void Subscribe(IRouteMidpointDevice parent)
 		{
+			base.Subscribe(parent);
+
 			parent.OnSourceDetectionStateChange += ParentOnSourceDetectionStateChange;
 			parent.OnActiveInputsChanged += ParentOnActiveInputsChanged;
 			parent.OnActiveTransmissionStateChanged += ParentOnActiveTransmissionStateChanged;
@@ -170,8 +169,10 @@ namespace ICD.Connect.Routing.Controls
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(IRouteMidpointDevice parent)
+		protected override void Unsubscribe(IRouteMidpointDevice parent)
 		{
+			base.Unsubscribe(parent);
+
 			parent.OnSourceDetectionStateChange -= ParentOnSourceDetectionStateChange;
 			parent.OnActiveInputsChanged -= ParentOnActiveInputsChanged;
 			parent.OnActiveTransmissionStateChanged -= ParentOnActiveTransmissionStateChanged;

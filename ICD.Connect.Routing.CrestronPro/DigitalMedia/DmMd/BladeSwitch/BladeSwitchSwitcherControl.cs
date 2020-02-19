@@ -52,7 +52,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 			m_Cache = new SwitcherCache();
 			Subscribe(m_Cache);
 
-			Subscribe(parent);
 			SetSwitcher(parent.Switcher);
 		}
 
@@ -70,7 +69,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 
 			// Unsubscribe and unregister.
 			Unsubscribe(m_Cache);
-			Unsubscribe(Parent);
 			SetSwitcher(null);
 		}
 
@@ -489,8 +487,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(ICrestronBladeSwitchAdapter parent)
+		protected override void Subscribe(ICrestronBladeSwitchAdapter parent)
 		{
+			base.Subscribe(parent);
+
 			parent.OnSwitcherChanged += ParentOnSwitcherChanged;
 		}
 
@@ -498,8 +498,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(ICrestronBladeSwitchAdapter parent)
+		protected override void Unsubscribe(ICrestronBladeSwitchAdapter parent)
 		{
+			base.Unsubscribe(parent);
+
 			parent.OnSwitcherChanged -= ParentOnSwitcherChanged;
 		}
 

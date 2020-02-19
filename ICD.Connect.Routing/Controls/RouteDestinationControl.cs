@@ -27,7 +27,6 @@ namespace ICD.Connect.Routing.Controls
 		public RouteDestinationControl(IRouteDestinationDevice parent, int id)
 			: base(parent, id)
 		{
-			Subscribe(parent);
 		}
 
 		/// <summary>
@@ -40,8 +39,6 @@ namespace ICD.Connect.Routing.Controls
 			OnActiveInputsChanged = null;
 
 			base.DisposeFinal(disposing);
-
-			Unsubscribe(Parent);
 		}
 
 		#region Methods
@@ -104,8 +101,10 @@ namespace ICD.Connect.Routing.Controls
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(IRouteDestinationDevice parent)
+		protected override void Subscribe(IRouteDestinationDevice parent)
 		{
+			base.Subscribe(parent);
+
 			parent.OnSourceDetectionStateChange += ParentOnSourceDetectionStateChange;
 			parent.OnActiveInputsChanged += ParentOnActiveInputsChanged;
 		}
@@ -114,8 +113,10 @@ namespace ICD.Connect.Routing.Controls
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(IRouteDestinationDevice parent)
+		protected override void Unsubscribe(IRouteDestinationDevice parent)
 		{
+			base.Unsubscribe(parent);
+
 			parent.OnSourceDetectionStateChange -= ParentOnSourceDetectionStateChange;
 			parent.OnActiveInputsChanged -= ParentOnActiveInputsChanged;
 		}

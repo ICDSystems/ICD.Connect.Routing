@@ -37,7 +37,6 @@ namespace ICD.Connect.Routing.Controls
 		public RouteSwitcherControl(IRouteSwitcherDevice parent, int id)
 			: base(parent, id)
 		{
-			Subscribe(parent);
 		}
 
 		/// <summary>
@@ -52,8 +51,6 @@ namespace ICD.Connect.Routing.Controls
 			OnRouteChange = null;
 
 			base.DisposeFinal(disposing);
-
-			Unsubscribe(Parent);
 		}
 
 		#region Methods
@@ -222,8 +219,10 @@ namespace ICD.Connect.Routing.Controls
 		/// Susbcribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(IRouteSwitcherDevice parent)
+		protected override void Subscribe(IRouteSwitcherDevice parent)
 		{
+			base.Subscribe(parent);
+
 			parent.OnSourceDetectionStateChange += ParentOnSourceDetectionStateChange;
 			parent.OnActiveInputsChanged += ParentOnActiveInputsChanged;
 			parent.OnActiveTransmissionStateChanged += ParentOnActiveTransmissionStateChanged;
@@ -234,8 +233,10 @@ namespace ICD.Connect.Routing.Controls
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(IRouteSwitcherDevice parent)
+		protected override void Unsubscribe(IRouteSwitcherDevice parent)
 		{
+			base.Unsubscribe(parent);
+
 			parent.OnSourceDetectionStateChange -= ParentOnSourceDetectionStateChange;
 			parent.OnActiveInputsChanged -= ParentOnActiveInputsChanged;
 			parent.OnActiveTransmissionStateChanged -= ParentOnActiveTransmissionStateChanged;

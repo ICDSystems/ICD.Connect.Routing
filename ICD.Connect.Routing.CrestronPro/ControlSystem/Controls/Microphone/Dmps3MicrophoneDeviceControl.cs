@@ -33,20 +33,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 #if SIMPLSHARP
 			m_Microphone = Parent.ControlSystem.Microphones[inputAddress] as Dmps3Microphone;
 #endif
-
-			Subscribe(parent);
-		}
-
-		/// <summary>
-		/// Override to release resources.
-		/// </summary>
-		/// <param name="disposing"></param>
-		protected override void DisposeFinal(bool disposing)
-		{
-			base.DisposeFinal(disposing);
-
-			if (Parent != null)
-				Unsubscribe(Parent);
 		}
 
 		#region Methods
@@ -104,8 +90,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(ControlSystemDevice parent)
+		protected override void Subscribe(ControlSystemDevice parent)
 		{
+			base.Subscribe(parent);
+
 #if SIMPLSHARP
 			parent.ControlSystem.MicrophoneChange += ControlSystemOnMicrophoneChange;
 #endif
@@ -115,8 +103,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(ControlSystemDevice parent)
+		protected override void Unsubscribe(ControlSystemDevice parent)
 		{
+			base.Unsubscribe(parent);
+
 #if SIMPLSHARP
 			parent.ControlSystem.MicrophoneChange -= ControlSystemOnMicrophoneChange;
 #endif

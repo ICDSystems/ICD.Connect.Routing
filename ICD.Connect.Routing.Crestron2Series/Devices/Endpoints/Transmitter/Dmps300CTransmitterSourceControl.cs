@@ -83,7 +83,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 		public Dmps300CTransmitterSourceControl(Dmps300CTransmitter parent)
 			: base(parent, 0)
 	    {
-			Subscribe(parent);
 		}
 
 		/// <summary>
@@ -95,8 +94,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 			OnActiveTransmissionStateChanged = null;
 
 			base.DisposeFinal(disposing);
-
-			Unsubscribe(Parent);
 		}
 
 	    #region Methods
@@ -172,8 +169,10 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(Dmps300CTransmitter parent)
+		protected override void Subscribe(Dmps300CTransmitter parent)
 		{
+			base.Subscribe(parent);
+
 			parent.OnSigEvent += ParentOnSigEvent;
 		}
 
@@ -181,8 +180,10 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(Dmps300CTransmitter parent)
+		protected override void Unsubscribe(Dmps300CTransmitter parent)
 		{
+			base.Unsubscribe(parent);
+
 			parent.OnSigEvent -= ParentOnSigEvent;
 		}
 

@@ -51,8 +51,6 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 			m_SwitcherCache = new SwitcherCache();
 			Subscribe(m_SwitcherCache);
 
-			Subscribe(parent);
-
 			SetDevice(parent.Device as TDevice);
 		}
 
@@ -70,7 +68,6 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 			base.DisposeFinal(disposing);
 
 			Unsubscribe(m_SwitcherCache);
-			Unsubscribe(Parent);
 
 			SetDevice(null);
 		}
@@ -210,8 +207,10 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(TParent parent)
+		protected override void Subscribe(TParent parent)
 		{
+			base.Subscribe(parent);
+
 			parent.OnDeviceChanged += ParentOnDeviceChanged;
 		}
 
@@ -219,8 +218,10 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(TParent parent)
+		protected override void Unsubscribe(TParent parent)
 		{
+			base.Unsubscribe(parent);
+
 			parent.OnDeviceChanged -= ParentOnDeviceChanged;
 		}
 

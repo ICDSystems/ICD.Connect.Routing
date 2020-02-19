@@ -74,8 +74,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			m_Cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
 			m_Cache.OnRouteChange += CacheOnRouteChange;
 
-			Subscribe(parent);
-
 			// DMPS 2 series is hard coded to always use breakaway in metlife rooms. 
 			// Revisit if some other job decides to use them.
 			AudioBreakawayEnabled = true;
@@ -94,8 +92,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			OnRouteChange = null;
 
 			base.DisposeFinal(disposing);
-
-			Unsubscribe(Parent);
 		}
 
 		#region Routing
@@ -428,8 +424,10 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		/// Subscribe to the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Subscribe(Dmps300CControlSystem parent)
+		protected override void Subscribe(Dmps300CControlSystem parent)
 		{
+			base.Subscribe(parent);
+
 			parent.OnSigEvent += ParentOnSigEvent;
 		}
 
@@ -437,8 +435,10 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		/// Unsubscribe from the parent events.
 		/// </summary>
 		/// <param name="parent"></param>
-		private void Unsubscribe(Dmps300CControlSystem parent)
+		protected override void Unsubscribe(Dmps300CControlSystem parent)
 		{
+			base.Unsubscribe(parent);
+
 			parent.OnSigEvent -= ParentOnSigEvent;
 		}
 
