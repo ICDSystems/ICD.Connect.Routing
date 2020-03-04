@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
  - Reworked volume controls to fit new interfaces
+ - Fixed Crestron Switchers, so online/offline updates are subscribed to
 
 ## [15.2.2] - 2020-02-06
 ### Changed
