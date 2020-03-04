@@ -108,6 +108,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 			if (Switcher != null && !GenericBaseUtils.SetUp(Switcher, this, out result))
 				Log(eSeverity.Error, "Unable to register {0} - {1}", Switcher.GetType().Name, result);
 
+			Subscribe(Switcher);
+
 			ConfigureSwitcher(Switcher);
 
 			UpdateCachedOnlineStatus();
