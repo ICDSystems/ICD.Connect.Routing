@@ -1,5 +1,4 @@
-﻿using System;
-using ICD.Common.Properties;
+﻿using ICD.Common.Properties;
 using ICD.Connect.API.EventArguments;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.Proxy;

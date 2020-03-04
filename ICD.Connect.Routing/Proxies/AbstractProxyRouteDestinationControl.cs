@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using ICD.Connect.API.Commands;
-using ICD.Connect.API.Info;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices.Proxies.Devices;
 using ICD.Connect.Routing.Connections;

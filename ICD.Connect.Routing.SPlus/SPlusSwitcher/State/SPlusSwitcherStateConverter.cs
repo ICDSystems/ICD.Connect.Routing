@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using ICD.Common.Utils.Extensions;
+﻿using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Json;
 using Newtonsoft.Json;
 
