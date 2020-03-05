@@ -1,11 +1,11 @@
-﻿using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
-using ICD.Connect.API.Nodes;
+﻿using ICD.Connect.API.Nodes;
 using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
+using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 #endif
 using System;
 using System.Collections.Generic;
