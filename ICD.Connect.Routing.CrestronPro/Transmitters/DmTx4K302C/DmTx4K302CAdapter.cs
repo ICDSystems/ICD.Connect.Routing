@@ -1,4 +1,5 @@
 ﻿using ICD.Common.Properties;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -121,6 +122,24 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		}
 #endif
 
+		#endregion
+
+		#region Console
+#if SIMPLSHARP
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			if (Transmitter != null)
+				addRow("VGA Sync", Transmitter.VgaInput.SyncDetectedFeedback.BoolValue);
+		}
+
+#endif
 		#endregion
 	}
 }

@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.API.Nodes;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
@@ -74,6 +75,24 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 		}
 #endif
 
+		#endregion
+
+		#region Console
+#if SIMPLSHARP
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			if (Transmitter != null)
+				addRow("DisplayPort Sync", Transmitter.DisplayPortInput.SyncDetectedFeedback.BoolValue);
+		}
+
+#endif
 		#endregion
 	}
 }
