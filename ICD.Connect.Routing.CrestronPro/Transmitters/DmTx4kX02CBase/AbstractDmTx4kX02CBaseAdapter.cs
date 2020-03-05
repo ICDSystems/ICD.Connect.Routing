@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 using ICD.Connect.API.Nodes;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -131,7 +132,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 		/// <param name="args"></param>
 		protected virtual void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
 		{
-			if (args.EventId != DMOutputEventIds.ContentLanModeEventId)
+			if (args.EventId != EndpointTransmitterBase.VideoSourceFeedbackEventId)
 				return;
 
 			// Ensure the device stays in auto routing mode
