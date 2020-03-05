@@ -51,7 +51,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 
 		private void DisplayPortInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
-			if (args.EventId == DMInputEventIds.VideoOutEventId)
+			if (args.EventId == EndpointInputStreamEventIds.SyncDetectedFeedbackEventId)
 				ActiveTransmissionState = GetActiveTransmissionState();
 		}
 #endif
