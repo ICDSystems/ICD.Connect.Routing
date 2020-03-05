@@ -75,7 +75,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		/// <param name="args"></param>
 		private void VgaInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
-			if (args.EventId == DMInputEventIds.VideoOutEventId)
+			if (args.EventId == EndpointInputStreamEventIds.SyncDetectedFeedbackEventId)
 				ActiveTransmissionState = GetActiveTransmissionState();
 		}
 
