@@ -59,6 +59,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.13.2] - 2020-03-05
+### Changed
+ - Fixed Sync Detection on DmTx4kX02C and DmTx4kzX02C devices
+ - Changed Base Event ID check for VideoSourceFeedback to use correct const for DmTx4kX02C and DmTx4kzX02C devices
+
 ## [13.13.1] - 2019-12-31
 ### Changed
  - Fixed issue where DM HDBaseT endpoints wouldn't instantiate in a point-to-point systems

@@ -1,8 +1,15 @@
-﻿#if SIMPLSHARP
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using ICD.Connect.Misc.CrestronPro.Devices;
+﻿using ICD.Connect.API.Nodes;
+using ICD.Connect.Misc.CrestronPro.Extensions;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
+using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 #endif
 using System;
 using System.Collections.Generic;
@@ -72,7 +79,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 
 		#endregion
 
-		#region Methods
+		#region Transmitter Callbacks
 
 #if SIMPLSHARP
 		/// <summary>
@@ -114,13 +121,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 		/// <param name="args"></param>
 		private void HdmiInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
-			if (args.EventId == DMInputEventIds.VideoDetectedEventId)
+			if (args.EventId == EndpointInputStreamEventIds.SyncDetectedFeedbackEventId)
 				ActiveTransmissionState = GetActiveTransmissionState();
-		}
-
-		protected virtual bool GetActiveTransmissionState()
-		{
-			return HdmiDetected;
 		}
 
 		/// <summary>
@@ -130,11 +132,24 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 		/// <param name="args"></param>
 		protected virtual void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
 		{
-			if (args.EventId != DMOutputEventIds.ContentLanModeEventId)
+			if (args.EventId != EndpointTransmitterBase.VideoSourceFeedbackEventId)
 				return;
 
 			// Ensure the device stays in auto routing mode
 			Transmitter.VideoSource = eX02VideoSourceType.Auto;
+		}
+
+#endif
+
+#endregion
+
+		#region Methods
+
+#if SIMPLSHARP
+
+		protected virtual bool GetActiveTransmissionState()
+		{
+			return HdmiDetected;
 		}
 #endif
 
@@ -238,5 +253,26 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 
 		#endregion
 #endif
+
+		#region Console
+
+#if SIMPLSHARP
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			if (Transmitter != null)
+			{
+				addRow("Source", Transmitter.VideoSourceFeedback);
+				addRow("HDMI 1 Sync", Transmitter.HdmiInputs[HDMI_INPUT_1].SyncDetectedFeedback.GetBoolValueOrDefault());
+				addRow("HDMI 2 Sync", Transmitter.HdmiInputs[HDMI_INPUT_2].SyncDetectedFeedback.GetBoolValueOrDefault());
+			}
+		}
+#endif
+		#endregion
 	}
 }
