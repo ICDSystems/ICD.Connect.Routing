@@ -114,7 +114,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 		/// <param name="args"></param>
 		private void HdmiInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
-			if (args.EventId == DMInputEventIds.VideoDetectedEventId)
+			if (args.EventId == DMInputEventIds.VideoOutEventId)
 				ActiveTransmissionState = GetActiveTransmissionState();
 		}
 

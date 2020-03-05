@@ -71,7 +71,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 
 		#endregion
 
-		#region Methods
+		#region Transmitter Callbacks
 
 #if SIMPLSHARP
 		/// <summary>
@@ -113,13 +113,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 		/// <param name="args"></param>
 		private void HdmiInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
-			if (args.EventId == DMInputEventIds.VideoDetectedEventId)
+			if (args.EventId == DMInputEventIds.VideoOutEventId)
 				ActiveTransmissionState = GetActiveTransmissionState();
-		}
-
-		protected virtual bool GetActiveTransmissionState()
-		{
-			return HdmiDetected;
 		}
 
 		/// <summary>
@@ -134,6 +129,19 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 
 			// Ensure the device stays in auto routing mode
 			Transmitter.VideoSource = eX02VideoSourceType.Auto;
+		}
+
+#endif
+
+#endregion
+
+		#region Methods
+
+#if SIMPLSHARP
+
+		protected virtual bool GetActiveTransmissionState()
+		{
+			return HdmiDetected;
 		}
 #endif
 
