@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [13.13.2] - 2020-03-05
 ### Changed
  - Fixed Sync Detection on DmTx4kX02C and DmTx4kzX02C devices
  - Changed Base Event ID check for VideoSourceFeedback to use correct const for DmTx4kX02C and DmTx4kzX02C devices
