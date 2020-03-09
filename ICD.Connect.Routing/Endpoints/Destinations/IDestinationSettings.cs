@@ -2,5 +2,8 @@
 {
 	public interface IDestinationSettings : ISourceDestinationCommonSettings
 	{
+
+		string DestinationGroupString { get; set; }
+
 	}
 }
