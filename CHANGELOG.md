@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Added
+ - Added DestinationGroupString to Destinations, to be used to create DestinationGroups at runtime
+
 ## [15.3.0] - 2020-03-20
 ### Added
  - Added Dmc4kzHdoAdapter
