@@ -22,7 +22,6 @@ using ICD.Connect.Routing.StaticRoutes;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Originators;
-using ICD.Connect.Settings.Utils;
 
 namespace ICD.Connect.Routing.RoutingGraphs
 {
@@ -1523,8 +1522,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			IEnumerable<IDestinationGroup> destinationGroups = GetOriginatorsSkipExceptions<IDestinationGroup>(settings.DestinationGroupSettings, factory);
 			m_DestinationGroups.SetChildren(destinationGroups);
 
-			HandleDestinationGroupStrings();
-
 			SubscribeMidpoints();
 			SubscribeDestinationControls();
 			SubscribeSourceControls();
@@ -1532,51 +1529,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			m_Cache.RebuildCache();
 
 			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
-		}
-
-		private void HandleDestinationGroupStrings()
-		{
-			foreach (IDestination destination in m_Destinations.Where(d => !string.IsNullOrEmpty(d.DestinationGroupString)))
-			{
-				IDestinationGroup destinationGroup;
-				LazyLoadDestinationGroupByName(destination.DestinationGroupString, out destinationGroup);
-				destinationGroup.AddItem(destination);
-			}
-		}
-
-		/// <summary>
-		/// Gets the destination group with the given name
-		/// </summary>
-		/// <param name="name"></param>
-		/// <param name="destinationGroup"></param>
-		/// <returns>True if destination group already exists, false if it was added</returns>
-		private bool LazyLoadDestinationGroupByName(string name, out IDestinationGroup destinationGroup)
-		{
-			destinationGroup = m_DestinationGroups.GetChildren().FirstOrDefault(d => string.Equals(d.Name,name,StringComparison.InvariantCultureIgnoreCase));
-
-			if (destinationGroup != null)
-				return true;
-
-			destinationGroup = new DestinationGroup
-			{
-				Name = name,
-				Id = GetDestinationGroupId()
-			};
-
-			return false;
-		}
-
-		/// <summary>
-		/// Gets a free ID for the destination group to use
-		/// </summary>
-		/// <returns></returns>
-		private int GetDestinationGroupId()
-		{
-			//todo: make this not suck
-			 List<int> ids = m_Destinations.GetChildrenIds().ToList();
-			 ids.AddRange(m_DestinationGroups.GetChildrenIds());
-
-			return IdUtils.GetNewId(ids, IdUtils.SUBSYSTEM_DESTINATIONS, 0);
 		}
 
 		private IEnumerable<T> GetOriginatorsSkipExceptions<T>(IEnumerable<ISettings> originatorSettings,
