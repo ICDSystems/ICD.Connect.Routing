@@ -19,6 +19,8 @@ namespace ICD.Connect.Routing.Controls
 	{
 		/// <summary>
 		/// Returns switcher port objects to get details about the input ports on this switcher.
+		///
+		/// TODO - This belongs on the IRouteDestinationControl.
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
@@ -26,6 +28,8 @@ namespace ICD.Connect.Routing.Controls
 
 		/// <summary>
 		/// Returns switcher port objects to get details about the output ports on this switcher.
+		///
+		/// TODO - This belongs on the IRouteSourceControl.
 		/// </summary>
 		/// <returns></returns>
 		[PublicAPI]
@@ -46,14 +50,6 @@ namespace ICD.Connect.Routing.Controls
 		/// <returns>True if successfully cleared.</returns>
 		[PublicAPI]
 		bool ClearOutput(int output, eConnectionType type);
-
-		/*
-		/// <summary>
-		/// Returns information about the inputs and outputs of this switcher for telemetry
-		/// </summary>
-		/// <returns></returns>
-		[PublicAPI]
-		IEnumerable<InputOutputPort> GetPorts();*/
 	}
 
 	/// <summary>

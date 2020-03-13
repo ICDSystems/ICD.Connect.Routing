@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Properties;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
@@ -34,11 +35,20 @@ namespace ICD.Connect.Routing.Controls
 		{
 			if (m_InputPorts == null || m_InputPorts.Count == 0)
 				m_InputPorts = GetInputs().Select(input => CreateInputPort(input))
-				                            .ToList();
+				                          .ToList();
 			return m_InputPorts.ToList();
 		}
 
-		protected abstract InputPort CreateInputPort(ConnectorInfo input);
+		protected virtual InputPort CreateInputPort(ConnectorInfo input)
+		{
+			return new InputPort
+			{
+				Address = input.Address,
+				ConnectionType = input.ConnectionType,
+				InputId = string.Format("Input {0}", input.Address),
+				InputIdFeedbackSupported = true
+			};
+		}
 
 		[NotNull]
 		public InputPort GetInputPort(int address)
@@ -58,7 +68,23 @@ namespace ICD.Connect.Routing.Controls
 			return m_OutputPorts.ToList();
 		}
 
-		protected abstract OutputPort CreateOutputPort(ConnectorInfo output);
+		protected virtual OutputPort CreateOutputPort(ConnectorInfo output)
+		{
+			bool supportsVideo = output.ConnectionType.HasFlag(eConnectionType.Video);
+			bool supportsAudio = output.ConnectionType.HasFlag(eConnectionType.Audio);
+
+			return new OutputPort
+			{
+				Address = output.Address,
+				ConnectionType = output.ConnectionType,
+				OutputId = string.Format("Output {0}", output.Address),
+				OutputIdFeedbackSupport = true,
+				VideoOutputSource = supportsVideo ? GetActiveSourceIdName(output, eConnectionType.Video) : null,
+				VideoOutputSourceFeedbackSupport = supportsVideo,
+				AudioOutputSource = supportsAudio ? GetActiveSourceIdName(output, eConnectionType.Audio) : null,
+				AudioOutputSourceFeedbackSupport = supportsAudio
+			};
+		}
 
 		[NotNull]
 		public OutputPort GetOutputPort(int address)
