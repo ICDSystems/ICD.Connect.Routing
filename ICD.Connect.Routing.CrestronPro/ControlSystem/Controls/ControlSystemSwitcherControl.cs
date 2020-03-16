@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Common.Properties;
+#if SIMPLSHARP
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -161,24 +162,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			switch (type)
 			{
 				case eConnectionType.Audio:
-					try
-					{
-						switcherOutput.AudioOut = switcherInput;
-					}
-					catch (NotSupportedException)
-					{
-						try
-						{
-							// DMPS 4K
-							switcherOutput.AudioOutSource = GetAudioSourceForInput(input);
-						}
-						catch (Exception e)
-						{
-							Log(eSeverity.Error, "Failed to route audio input {0} to output {1} - {2}", input, output, e.Message);
-							return false;
-						}
-					}
-
+					if (!RouteAudio(input, switcherInput, output, switcherOutput))
+						return false;
 					break;
 
 				case eConnectionType.Video:
@@ -190,11 +175,125 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 					break;
 
 				default:
-// ReSharper disable once NotResolvedInText
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
 			}
 
 			return m_Cache.SetInputForOutput(output, input, type);
+		}
+
+		private bool RouteAudio(int input, [NotNull] DMInput switcherInput, int output, [NotNull] DMOutput switcherOutput)
+		{
+			if (switcherInput == null)
+				throw new ArgumentNullException("switcherInput");
+
+			if (switcherOutput == null)
+				throw new ArgumentNullException("switcherOutput");
+
+			// Normal DMPS3 routing
+			try
+			{
+				switcherOutput.AudioOut = switcherInput;
+				return true;
+			}
+			catch (NotSupportedException)
+			{
+				// Control system is a DMPS3-4k
+			}
+
+			// DMPS3-4k routing
+			try
+			{
+				eDmps34KAudioOutSource audioOutSource = GetAudioSourceForInput(input);
+
+				// First route the mixer to the output
+				Card.Dmps3DigitalMixOutput mixOut = GetBestMixerForAudioOut(audioOutSource);
+				mixOut.AudioOutSource = audioOutSource;
+
+				// Now route audio to the mixer
+				SetAudioOutSourceDevice(switcherOutput, mixOut);
+
+				//switcherOutput.AudioOutSourceDevice = audioOutSource;
+				return true;
+			}
+			catch (Exception e)
+			{
+				Log(eSeverity.Error, "Failed to route audio input {0} to output {1} - {2}", input, output, e.Message);
+				return false;
+			}
+		}
+
+		private void SetAudioOutSourceDevice([NotNull] DMOutput switcherOutput, [NotNull] Card.Dmps3DigitalMixOutput mixer)
+		{
+			if (switcherOutput == null)
+				throw new ArgumentNullException("switcherOutput");
+
+			if (mixer == null)
+				throw new ArgumentNullException("mixer");
+
+			eDmps34KAudioOutSourceDevice sourceDevice = GetSourceDevice(mixer);
+
+			Card.Dmps3HdmiOutputBackend hdmiOutput = switcherOutput as Card.Dmps3HdmiOutputBackend;
+			if (hdmiOutput != null)
+			{
+				hdmiOutput.AudioOutSourceDevice = sourceDevice;
+				return;
+			}
+
+			Card.Dmps3DmOutputBackend dmOutput = switcherOutput as Card.Dmps3DmOutputBackend;
+			if (dmOutput != null)
+			{
+				dmOutput.AudioOutSourceDevice = sourceDevice;
+				return;
+			}
+
+			throw new InvalidOperationException("Unable to set audio out source device for " + switcherOutput);
+		}
+
+		private eDmps34KAudioOutSourceDevice GetSourceDevice([NotNull] Card.Dmps3DigitalMixOutput mixer)
+		{
+			if (mixer == null)
+				throw new ArgumentNullException("mixer");
+
+			int index = Parent.ControlSystem
+			                  .SwitcherOutputs
+			                  .OfType<Card.Dmps3DigitalMixOutput>()
+			                  .FindIndex(o => o == mixer);
+
+			switch (index)
+			{
+				case 0:
+					return eDmps34KAudioOutSourceDevice.DigitalMixer1;
+				case 1:
+					return eDmps34KAudioOutSourceDevice.DigitalMixer2;
+
+				default:
+					throw new ArgumentException("Unable to find index of mixer");
+			}
+		}
+
+		[NotNull]
+		private Card.Dmps3DigitalMixOutput GetBestMixerForAudioOut(eDmps34KAudioOutSource audioOutSource)
+		{
+			Card.Dmps3DigitalMixOutput output;
+
+			// Is a mixer already routed?
+			bool found = Parent.ControlSystem
+			                   .SwitcherOutputs
+			                   .OfType<Card.Dmps3DigitalMixOutput>()
+			                   .TryFirst(m => m.AudioOutSource == audioOutSource, out output);
+			if (found)
+				return output;
+
+			// Find the first unused mixer
+			found = Parent.ControlSystem
+			              .SwitcherOutputs
+			              .OfType<Card.Dmps3DigitalMixOutput>()
+						  .TryFirst(m => m.AudioOutSource == eDmps34KAudioOutSource.NoRoute, out output);
+			if (found)
+				return output;
+
+			// No available mixers
+			throw new InvalidOperationException("No unused mixers available");
 		}
 
 		/// <summary>
