@@ -332,10 +332,6 @@ namespace ICD.Connect.Routing.Mock.Switcher
 				"SetSignalDetectedState",
 				"<input> <connectionType> <true/false>",
 				(a, b, c) => SetSignalDetectedState(a, b, c));
-			yield return new GenericConsoleCommand<int, int, eConnectionType>(
-				"Route",
-				"Routes the input address to the output address with the given connection type",
-				(a, b, c) => this.Route(a, b, c));
 		}
 
 		/// <summary>
