@@ -23,6 +23,16 @@ using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 {
+
+	public enum eOutputMixerMode
+	{
+		Auto,
+		None,
+		Mixer1,
+		Mixer2,
+		AudioFollowsVideo
+	}
+
 	/// <summary>
 	/// Wraps a CrestronControlSystem to provide a device that can be used as a port provider and a switcher.
 	/// </summary>
@@ -37,6 +47,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		private readonly List<IDeviceControl> m_LoadedControls;
 		private string m_ConfigPath;
+
+
+		public eOutputMixerMode Output1MixerMode { get; private set; }
+		public eOutputMixerMode Output2MixerMode { get; private set; }
+		public eOutputMixerMode Output3MixerMode { get; private set; }
+		public eOutputMixerMode Output4MixerMode { get; private set; }
 
 		/// <summary>
 		/// Constructor.
@@ -160,6 +176,23 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			catch (Exception e)
 			{
 				Log(eSeverity.Error, "Failed to load integration config {0} - {1}", fullPath, e.Message);
+			}
+		}
+
+		public eOutputMixerMode GetMixerModeForOutput(int output)
+		{
+			switch (output)
+			{
+				case 1:
+					return Output1MixerMode;
+				case 2:
+					return Output2MixerMode;
+				case 3:
+					return Output3MixerMode;
+				case 4:
+					return Output4MixerMode;
+				default:
+					throw new ArgumentOutOfRangeException("output", String.Format("No Mixer Mode for Output {0}", output));
 			}
 		}
 
@@ -393,6 +426,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			base.ClearSettingsFinal();
 
 			m_ConfigPath = null;
+
+			Output1MixerMode = eOutputMixerMode.Auto;
+			Output2MixerMode = eOutputMixerMode.Auto;
+			Output3MixerMode = eOutputMixerMode.Auto;
+			Output4MixerMode = eOutputMixerMode.Auto;
 		}
 
 		protected override void CopySettingsFinal(ControlSystemDeviceSettings settings)
@@ -400,6 +438,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			base.CopySettingsFinal(settings);
 
 			settings.Config = m_ConfigPath;
+
+			settings.Output1MixerMode = Output1MixerMode;
+			settings.Output2MixerMode = Output2MixerMode;
+			settings.Output3MixerMode = Output3MixerMode;
+			settings.Output4MixerMode = Output4MixerMode;
 		}
 
 		protected override void ApplySettingsFinal(ControlSystemDeviceSettings settings, IDeviceFactory factory)
@@ -408,6 +451,17 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 			if (!string.IsNullOrEmpty(settings.Config))
 				LoadControls(settings.Config);
+
+			Output1MixerMode = settings.Output1MixerMode;
+			Output2MixerMode = settings.Output2MixerMode;
+			Output3MixerMode = settings.Output3MixerMode;
+			Output4MixerMode = settings.Output4MixerMode;
+
+#if SIMPLSHARP
+			var control = Controls.GetControl<ControlSystemSwitcherControl>();
+			if (control != null)
+				control.SetupOutputMixers();
+#endif
 		}
 
 		#endregion
@@ -443,6 +497,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			bool? lockout = FrontPanelLockStatus;
 			if (lockout.HasValue)
 				addRow("Front Panel Lockout", lockout.Value);
+
+			addRow("Output1MixerMode", Output1MixerMode);
+			addRow("Output2MixerMode", Output2MixerMode);
+			addRow("Output3MixerMode", Output3MixerMode);
+			addRow("Output4MixerMode", Output4MixerMode);
 
 		}
 

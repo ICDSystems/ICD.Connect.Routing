@@ -62,6 +62,39 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			SetControlSystem(parent.ControlSystem);
 		}
 
+		public void SetupOutputMixers()
+		{
+			// Setup output mixers
+			for (int i = 1; i <= 4; i++)
+			{
+				if (ContainsOutput(i))
+					SetupOutputMixer(Parent.GetDmOutput(i), Parent.GetMixerModeForOutput(i));
+			}
+		}
+
+		private void SetupOutputMixer(DMOutput dmOutput, eOutputMixerMode mixerMode)
+		{
+			switch (mixerMode)
+			{
+				case eOutputMixerMode.Auto:
+				case eOutputMixerMode.None:
+					SetMixerForOutput(dmOutput, eDmps34KAudioOutSourceDevice.NoRoute);
+					break;
+				case eOutputMixerMode.Mixer1:
+					SetMixerForOutput(dmOutput, eDmps34KAudioOutSourceDevice.DigitalMixer1);
+					break;
+				case eOutputMixerMode.Mixer2:
+					SetMixerForOutput(dmOutput, eDmps34KAudioOutSourceDevice.DigitalMixer2);
+					break;
+				case eOutputMixerMode.AudioFollowsVideo:
+					SetMixerForOutput(dmOutput, eDmps34KAudioOutSourceDevice.AudioFollowsVideo);
+					break;
+				default:
+					throw new ArgumentOutOfRangeException("mixerMode");
+
+			}
+		}
+
 		/// <summary>
 		/// Override to release resources.
 		/// </summary>
@@ -205,7 +238,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			try
 			{
 				// Make sure a mixer is assigned
-				AssignMixerForOutput(switcherOutput);
+				AutoAssignMixerForOutput(switcherOutput, output);
 
                 // Route audio to the output
 				switcherOutput.AudioOutSource = GetAudioSourceForInput(input);
@@ -219,33 +252,52 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			}
 		}
 
-		private void AssignMixerForOutput(DMOutput switcherOutput)
+		private void AutoAssignMixerForOutput(DMOutput switcherOutput, int output)
 		{
-			Card.Dmps3HdmiOutputBackend hdmiOutput = switcherOutput as Card.Dmps3HdmiOutputBackend;
+			// Only perform actions if auto mode is enabled for this output
+			if (Parent.GetMixerModeForOutput(output) != eOutputMixerMode.Auto)
+				return;
+
+			eDmps34KAudioOutSourceDevice? currentMixer = GetMixerForOutput(switcherOutput);
+			if (currentMixer.HasValue &&
+			    currentMixer.Value != eDmps34KAudioOutSourceDevice.DigitalMixer1 &&
+			    currentMixer.Value != eDmps34KAudioOutSourceDevice.DigitalMixer2)
+			{
+				SetMixerForOutput(switcherOutput, GetUnusedMixer());
+			}
+		}
+
+		private void SetMixerForOutput(DMOutput output, eDmps34KAudioOutSourceDevice mixer)
+		{
+			Card.Dmps3HdmiOutputBackend hdmiOutput = output as Card.Dmps3HdmiOutputBackend;
 			if (hdmiOutput != null)
-				AssignMixerForHdmiOutput(hdmiOutput);
+			{
+				//Workaround cause Crestron screwed up - set the feedback value first, then the value we want
+				hdmiOutput.AudioOutSourceDevice = hdmiOutput.AudioOutSourceDeviceFeedback;
+				hdmiOutput.AudioOutSourceDevice = mixer;
+				return;
+			}
 
-			var dmOutput = switcherOutput as Card.Dmps3DmOutputBackend;
+			Card.Dmps3DmOutputBackend dmOutput = output as Card.Dmps3DmOutputBackend;
 			if (dmOutput != null)
-				AssignMixerForDmOutput(dmOutput);
-		}
-
-		private void AssignMixerForDmOutput(Card.Dmps3DmOutputBackend output)
-		{
-			if (output.AudioOutSourceDeviceFeedback != eDmps34KAudioOutSourceDevice.DigitalMixer1 &&
-				output.AudioOutSourceDeviceFeedback != eDmps34KAudioOutSourceDevice.DigitalMixer2)
 			{
-				output.AudioOutSourceDevice = GetUnusedMixer();
+				//Workaround cause Crestron screwed up - set the feedback value first, then the value we want
+				dmOutput.AudioOutSourceDevice = dmOutput.AudioOutSourceDeviceFeedback;
+				dmOutput.AudioOutSourceDevice = mixer;
 			}
 		}
 
-		private void AssignMixerForHdmiOutput(Card.Dmps3HdmiOutputBackend output)
+		private eDmps34KAudioOutSourceDevice? GetMixerForOutput(DMOutput output)
 		{
-			if (output.AudioOutSourceDeviceFeedback != eDmps34KAudioOutSourceDevice.DigitalMixer1 &&
-			    output.AudioOutSourceDeviceFeedback != eDmps34KAudioOutSourceDevice.DigitalMixer2)
-			{
-				output.AudioOutSourceDevice = GetUnusedMixer();
-			}
+			Card.Dmps3HdmiOutputBackend hdmiOutput = output as Card.Dmps3HdmiOutputBackend;
+			if (hdmiOutput != null)
+				return hdmiOutput.AudioOutSourceDeviceFeedback;
+
+			Card.Dmps3DmOutputBackend dmOutput = output as Card.Dmps3DmOutputBackend;
+			if (dmOutput != null)
+				return dmOutput.AudioOutSourceDeviceFeedback;
+
+			return null;
 		}
 
 		private eDmps34KAudioOutSourceDevice GetUnusedMixer()
@@ -310,7 +362,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 						{
 							// DMPS 4K - set AudioOutSource and clear the mixer
 							switcherOutput.AudioOutSource = GetAudioSourceForInput(null);
-							ClearMixerForOutput(switcherOutput);
+							AutoClearMixerForOutput(switcherOutput, output);
 						}
 						catch (Exception e)
 						{
@@ -333,25 +385,13 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			return true;
 		}
 
-		private void ClearMixerForOutput(DMOutput switcherOutput)
+		private void AutoClearMixerForOutput(DMOutput switcherOutput, int output)
 		{
-			Card.Dmps3HdmiOutputBackend hdmiOutput = switcherOutput as Card.Dmps3HdmiOutputBackend;
-			if (hdmiOutput != null)
-				ClearMixerForHdmiOutput(hdmiOutput);
+			// Only perform actions if auto mode is enabled for this output
+			if (Parent.GetMixerModeForOutput(output) != eOutputMixerMode.Auto)
+				return;
 
-			var dmOutput = switcherOutput as Card.Dmps3DmOutputBackend;
-			if (dmOutput != null)
-				ClearMixerForDmOutput(dmOutput);
-		}
-
-		private void ClearMixerForHdmiOutput(Card.Dmps3HdmiOutputBackend output)
-		{
-			output.AudioOutSourceDevice = eDmps34KAudioOutSourceDevice.NoRoute;
-		}
-
-		private void ClearMixerForDmOutput(Card.Dmps3DmOutputBackend output)
-		{
-			output.AudioOutSourceDevice = eDmps34KAudioOutSourceDevice.NoRoute;
+			SetMixerForOutput(switcherOutput, eDmps34KAudioOutSourceDevice.NoRoute);
 		}
 
 		/// <summary>
