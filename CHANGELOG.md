@@ -14,7 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Added DmcStroAdapter
  - Added misc Crestron input cards
  - Added IO switcher device that is toggled by a digital output port
- - Setup DMPS3-4K switchers to automatically pick a mixer when routing to digital audio outputs
+ - Added mixer configuration options for DMPS3-4k devices, with auto option
 
 ### Changed
  - Reworked volume controls to fit new interfaces
