@@ -1,4 +1,5 @@
 ﻿using ICD.Common.Properties;
+using ICD.Common.Utils.Collections;
 #if SIMPLSHARP
 using System;
 using System.Collections.Generic;
@@ -203,16 +204,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			// DMPS3-4k routing
 			try
 			{
-				eDmps34KAudioOutSource audioOutSource = GetAudioSourceForInput(input);
+				// Make sure a mixer is assigned
+				AssignMixerForOutput(switcherOutput);
 
-				// First route the mixer to the output
-				Card.Dmps3DigitalMixOutput mixOut = GetBestMixerForAudioOut(audioOutSource);
-				mixOut.AudioOutSource = audioOutSource;
+                // Route audio to the output
+				switcherOutput.AudioOutSource = GetAudioSourceForInput(input);
 
-				// Now route audio to the mixer
-				SetAudioOutSourceDevice(switcherOutput, mixOut);
-
-				//switcherOutput.AudioOutSourceDevice = audioOutSource;
 				return true;
 			}
 			catch (Exception e)
@@ -222,75 +219,57 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			}
 		}
 
-		private void SetAudioOutSourceDevice([NotNull] DMOutput switcherOutput, [NotNull] Card.Dmps3DigitalMixOutput mixer)
+		private void AssignMixerForOutput(DMOutput switcherOutput)
 		{
-			if (switcherOutput == null)
-				throw new ArgumentNullException("switcherOutput");
-
-			if (mixer == null)
-				throw new ArgumentNullException("mixer");
-
-			eDmps34KAudioOutSourceDevice sourceDevice = GetSourceDevice(mixer);
-
 			Card.Dmps3HdmiOutputBackend hdmiOutput = switcherOutput as Card.Dmps3HdmiOutputBackend;
 			if (hdmiOutput != null)
-			{
-				hdmiOutput.AudioOutSourceDevice = sourceDevice;
-				return;
-			}
+				AssignMixerForHdmiOutput(hdmiOutput);
 
-			Card.Dmps3DmOutputBackend dmOutput = switcherOutput as Card.Dmps3DmOutputBackend;
+			var dmOutput = switcherOutput as Card.Dmps3DmOutputBackend;
 			if (dmOutput != null)
-			{
-				dmOutput.AudioOutSourceDevice = sourceDevice;
-				return;
-			}
-
-			throw new InvalidOperationException("Unable to set audio out source device for " + switcherOutput);
+				AssignMixerForDmOutput(dmOutput);
 		}
 
-		private eDmps34KAudioOutSourceDevice GetSourceDevice([NotNull] Card.Dmps3DigitalMixOutput mixer)
+		private void AssignMixerForDmOutput(Card.Dmps3DmOutputBackend output)
 		{
-			if (mixer == null)
-				throw new ArgumentNullException("mixer");
-
-			int index = Parent.ControlSystem
-			                  .SwitcherOutputs
-			                  .OfType<Card.Dmps3DigitalMixOutput>()
-			                  .FindIndex(o => o == mixer);
-
-			switch (index)
+			if (output.AudioOutSourceDeviceFeedback != eDmps34KAudioOutSourceDevice.DigitalMixer1 &&
+				output.AudioOutSourceDeviceFeedback != eDmps34KAudioOutSourceDevice.DigitalMixer2)
 			{
-				case 0:
-					return eDmps34KAudioOutSourceDevice.DigitalMixer1;
-				case 1:
-					return eDmps34KAudioOutSourceDevice.DigitalMixer2;
-
-				default:
-					throw new ArgumentException("Unable to find index of mixer");
+				output.AudioOutSourceDevice = GetUnusedMixer();
 			}
 		}
 
-		[NotNull]
-		private Card.Dmps3DigitalMixOutput GetBestMixerForAudioOut(eDmps34KAudioOutSource audioOutSource)
+		private void AssignMixerForHdmiOutput(Card.Dmps3HdmiOutputBackend output)
 		{
-			Card.Dmps3DigitalMixOutput output;
+			if (output.AudioOutSourceDeviceFeedback != eDmps34KAudioOutSourceDevice.DigitalMixer1 &&
+			    output.AudioOutSourceDeviceFeedback != eDmps34KAudioOutSourceDevice.DigitalMixer2)
+			{
+				output.AudioOutSourceDevice = GetUnusedMixer();
+			}
+		}
 
-			// Is a mixer already routed?
-			bool found = Parent.ControlSystem
-			                   .SwitcherOutputs
-			                   .OfType<Card.Dmps3DigitalMixOutput>()
-			                   .TryFirst(m => m.AudioOutSource == audioOutSource, out output);
-			if (found)
-				return output;
+		private eDmps34KAudioOutSourceDevice GetUnusedMixer()
+		{
+			IcdHashSet<eDmps34KAudioOutSourceDevice> avaliableMixers = new IcdHashSet<eDmps34KAudioOutSourceDevice>
+			{
+				eDmps34KAudioOutSourceDevice.DigitalMixer1,
+				eDmps34KAudioOutSourceDevice.DigitalMixer2
+			};
 
-			// Find the first unused mixer
-			found = Parent.ControlSystem
+			// Check HDMI outputs for used mixers
+			Parent.ControlSystem
 			              .SwitcherOutputs
-			              .OfType<Card.Dmps3DigitalMixOutput>()
-						  .TryFirst(m => m.AudioOutSource == eDmps34KAudioOutSource.NoRoute, out output);
-			if (found)
-				return output;
+			              .OfType<Card.Dmps3HdmiOutputBackend>()
+						  .ForEach(c => avaliableMixers.Remove(c.AudioOutSourceDeviceFeedback));
+
+			// Check DM outputs for used mixers
+			Parent.ControlSystem
+						.SwitcherOutputs
+						.OfType<Card.Dmps3DmOutputBackend>()
+						.ForEach(c => avaliableMixers.Remove(c.AudioOutSourceDeviceFeedback));
+
+			if (avaliableMixers.Count > 0)
+				return avaliableMixers.First();
 
 			// No available mixers
 			throw new InvalidOperationException("No unused mixers available");
@@ -329,8 +308,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 					{
 						try
 						{
-							// DMPS 4K
+							// DMPS 4K - set AudioOutSource and clear the mixer
 							switcherOutput.AudioOutSource = GetAudioSourceForInput(null);
+							ClearMixerForOutput(switcherOutput);
 						}
 						catch (Exception e)
 						{
@@ -351,6 +331,27 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 
 			m_Cache.SetInputForOutput(output, null, type);
 			return true;
+		}
+
+		private void ClearMixerForOutput(DMOutput switcherOutput)
+		{
+			Card.Dmps3HdmiOutputBackend hdmiOutput = switcherOutput as Card.Dmps3HdmiOutputBackend;
+			if (hdmiOutput != null)
+				ClearMixerForHdmiOutput(hdmiOutput);
+
+			var dmOutput = switcherOutput as Card.Dmps3DmOutputBackend;
+			if (dmOutput != null)
+				ClearMixerForDmOutput(dmOutput);
+		}
+
+		private void ClearMixerForHdmiOutput(Card.Dmps3HdmiOutputBackend output)
+		{
+			output.AudioOutSourceDevice = eDmps34KAudioOutSourceDevice.NoRoute;
+		}
+
+		private void ClearMixerForDmOutput(Card.Dmps3DmOutputBackend output)
+		{
+			output.AudioOutSourceDevice = eDmps34KAudioOutSourceDevice.NoRoute;
 		}
 
 		/// <summary>
