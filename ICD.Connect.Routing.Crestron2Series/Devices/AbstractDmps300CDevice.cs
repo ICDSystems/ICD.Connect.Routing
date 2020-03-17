@@ -163,6 +163,9 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
 				yield return node;
 
+			if (m_ConnectionStateManager != null)
+				yield return m_ConnectionStateManager.Port;
+
 			yield return m_Client;
 		}
 

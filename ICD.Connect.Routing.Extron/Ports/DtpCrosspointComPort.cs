@@ -1,10 +1,13 @@
 ﻿using ICD.Common.Utils.EventArguments;
+using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
 using ICD.Connect.Protocol.Settings;
 using ICD.Connect.Routing.Extron.Devices.Endpoints;
 using ICD.Connect.Settings;
+using System.Collections.Generic;
 
 namespace ICD.Connect.Routing.Extron.Ports
 {
@@ -263,6 +266,30 @@ namespace ICD.Connect.Routing.Extron.Ports
 			Receive(e.Data);
 		}
 
+		#endregion
+
+		#region Console
+		/// <summary>
+		/// Gets the child console nodes.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleNodeBase> GetConsoleNodes()
+		{
+			foreach (IConsoleNodeBase node in GetBaseConsoleNodes())
+				yield return node;
+
+			if (m_ConnectionStateManager != null)
+				yield return m_ConnectionStateManager.Port;
+		}
+
+		/// <summary>
+		/// Workaround for "unverifiable code" warning.
+		/// </summary>
+		/// <returns></returns>
+		private IEnumerable<IConsoleNodeBase> GetBaseConsoleNodes()
+		{
+			return base.GetConsoleNodes();
+		}
 		#endregion
 	}
 }
