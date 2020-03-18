@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
  - Reworked volume controls to fit new interfaces
  - Fixed Crestron Switchers, so online/offline updates are subscribed to
+ - Routing cache fails gracefully when a connection is invalid
 
 ## [15.2.2] - 2020-02-06
 ### Changed

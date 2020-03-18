@@ -5,6 +5,8 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
@@ -705,10 +707,44 @@ namespace ICD.Connect.Routing.RoutingCaches
 					if (midpoint == null)
 						continue;
 
-					ConnectorInfo outputConnector = midpoint.GetOutput(connection.Source.Address);
+					ConnectorInfo outputConnector;
+
+					try
+					{
+						outputConnector = midpoint.GetOutput(connection.Source.Address);
+					}
+					catch (Exception e)
+					{
+						ServiceProvider.GetService<ILoggerService>()
+									   .AddEntry(eSeverity.Error,
+												 "{0} - Failed to cache output {1} on {2} - {3}",
+												 GetType().Name,
+												 connection.Source.Address,
+												 midpoint,
+												 e.Message);
+						continue;
+					}
+
 					foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(outputConnector.ConnectionType))
 					{
-						ConnectorInfo? inputConnector = midpoint.GetInput(outputConnector.Address, flag);
+						ConnectorInfo? inputConnector;
+						try
+						{
+							inputConnector = midpoint.GetInput(outputConnector.Address, flag);
+						}
+						catch (Exception e)
+						{
+							ServiceProvider.GetService<ILoggerService>()
+										   .AddEntry(eSeverity.Error,
+													 "{0} - Failed to cache input {1} on {2} - {3}",
+													 GetType().Name,
+													 outputConnector.Address,
+													 midpoint,
+													 e.Message);
+							continue;
+						}
+
+
 						int? inputAddress = inputConnector.HasValue ? inputConnector.Value.Address : (int?) null;
 
 						m_MidpointCache.SetCachedInputForOutput(midpoint, null, inputAddress, outputConnector.Address, flag);
@@ -751,7 +787,23 @@ namespace ICD.Connect.Routing.RoutingCaches
 				foreach (Connection connection in m_RoutingGraph.Connections)
 				{
 					IRouteSourceControl sourceControl = m_RoutingGraph.GetSourceControl(connection);
-					ConnectorInfo outputConnector = sourceControl.GetOutput(connection.Source.Address);
+					ConnectorInfo outputConnector;
+
+					try
+					{
+						outputConnector = sourceControl.GetOutput(connection.Source.Address);
+					}
+					catch (Exception e)
+					{
+						ServiceProvider.GetService<ILoggerService>()
+									   .AddEntry(eSeverity.Error,
+												 "{0} - Failed to cache output {1} on {2} - {3}",
+												 GetType().Name,
+												 connection.Source.Address,
+												 sourceControl,
+												 e.Message);
+						continue;
+					}
 
 					foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(outputConnector.ConnectionType))
 					{
@@ -796,7 +848,23 @@ namespace ICD.Connect.Routing.RoutingCaches
 				foreach (Connection connection in m_RoutingGraph.Connections)
 				{
 					IRouteDestinationControl destinationControl = m_RoutingGraph.GetDestinationControl(connection);
-					ConnectorInfo inputConnector = destinationControl.GetInput(connection.Destination.Address);
+					ConnectorInfo inputConnector;
+
+					try
+					{
+						inputConnector = destinationControl.GetInput(connection.Destination.Address);
+					}
+					catch (Exception e)
+					{
+						ServiceProvider.GetService<ILoggerService>()
+						               .AddEntry(eSeverity.Error,
+						                         "{0} - Failed to cache input {1} on {2} - {3}",
+						                         GetType().Name,
+						                         connection.Destination.Address,
+						                         destinationControl,
+						                         e.Message);
+						continue;
+					}
 
 					foreach (eConnectionType flag in EnumUtils.GetFlagsExceptNone(inputConnector.ConnectionType))
 					{
