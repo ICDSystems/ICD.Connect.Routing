@@ -465,7 +465,7 @@ namespace ICD.Connect.Routing.Atlona
 			foreach (IConsoleCommand command in GetBaseConsoleCommands())
 				yield return command;
 
-			yield return new GenericConsoleCommand<int>("Route", "Route <INPUT>", i => Route(i));
+			yield return new GenericConsoleCommand<int>("RouteInput", "Route <INPUT>", i => Route(i));
 			yield return new GenericConsoleCommand<bool>("TurnOnOutput", "TurnOnOutput <true/false>", i => TurnOnOutput(i));
 		}
 
