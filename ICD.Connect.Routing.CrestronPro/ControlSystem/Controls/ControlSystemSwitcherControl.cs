@@ -379,6 +379,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 
 		#region Output Mixer
 
+		/// <summary>
+		/// Setup the outputs on the switcher based on the mixer mode from settings
+		/// </summary>
 		public void SetupOutputMixers()
 		{
 			// Setup output mixers
@@ -390,6 +393,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			}
 		}
 
+		/// <summary>
+		/// Setup the output mixer based on the mixer mode setting.
+		/// </summary>
+		/// <param name="dmOutput"></param>
+		/// <param name="mixerMode"></param>
 		private void SetupOutputMixer([NotNull] DMOutput dmOutput, eOutputMixerMode mixerMode)
 		{
 			if (dmOutput == null)
@@ -416,6 +424,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			}
 		}
 
+		/// <summary>
+		/// If the output is setup to auto mode, assigns and unused mixer to the output
+		/// </summary>
+		/// <param name="switcherOutput"></param>
 		private void AutoAssignMixerForOutput([NotNull] DMOutput switcherOutput)
 		{
 			if (switcherOutput == null)
@@ -467,6 +479,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			return false;
 		}
 
+		/// <summary>
+		/// Tries to get the mixer for the given output
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns>Mixer in use for the output, or null if output does not have a mixer setting</returns>
 		private eDmps34KAudioOutSourceDevice? GetMixerForOutput([NotNull] DMOutput output)
 		{
 			if (output == null)
@@ -483,6 +500,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			return null;
 		}
 
+		/// <summary>
+		/// Gets the first unused mixer
+		/// Throws InvalidOperationException if no mixer is unused
+		/// </summary>
+		/// <returns></returns>
 		private eDmps34KAudioOutSourceDevice GetUnusedMixer()
 		{
 			IcdHashSet<eDmps34KAudioOutSourceDevice> avaliableMixers = new IcdHashSet<eDmps34KAudioOutSourceDevice>
@@ -510,6 +532,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			throw new InvalidOperationException("No unused mixers available");
 		}
 
+		/// <summary>
+		/// If the output is set to auto mode, clears the mixer for the given output
+		/// </summary>
+		/// <param name="switcherOutput"></param>
 		private void AutoClearMixerForOutput([NotNull] DMOutput switcherOutput)
 		{
 			if (switcherOutput == null)

@@ -23,10 +23,12 @@ using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 {
-
+	/// <summary>
+	/// Specifies the mixer setting to use for an output
+	/// </summary>
 	public enum eOutputMixerMode
 	{
-		Auto,
+		Auto, //Automatically pick an unused mixer
 		None,
 		Mixer1,
 		Mixer2,
