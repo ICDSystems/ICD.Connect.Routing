@@ -382,11 +382,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		public void SetupOutputMixers()
 		{
 			// Setup output mixers
-			for (int i = 1; i <= 4; i++)
+			foreach (ConnectorInfo output in GetOutputs())
 			{
 				eOutputMixerMode mixerMode;
-				if (ContainsOutput(i) && Parent.TryGetMixerModeForOutput(i, out mixerMode))
-					SetupOutputMixer(Parent.GetDmOutput(i), mixerMode);
+				if (ContainsOutput(output.Address) && Parent.TryGetMixerModeForOutput(output.Address, out mixerMode))
+					SetupOutputMixer(Parent.GetDmOutput(output.Address), mixerMode);
 			}
 		}
 
