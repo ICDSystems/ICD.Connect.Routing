@@ -179,20 +179,25 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			}
 		}
 
-		public eOutputMixerMode GetMixerModeForOutput(int output)
+		public bool TryGetMixerModeForOutput(int output, out eOutputMixerMode mixerMode)
 		{
+			mixerMode = eOutputMixerMode.None;
 			switch (output)
 			{
 				case 1:
-					return Output1MixerMode;
+					mixerMode = Output1MixerMode;
+					return true;
 				case 2:
-					return Output2MixerMode;
+					mixerMode = Output2MixerMode;
+					return true;
 				case 3:
-					return Output3MixerMode;
+					mixerMode = Output3MixerMode;
+					return true;
 				case 4:
-					return Output4MixerMode;
+					mixerMode = Output4MixerMode;
+					return true;
 				default:
-					throw new ArgumentOutOfRangeException("output", String.Format("No Mixer Mode for Output {0}", output));
+					return false;
 			}
 		}
 
