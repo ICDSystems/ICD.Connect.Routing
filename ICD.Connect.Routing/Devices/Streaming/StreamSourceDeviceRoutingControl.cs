@@ -16,7 +16,7 @@ namespace ICD.Connect.Routing.Devices.Streaming
 		#region Events
 
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
-		public override event EventHandler<StreamUriEventArgs> OnStreamUriChanged;
+		public override event EventHandler<StreamUriEventArgs> OnOutputStreamUriChanged;
 
 		#endregion
 
@@ -35,7 +35,7 @@ namespace ICD.Connect.Routing.Devices.Streaming
 				m_StreamUri = value;
 				ActiveTransmissionState = m_StreamUri != null;
 
-				OnStreamUriChanged.Raise(this,
+				OnOutputStreamUriChanged.Raise(this,
 				                         new StreamUriEventArgs(eConnectionType.Audio | eConnectionType.Video, 1,
 				                                                m_StreamUri));
 			}

@@ -33,6 +33,11 @@ namespace ICD.Connect.Routing.Devices.Streaming
 		    }
 	    }
 
+	    public StreamSourceDevice()
+	    {
+			Controls.Add(new StreamSourceDeviceRoutingControl(this, 0));
+	    }
+
 
 	    protected override bool GetIsOnlineStatus()
 	    {
