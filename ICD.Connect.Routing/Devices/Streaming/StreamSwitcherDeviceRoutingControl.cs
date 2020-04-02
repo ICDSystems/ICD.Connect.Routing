@@ -120,7 +120,10 @@ namespace ICD.Connect.Routing.Devices.Streaming
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
-			return m_SwitcherCache.GetSourceDetectedState(input, type);
+			// Always detected
+			if (!ContainsInput(input))
+				throw new ArgumentOutOfRangeException("input");
+			return true;
 		}
 
 		/// <summary>
