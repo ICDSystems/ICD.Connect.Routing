@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Devices;
+﻿using System.Linq;
+using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
 
@@ -6,9 +7,12 @@ namespace ICD.Connect.Routing.Devices.Streaming
 {
 	public sealed class StreamSwitcherDevice : AbstractDevice<StreamSwitcherDeviceSettings>
 	{
-		public StreamSwitcherDeviceRoutingControl RoutingControl
+		private StreamSwitcherDeviceRoutingControl RoutingControl
 		{
-			get { return Controls.GetControl<StreamSwitcherDeviceRoutingControl>(0); }
+			get
+			{
+				return Controls.GetControls<StreamSwitcherDeviceRoutingControl>().FirstOrDefault();
+			}
 		}
 
 		public StreamSwitcherDevice()
@@ -30,7 +34,9 @@ namespace ICD.Connect.Routing.Devices.Streaming
 		{
 			base.ClearSettingsFinal();
 
-			RoutingControl.ClearEndpointCache();
+			var routingControl = RoutingControl;
+			if (routingControl != null)
+				routingControl.ClearEndpointCache();
 		}
 
 		/// <summary>
