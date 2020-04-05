@@ -10,7 +10,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		[EventTelemetry(ControlSystemExternalTelemetryNames.DHCP_STATUS_CHANGED)]
 		event EventHandler<BoolEventArgs> OnDhcpStatusChanged;
 
-		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.DHCP_STATUS, ControlSystemExternalTelemetryNames.DHCP_STATUS_CHANGED)]
+		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.DHCP_STATUS, null, ControlSystemExternalTelemetryNames.DHCP_STATUS_CHANGED)]
 		bool DhcpStatus { get; }
 
 		[StaticPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_MODEL)]
@@ -28,13 +28,13 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		[EventTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_IP_ADDRESS_CHANGED)]
 		event EventHandler<StringEventArgs> OnProcessorIpAddressChanged; 
 		
-		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_IP_ADDRESS, ControlSystemExternalTelemetryNames.PROCESSOR_IP_ADDRESS_CHANGED)]
+		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_IP_ADDRESS, null, ControlSystemExternalTelemetryNames.PROCESSOR_IP_ADDRESS_CHANGED)]
 		string ProcessorIpAddress { get; }
 
 		[EventTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_HOSTNAME_CHANGED)]
 		event EventHandler<StringEventArgs> OnProcessorHostnameChanged; 
 
-		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_HOSTNAME, ControlSystemExternalTelemetryNames.PROCESSOR_HOSTNAME_CHANGED)]
+		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_HOSTNAME, null, ControlSystemExternalTelemetryNames.PROCESSOR_HOSTNAME_CHANGED)]
 		string ProcessorHostname { get; }
 		
 		[StaticPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_SERIAL_NUMBER)]
@@ -43,13 +43,13 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		[EventTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_UPTIME_CHANGED)]
 		event EventHandler<StringEventArgs> OnProcessorUptimeChanged;
 
-		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_UPTIME, ControlSystemExternalTelemetryNames.PROCESSOR_UPTIME_CHANGED)]
+		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_UPTIME, null, ControlSystemExternalTelemetryNames.PROCESSOR_UPTIME_CHANGED)]
 		string ProcessorUptime { get; }
 
 		[EventTelemetry(ControlSystemExternalTelemetryNames.PROGRAM_UPTIME_CHANGED)]
 		event EventHandler<StringEventArgs> OnProgramUptimeChanged;
 
-		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROGRAM_UPTIME, ControlSystemExternalTelemetryNames.PROGRAM_UPTIME_CHANGED
+		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROGRAM_UPTIME, null, ControlSystemExternalTelemetryNames.PROGRAM_UPTIME_CHANGED
 			)]
 		string ProgramUptime { get; }
 		
@@ -59,7 +59,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		[EventTelemetry(ControlSystemExternalTelemetryNames.SYSTEM_NAME_CHANGED)]
 		event EventHandler<StringEventArgs> OnSystemNameChanged; 
 
-		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.SYSTEM_NAME, ControlSystemExternalTelemetryNames.SYSTEM_NAME_CHANGED)]
+		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.SYSTEM_NAME, null, ControlSystemExternalTelemetryNames.SYSTEM_NAME_CHANGED)]
 		string SystemName { get; }
 		
 		[StaticPropertyTelemetry(ControlSystemExternalTelemetryNames.PROGRAM_SOURCE_FILE)]
@@ -71,13 +71,13 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		[EventTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_IP_ADDRESS_SECONDARY_CHAGNED)]
 		event EventHandler<StringEventArgs> OnIpAddressSecondaryChanged; 
 
-		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_IP_ADDRESS_SECONDARY, ControlSystemExternalTelemetryNames.PROCESSOR_IP_ADDRESS_SECONDARY_CHAGNED)]
+		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_IP_ADDRESS_SECONDARY, null, ControlSystemExternalTelemetryNames.PROCESSOR_IP_ADDRESS_SECONDARY_CHAGNED)]
 		string ProcessorIpAddressSecondary { get; }
 
 		[EventTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_HOSTNAME_SECONDARY_CHANGED)]
 		event EventHandler<StringEventArgs> OnProcessorHostnameCustomChanged; 
 
-		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_HOSTNAME_SECONDARY, ControlSystemExternalTelemetryNames.PROCESSOR_HOSTNAME_SECONDARY_CHANGED)]
+		[DynamicPropertyTelemetry(ControlSystemExternalTelemetryNames.PROCESSOR_HOSTNAME_SECONDARY, null, ControlSystemExternalTelemetryNames.PROCESSOR_HOSTNAME_SECONDARY_CHANGED)]
 		string ProcessorHostnameCustom { get; }
 	}
 }
