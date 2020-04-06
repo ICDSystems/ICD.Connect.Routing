@@ -1,4 +1,4 @@
-﻿using ICD.Connect.Devices;
+﻿using ICD.Connect.Devices.Mock;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.Mock.Source
@@ -7,7 +7,7 @@ namespace ICD.Connect.Routing.Mock.Source
 	/// Settings for the MockSourceDevice.
 	/// </summary>
 	[KrangSettings("MockSourceDevice", typeof(MockSourceDevice))]
-	public sealed class MockSourceDeviceSettings : AbstractDeviceSettings
+	public sealed class MockSourceDeviceSettings : AbstractMockDeviceSettings
 	{
 	}
 }

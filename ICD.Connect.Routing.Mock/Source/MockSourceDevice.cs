@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Connect.API.Commands;
-using ICD.Connect.Devices;
+using ICD.Connect.Devices.Mock;
 
 namespace ICD.Connect.Routing.Mock.Source
 {
 	/// <summary>
 	/// Virtual representation of a source device.
 	/// </summary>
-	public sealed class MockSourceDevice : AbstractDevice<MockSourceDeviceSettings>
+	public sealed class MockSourceDevice : AbstractMockDevice<MockSourceDeviceSettings>
 	{
 		/// <summary>
 		/// Constructor.
@@ -19,15 +19,6 @@ namespace ICD.Connect.Routing.Mock.Source
 		}
 
 		#region Methods
-
-		/// <summary>
-		/// Gets the current online status of the device.
-		/// </summary>
-		/// <returns></returns>
-		protected override bool GetIsOnlineStatus()
-		{
-			return true;
-		}
 
 		/// <summary>
 		/// Adds a source control with the given id.
