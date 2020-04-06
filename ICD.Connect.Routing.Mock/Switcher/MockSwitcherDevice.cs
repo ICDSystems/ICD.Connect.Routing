@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Connect.API.Commands;
-using ICD.Connect.Devices;
+using ICD.Connect.Devices.Mock;
 
 namespace ICD.Connect.Routing.Mock.Switcher
 {
@@ -9,7 +9,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 	/// The MockSwitcherDevice does not represent a real hardware device, but allows
 	/// us to test systems without hardware connected.
 	/// </summary>
-	public sealed class MockSwitcherDevice : AbstractDevice<MockSwitcherDeviceSettings>
+	public sealed class MockSwitcherDevice : AbstractMockDevice<MockSwitcherDeviceSettings>
 	{
 		/// <summary>
 		/// Constructor.
@@ -20,15 +20,6 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		}
 
 		#region Methods
-
-		/// <summary>
-		/// Gets the current online status of the device.
-		/// </summary>
-		/// <returns></returns>
-		protected override bool GetIsOnlineStatus()
-		{
-			return true;
-		}
 
 		/// <summary>
 		/// Adds a source control with the given id.
