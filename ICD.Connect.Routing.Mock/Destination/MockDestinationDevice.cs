@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Connect.API.Commands;
-using ICD.Connect.Devices;
+using ICD.Connect.Devices.Mock;
 
 namespace ICD.Connect.Routing.Mock.Destination
 {
-	public sealed class MockDestinationDevice : AbstractDevice<MockDestinationDeviceSettings>
+	public sealed class MockDestinationDevice : AbstractMockDevice<MockDestinationDeviceSettings>
 	{
 		/// <summary>
 		/// Constructor.
@@ -16,15 +16,6 @@ namespace ICD.Connect.Routing.Mock.Destination
 		}
 
 		#region Methods
-
-		/// <summary>
-		/// Gets the current online status of the device.
-		/// </summary>
-		/// <returns></returns>
-		protected override bool GetIsOnlineStatus()
-		{
-			return true;
-		}
 
 		/// <summary>
 		/// Adds a destination control with the given id.
