@@ -177,7 +177,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			}
 			catch (Exception e)
 			{
-				Log(eSeverity.Error, "Failed to load integration config {0} - {1}", fullPath, e.Message);
+				Logger.Log(eSeverity.Error, "Failed to load integration config {0} - {1}", fullPath, e.Message);
 			}
 		}
 

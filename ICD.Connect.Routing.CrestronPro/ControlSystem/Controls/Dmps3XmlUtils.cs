@@ -67,7 +67,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				}
 				catch (Exception e)
 				{
-					parent.Log(eSeverity.Error, "Failed to instantiate control from XML - {0}", e.Message);
+					parent.Logger.Log(eSeverity.Error, "Failed to instantiate control from XML - {0}", e.Message);
 					continue;
 				}
 

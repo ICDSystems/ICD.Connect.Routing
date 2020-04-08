@@ -1545,7 +1545,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				}
 				catch (Exception e)
 				{
-					Log(eSeverity.Error, "Failed to instantiate {0} with id {1} - {2}", typeof(T).Name, settings.Id, e.Message);
+					Logger.Log(eSeverity.Error, "Failed to instantiate {0} with id {1} - {2}", typeof(T).Name, settings.Id, e.Message);
 					continue;
 				}
 

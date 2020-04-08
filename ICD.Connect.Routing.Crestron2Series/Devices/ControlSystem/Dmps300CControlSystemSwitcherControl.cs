@@ -36,7 +36,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		private const ushort DIGITAL_VIDEO_DETECTED_5 = 405;
 		private const ushort DIGITAL_VIDEO_DETECTED_6 = 406;
 		private const ushort DIGITAL_VIDEO_DETECTED_7 = 407;
-		private bool m_debug;
+
+		private bool m_Debug;
 
 		/// <summary>
 		/// Raised when the device starts/stops actively transmitting on an output.
@@ -150,8 +151,8 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		/// <returns>True if routing successful.</returns>
 		public override bool Route(RouteOperation info)
 		{
-			if(m_debug)
-				Log(eSeverity.Debug, "DMPS route input {0} -> output {1}, {2}", info.LocalInput, info.LocalOutput, info.ConnectionType);
+			if(m_Debug)
+				Logger.Log(eSeverity.Debug, "DMPS route input {0} -> output {1}, {2}", info.LocalInput, info.LocalOutput, info.ConnectionType);
 
 			if (info == null)
 				throw new ArgumentNullException("info");
@@ -574,7 +575,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 			foreach (var cmd in GetBaseConsoleCommands())
 				yield return cmd;
 
-			yield return new ConsoleCommand("EnableSwitchNotification", "prints debug info when the dmps is asked to make a route", ()=> m_debug=true);
+			yield return new ConsoleCommand("EnableSwitchNotification", "prints debug info when the dmps is asked to make a route", ()=> m_Debug=true);
 		}
 
 		private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()

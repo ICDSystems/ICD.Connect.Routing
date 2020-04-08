@@ -392,7 +392,7 @@ namespace ICD.Connect.Routing.Devices.IoToggleSwitcher
 				}
 				catch (KeyNotFoundException)
 				{
-					Log(eSeverity.Error, "No IO port with id {0}", settings.Port);
+					Logger.Log(eSeverity.Error, "No IO port with id {0}", settings.Port);
 				}
 			}
 

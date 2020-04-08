@@ -134,7 +134,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 			eDeviceRegistrationUnRegistrationResponse result;
 			if (Transmitter != null && !GenericBaseUtils.SetUp(Transmitter, this, out result))
-				Log(eSeverity.Error, "Unable to register {0} - {1}", Transmitter.GetType().Name, result);
+				Logger.Log(eSeverity.Error, "Unable to register {0} - {1}", Transmitter.GetType().Name, result);
 
 			Subscribe(Transmitter);
 
@@ -310,7 +310,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			}
 			catch (Exception e)
 			{
-				Log(eSeverity.Error, "Failed to instantiate internal {0} - {1}", typeof(TTransmitter).Name, e.Message);
+				Logger.Log(eSeverity.Error, "Failed to instantiate internal {0} - {1}", typeof(TTransmitter).Name, e.Message);
 			}
 
 			SetTransmitter(transmitter, settings.DmSwitch);

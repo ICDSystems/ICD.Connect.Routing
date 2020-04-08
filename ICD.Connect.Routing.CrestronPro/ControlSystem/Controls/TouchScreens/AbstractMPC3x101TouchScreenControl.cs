@@ -94,7 +94,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 
 				m_ProximityDetected = value;
 
-				Log(eSeverity.Informational, "ProximityDetected changed to {0}", m_ProximityDetected);
+				Logger.Set("Proximity Detected", eSeverity.Informational, m_ProximityDetected);
 
 				OnProximityDetectedStateChange.Raise(this, new BoolEventArgs(m_ProximityDetected));
 			}

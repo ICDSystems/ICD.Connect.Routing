@@ -4,7 +4,6 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Timers;
-using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol;
@@ -362,7 +361,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 				}
 				catch (KeyNotFoundException)
 				{
-					Log(eSeverity.Error, "No serial port with id {0}", settings.Port);
+					Logger.Log(eSeverity.Error, "No serial port with id {0}", settings.Port);
 				}
 			}
 

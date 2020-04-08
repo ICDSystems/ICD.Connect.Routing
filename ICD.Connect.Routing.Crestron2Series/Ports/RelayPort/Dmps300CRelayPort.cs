@@ -56,7 +56,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 		{
 			if (m_Device == null)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to open - parent device is null", this);
+				Logger.Log(eSeverity.Error, "Unable to open - Parent device is null");
 				return;
 			}
 
@@ -71,7 +71,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.RelayPort
 		{
 			if (m_Device == null)
 			{
-				Logger.AddEntry(eSeverity.Error, "{0} unable to open - parent device is null", this);
+				Logger.Log(eSeverity.Error, "Unable to open - Parent device is null");
 				return;
 			}
 

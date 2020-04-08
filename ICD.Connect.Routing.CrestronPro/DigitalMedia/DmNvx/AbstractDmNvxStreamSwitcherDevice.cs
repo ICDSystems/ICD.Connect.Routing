@@ -468,7 +468,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 					DmNvxBaseClassSwitcherControl switcher = GetSourceControl(inputConnection);
 					if (switcher == null)
 					{
-						Log(eSeverity.Error, "Unable to support connection from {0}", sourceEndpoint);
+						Logger.Log(eSeverity.Error, "Unable to support connection from {0}", sourceEndpoint);
 						continue;
 					}
 
@@ -476,7 +476,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 					if ((IsPrimaryStream && !info.IsPrimaryStream) ||
 					    (!IsPrimaryStream && !info.IsSecondaryStream))
 					{
-						Log(eSeverity.Error, "Unable to support stream type from {0}", sourceEndpoint);
+						Logger.Log(eSeverity.Error, "Unable to support stream type from {0}", sourceEndpoint);
 						continue;
 					}
 
@@ -506,7 +506,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 					DmNvxBaseClassSwitcherControl switcher = GetDestinationControl(outputConnection);
 					if (switcher == null)
 					{
-						Log(eSeverity.Error, "Unable to support connection to {0}", destinationEndpoint);
+						Logger.Log(eSeverity.Error, "Unable to support connection to {0}", destinationEndpoint);
 						continue;
 					}
 
@@ -514,7 +514,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 					if ((IsPrimaryStream && !info.IsPrimaryStream) ||
 					    (!IsPrimaryStream && !info.IsSecondaryStream))
 					{
-						Log(eSeverity.Error, "Unable to support stream type to {0}", destinationEndpoint);
+						Logger.Log(eSeverity.Error, "Unable to support stream type to {0}", destinationEndpoint);
 						continue;
 					}
 

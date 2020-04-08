@@ -94,7 +94,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 
 			eDeviceRegistrationUnRegistrationResponse result;
 			if (Streamer != null && !GenericBaseUtils.SetUp(Streamer, this, out result))
-				Log(eSeverity.Error, "Unable to register {0} - {1}", Streamer.GetType().Name, result);
+				Logger.Log(eSeverity.Error, "Unable to register {0} - {1}", Streamer.GetType().Name, result);
 
 			Subscribe(Streamer);
 
@@ -218,7 +218,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 			}
 			catch (Exception e)
 			{
-				Log(eSeverity.Error, "Failed to instantiate internal {0} - {1}", typeof(TStreamer).Name, e.Message);
+				Logger.Log(eSeverity.Error, "Failed to instantiate internal {0} - {1}", typeof(TStreamer).Name, e.Message);
 			}
 
 			SetStreamer(streamer);

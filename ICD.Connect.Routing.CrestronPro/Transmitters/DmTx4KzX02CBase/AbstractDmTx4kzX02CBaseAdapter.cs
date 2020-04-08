@@ -11,13 +11,9 @@ using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 #endif
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.Connections;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase

@@ -106,7 +106,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 			eDeviceRegistrationUnRegistrationResponse result;
 			if (Switcher != null && !GenericBaseUtils.SetUp(Switcher, this, out result))
-				Log(eSeverity.Error, "Unable to register {0} - {1}", Switcher.GetType().Name, result);
+				Logger.Log(eSeverity.Error, "Unable to register {0} - {1}", Switcher.GetType().Name, result);
 
 			Subscribe(Switcher);
 
@@ -259,7 +259,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 			}
 			catch (Exception e)
 			{
-				Log(eSeverity.Error, "Failed to instantiate {0} - {1}", typeof(TSwitcher).Name, e.Message);
+				Logger.Log(eSeverity.Error, "Failed to instantiate {0} - {1}", typeof(TSwitcher).Name, e.Message);
 			}
 			
 			SetSwitcher(switcher);

@@ -1,5 +1,4 @@
 ﻿using ICD.Common.Utils.EventArguments;
-using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Ports;

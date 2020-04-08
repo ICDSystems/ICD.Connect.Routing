@@ -110,7 +110,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 
 			eDeviceRegistrationUnRegistrationResponse result;
 			if (Device != null && !GenericBaseUtils.SetUp(Device, this, out result))
-				Log(eSeverity.Error, "Unable to register {0} - {1}", Device.GetType().Name, result);
+				Logger.Log(eSeverity.Error, "Unable to register {0} - {1}", Device.GetType().Name, result);
 
 			Subscribe(Device);
 
@@ -248,7 +248,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 			}
 			catch (Exception e)
 			{
-				Log(eSeverity.Error, "Failed to instantiate internal {0} - {1}", typeof(TDevice).Name, e.Message);
+				Logger.Log(eSeverity.Error, "Failed to instantiate internal {0} - {1}", typeof(TDevice).Name, e.Message);
 			}
 
 			SetDevice(device, settings.DmSwitch, settings.DmEndpoint);

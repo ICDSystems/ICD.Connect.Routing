@@ -105,7 +105,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 
 			eDeviceRegistrationUnRegistrationResponse result;
 			if (Director != null && !GenericBaseUtils.SetUp(Director, this, out result))
-				Log(eSeverity.Error, "Unable to register {0} - {1}", Director.GetType().Name, result);
+				Logger.Log(eSeverity.Error, "Unable to register {0} - {1}", Director.GetType().Name, result);
 
 			Subscribe(Director);
 

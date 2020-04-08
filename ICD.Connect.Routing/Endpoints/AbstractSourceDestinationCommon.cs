@@ -233,7 +233,7 @@ namespace ICD.Connect.Routing.Endpoints
 			SetAddresses(settings.GetAddresses());
 
 			if (!GetAddresses().Any())
-				Log(eSeverity.Warning, "No addresses assigned");
+				Logger.Log(eSeverity.Warning, "No addresses assigned");
 		}
 
 		#endregion

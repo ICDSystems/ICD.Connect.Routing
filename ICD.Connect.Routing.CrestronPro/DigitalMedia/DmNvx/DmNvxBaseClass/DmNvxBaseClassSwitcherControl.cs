@@ -177,7 +177,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 				m_ServerUrl = value;
 
-				Log(eSeverity.Informational, "ServerUrl set to {0}", m_ServerUrl);
+				Logger.Set("Server URL", eSeverity.Informational, m_ServerUrl);
 
 				OnServerUrlChange.Raise(this, new StringEventArgs(m_ServerUrl));
 			}
@@ -236,7 +236,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 				m_LastKnownMulticastAddress = value;
 
-				Log(eSeverity.Informational, "Last-known MulticastAddress set to {0}", m_LastKnownMulticastAddress);
+				Logger.Set("Last Known Multicast Address", eSeverity.Informational, m_LastKnownMulticastAddress);
 
 				OnLastKnownMulticastAddressChange.Raise(this, new StringEventArgs(m_LastKnownMulticastAddress));
 			}
@@ -255,7 +255,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 				m_LastKnownSecondaryAudioMulticastAddress = value;
 
-				Log(eSeverity.Informational, "Last-known SecondaryAudio MulticastAddress set to {0}", m_LastKnownSecondaryAudioMulticastAddress);
+				Logger.Set("Last Known Secondary Audio Multicast Address", eSeverity.Informational, m_LastKnownSecondaryAudioMulticastAddress);
 
 				OnLastKnownSecondaryAudioMulticastAddressChange.Raise(this, new StringEventArgs(m_LastKnownSecondaryAudioMulticastAddress));
 			}
@@ -804,11 +804,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			switch (args.EventId)
 			{
 				case DMInputEventIds.ResolutionEventId:
-					Log(eSeverity.Debug, "HDMI Input {0} Resolution changed to {1}x{2}&{3}",
-						input.Name,
-					    input.VideoAttributes.HorizontalResolutionFeedback.UShortValue,
-					    input.VideoAttributes.VerticalResolutionFeedback.UShortValue,
-					    input.VideoAttributes.FramesPerSecondFeedback);
+					Logger.Log(eSeverity.Debug, "HDMI Input {0} Resolution changed to {1}x{2}&{3}",
+					           input.Name,
+					           input.VideoAttributes.HorizontalResolutionFeedback.UShortValue,
+					           input.VideoAttributes.VerticalResolutionFeedback.UShortValue,
+					           input.VideoAttributes.FramesPerSecondFeedback);
 					break;
 			}
 		}
@@ -818,15 +818,15 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			switch (args.EventId)
 			{
 				case DMOutputEventIds.HdcpTransmitterModeFeedbackEventId:
-					Log(eSeverity.Debug, "HDMI Output HDCP Transmitter Mode changed to {0}", m_Streamer.HdmiOut.HdcpTransmitterModeFeedback);
+					Logger.Log(eSeverity.Debug, "HDMI Output HDCP Transmitter Mode changed to {0}", m_Streamer.HdmiOut.HdcpTransmitterModeFeedback);
 					break;
 
 				case DMOutputEventIds.DisabledByHdcpEventId:
-					Log(eSeverity.Debug, "HDMI Output Disabled By HDCP changed to {0}", m_Streamer.HdmiOut.DisabledByHdcpFeedback.BoolValue);
+					Logger.Log(eSeverity.Debug, "HDMI Output Disabled By HDCP changed to {0}", m_Streamer.HdmiOut.DisabledByHdcpFeedback.BoolValue);
 					break;
 
 				case DMOutputEventIds.ResolutionEventId:
-					Log(eSeverity.Debug, "HDMI Output Resolution changed to {0}", m_Streamer.HdmiOut.ResolutionFeedback);
+					Logger.Log(eSeverity.Debug, "HDMI Output Resolution changed to {0}", m_Streamer.HdmiOut.ResolutionFeedback);
 					break;
 			}
 		}

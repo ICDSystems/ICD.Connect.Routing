@@ -338,7 +338,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Controls
 		/// </summary>
 		private void SetAllInputsDetected()
 		{
-			Log(eSeverity.Debug, "Switch doesn't support input detection, setting all inputs as detected");
+			Logger.Log(eSeverity.Debug, "Switch doesn't support input detection, setting all inputs as detected");
 			foreach (var layer in EnumUtils.GetFlagsExceptNone(SwitcherLayers))
 				for (int input = 1; input <= InputCount; input++)
 					m_SwitcherCache.SetSourceDetectedState(input, layer, true);

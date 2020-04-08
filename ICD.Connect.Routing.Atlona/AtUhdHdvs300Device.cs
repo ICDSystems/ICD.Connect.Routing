@@ -294,7 +294,7 @@ namespace ICD.Connect.Routing.Atlona
 			OnResponseReceived.Raise(this, new StringEventArgs(args.Data));
 
 			if (args.Data.StartsWith("Command FAILED:"))
-				Log(eSeverity.Error, args.Data);
+				Logger.Log(eSeverity.Error, args.Data);
 		}
 
 		#endregion
@@ -355,7 +355,7 @@ namespace ICD.Connect.Routing.Atlona
 				}
 				catch (KeyNotFoundException)
 				{
-					Log(eSeverity.Error, "No serial port with id {0}", settings.Port);
+					Logger.Log(eSeverity.Error, "No serial port with id {0}", settings.Port);
 				}
 			}
 

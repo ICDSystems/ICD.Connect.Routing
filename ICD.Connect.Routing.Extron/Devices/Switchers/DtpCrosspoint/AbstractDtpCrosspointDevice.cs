@@ -129,7 +129,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			}
 			catch (Exception ex)
 			{
-				Log(eSeverity.Error, "Could not get insertion port - {0}", ex.Message);
+				Logger.Log(eSeverity.Error, "Could not get insertion port - {0}", ex.Message);
 			}
 			finally
 			{
@@ -165,7 +165,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 			}
 			catch (Exception e)
 			{
-				Log(eSeverity.Error, "Failed to load integration config {0} - {1}", fullPath, e.Message);
+				Logger.Log(eSeverity.Error, "Failed to load integration config {0} - {1}", fullPath, e.Message);
 			}
 		}
 
@@ -359,7 +359,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 				{
 					if (DtpUtils.GetPortOffsetFromSwitcher(this, pair.Key, eDtpInputOuput.Input) == null)
 					{
-						Log(eSeverity.Error, "{0} is not a valid DTP Input address", pair.Key);
+						Logger.Log(eSeverity.Error, "{0} is not a valid DTP Input address", pair.Key);
 						continue;
 					}
 
@@ -379,7 +379,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint
 				{
 					if (DtpUtils.GetPortOffsetFromSwitcher(this, pair.Key, eDtpInputOuput.Output) == null)
 					{
-						Log(eSeverity.Error, "{0} is not a valid DTP Output address", pair.Key);
+						Logger.Log(eSeverity.Error, "{0} is not a valid DTP Output address", pair.Key);
 						continue;
 					}
 

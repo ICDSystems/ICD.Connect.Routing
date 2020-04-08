@@ -45,7 +45,7 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 			if (m_VolumeGroupId != null)
 				Parent.SendCommand("WD{0}*{1}GRPM", m_VolumeGroupId, volumeParam);
 			else
-				Log(eSeverity.Warning, "Attempted to set volume, but no volume group ID has been set");
+				Logger.Log(eSeverity.Warning, "Attempted to set volume, but no volume group ID has been set");
 		}
 
 		public override void SetIsMuted(bool mute)
@@ -53,7 +53,7 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 			if (m_MuteGroupId != null)
 				Parent.SendCommand("WD{0}*{1}GRPM", m_MuteGroupId, mute ? 1 : 0);
 			else
-				Log(eSeverity.Warning, "Attempted to mute, but no mute group ID has been set");
+				Logger.Log(eSeverity.Warning, "Attempted to mute, but no mute group ID has been set");
 		}
 
 		protected override void Initialize()
