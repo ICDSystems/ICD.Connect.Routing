@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
  - Added DestinationGroupString to Destinations, to be used to create DestinationGroups at runtime
+ - Added EnableWhenOffline property/event to SourceDestinationBaseCommon
 
 ### Changed
  - MockDestinationDevice now inherits from AbstractMockDevice
