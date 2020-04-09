@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
+using ICD.Common.Utils.EventArguments;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Endpoints;
@@ -14,6 +17,21 @@ namespace ICD.Connect.Routing.Groups.Endpoints
 		where TOriginator : class, ISourceDestinationCommon
 		where TSettings : ISourceDestinationGroupCommonSettings, new()
 	{
+		#region Events
+
+		/// <summary>
+		/// Raised when the state of EnableWhenOffline property changes
+		/// </summary>
+		public event EventHandler<BoolEventArgs> OnEnableWhenOfflineChanged;
+
+		#endregion
+
+		#region Fields
+
+		private bool m_EnableWhenOffline;
+
+		#endregion
+
 		#region Properties
 
 		/// <summary>
@@ -33,6 +51,23 @@ namespace ICD.Connect.Routing.Groups.Endpoints
 		/// Masks the connection types inherited from the group items.
 		/// </summary>
 		public eConnectionType ConnectionTypeMask { get; set; }
+
+		/// <summary>
+		/// Indicates that the UI should enable this source/destination even when offline
+		/// </summary>
+		public bool EnableWhenOffline
+		{
+			get { return m_EnableWhenOffline; }
+			set
+			{
+				if (m_EnableWhenOffline == value)
+					return;
+
+				m_EnableWhenOffline = value;
+
+				OnEnableWhenOfflineChanged.Raise(this, new BoolEventArgs(value));
+			}
+		}
 
 		#endregion
 
@@ -70,6 +105,8 @@ namespace ICD.Connect.Routing.Groups.Endpoints
 			base.ClearSettingsFinal();
 
 			ConnectionTypeMask = EnumUtils.GetFlagsAllValue<eConnectionType>();
+
+			EnableWhenOffline = false;
 		}
 
 		/// <summary>
@@ -81,6 +118,8 @@ namespace ICD.Connect.Routing.Groups.Endpoints
 			base.CopySettingsFinal(settings);
 
 			settings.ConnectionTypeMask = ConnectionTypeMask;
+
+			settings.EnableWhenOffline = EnableWhenOffline;
 		}
 
 		/// <summary>
@@ -93,6 +132,8 @@ namespace ICD.Connect.Routing.Groups.Endpoints
 			base.ApplySettingsFinal(settings, factory);
 
 			ConnectionTypeMask = settings.ConnectionTypeMask;
+
+			EnableWhenOffline = settings.EnableWhenOffline;
 		}
 
 		#endregion

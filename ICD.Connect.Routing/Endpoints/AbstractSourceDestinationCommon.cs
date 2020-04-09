@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
+using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
@@ -17,6 +18,11 @@ namespace ICD.Connect.Routing.Endpoints
 	public abstract class AbstractSourceDestinationCommon<TSettings> : AbstractOriginator<TSettings>, ISourceDestinationCommon
 		where TSettings : ISourceDestinationCommonSettings, new()
 	{
+		/// <summary>
+		/// Raised when the state of EnableWhenOffline property changes
+		/// </summary>
+		public event EventHandler<BoolEventArgs> OnEnableWhenOfflineChanged;
+
 		private readonly List<int> m_AddressesOrdered;
 		private readonly List<EndpointInfo> m_EndpointsOrdered;
 
@@ -26,6 +32,7 @@ namespace ICD.Connect.Routing.Endpoints
 		private readonly SafeCriticalSection m_AddressesSection;
 
 		private ICore m_CachedCore;
+		private bool m_EnableWhenOffline;
 
 		#region Properties
 
@@ -48,6 +55,23 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Specifies if this instance was discovered via remote broadcast.
 		/// </summary>
 		public bool Remote { get; set; }
+
+		/// <summary>
+		/// Indicates that the UI should enable this source/destination even when offline
+		/// </summary>
+		public bool EnableWhenOffline
+		{
+			get { return m_EnableWhenOffline; }
+			set
+			{
+				if (m_EnableWhenOffline == value)
+					return;
+
+				m_EnableWhenOffline = value;
+
+				OnEnableWhenOfflineChanged.Raise(this, new BoolEventArgs(value));
+			}
+		}
 
 		/// <summary>
 		/// Gets the parent core instance.
@@ -192,6 +216,7 @@ namespace ICD.Connect.Routing.Endpoints
 			Order = 0;
 			Disable = false;
 			ConnectionType = default(eConnectionType);
+			EnableWhenOffline = false;
 
 			SetAddresses(Enumerable.Empty<int>());
 		}
@@ -209,6 +234,7 @@ namespace ICD.Connect.Routing.Endpoints
 			settings.Order = Order;
 			settings.Disable = Disable;
 			settings.ConnectionType = ConnectionType;
+			settings.EnableWhenOffline = EnableWhenOffline;
 
 			settings.SetAddresses(GetAddresses());
 		}
@@ -229,6 +255,7 @@ namespace ICD.Connect.Routing.Endpoints
 			Order = settings.Order;
 			Disable = settings.Disable;
 			ConnectionType = settings.ConnectionType;
+			EnableWhenOffline = settings.EnableWhenOffline;
 
 			SetAddresses(settings.GetAddresses());
 

@@ -32,5 +32,10 @@ namespace ICD.Connect.Routing.Endpoints
 		/// </summary>
 		/// <param name="addresses"></param>
 		void SetAddresses(IEnumerable<int> addresses);
+
+		/// <summary>
+		/// Indicates that the UI should enable this source/destination even when offline
+		/// </summary>
+		bool EnableWhenOffline { get; set; }
 	}
 }

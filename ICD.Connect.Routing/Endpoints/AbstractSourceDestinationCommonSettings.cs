@@ -19,6 +19,7 @@ namespace ICD.Connect.Routing.Endpoints
 		private const string ADDRESSES_ELEMENT = "Addresses";
 		private const string ADDRESS_ELEMENT = "Address";
 		private const string CONNECTION_TYPE_ELEMENT = "ConnectionType";
+		private const string ENABLE_WHEN_OFFLINE_ELEMENT = "EnableWhenOffline";
 
 		private readonly IcdHashSet<int> m_Addresses;
 
@@ -39,6 +40,11 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Specifies which media types to use for the source.
 		/// </summary>
 		public eConnectionType ConnectionType { get; set; }
+
+		/// <summary>
+		/// Indicates that the UI should enable this source/destination even when offline
+		/// </summary>
+		public bool EnableWhenOffline { get; set; }
 
 		#endregion
 
@@ -83,6 +89,8 @@ namespace ICD.Connect.Routing.Endpoints
 			XmlUtils.WriteListToXml(writer, GetAddresses().Order(), ADDRESSES_ELEMENT, ADDRESS_ELEMENT);
 
 			writer.WriteElementString(CONNECTION_TYPE_ELEMENT, ConnectionType.ToString());
+
+			writer.WriteElementString(ENABLE_WHEN_OFFLINE_ELEMENT, IcdXmlConvert.ToString(EnableWhenOffline));
 		}
 
 		/// <summary>
@@ -108,6 +116,8 @@ namespace ICD.Connect.Routing.Endpoints
 				addresses = addresses.Append(oldAddress.Value);
 
 			SetAddresses(addresses);
+
+			EnableWhenOffline = XmlUtils.TryReadChildElementContentAsBoolean(xml, ENABLE_WHEN_OFFLINE_ELEMENT) ?? false;
 		}
 	}
 }
