@@ -16,7 +16,7 @@ using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Mock.Destination
 {
-	public sealed class MockRouteDestinationControl : AbstractRouteDestinationControl<IDeviceBase>
+	public sealed class MockRouteDestinationControl : AbstractRouteDestinationControl<IDevice>
 	{
 		/// <summary>
 		/// Called when an input source status changes.
@@ -46,7 +46,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteDestinationControl(IDeviceBase parent, int id)
+		public MockRouteDestinationControl(IDevice parent, int id)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();

@@ -556,8 +556,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		private DmNvxBaseClassSwitcherControl GetSourceControl(Connection inputConnection)
 		{
 			return Core.Originators
-			           .GetChild<IDeviceBase>(inputConnection.Source.Device)
-			           .Controls.GetControl<DmNvxBaseClassSwitcherControl>(0);
+			           .GetChild<IDevice>(inputConnection.Source.Device)
+			           .Controls
+			           .GetControl<DmNvxBaseClassSwitcherControl>(0);
 		}
 
 		/// <summary>
@@ -568,8 +569,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		private DmNvxBaseClassSwitcherControl GetDestinationControl(Connection outputConnection)
 		{
 			return Core.Originators
-			           .GetChild<IDeviceBase>(outputConnection.Destination.Device)
-			           .Controls.GetControl<DmNvxBaseClassSwitcherControl>(0);
+			           .GetChild<IDevice>(outputConnection.Destination.Device)
+			           .Controls
+			           .GetControl<DmNvxBaseClassSwitcherControl>(0);
 		}
 
 		/// <summary>

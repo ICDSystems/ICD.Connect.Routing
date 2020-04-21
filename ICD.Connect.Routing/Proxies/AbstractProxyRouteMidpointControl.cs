@@ -35,7 +35,7 @@ namespace ICD.Connect.Routing.Proxies
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		protected AbstractProxyRouteMidpointControl(IProxyDeviceBase parent, int id)
+		protected AbstractProxyRouteMidpointControl(IProxyDevice parent, int id)
 			: base(parent, id)
 		{
 		}

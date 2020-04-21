@@ -9,7 +9,7 @@ using ICD.Connect.Routing.EventArguments;
 namespace ICD.Connect.Routing.Controls
 {
 	public abstract class AbstractRouteSourceControl<T> : AbstractRouteControl<T>, IRouteSourceControl
-		where T : IDeviceBase
+		where T : IDevice
 	{
 		/// <summary>
 		/// Raised when the device starts/stops actively transmitting on an output.

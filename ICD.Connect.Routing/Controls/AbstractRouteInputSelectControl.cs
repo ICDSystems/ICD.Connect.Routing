@@ -10,7 +10,7 @@ using ICD.Connect.Routing.EventArguments;
 namespace ICD.Connect.Routing.Controls
 {
 	public abstract class AbstractRouteInputSelectControl<TParent> : AbstractRouteDestinationControl<TParent>, IRouteInputSelectControl
-		where TParent : IDeviceBase
+		where TParent : IDevice
 	{
 		/// <summary>
 		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.

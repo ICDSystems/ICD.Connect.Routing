@@ -77,7 +77,7 @@ namespace ICD.Connect.Routing.Groups.Endpoints
 		/// Gets the devices for this instance.
 		/// </summary>
 		/// <returns></returns>
-		public IEnumerable<IDeviceBase> GetDevices()
+		public IEnumerable<IDevice> GetDevices()
 		{
 			return GetItems().SelectMany(i => i.GetDevices())
 			                 .Distinct();

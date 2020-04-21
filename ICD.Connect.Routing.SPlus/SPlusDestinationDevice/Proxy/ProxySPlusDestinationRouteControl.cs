@@ -33,7 +33,8 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
 		/// <param name="inputCount"></param>
-		public ProxySPlusDestinationRouteControl(IProxySPlusDestinationDevice parent, int id, int inputCount) : base(parent, id)
+		public ProxySPlusDestinationRouteControl(IProxySPlusDestinationDevice parent, int id, int inputCount)
+			: base(parent, id)
 		{
 			m_InputsDetectedCriticalSection = new SafeCriticalSection();
 			m_InputsDetectedHashSet = new IcdHashSet<int>();

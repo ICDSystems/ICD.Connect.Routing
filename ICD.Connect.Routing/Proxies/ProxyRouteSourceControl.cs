@@ -9,7 +9,7 @@ namespace ICD.Connect.Routing.Proxies
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public ProxyRouteSourceControl(IProxyDeviceBase parent, int id)
+		public ProxyRouteSourceControl(IProxyDevice parent, int id)
 			: base(parent, id)
 		{
 		}

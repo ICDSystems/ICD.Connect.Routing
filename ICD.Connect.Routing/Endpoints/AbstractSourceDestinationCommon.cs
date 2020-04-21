@@ -114,9 +114,9 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Gets the devices for this instance.
 		/// </summary>
 		/// <returns></returns>
-		IEnumerable<IDeviceBase> ISourceDestinationBaseCommon.GetDevices()
+		IEnumerable<IDevice> ISourceDestinationBaseCommon.GetDevices()
 		{
-			yield return Core.Originators.GetChild<IDeviceBase>(Device);
+			yield return Core.Originators.GetChild<IDevice>(Device);
 		}
 
 		/// <summary>

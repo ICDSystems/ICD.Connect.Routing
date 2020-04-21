@@ -15,7 +15,7 @@ using ICD.Connect.Routing.RoutingGraphs;
 
 namespace ICD.Connect.Routing.Mock.Source
 {
-	public sealed class MockRouteSourceControl : AbstractRouteSourceControl<IDeviceBase>
+	public sealed class MockRouteSourceControl : AbstractRouteSourceControl<IDevice>
 	{
 		/// <summary>
 		/// Raised when the device starts/stops actively transmitting on an output.
@@ -39,7 +39,7 @@ namespace ICD.Connect.Routing.Mock.Source
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteSourceControl(IDeviceBase parent, int id)
+		public MockRouteSourceControl(IDevice parent, int id)
 			: base(parent, id)
 		{
 			m_TransmissionStates = new Dictionary<int, Dictionary<eConnectionType, bool>>();

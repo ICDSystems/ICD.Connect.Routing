@@ -26,7 +26,7 @@ namespace ICD.Connect.Routing.Endpoints
 		/// Gets the devices for this instance.
 		/// </summary>
 		/// <returns></returns>
-		IEnumerable<IDeviceBase> GetDevices();
+		IEnumerable<IDevice> GetDevices();
 
 		/// <summary>
 		/// Gets the endpoints for this instance.

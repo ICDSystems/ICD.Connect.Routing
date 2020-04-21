@@ -13,7 +13,7 @@ using ICD.Connect.Routing.EventArguments;
 namespace ICD.Connect.Routing.Controls
 {
 	public abstract class AbstractRouteMidpointControl<T> : AbstractRouteDestinationControl<T>, IRouteMidpointControl
-		where T : IDeviceBase
+		where T : IDevice
 	{
 		public event EventHandler<BoolEventArgs> OnAudioBreakawayEnabledChanged;
 		public event EventHandler<BoolEventArgs> OnUsbBreakawayEnabledChanged;

@@ -21,7 +21,7 @@ namespace ICD.Connect.Routing.Proxies
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		protected AbstractProxyRouteSourceControl(IProxyDeviceBase parent, int id)
+		protected AbstractProxyRouteSourceControl(IProxyDevice parent, int id)
 			: base(parent, id)
 		{
 		}

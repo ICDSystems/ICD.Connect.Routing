@@ -2,7 +2,7 @@
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy
 {
-	public interface IProxySPlusDestinationDevice: IProxyDeviceBase
+	public interface IProxySPlusDestinationDevice: IProxyDevice
 	{
 	}
 }

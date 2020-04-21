@@ -19,7 +19,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 	/// <summary>
 	/// MockRouteSplitterControl routes a single input to all outputs.
 	/// </summary>
-	public sealed class MockRouteSplitterControl : AbstractRouteMidpointControl<IDeviceBase>
+	public sealed class MockRouteSplitterControl : AbstractRouteMidpointControl<IDevice>
 	{
 		/// <summary>
 		/// Raised when an input source status changes.
@@ -58,7 +58,7 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteSplitterControl(IDeviceBase parent, int id)
+		public MockRouteSplitterControl(IDevice parent, int id)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();

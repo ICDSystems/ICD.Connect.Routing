@@ -9,7 +9,7 @@ using ICD.Connect.Routing.Connections;
 namespace ICD.Connect.Routing.Controls
 {
 	public abstract class AbstractRouteSwitcherControl<T> : AbstractRouteMidpointControl<T>, IRouteSwitcherControl
-		where T : IDeviceBase
+		where T : IDevice
 	{
 		private List<InputPort> m_InputPorts;
 		private List<OutputPort> m_OutputPorts; 

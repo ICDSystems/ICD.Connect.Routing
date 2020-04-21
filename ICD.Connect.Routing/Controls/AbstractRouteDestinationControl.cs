@@ -5,12 +5,11 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
-using ICD.Connect.Telemetry.EventArguments;
 
 namespace ICD.Connect.Routing.Controls
 {
 	public abstract class AbstractRouteDestinationControl<T> : AbstractRouteControl<T>, IRouteDestinationControl
-		where T : IDeviceBase
+		where T : IDevice
 	{
 		/// <summary>
 		/// Raised when an input source status changes.
@@ -21,11 +20,6 @@ namespace ICD.Connect.Routing.Controls
 		/// Raised when the device starts/stops actively using an input, e.g. unroutes an input.
 		/// </summary>
 		public abstract event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
-		
-		/// <summary>
-		/// Raised when the device's video inputs chance sync state. Index indicates which input.
-		/// </summary>
-		public event EventHandler<IndexedBooleanEventArgs> OnVideoInputSyncChanged;
 
 		/// <summary>
 		/// Constructor.

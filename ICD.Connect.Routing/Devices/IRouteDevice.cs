@@ -2,7 +2,7 @@
 
 namespace ICD.Connect.Routing.Devices
 {
-	public interface IRouteDevice : IDeviceBase
+	public interface IRouteDevice : IDevice
 	{
 	}
 }

@@ -15,7 +15,7 @@ using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Mock.Switcher
 {
-	public sealed class MockRouteSwitcherControl : AbstractRouteSwitcherControl<IDeviceBase>
+	public sealed class MockRouteSwitcherControl : AbstractRouteSwitcherControl<IDevice>
 	{
 		/// <summary>
 		/// Called when a route changes.
@@ -54,7 +54,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public MockRouteSwitcherControl(IDeviceBase parent, int id)
+		public MockRouteSwitcherControl(IDevice parent, int id)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
@@ -310,7 +310,6 @@ namespace ICD.Connect.Routing.Mock.Switcher
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
 
 			InputPort inputPort = GetInputPort(args.Input);
-			ConnectorInfo info = GetInput(args.Input);
 			inputPort.VideoInputSync = args.State;
 		}
 
