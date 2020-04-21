@@ -7,9 +7,19 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 {
 	public abstract class AbstractDestination<TSettings> : AbstractSourceDestinationCommon<TSettings>, IDestination
 		where TSettings : IDestinationSettings, new()
-	{ 
+	{
+		#region Properties
+
+		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		public override string Category { get { return "Destination"; } }
 
 		public string DestinationGroupString { get; private set; }
+
+		#endregion
+
+		#region Private Methods
 
 		/// <summary>
 		/// Gets the destinations represented by this instance.
@@ -25,6 +35,8 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 			if (ConnectionType.HasFlags(type))
 				yield return this;
 		}
+
+		#endregion
 
 		#region Settings
 

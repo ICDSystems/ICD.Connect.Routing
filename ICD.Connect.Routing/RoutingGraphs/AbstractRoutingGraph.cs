@@ -48,6 +48,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		#region Properties
 
 		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		public override string Category { get { return "RoutingGraph"; } }
+
+		/// <summary>
 		/// Gets the connections collection.
 		/// </summary>
 		public abstract IConnectionsCollection Connections { get; }

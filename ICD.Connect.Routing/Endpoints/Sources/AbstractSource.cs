@@ -7,6 +7,17 @@ namespace ICD.Connect.Routing.Endpoints.Sources
 	public abstract class AbstractSource<TSettings> : AbstractSourceDestinationCommon<TSettings>, ISource
 		where TSettings : ISourceSettings, new()
 	{
+		#region Properties
+
+		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		public override string Category { get { return "Source"; } }
+
+		#endregion
+
+		#region Private Methods
+
 		/// <summary>
 		/// Gets the sources represented by this instance.
 		/// </summary>
@@ -21,5 +32,7 @@ namespace ICD.Connect.Routing.Endpoints.Sources
 			if (ConnectionType.HasFlags(type))
 				yield return this;
 		}
+
+		#endregion
 	}
 }

@@ -14,7 +14,16 @@ namespace ICD.Connect.Routing.StaticRoutes
 		private readonly IcdHashSet<int> m_Connections;
 		private readonly SafeCriticalSection m_ConnectionsSection;
 
+		#region Properties
+
+		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		public override string Category { get { return "StaticRoute"; } }
+
 		public eConnectionType ConnectionType { get; set; }
+
+		#endregion
 
 		/// <summary>
 		/// Constructor.

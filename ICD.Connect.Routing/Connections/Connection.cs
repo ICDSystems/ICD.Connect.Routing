@@ -33,6 +33,11 @@ namespace ICD.Connect.Routing.Connections
 
 		#region Properties
 
+		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		public override string Category { get { return "Connection"; } }
+
 		public EndpointInfo Source { get; private set; }
 		public EndpointInfo Destination { get; private set; }
 		public eConnectionType ConnectionType { get; private set; }

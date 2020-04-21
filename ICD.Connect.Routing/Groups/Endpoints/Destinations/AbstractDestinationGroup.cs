@@ -12,6 +12,11 @@ namespace ICD.Connect.Routing.Groups.Endpoints.Destinations
 		where TSettings : IDestinationGroupSettings, new()
 	{
 		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		public override string Category { get { return "DestinationGroup"; } }
+
+		/// <summary>
 		/// Gets the destinations represented by this instance.
 		/// </summary>
 		/// <returns></returns>

@@ -12,6 +12,11 @@ namespace ICD.Connect.Routing.Groups.Endpoints.Sources
 		where TSettings : ISourceGroupSettings, new()
 	{
 		/// <summary>
+		/// Gets the category for this originator type (e.g. Device, Port, etc)
+		/// </summary>
+		public override string Category { get { return "SourceGroup"; } }
+
+		/// <summary>
 		/// Gets the sources represented by this instance.
 		/// </summary>
 		/// <returns></returns>
