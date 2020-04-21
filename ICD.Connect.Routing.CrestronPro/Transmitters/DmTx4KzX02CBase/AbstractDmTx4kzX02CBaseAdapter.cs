@@ -21,7 +21,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 #if SIMPLSHARP
 	public abstract class AbstractDmTx4kzX02CBaseAdapter<TTransmitter, TSettings> :
 		AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings>, IDmTx4kzX02CBaseAdapter
-		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kzX02CBase
+		where TTransmitter : DmTx4kzX02CBase
 #else
 	public abstract class AbstractDmTx4kzX02CBaseAdapter<TSettings> :
 		AbstractEndpointTransmitterBaseAdapter<TSettings>, IDmTx4kzX02CBaseAdapter
