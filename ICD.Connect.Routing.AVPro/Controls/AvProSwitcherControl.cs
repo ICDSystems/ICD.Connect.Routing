@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.AVPro.Devices.Switchers;
@@ -35,6 +36,8 @@ namespace ICD.Connect.Routing.AVPro.Controls
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
 		private readonly SwitcherCache m_Cache;
+		private readonly Dictionary<int, bool> m_OutputTransmission;
+		private readonly SafeCriticalSection m_OutputTransmissionSection;
 
 		/// <summary>
 		/// Constructor.
@@ -45,6 +48,8 @@ namespace ICD.Connect.Routing.AVPro.Controls
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
+			m_OutputTransmission = new Dictionary<int, bool>();
+			m_OutputTransmissionSection = new SafeCriticalSection();
 
 			Subscribe(m_Cache);
 		}
@@ -75,7 +80,26 @@ namespace ICD.Connect.Routing.AVPro.Controls
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
+			if (!ContainsInput(input))
+				throw new ArgumentOutOfRangeException("input");
+
 			return m_Cache.GetSourceDetectedState(input, type);
+		}
+
+		/// <summary>
+		/// Returns true if the device is actively transmitting on the given output.
+		/// This is NOT the same as sending video, since some devices may send an
+		/// idle signal by default.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override bool GetActiveTransmissionState(int output, eConnectionType type)
+		{
+			if (!ContainsOutput(output))
+				throw new ArgumentOutOfRangeException("output");
+
+			return m_OutputTransmissionSection.Execute(() => m_OutputTransmission.GetDefault(output));
 		}
 
 		/// <summary>
@@ -279,7 +303,8 @@ namespace ICD.Connect.Routing.AVPro.Controls
 		/// <param name="args"></param>
 		private void ParentOnInitializedChanged(object sender, BoolEventArgs args)
 		{
-			InitializeCache();
+			if (args.Data)
+				Initialize();
 		}
 
 		/// <summary>
@@ -301,8 +326,8 @@ namespace ICD.Connect.Routing.AVPro.Controls
 				int output = int.Parse(match.Groups["output"].Value);
 				int input = int.Parse(match.Groups["input"].Value);
 
-				// TODO - Needs to handle output enabled state
 				m_Cache.SetInputForOutput(output, input, eConnectionType.Audio | eConnectionType.Video);
+				return;
 			}
 
 			// Output enabled
@@ -312,7 +337,25 @@ namespace ICD.Connect.Routing.AVPro.Controls
 				int output = int.Parse(match.Groups["output"].Value);
 				bool enabled = match.Groups["enabled"].Value == "ON";
 
-				// TODO - Needs to handle output enabled state
+				m_OutputTransmissionSection.Enter();
+
+				try
+				{
+					if (enabled == m_OutputTransmission.GetDefault(output))
+						return;
+
+					m_OutputTransmission[output] = enabled;
+				}
+				finally
+				{
+					m_OutputTransmissionSection.Leave();
+				}
+
+				OnActiveTransmissionStateChanged.Raise(this,
+				                                       new TransmissionStateEventArgs(output,
+				                                                                      eConnectionType.Audio |
+				                                                                      eConnectionType.Video, enabled));
+				return;
 			}
 
 			// Source detected
@@ -323,10 +366,11 @@ namespace ICD.Connect.Routing.AVPro.Controls
 				bool detected = match.Groups["detected"].Value == "1";
 
 				m_Cache.SetSourceDetectedState(input, eConnectionType.Audio | eConnectionType.Video, detected);
+				return;
 			}
 		}
 
-		private void InitializeCache()
+		private void Initialize()
 		{
 			Parent.SendCommand("GET OUT0 VS"); // List routing
 			Parent.SendCommand("GET OUT0 STREAM"); // List output enabled
@@ -346,7 +390,6 @@ namespace ICD.Connect.Routing.AVPro.Controls
 			cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
 			cache.OnRouteChange += CacheOnRouteChange;
 			cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
-			cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
 		}
 
 		/// <summary>
@@ -358,7 +401,6 @@ namespace ICD.Connect.Routing.AVPro.Controls
 			cache.OnSourceDetectionStateChange -= CacheOnSourceDetectionStateChange;
 			cache.OnRouteChange -= CacheOnRouteChange;
 			cache.OnActiveInputsChanged -= CacheOnActiveInputsChanged;
-			cache.OnActiveTransmissionStateChanged -= CacheOnActiveTransmissionStateChanged;
 		}
 
 		private void CacheOnRouteChange(object sender, RouteChangeEventArgs args)
@@ -374,11 +416,6 @@ namespace ICD.Connect.Routing.AVPro.Controls
 		private void CacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
 		{
 			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
-		}
-
-		private void CacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
-		{
-			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(args));
 		}
 
 		#endregion

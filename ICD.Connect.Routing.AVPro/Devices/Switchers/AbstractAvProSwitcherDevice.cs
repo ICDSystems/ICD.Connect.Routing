@@ -78,7 +78,7 @@ namespace ICD.Connect.Routing.AVPro.Devices.Switchers
 			m_NetworkProperties = new NetworkProperties();
 			m_ComSpecProperties = new ComSpecProperties();
 
-			m_SerialBuffer = new DelimiterSerialBuffer('\n');
+			m_SerialBuffer = new MultiDelimiterSerialBuffer('\r', '\n');
 			m_ConnectionStateManager = new ConnectionStateManager(this) { ConfigurePort = ConfigurePort };
 
 			Controls.Add(new AvProSwitcherControl(this, 0));
@@ -115,14 +115,14 @@ namespace ICD.Connect.Routing.AVPro.Devices.Switchers
 			if (args != null)
 				command = string.Format(command, args);
 
-			m_ConnectionStateManager.Send(command + '\n');
+			m_ConnectionStateManager.Send(command + "\r\n");
 		}
 
 		/// <summary>
 		/// Configures the given port for communication with the device.
 		/// </summary>
 		/// <param name="port"></param>
-		private void ConfigurePort(ISerialPort port)
+		private void ConfigurePort(IPort port)
 		{
 			// Com
 			if (port is IComPort)
@@ -219,8 +219,7 @@ namespace ICD.Connect.Routing.AVPro.Devices.Switchers
 		{
 			m_SerialBuffer.Clear();
 
-			if (!e.Data)
-				Initialized = false;
+			Initialized = e.Data;
 		}
 
 		/// <summary>
@@ -231,6 +230,8 @@ namespace ICD.Connect.Routing.AVPro.Devices.Switchers
 		private void PortOnSerialDataReceived(object sender, StringEventArgs e)
 		{
 			m_SerialBuffer.Enqueue(e.Data);
+
+			Initialized = true;
 		}
 
 		#endregion
