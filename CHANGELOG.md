@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Chaned
  - Removed network adatper telemetery from SwitcherTelemetry
+ - ControlSystemExternalTelemetry - Fixed DHCP state telemetry to properly parse DHCP Off state
+ - ControlSystemExternalTelemetry - Removed telemetry names for control system network info (using Device network info instead)
+ - ControlSystemExternalTelemetry - Changed telemetry names for network info to use Device telemetry names
+ - ControlSystemExternalTelemetry - DateTime fields are converted to ISO-8601 strings
 
 ## [13.13.2] - 2020-03-05
 ### Changed
