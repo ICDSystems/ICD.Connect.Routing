@@ -38,11 +38,6 @@ namespace ICD.Connect.Routing.Telemetry
 
 		public bool AudioBreakawayEnabled { get { return GetSwitcherAudioBreakawayEnabled(); } }
 		public bool UsbBreakawayEnabled { get { return GetSwitcherUsbBreakawayEnabled(); } }
-		public string IpAddress { get; private set; }
-		public string Hostname { get; private set; }
-		public string SubnetMask { get; private set; }
-		public string MacAddress { get; private set; }
-		public string DefaultRouter { get; private set; }
 		public IEnumerable<InputPort> SwitcherInputPorts { get { return m_InputPorts; } }
 		public IEnumerable<OutputPort> SwitcherOutputPorts { get { return m_OutputPorts; } }
 
