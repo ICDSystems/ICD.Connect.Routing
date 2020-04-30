@@ -877,6 +877,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		{
 			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(args));
 
+			if (!args.Type.HasFlag(eConnectionType.Video))
+				return;
 			InputPort inputPort = GetInputPort(args.Input);
 			ConnectorInfo info = GetInput(args.Input);
 			inputPort.VideoInputSync = args.State;

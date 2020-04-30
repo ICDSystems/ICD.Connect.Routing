@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - ControlSystemExternalTelemetry - Changed telemetry names for network info to use Device telemetry names
  - ControlSystemExternalTelemetry - DateTime fields are converted to ISO-8601 strings
  - ControlSystem - only add switcher control if control system has inputs/outputs
+ - ControlSystemSwitcherControl - update video source detection on input port only for video detection changed
 
 ## [13.13.2] - 2020-03-05
 ### Changed
