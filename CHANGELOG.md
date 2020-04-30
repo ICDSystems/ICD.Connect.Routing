@@ -33,6 +33,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.14.0] - 2020-04-30
+### Changed
+ - ControlSystemExternalTelemetry - Fixed DHCP state telemetry to properly parse DHCP Off state
+ - ControlSystemExternalTelemetry - Removed telemetry names for control system network info (using Device network info instead)
+ - ControlSystemExternalTelemetry - Changed telemetry names for network info to use Device telemetry names
+ - ControlSystemExternalTelemetry - DateTime fields are converted to ISO-8601 strings
+ - ControlSystem - Only add switcher control if control system has inputs/outputs
+ - ControlSystemSwitcherControl - Update video source detection on input port only for video detection changed
+ - ControlSystemSwitcherControl - Breakaway routing check feedback bools for supported instead of set bools
+
+### Removed
+ - SwitcherTelemetry - AudioBreakawayEnabled and UsbBreakawayEnabled removed
+ - Removed network adapter telemetery from SwitcherTelemetry
+ - SwitcherTelemetry - Removed methods for Output Mute/Unmute/Volume that weren't implemented
+
 ## [13.13.2] - 2020-03-05
 ### Changed
  - Fixed Sync Detection on DmTx4kX02C and DmTx4kzX02C devices
