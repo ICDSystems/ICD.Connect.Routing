@@ -906,13 +906,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				return;
 
 			addRow("Audio Breakaway",
-			       m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Supported &&
-			       m_SubscribedControlSystem.SystemControl.EnableAudioBreakaway.Type == eSigType.Bool
+			       m_SubscribedControlSystem.SystemControl.EnableAudioBreakawayFeedback.Supported
 				       ? m_SubscribedControlSystem.SystemControl.EnableAudioBreakawayFeedback.GetBoolValueOrDefault().ToString()
 				       : "Not Supported");
 			addRow("USB Breakaway",
-			       m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Supported &&
-			       m_SubscribedControlSystem.SystemControl.EnableUSBBreakaway.Type == eSigType.Bool
+			       m_SubscribedControlSystem.SystemControl.EnableUSBBreakawayFeedback.Supported
 				       ? m_SubscribedControlSystem.SystemControl.EnableUSBBreakawayFeedback.GetBoolValueOrDefault().ToString()
 				       : "Not Supported");
 		}

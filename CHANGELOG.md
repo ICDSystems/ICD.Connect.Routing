@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - ControlSystemExternalTelemetry - DateTime fields are converted to ISO-8601 strings
  - ControlSystem - only add switcher control if control system has inputs/outputs
  - ControlSystemSwitcherControl - update video source detection on input port only for video detection changed
+ - ControlSystemSwitcherControl - Breakaway routing check feedback bools for supported instead of set bools
 
 ## [13.13.2] - 2020-03-05
 ### Changed
