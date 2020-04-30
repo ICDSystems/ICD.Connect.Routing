@@ -5,12 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
-### Chaned
+### Changed
  - Removed network adatper telemetery from SwitcherTelemetry
  - ControlSystemExternalTelemetry - Fixed DHCP state telemetry to properly parse DHCP Off state
  - ControlSystemExternalTelemetry - Removed telemetry names for control system network info (using Device network info instead)
  - ControlSystemExternalTelemetry - Changed telemetry names for network info to use Device telemetry names
  - ControlSystemExternalTelemetry - DateTime fields are converted to ISO-8601 strings
+ - ControlSystem - only add switcher control if control system has inputs/outputs
 
 ## [13.13.2] - 2020-03-05
 ### Changed
