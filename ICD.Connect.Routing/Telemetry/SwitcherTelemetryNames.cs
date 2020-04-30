@@ -2,12 +2,6 @@
 {
 	public static class SwitcherTelemetryNames
 	{
-		public const string AUDIO_BREAKAWAY_ENABLED = "Audio Breakaway Enabled";
-		public const string AUDIO_BREAKAWAY_ENABLED_CHANGED = "Audio Breakaway Enabled Changed";
-
-		public const string USB_BREAKAWAY_ENABLED = "USB Breakaway Enabled";
-		public const string USB_BREAKAWAY_ENABLED_CHANGED = "USB Breakaway Enabled Changed";
-
 		public const string INPUT_PORTS = "Input Ports";
 		public const string OUTPUT_PORTS = "Output Ports";
 
