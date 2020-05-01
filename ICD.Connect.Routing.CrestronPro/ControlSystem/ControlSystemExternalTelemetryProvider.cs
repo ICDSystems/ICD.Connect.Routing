@@ -13,6 +13,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 	[UsedImplicitly]
 	public sealed class ControlSystemExternalTelemetryProvider : IControlSystemExternalTelemetryProvider
 	{
+		private const string DHCP_ON_TEXT = "ON";
+
+		// Drew said to make these constants for now.
+		private const string PROGRAMMER_NAME = "ICD Systems";
+		private const string SYSTEM_NAME = "Metlife.RoomOS";
+
 		private ITelemetryProvider m_Parent;
 		private readonly IcdTimer m_UptimeUpdateTimer;
 		private const long UPTIME_UPDATE_TIMER_INTERVAL = 10 * 60 * 1000;
@@ -20,10 +26,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		private string[] m_Hostnames;
 		private string[] m_IpAddresses;
 		private string m_DhcpStatus;
-
-		// Drew said to make these constants for now.
-		private const string PROGRAMMER_NAME = "ICD Systems";
-		private const string SYSTEM_NAME = "Metlife.RoomOS";
 
 		public event EventHandler<BoolEventArgs> OnDhcpStatusChanged;
 		public event EventHandler<StringEventArgs> OnProcessorIpAddressChanged;
@@ -34,11 +36,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public event EventHandler<StringEventArgs> OnProcessorUptimeChanged;
 		public event EventHandler<StringEventArgs> OnProgramUptimeChanged;
 
-		public bool DhcpStatus { get { return !string.IsNullOrEmpty(IcdEnvironment.DhcpStatus); } }
+		public bool DhcpStatus { get { return !string.IsNullOrEmpty(IcdEnvironment.DhcpStatus) && IcdEnvironment.DhcpStatus.Equals(DHCP_ON_TEXT, StringComparison.OrdinalIgnoreCase); } }
 
 		public string ProcessorModel { get { return ProcessorUtils.ModelName; } }
 		public string ProcessorFirmwareVersion { get { return ProcessorUtils.ModelVersion.ToString(); } }
-		public string ProcessorFirmwareDate { get { return ProcessorUtils.ModelVersionDate; } }
+		public string ProcessorFirmwareDate { get { return ProcessorUtils.ModelVersionDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"); } }
 		public string ProcessorMacAddress { get { return IcdEnvironment.MacAddresses.First(); } }
 		public string ProcessorIpAddress { get { return GetPrimaryIp(); } }
 		public string ProcessorHostname { get { return GetPrimaryHostname(); } }
@@ -75,7 +77,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public string ProgrammerName { get { return PROGRAMMER_NAME; } }
 		public string SystemName { get { return SYSTEM_NAME; } }
 		public string ProgramSourceFile { get { return ProgramUtils.ProgramFile; } }
-		public string ProgramCompileDate { get { return ProgramUtils.CompiledDate; } }
+		public string ProgramCompileDate { get { return ProgramUtils.CompiledDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"); } }
 		public string ProcessorIpAddressSecondary { get { return GetSecondaryIp(); } }
 		public string ProcessorHostnameCustom { get { return GetSecondaryHostname(); } }
 

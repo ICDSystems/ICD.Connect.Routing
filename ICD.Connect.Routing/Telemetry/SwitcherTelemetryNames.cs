@@ -2,12 +2,6 @@
 {
 	public static class SwitcherTelemetryNames
 	{
-		public const string AUDIO_BREAKAWAY_ENABLED = "Audio Breakaway Enabled";
-		public const string AUDIO_BREAKAWAY_ENABLED_CHANGED = "Audio Breakaway Enabled Changed";
-
-		public const string USB_BREAKAWAY_ENABLED = "USB Breakaway Enabled";
-		public const string USB_BREAKAWAY_ENABLED_CHANGED = "USB Breakaway Enabled Changed";
-
 		public const string INPUT_PORTS = "Input Ports";
 		public const string OUTPUT_PORTS = "Output Ports";
 
@@ -25,21 +19,6 @@
 		public const string AUDIO_OUTPUT_VOLUME = "Audio Output Volume";
 		public const string AUDIO_OUTPUT_VOLUME_CHANGED = "Audio Output Volume Changed";
 		public const string AUDIO_OUTPUT_VOLUME_COMMAND = "Audio Output Volume Command";
-
-		public const string IP_ADDRESS = "Switcher Ip Address";
-		public const string IP_ADDRESS_CHANGED = "Switcher Ip Address Changed";
-
-		public const string HOSTNAME = "Switcher Hostname";
-		public const string HOSTNAME_CHANGED = "Switcher Hostname Changed";
-
-		public const string SUBNET_MASK = "Switcher Subnet Mask";
-		public const string SUBNET_MASK_CHANGED = "Switcher Subnet Mask Changed";
-
-		public const string MAC_ADDRESS = "Switcher MAC Address";
-		public const string MAC_ADDRESS_CHANGED = "Switcher MAC Address Changed";
-
-		public const string DEFAULT_ROUTER = "Switcher Default Router";
-		public const string DEFAULT_ROUTER_CHANGED = "Switcher Default Router Changed";
 
 		public const string INPUT_ID = "Input Id";
 		public const string INPUT_ID_CHANGED = "Input Id Changed";
