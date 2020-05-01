@@ -62,7 +62,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 #if SIMPLSHARP
 			SetControlSystem(ProgramInfo.ControlSystem);
 
-			Controls.Add(new ControlSystemSwitcherControl(this, 0));
+			if (ControlSystem.SupportsSwitcherInputs || ControlSystem.SupportsSwitcherOutputs)
+				Controls.Add(new ControlSystemSwitcherControl(this, 0));
 
 			IThreeSeriesTouchScreenControl touchScreen = InstantiateTouchScreen(this, 1);
 			if (touchScreen != null)
