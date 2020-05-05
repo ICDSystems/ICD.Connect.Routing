@@ -81,7 +81,7 @@ namespace ICD.Connect.Routing.Controls
 
 		#region Public Properties
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_SYNC, null, SwitcherTelemetryNames.VIDEO_OUTPUT_SYNC_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_SYNC, null, SwitcherTelemetryNames.VIDEO_OUTPUT_SYNC_CHANGED)]
 		public bool VideoOutputSync
 		{
 			get { return m_VideoOutputSync; }
@@ -104,7 +104,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_VideoOutputSyncFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(
+		[PropertyTelemetry(
 			SwitcherTelemetryNames.AUDIO_OUTPUT_MUTE, 
 			SwitcherTelemetryNames.AUDIO_OUTPUT_MUTE_COMMAND, 
 			SwitcherTelemetryNames.AUDIO_OUTPUT_MUTE_CHANGED)]
@@ -131,7 +131,7 @@ namespace ICD.Connect.Routing.Controls
 		}
 
 		[Range(0.0f, 1.0f)]
-		[DynamicPropertyTelemetry(
+		[PropertyTelemetry(
 			SwitcherTelemetryNames.AUDIO_OUTPUT_VOLUME, 
 			SwitcherTelemetryNames.AUDIO_OUTPUT_VOLUME_COMMAND, 
 			SwitcherTelemetryNames.AUDIO_OUTPUT_VOLUME_CHANGED)]
@@ -157,7 +157,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_AudioOutputVolumeFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.OUTPUT_ID, null, SwitcherTelemetryNames.OUTPUT_ID_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.OUTPUT_ID, null, SwitcherTelemetryNames.OUTPUT_ID_CHANGED)]
 		public string OutputId
 		{
 			get { return m_OutputId; }
@@ -176,7 +176,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_OutputIdFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.OUTPUT_NAME, null, SwitcherTelemetryNames.OUTPUT_NAME_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.OUTPUT_NAME, null, SwitcherTelemetryNames.OUTPUT_NAME_CHANGED)]
 		public string OutputName
 		{
 			get { return m_OutputName; }
@@ -195,7 +195,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_OutputNameFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_SYNC_TYPE, null, SwitcherTelemetryNames.VIDEO_OUTPUT_SYNC_TYPE_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_SYNC_TYPE, null, SwitcherTelemetryNames.VIDEO_OUTPUT_SYNC_TYPE_CHANGED)]
 		public string VideoOutputSyncType
 		{
 			get { return m_VideoOutputSyncType; }
@@ -218,7 +218,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_VideoOutputSyncTypeFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_RESOLUTION, null, SwitcherTelemetryNames.VIDEO_OUTPUT_RESOLUTION_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_RESOLUTION, null, SwitcherTelemetryNames.VIDEO_OUTPUT_RESOLUTION_CHANGED)]
 		public string VideoOutputResolution
 		{
 			get { return m_VideoOutputResolution; }
@@ -241,7 +241,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_VideoOutputResolutionFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_ENCODING, null, SwitcherTelemetryNames.VIDEO_OUTPUT_ENCODING_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_ENCODING, null, SwitcherTelemetryNames.VIDEO_OUTPUT_ENCODING_CHANGED)]
 		public string VideoOutputEncoding
 		{
 			get { return m_VideoOutputEncoding; }
@@ -264,7 +264,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_VideoOutputEncodingFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_SOURCE, null, SwitcherTelemetryNames.VIDEO_OUTPUT_SOURCE_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.VIDEO_OUTPUT_SOURCE, null, SwitcherTelemetryNames.VIDEO_OUTPUT_SOURCE_CHANGED)]
 		public string VideoOutputSource
 		{
 			get { return m_VideoOutputSource; }
@@ -288,7 +288,7 @@ namespace ICD.Connect.Routing.Controls
 		}
 
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.AUDIO_OUTPUT_SOURCE, null, SwitcherTelemetryNames.AUDIO_OUTPUT_SOURCE_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.AUDIO_OUTPUT_SOURCE, null, SwitcherTelemetryNames.AUDIO_OUTPUT_SOURCE_CHANGED)]
 		public string AudioOutputSource
 		{
 			get { return m_AudioOutputSource; }
@@ -311,7 +311,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_AudioOutputSourceFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.AUDIO_OUTPUT_FORMAT, null, SwitcherTelemetryNames.AUDIO_OUTPUT_FORMAT_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.AUDIO_OUTPUT_FORMAT, null, SwitcherTelemetryNames.AUDIO_OUTPUT_FORMAT_CHANGED)]
 		public string AudioOutputFormat
 		{
 			get { return m_AudioOutputFormat; }
@@ -334,7 +334,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_AudioOutputFormatFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.USB_OUTPUT_ID, null, SwitcherTelemetryNames.USB_OUTPUT_ID_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.USB_OUTPUT_ID, null, SwitcherTelemetryNames.USB_OUTPUT_ID_CHANGED)]
 		public string UsbOutputId
 		{
 			get { return m_UsbOutputId; }

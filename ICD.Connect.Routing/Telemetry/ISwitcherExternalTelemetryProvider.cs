@@ -2,6 +2,7 @@
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Telemetry;
 using ICD.Connect.Telemetry.Attributes;
+using ICD.Connect.Telemetry.Nodes.External;
 
 namespace ICD.Connect.Routing.Telemetry
 {

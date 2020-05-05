@@ -45,7 +45,7 @@ namespace ICD.Connect.Routing.Controls
 
 		#region Public Properties
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.VIDEO_INPUT_SYNC, null, SwitcherTelemetryNames.VIDEO_INPUT_SYNC_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.VIDEO_INPUT_SYNC, null, SwitcherTelemetryNames.VIDEO_INPUT_SYNC_CHANGED)]
 		public bool VideoInputSync
 		{
 			get { return m_VideoInputSync; }
@@ -68,7 +68,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_VideoInputSyncFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.INPUT_ID, null, SwitcherTelemetryNames.INPUT_ID_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.INPUT_ID, null, SwitcherTelemetryNames.INPUT_ID_CHANGED)]
 		public string InputId
 		{
 			get { return m_InputId; }
@@ -87,7 +87,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_InputIdFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.INPUT_NAME, null, SwitcherTelemetryNames.INPUT_NAME_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.INPUT_NAME, null, SwitcherTelemetryNames.INPUT_NAME_CHANGED)]
 		public string InputName
 		{
 			get { return m_InputName; }
@@ -106,7 +106,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_InputNameFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.VIDEO_INPUT_SYNC_TYPE, null, SwitcherTelemetryNames.VIDEO_INPUT_SYNC_TYPE_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.VIDEO_INPUT_SYNC_TYPE, null, SwitcherTelemetryNames.VIDEO_INPUT_SYNC_TYPE_CHANGED)]
 		public string VideoInputSyncType
 		{
 			get { return m_VideoInputSyncType; }
@@ -129,7 +129,7 @@ namespace ICD.Connect.Routing.Controls
 			set { m_VideoInputSyncTypeFeedbackSupported = value; }
 		}
 
-		[DynamicPropertyTelemetry(SwitcherTelemetryNames.VIDEO_INPUT_RESOLUTION, null, SwitcherTelemetryNames.VIDEO_INPUT_RESOLUTION_CHANGED)]
+		[PropertyTelemetry(SwitcherTelemetryNames.VIDEO_INPUT_RESOLUTION, null, SwitcherTelemetryNames.VIDEO_INPUT_RESOLUTION_CHANGED)]
 		public string VideoInputResolution
 		{
 			get { return m_VideoInputResolution; }
