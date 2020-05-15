@@ -106,7 +106,7 @@ namespace ICD.Connect.Routing.Controls
 
 		[PropertyTelemetry(
 			SwitcherTelemetryNames.AUDIO_OUTPUT_MUTE, 
-			SwitcherTelemetryNames.AUDIO_OUTPUT_MUTE_COMMAND, 
+			null, 
 			SwitcherTelemetryNames.AUDIO_OUTPUT_MUTE_CHANGED)]
 		public bool AudioOutputMute
 		{
@@ -133,7 +133,7 @@ namespace ICD.Connect.Routing.Controls
 		[Range(0.0f, 1.0f)]
 		[PropertyTelemetry(
 			SwitcherTelemetryNames.AUDIO_OUTPUT_VOLUME, 
-			SwitcherTelemetryNames.AUDIO_OUTPUT_VOLUME_COMMAND, 
+			null, 
 			SwitcherTelemetryNames.AUDIO_OUTPUT_VOLUME_CHANGED)]
 		public float AudioOutputVolume
 		{
