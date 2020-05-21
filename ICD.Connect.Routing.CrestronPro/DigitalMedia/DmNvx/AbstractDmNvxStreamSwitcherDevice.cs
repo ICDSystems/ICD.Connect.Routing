@@ -4,7 +4,6 @@ using System.Linq;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
@@ -15,7 +14,6 @@ using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
 using ICD.Connect.Settings;
-using ICD.Connect.Settings.Cores;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 {
@@ -54,14 +52,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 
 		private readonly SwitcherCache m_SwitcherCache;
 
-		private ICore m_CachedCore;
-
 		#region Properties
-
-		/// <summary>
-		/// Gets the core.
-		/// </summary>
-		public ICore Core { get { return m_CachedCore = m_CachedCore ?? ServiceProvider.GetService<ICore>(); } }
 
 		/// <summary>
 		/// Returns true if this switcher handles the primary stream, false for secondary stream.

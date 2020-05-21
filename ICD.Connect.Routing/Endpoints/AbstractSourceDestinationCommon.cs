@@ -5,12 +5,10 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
-using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Routing.Endpoints
@@ -31,7 +29,6 @@ namespace ICD.Connect.Routing.Endpoints
 
 		private readonly SafeCriticalSection m_AddressesSection;
 
-		private ICore m_CachedCore;
 		private bool m_EnableWhenOffline;
 
 		#region Properties
@@ -72,11 +69,6 @@ namespace ICD.Connect.Routing.Endpoints
 				OnEnableWhenOfflineChanged.Raise(this, new BoolEventArgs(value));
 			}
 		}
-
-		/// <summary>
-		/// Gets the parent core instance.
-		/// </summary>
-		public ICore Core { get { return m_CachedCore = m_CachedCore ?? ServiceProvider.GetService<ICore>(); } }
 
 		#endregion
 

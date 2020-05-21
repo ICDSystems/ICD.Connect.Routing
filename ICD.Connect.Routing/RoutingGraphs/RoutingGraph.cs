@@ -76,11 +76,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private readonly RoutingCache m_Cache;
 
-		private ICore m_CachedCore;
-
 		#region Properties
-
-		public ICore Core { get { return m_CachedCore = m_CachedCore ?? ServiceProvider.GetService<ICore>(); } }
 
 		/// <summary>
 		/// Gets the connections collection.
