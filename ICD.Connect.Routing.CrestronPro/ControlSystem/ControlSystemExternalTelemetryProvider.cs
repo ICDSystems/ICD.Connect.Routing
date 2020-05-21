@@ -6,12 +6,12 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Timers;
-using ICD.Connect.Telemetry;
+using ICD.Connect.Telemetry.Nodes.External;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 {
 	[UsedImplicitly]
-	public sealed class ControlSystemExternalTelemetryProvider : IControlSystemExternalTelemetryProvider
+	public sealed class ControlSystemExternalTelemetryProvider : AbstractExternalTelemetryProvider<IControlSystemDevice>, IControlSystemExternalTelemetryProvider
 	{
 		private const string DHCP_ON_TEXT = "ON";
 
@@ -19,7 +19,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		private const string PROGRAMMER_NAME = "ICD Systems";
 		private const string SYSTEM_NAME = "Metlife.RoomOS";
 
-		private ITelemetryProvider m_Parent;
 		private readonly IcdTimer m_UptimeUpdateTimer;
 		private const long UPTIME_UPDATE_TIMER_INTERVAL = 10 * 60 * 1000;
 
@@ -38,13 +37,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		public bool DhcpStatus { get { return !string.IsNullOrEmpty(IcdEnvironment.DhcpStatus) && IcdEnvironment.DhcpStatus.Equals(DHCP_ON_TEXT, StringComparison.OrdinalIgnoreCase); } }
 
-		public string ProcessorModel { get { return ProcessorUtils.ModelName; } }
 		public string ProcessorFirmwareVersion { get { return ProcessorUtils.ModelVersion.ToString(); } }
 		public string ProcessorFirmwareDate { get { return ProcessorUtils.ModelVersionDate.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ"); } }
 		public string ProcessorMacAddress { get { return IcdEnvironment.MacAddresses.First(); } }
 		public string ProcessorIpAddress { get { return GetPrimaryIp(); } }
 		public string ProcessorHostname { get { return GetPrimaryHostname(); } }
-		public string ProcessorSerialNumber { get { return ProcessorUtils.ProcessorSerialNumber; } }
 
 		public string ProcessorUptime
 		{
@@ -96,11 +93,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			OnProcessorUptimeChanged.Raise(this, new StringEventArgs(ProcessorUptime));
 			OnProgramUptimeChanged.Raise(this, new StringEventArgs(ProgramUptime));
 			m_UptimeUpdateTimer.Restart(UPTIME_UPDATE_TIMER_INTERVAL);
-		}
-
-		public void SetParent(ITelemetryProvider provider)
-		{
-			m_Parent = provider;
 		}
 
 		private IEnumerable<string> GetHostnames()

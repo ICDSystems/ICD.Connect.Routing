@@ -72,6 +72,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 				Controls.Add(touchScreen);
 #endif
 			m_LoadedControls = new List<IDeviceControl>();
+
+			Model = ProcessorUtils.ModelName;
+			SerialNumber = ProcessorUtils.ProcessorSerialNumber;
 		}
 
 #if SIMPLSHARP

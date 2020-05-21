@@ -1,7 +1,6 @@
 ﻿using System;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Devices;
-using ICD.Connect.Telemetry;
 using ICD.Connect.Telemetry.Attributes;
 using ICD.Connect.Telemetry.Nodes.External;
 
@@ -14,9 +13,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_DHCP_STATUS, null, DeviceTelemetryNames.DEVICE_DHCP_STATUS_CHANGED)]
 		bool DhcpStatus { get; }
-
-		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_MODEL, null, null)]
-		string ProcessorModel { get; }
 
 		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_FIRMWARE_VERSION, null, null)]
 		string ProcessorFirmwareVersion { get; }
@@ -38,9 +34,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_HOSTNAME, null, DeviceTelemetryNames.DEVICE_HOSTNAME_CHANGED)]
 		string ProcessorHostname { get; }
-
-		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_SERIAL_NUMBER, null, null)]
-		string ProcessorSerialNumber { get; }
 
 		[EventTelemetry(DeviceTelemetryNames.DEVICE_UPTIME_CHANGED)]
 		event EventHandler<StringEventArgs> OnProcessorUptimeChanged;
