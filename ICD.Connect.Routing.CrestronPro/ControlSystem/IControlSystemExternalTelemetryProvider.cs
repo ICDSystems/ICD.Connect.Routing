@@ -2,7 +2,7 @@
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Devices;
 using ICD.Connect.Telemetry.Attributes;
-using ICD.Connect.Telemetry.Nodes.External;
+using ICD.Connect.Telemetry.Providers.External;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 {

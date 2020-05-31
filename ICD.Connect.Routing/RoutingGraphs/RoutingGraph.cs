@@ -5,7 +5,6 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices;
 using ICD.Connect.Devices.Extensions;
@@ -20,7 +19,6 @@ using ICD.Connect.Routing.Groups.Endpoints.Sources;
 using ICD.Connect.Routing.RoutingCaches;
 using ICD.Connect.Routing.StaticRoutes;
 using ICD.Connect.Settings;
-using ICD.Connect.Settings.Cores;
 using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Routing.RoutingGraphs

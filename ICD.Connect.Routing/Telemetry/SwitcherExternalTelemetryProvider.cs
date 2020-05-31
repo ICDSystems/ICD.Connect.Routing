@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using ICD.Common.Utils.Collections;
 using ICD.Connect.Routing.Controls;
-using ICD.Connect.Telemetry;
+using ICD.Connect.Telemetry.Providers;
 
 namespace ICD.Connect.Routing.Telemetry
 {
@@ -20,7 +20,7 @@ namespace ICD.Connect.Routing.Telemetry
 
 		#endregion
 
-		#region Parent Callbacks
+		#region Provider Callbacks
 
 		public void SetParent(ITelemetryProvider provider)
 		{

@@ -1,6 +1,6 @@
 using System;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Telemetry;
+using ICD.Connect.Telemetry.Providers;
 
 namespace ICD.Connect.Routing.Controls
 {

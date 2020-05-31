@@ -6,7 +6,7 @@ using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Timers;
-using ICD.Connect.Telemetry.Nodes.External;
+using ICD.Connect.Telemetry.Providers.External;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 {
