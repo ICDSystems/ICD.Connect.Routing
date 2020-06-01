@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
@@ -94,7 +95,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 
 				m_ProximityDetected = value;
 
-				Logger.Set("Proximity Detected", eSeverity.Informational, m_ProximityDetected);
+				Logger.LogSetTo(eSeverity.Informational, "ProximityDetected", m_ProximityDetected);
+				Activities.LogActivity(m_ProximityDetected
+					                   ? new Activity(Activity.ePriority.Low, "Proximity Detected", "Proximity Detected",
+					                                  eSeverity.Informational)
+					                   : new Activity(Activity.ePriority.Low, "Proximity Detected", "Proximity Not Detected",
+					                                  eSeverity.Informational));
 
 				OnProximityDetectedStateChange.Raise(this, new BoolEventArgs(m_ProximityDetected));
 			}

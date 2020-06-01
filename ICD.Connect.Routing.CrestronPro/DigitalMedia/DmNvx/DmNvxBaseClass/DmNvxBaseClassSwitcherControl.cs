@@ -21,6 +21,7 @@ using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
+using ICD.Common.Logging.LoggingContexts;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 {
@@ -177,7 +178,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 				m_ServerUrl = value;
 
-				Logger.Set("Server URL", eSeverity.Informational, m_ServerUrl);
+				Logger.LogSetTo(eSeverity.Informational, "ServerUrl", m_ServerUrl);
+				Activities.LogActivity(string.IsNullOrEmpty(m_ServerUrl)
+					                   ? new Activity(Activity.ePriority.Medium, "Server URL", "Streaming from " + m_ServerUrl,
+					                                  eSeverity.Informational)
+					                   : new Activity(Activity.ePriority.High, "Server URL", "No Server URL", eSeverity.Error));
 
 				OnServerUrlChange.Raise(this, new StringEventArgs(m_ServerUrl));
 			}
@@ -236,7 +241,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 				m_LastKnownMulticastAddress = value;
 
-				Logger.Set("Last Known Multicast Address", eSeverity.Informational, m_LastKnownMulticastAddress);
+				Logger.LogSetTo(eSeverity.Informational, "Last Known Multicast Address", m_LastKnownMulticastAddress);
 
 				OnLastKnownMulticastAddressChange.Raise(this, new StringEventArgs(m_LastKnownMulticastAddress));
 			}
@@ -255,7 +260,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 				m_LastKnownSecondaryAudioMulticastAddress = value;
 
-				Logger.Set("Last Known Secondary Audio Multicast Address", eSeverity.Informational, m_LastKnownSecondaryAudioMulticastAddress);
+				Logger.LogSetTo(eSeverity.Informational, "Last Known Secondary Audio Multicast Address", m_LastKnownSecondaryAudioMulticastAddress);
 
 				OnLastKnownSecondaryAudioMulticastAddressChange.Raise(this, new StringEventArgs(m_LastKnownSecondaryAudioMulticastAddress));
 			}
