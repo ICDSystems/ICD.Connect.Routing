@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Settings;
 #if SIMPLSHARP
@@ -18,15 +19,6 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 #endif
 	{
 #if SIMPLSHARP
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public DmTx4K100C1GAdapter()
-		{
-			Controls.Add(new DmTx4K100C1GAdapterRouteMidpointControl(this, 0));
-		}
-
 		/// <summary>
 		/// Instantiates the device with the given settings.
 		/// </summary>
@@ -112,6 +104,21 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 			settings.DmInputAddress = output == null ? null : (int?)output.Number;
 #else
 			settings.DmInputAddress = null;
+#endif
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(DmTx4K100C1GAdapterSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+#if SIMPLSHARP
+			addControl(new DmTx4K100C1GAdapterRouteMidpointControl(this, 0));
 #endif
 		}
 	}

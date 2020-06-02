@@ -3,6 +3,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.Ports.ComPort;
@@ -68,14 +69,6 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 		public abstract eDtpInputOuput SwitcherInputOutput { get; }
 
 		#endregion
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		protected AbstractDtpHdmiDevice()
-		{
-			Controls.Add(new DtpHdmiMidpointControl<AbstractDtpHdmiDevice<TSettings>>(this, 0));
-		}
 
 		/// <summary>
 		/// Release resources.
@@ -154,6 +147,10 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 
 		#region Settings
 
+		/// <summary>
+		/// Override to apply properties to the settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
 		protected override void CopySettingsFinal(TSettings settings)
 		{
 			base.CopySettingsFinal(settings);
@@ -161,6 +158,11 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 			settings.DtpSwitch = Parent == null ? (int?)null : Parent.Id;
 		}
 
+		/// <summary>
+		/// Override to apply settings to the instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
@@ -168,11 +170,27 @@ namespace ICD.Connect.Routing.Extron.Devices.Endpoints
 			Parent = settings.DtpSwitch == null ? null : factory.GetOriginatorById<IDtpCrosspointDevice>(settings.DtpSwitch.Value);
 		}
 
+		/// <summary>
+		/// Override to clear the instance settings.
+		/// </summary>
 		protected override void ClearSettingsFinal()
 		{
 			base.ClearSettingsFinal();
 
 			Parent = null;
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new DtpHdmiMidpointControl<AbstractDtpHdmiDevice<TSettings>>(this, 0));
 		}
 
 		#endregion

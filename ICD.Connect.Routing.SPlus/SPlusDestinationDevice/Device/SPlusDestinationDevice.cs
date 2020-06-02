@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Controls;
-using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Devices.Simpl;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs;
@@ -20,15 +19,22 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 		
 		#endregion
 
-		#region Fields
-
-		#endregion
-
 		#region Properties
 
-		internal SPlusDestinationRouteControl RouteControl { get; private set; }
-		internal SPlusDestinationPowerControl PowerControl { get; private set; }
-		internal SPlusDestinationVolumeControl VolumeControl { get; private set; }
+		private SPlusDestinationRouteControl RouteControl
+		{
+			get { return Controls.GetControl<SPlusDestinationRouteControl>(); }
+		}
+
+		private SPlusDestinationPowerControl PowerControl
+		{
+			get { return Controls.GetControl<SPlusDestinationPowerControl>(); }
+		}
+
+		private SPlusDestinationVolumeControl VolumeControl
+		{
+			get { return Controls.GetControl<SPlusDestinationVolumeControl>(); }
+		}
 
 		public int? InputCount
 		{
@@ -184,65 +190,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 		#endregion
 
-		#region Methods
-
-		/// <summary>
-		/// Release resources.
-		/// </summary>
-		protected override void DisposeFinal(bool disposing)
-		{
-			base.DisposeFinal(disposing);
-
-			RouteControl = null;
-			PowerControl = null;
-			VolumeControl = null;
-		}
-
-		#endregion
-
 		#region Settings
-
-		/// <summary>
-		/// Override to apply settings to the instance.
-		/// </summary>
-		/// <param name="settings"></param>
-		/// <param name="factory"></param>
-		protected override void ApplySettingsFinal(SPlusDestinationDeviceSettings settings, IDeviceFactory factory)
-		{
-			base.ApplySettingsFinal(settings, factory);
-
-			//Note: Order is important - power control must be first
-			if (settings.PowerControl)
-			{
-				PowerControl = new SPlusDestinationPowerControl(this, POWER_CONTROL_ID);
-				Controls.Add(PowerControl);
-				Subscribe(PowerControl);
-			}
-
-			RouteControl = new SPlusDestinationRouteControl(this, ROUTE_CONTROL_ID, settings.InputCount);
-			Controls.Add(RouteControl);
-
-			if (settings.VolumeControl)
-			{
-				VolumeControl = new SPlusDestinationVolumeControl(this, VOLUME_CONTROL_ID);
-				Controls.Add(VolumeControl);
-			}
-		}
-
-		private void Subscribe(SPlusDestinationPowerControl powerControl)
-		{
-			powerControl.OnPowerStateChanged += PowerControlOnPowerStateChanged;
-		}
-
-		private void Unsubscribe(SPlusDestinationPowerControl powerControl)
-		{
-			powerControl.OnPowerStateChanged -= PowerControlOnPowerStateChanged;
-		}
-
-		private void PowerControlOnPowerStateChanged(object sender, PowerDeviceControlPowerStateApiEventArgs powerDeviceControlPowerStateApiEventArgs)
-		{
-			
-		}
 
 		/// <summary>
 		/// Override to apply properties to the settings instance.
@@ -254,7 +202,6 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 			if (RouteControl != null)
 				settings.InputCount = RouteControl.InputCount;
-			
 			if (PowerControl != null)
 				settings.PowerControl = true;
 			if (VolumeControl != null)
@@ -262,33 +209,23 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 		}
 
 		/// <summary>
-		/// Override to clear the instance settings.
+		/// Override to add controls to the device.
 		/// </summary>
-		protected override void ClearSettingsFinal()
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(SPlusDestinationDeviceSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
 		{
-			base.ClearSettingsFinal();
+			base.AddControls(settings, factory, addControl);
 
-			if (RouteControl != null)
-			{
-				Controls.Remove(ROUTE_CONTROL_ID);
-				RouteControl.Dispose();
-				RouteControl = null;
-			}
+			//Note: Order is important - power control must be first
+			if (settings.PowerControl)
+				addControl(new SPlusDestinationPowerControl(this, POWER_CONTROL_ID));
 
-			if (PowerControl != null)
-			{
-				Unsubscribe(PowerControl);
-				Controls.Remove(POWER_CONTROL_ID);
-				PowerControl.Dispose();
-				PowerControl = null;
-			}
+			addControl(new SPlusDestinationRouteControl(this, ROUTE_CONTROL_ID, settings.InputCount));
 
-			if (VolumeControl != null)
-			{
-				Controls.Remove(VOLUME_CONTROL_ID);
-				VolumeControl.Dispose();
-				VolumeControl = null;
-			}
+			if (settings.VolumeControl)
+				addControl(new SPlusDestinationVolumeControl(this, VOLUME_CONTROL_ID));
 		}
 
 		#endregion

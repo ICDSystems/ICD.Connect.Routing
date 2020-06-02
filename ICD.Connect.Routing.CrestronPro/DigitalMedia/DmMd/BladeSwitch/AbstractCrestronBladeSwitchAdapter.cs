@@ -1,4 +1,8 @@
-﻿namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
+﻿using System;
+using ICD.Connect.Devices.Controls;
+using ICD.Connect.Settings;
+
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 {
 #if SIMPLSHARP
 	public abstract class AbstractCrestronBladeSwitchAdapter<TSwitch, TSettings> :
@@ -15,12 +19,17 @@
 #endif
 
 		/// <summary>
-		/// Constructor.
+		/// Override to add controls to the device.
 		/// </summary>
-		protected AbstractCrestronBladeSwitchAdapter()
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
 		{
+			base.AddControls(settings, factory, addControl);
+
 #if SIMPLSHARP
-			Controls.Add(new BladeSwitchSwitcherControl(this));
+			addControl(new BladeSwitchSwitcherControl(this));
 #endif
 		}
 	}

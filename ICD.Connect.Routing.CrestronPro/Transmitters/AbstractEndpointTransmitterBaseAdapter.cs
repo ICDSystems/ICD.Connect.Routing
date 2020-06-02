@@ -1,5 +1,6 @@
 ﻿using System;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Routing.Connections;
@@ -87,14 +88,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 #endif
 
 		#endregion
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		protected AbstractEndpointTransmitterBaseAdapter()
-		{
-			Controls.Add(new RouteSourceControl(this, 0));
-		}
 
 		/// <summary>
 		/// Release resources.
@@ -315,6 +308,19 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 			SetTransmitter(transmitter, settings.DmSwitch);
 #endif
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new RouteSourceControl(this, 0));
 		}
 
 #if SIMPLSHARP

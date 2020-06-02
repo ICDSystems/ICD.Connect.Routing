@@ -1,6 +1,8 @@
-﻿#if SIMPLSHARP
+﻿using System;
+using ICD.Connect.Devices.Controls;
+using ICD.Connect.Settings;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
-
 #else
 using System;
 #endif
@@ -17,27 +19,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 #endif
 		where TSettings : IDmMdNXNAdapterSettings, new()
 	{
-		#region Properties
-
 #if SIMPLSHARP
 		DmMDMnxn IDmMdMNXNAdapter.Switcher { get { return Switcher; } }
-#endif
-
-		#endregion
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		protected AbstractDmMdMNXNAdapter()
-		{
-#if SIMPLSHARP
-			Controls.Add(new DmMdMNXNSwitcherControl(this));
-#endif
-		}
-
-		#region Methods
-
-#if SIMPLSHARP
 
 		/// <summary>
 		/// Override to control how the assigned switcher behaves.
@@ -54,8 +37,18 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 			switcher.AudioEnter.BoolValue = true;
 		}
 
-#endif
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
 
-		#endregion
+			addControl(new DmMdMNXNSwitcherControl(this));
+		}
+#endif
 	}
 }

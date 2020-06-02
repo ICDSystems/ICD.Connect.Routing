@@ -6,6 +6,7 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Timers;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.Ports;
@@ -99,8 +100,6 @@ namespace ICD.Connect.Routing.Atlona
 
 			m_SerialBuffer = new AtUhdHdvs300DeviceSerialBuffer();
 			Subscribe(m_SerialBuffer);
-
-			Controls.Add(new AtUhdHdvs300SwitcherControl(this, 0));
 
 			m_KeepAliveTimer = SafeTimer.Stopped(KeepAliveCallback);
 			m_KeepAliveTimer.Reset(KEEPALIVE_INTERVAL, KEEPALIVE_INTERVAL);
@@ -360,6 +359,19 @@ namespace ICD.Connect.Routing.Atlona
 			}
 
 			SetPort(port);
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(AtUhdHdvs300DeviceSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new AtUhdHdvs300SwitcherControl(this, 0));
 		}
 
 		#endregion

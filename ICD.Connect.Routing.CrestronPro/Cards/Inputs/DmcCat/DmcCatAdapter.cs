@@ -1,3 +1,6 @@
+using System;
+using ICD.Connect.Devices.Controls;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -10,11 +13,16 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcCat
 	public sealed class DmcCatAdapter : AbstractInputCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcCat, DmcCatAdapterSettings>
 	{
 		/// <summary>
-		/// Constructor.
+		/// Override to add controls to the device.
 		/// </summary>
-		public DmcCatAdapter()
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(DmcCatAdapterSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
 		{
-			Controls.Add(new DmcCatAdapterRoutingControl(this, 0));
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new DmcCatAdapterRoutingControl(this, 0));
 		}
 
 		protected override bool GetIsOnlineStatus()

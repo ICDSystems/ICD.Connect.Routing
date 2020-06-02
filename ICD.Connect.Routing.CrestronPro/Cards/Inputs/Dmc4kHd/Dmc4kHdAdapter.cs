@@ -1,4 +1,7 @@
-﻿using ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdBase;
+﻿using System;
+using ICD.Connect.Devices.Controls;
+using ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdBase;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -12,11 +15,16 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHd
 		AbstractDmc4kHdBaseAdapter<Crestron.SimplSharpPro.DM.Cards.Dmc4kHd, Dmc4kHdAdapterSettings>
 	{
 		/// <summary>
-		/// Constructor.
+		/// Override to add controls to the device.
 		/// </summary>
-		public Dmc4kHdAdapter()
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(Dmc4kHdAdapterSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
 		{
-			Controls.Add(new Dmc4kHdAdapterRoutingControl(this, 0));
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new Dmc4kHdAdapterRoutingControl(this, 0));
 		}
 
 		protected override bool GetIsOnlineStatus()

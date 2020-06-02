@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Connect.API.Commands;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.Mock;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Mock.Source
 {
@@ -10,14 +13,6 @@ namespace ICD.Connect.Routing.Mock.Source
 	/// </summary>
 	public sealed class MockSourceDevice : AbstractMockDevice<MockSourceDeviceSettings>
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public MockSourceDevice()
-		{
-			Controls.Add(new MockRouteSourceControl(this, 0));
-		}
-
 		#region Methods
 
 		/// <summary>
@@ -48,6 +43,19 @@ namespace ICD.Connect.Routing.Mock.Source
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(MockSourceDeviceSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new MockRouteSourceControl(this, 0));
+		}
 
 		#region Console
 

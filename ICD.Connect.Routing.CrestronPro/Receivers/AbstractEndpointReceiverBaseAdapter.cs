@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Routing.Controls;
@@ -80,14 +81,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 #endif
 
 		#endregion
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		protected AbstractEndpointReceiverBaseAdapter()
-		{
-			Controls.Add(new RouteMidpointControl(this, 0));
-		}
 
 		#region Methods
 
@@ -270,6 +263,19 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 
 			SetScaler(scaler, settings.DmSwitch);
 #endif
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new RouteMidpointControl(this, 0));
 		}
 
 #if SIMPLSHARP

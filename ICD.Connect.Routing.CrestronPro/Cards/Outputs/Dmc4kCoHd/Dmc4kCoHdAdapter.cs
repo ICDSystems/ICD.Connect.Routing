@@ -1,4 +1,7 @@
+using System;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHdBase;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
@@ -14,11 +17,16 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHd
 	public sealed class Dmc4kCoHdAdapter : AbstractDmc4kCoHdBaseAdapter<Dmc4kCoHdSingle, Dmc4kCoHdAdapterSettings>
 	{
 		/// <summary>
-		/// Constructor.
+		/// Override to add controls to the device.
 		/// </summary>
-		public Dmc4kCoHdAdapter()
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(Dmc4kCoHdAdapterSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
 		{
-			Controls.Add(new Dmc4kCoHdAdapterRoutingControl(this, 0));
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new Dmc4kCoHdAdapterRoutingControl(this, 0));
 		}
 
 		/// <summary>

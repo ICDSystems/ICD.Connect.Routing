@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.EventArguments;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Ports.IoPort;
@@ -91,8 +92,6 @@ namespace ICD.Connect.Routing.Devices.IoToggleSwitcher
 			m_Cache.OnActiveTransmissionStateChanged += CacheOnActiveTransmissionStateChanged;
 			m_Cache.OnRouteChange += CacheOnRouteChange;
 			m_Cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
-			
-			Controls.Add(new RouteSwitcherControl(this, 0));
 		}
 
 		#region Methods
@@ -418,6 +417,19 @@ namespace ICD.Connect.Routing.Devices.IoToggleSwitcher
 			base.CopySettingsFinal(settings);
 
 			settings.Port = Port == null ? (int?)null : Port.Id;
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(IoToggleSwitcherDeviceSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new RouteSwitcherControl(this, 0));
 		}
 
 		#endregion

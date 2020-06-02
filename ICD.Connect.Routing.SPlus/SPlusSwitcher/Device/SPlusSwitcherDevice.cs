@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.Simpl;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.Controls;
@@ -15,7 +16,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 	{
 		private const int SWITCHER_CONTROL_ID = 0;
 
-		private SPlusSwitcherControl m_SwitcherControl;
+		private SPlusSwitcherControl SwitcherControl { get { return Controls.GetControl<SPlusSwitcherControl>(); } }
 
 		#region Shim
 
@@ -25,7 +26,6 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 		/// Event raised when the device want the shim to set a route
 		/// </summary>
 		public event EventHandler<SetRouteApiEventArgs> OnSetRoute;
-
 
 		/// <summary>
 		/// Event raised when the device wants the shim to clear a route
@@ -43,8 +43,8 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 		/// <param name="state"></param>
 		public void SetSignalDetectedStateFeedback(int input, bool state)
 		{
-			if (m_SwitcherControl != null)
-				m_SwitcherControl.SetSignalDetectedState(input, state);
+			if (SwitcherControl != null)
+				SwitcherControl.SetSignalDetectedState(input, state);
 		}
 
 		/// <summary>
@@ -55,8 +55,8 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 		/// <param name="type"></param>
 		public void SetInputForOutputFeedback(int output, int? input, eConnectionType type)
 		{
-			if (m_SwitcherControl != null)
-				m_SwitcherControl.SetInputForOutput(output, input, type);
+			if (SwitcherControl != null)
+				SwitcherControl.SetInputForOutput(output, input, type);
 		}
 
 		/// <summary>
@@ -64,8 +64,8 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 		/// </summary>
 		public void ClearCache()
 		{
-			if (m_SwitcherControl != null)
-				m_SwitcherControl.ClearCache();
+			if (SwitcherControl != null)
+				SwitcherControl.ClearCache();
 		}
 
 		/// <summary>
@@ -74,29 +74,28 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 		/// <param name="state"></param>
 		public void SetState(SPlusSwitcherState state)
 		{
-			if (m_SwitcherControl == null)
+			if (SwitcherControl == null)
 				return;
 
-			foreach (ConnectorInfo input in m_SwitcherControl.GetInputs())
+			foreach (ConnectorInfo input in SwitcherControl.GetInputs())
 			{
-				m_SwitcherControl.SetSignalDetectedState(input.Address, state.DetectedInputs.Contains(input.Address));
+				SwitcherControl.SetSignalDetectedState(input.Address, state.DetectedInputs.Contains(input.Address));
 			}
 
-			foreach (ConnectorInfo output in m_SwitcherControl.GetOutputs())
+			foreach (ConnectorInfo output in SwitcherControl.GetOutputs())
 			{
 				foreach (
-					eConnectionType layer in EnumUtils.GetFlagsExceptNone(m_SwitcherControl.SwitcherLayers & output.ConnectionType))
+					eConnectionType layer in EnumUtils.GetFlagsExceptNone(SwitcherControl.SwitcherLayers & output.ConnectionType))
 				{
 					int? input = GetInputNullableFromState(state, output.Address, layer);
-					m_SwitcherControl.SetInputForOutput(output.Address, input, layer);
+					SwitcherControl.SetInputForOutput(output.Address, input, layer);
 				}
 			}
 		}
 
-	#endregion
-
 		#endregion
 
+		#endregion
 
 		#region Switcher Control
 
@@ -152,21 +151,6 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 		#region Settings
 
 		/// <summary>
-		/// Override to apply settings to the instance.
-		/// </summary>
-		/// <param name="settings"></param>
-		/// <param name="factory"></param>
-		protected override void ApplySettingsFinal(SPlusSwitcherDeviceSettings settings, IDeviceFactory factory)
-		{
-			base.ApplySettingsFinal(settings, factory);
-
-			m_SwitcherControl = new SPlusSwitcherControl(this, SWITCHER_CONTROL_ID, settings.InputCount, settings.OutputCount,
-			                                             settings.SwitcherLayers, settings.SupportsSourceDetection);
-
-			Controls.Add(m_SwitcherControl);
-		}
-
-		/// <summary>
 		/// Override to apply properties to the settings instance.
 		/// </summary>
 		/// <param name="settings"></param>
@@ -174,34 +158,33 @@ namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 		{
 			base.CopySettingsFinal(settings);
 
-			if (m_SwitcherControl == null)
-			{
+			if (SwitcherControl == null)
 				throw new InvalidOperationException("Cannot copy settings without switcher control");
-			}
 
-			settings.InputCount = m_SwitcherControl.InputCount;
-			settings.OutputCount = m_SwitcherControl.OutputCount;
-			settings.SwitcherLayers = m_SwitcherControl.SwitcherLayers;
-			settings.SupportsSourceDetection = m_SwitcherControl.SupportsSourceDetection;
+			settings.InputCount = SwitcherControl.InputCount;
+			settings.OutputCount = SwitcherControl.OutputCount;
+			settings.SwitcherLayers = SwitcherControl.SwitcherLayers;
+			settings.SupportsSourceDetection = SwitcherControl.SupportsSourceDetection;
 		}
 
 		/// <summary>
-		/// Override to clear the instance settings.
+		/// Override to add controls to the device.
 		/// </summary>
-		protected override void ClearSettingsFinal()
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(SPlusSwitcherDeviceSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
 		{
-			base.ClearSettingsFinal();
+			base.AddControls(settings, factory, addControl);
 
-			if (m_SwitcherControl == null)
-				return;
-
-			Controls.Remove(SWITCHER_CONTROL_ID);
-			m_SwitcherControl.Dispose();
-			m_SwitcherControl = null;
-
+			addControl(new SPlusSwitcherControl(this,
+			                                    SWITCHER_CONTROL_ID,
+			                                    settings.InputCount,
+			                                    settings.OutputCount,
+			                                    settings.SwitcherLayers,
+			                                    settings.SupportsSourceDetection));
 		}
 
 		#endregion
-
 	}
 }

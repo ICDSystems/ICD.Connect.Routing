@@ -1,4 +1,7 @@
-﻿using ICD.Connect.API.Nodes;
+﻿using System;
+using ICD.Connect.API.Nodes;
+using ICD.Connect.Devices.Controls;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 #endif
@@ -17,19 +20,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 
 #if SIMPLSHARP
 		HdMdNxM IHdMdNXMAdapter.Switcher { get { return Switcher; } }
-#endif
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		protected AbstractHdMdNXMAdapter()
-		{
-#if SIMPLSHARP
-			Controls.Add(new HdMdNXMSwitcherControl(this));
-#endif
-		}
-
-#if SIMPLSHARP
 		/// <summary>
 		/// Sets the wrapped switcher.
 		/// </summary>
@@ -74,6 +65,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNXM
 		{
 			TSwitcher switcher = InstantiateSwitcher(settings);
 			SetSwitcher(switcher, settings.Address);
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new HdMdNXMSwitcherControl(this));
 		}
 #endif
 

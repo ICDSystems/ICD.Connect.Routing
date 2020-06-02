@@ -40,6 +40,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 	/// </summary>
 	public sealed class ControlSystemDevice : AbstractDevice<ControlSystemDeviceSettings>, IPortParent, IDmParent, IControlSystemDevice
 	{
+		private readonly List<IDeviceControl> m_LoadedControls;
+		private string m_ConfigPath;
+
+		#region Properties
+
 #if SIMPLSHARP
 		/// <summary>
 		/// Gets the wrapped Crestron control system.
@@ -47,14 +52,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public CrestronControlSystem ControlSystem { get; private set; }
 #endif
 
-		private readonly List<IDeviceControl> m_LoadedControls;
-		private string m_ConfigPath;
-
-
 		public eOutputMixerMode Output1MixerMode { get; private set; }
 		public eOutputMixerMode Output2MixerMode { get; private set; }
 		public eOutputMixerMode Output3MixerMode { get; private set; }
 		public eOutputMixerMode Output4MixerMode { get; private set; }
+
+		#endregion
 
 		/// <summary>
 		/// Constructor.
@@ -63,13 +66,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		{
 #if SIMPLSHARP
 			SetControlSystem(ProgramInfo.ControlSystem);
-
-			if (ControlSystem.SupportsSwitcherInputs || ControlSystem.SupportsSwitcherOutputs)
-				Controls.Add(new ControlSystemSwitcherControl(this, 0));
-
-			IThreeSeriesTouchScreenControl touchScreen = InstantiateTouchScreen(this, 1);
-			if (touchScreen != null)
-				Controls.Add(touchScreen);
 #endif
 			m_LoadedControls = new List<IDeviceControl>();
 
@@ -356,7 +352,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 #endif
 		}
 
-
 		private void ParseXml(string xml)
 		{
 			DisposeLoadedControls();
@@ -467,9 +462,27 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			Output2MixerMode = settings.Output2MixerMode;
 			Output3MixerMode = settings.Output3MixerMode;
 			Output4MixerMode = settings.Output4MixerMode;
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(ControlSystemDeviceSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
 
 #if SIMPLSHARP
-			var control = Controls.GetControl<ControlSystemSwitcherControl>();
+			if (ControlSystem.SupportsSwitcherInputs || ControlSystem.SupportsSwitcherOutputs)
+				addControl(new ControlSystemSwitcherControl(this, 0));
+
+			IThreeSeriesTouchScreenControl touchScreen = InstantiateTouchScreen(this, 1);
+			if (touchScreen != null)
+				addControl(touchScreen);
+
+			ControlSystemSwitcherControl control = Controls.GetControl<ControlSystemSwitcherControl>();
 			if (control != null)
 				control.SetupOutputMixers();
 #endif
@@ -513,7 +526,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			addRow("Output2MixerMode", Output2MixerMode);
 			addRow("Output3MixerMode", Output3MixerMode);
 			addRow("Output4MixerMode", Output4MixerMode);
-
 		}
 
 		#endregion

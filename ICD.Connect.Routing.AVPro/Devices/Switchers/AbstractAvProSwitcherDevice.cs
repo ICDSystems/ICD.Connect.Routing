@@ -5,6 +5,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.Extensions;
 using ICD.Connect.Protocol.Network.Ports;
@@ -80,8 +81,6 @@ namespace ICD.Connect.Routing.AVPro.Devices.Switchers
 
 			m_SerialBuffer = new MultiDelimiterSerialBuffer('\r', '\n');
 			m_ConnectionStateManager = new ConnectionStateManager(this) { ConfigurePort = ConfigurePort };
-
-			Controls.Add(new AvProSwitcherControl(this, 0));
 
 			Subscribe(m_SerialBuffer);
 			Subscribe(m_ConnectionStateManager);
@@ -292,6 +291,19 @@ namespace ICD.Connect.Routing.AVPro.Devices.Switchers
 			}
 
 			m_ConnectionStateManager.SetPort(port);
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new AvProSwitcherControl(this, 0));
 		}
 
 		#endregion

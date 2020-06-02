@@ -1,3 +1,6 @@
+using System;
+using ICD.Connect.Devices.Controls;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
@@ -13,11 +16,16 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.DmcCatoHd
 	public sealed class DmcCatoHdAdapter : AbstractOutputCardAdapter<DmcCatoHdSingle, DmcCatoHdAdapterSettings>
 	{
 		/// <summary>
-		/// Constructor.
+		/// Override to add controls to the device.
 		/// </summary>
-		public DmcCatoHdAdapter()
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(DmcCatoHdAdapterSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
 		{
-			Controls.Add(new DmcCatoHdAdapterRoutingControl(this, 0));
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new DmcCatoHdAdapterRoutingControl(this, 0));
 		}
 
 		/// <summary>

@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Connect.API.Commands;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.Mock;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Mock.Switcher
 {
@@ -11,23 +14,15 @@ namespace ICD.Connect.Routing.Mock.Switcher
 	/// </summary>
 	public sealed class MockSwitcherDevice : AbstractMockDevice<MockSwitcherDeviceSettings>
 	{
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public MockSwitcherDevice()
-		{
-			Controls.Add(new MockRouteSwitcherControl(this, 0));
-		}
-
 		#region Methods
 
 		/// <summary>
-		/// Adds a source control with the given id.
+		/// Adds a switcher control with the given id.
 		/// </summary>
 		/// <param name="id"></param>
 		/// <returns></returns>
 		[PublicAPI]
-		public bool AddSourceControl(int id)
+		public bool AddSwitcherControl(int id)
 		{
 			if (Controls.Contains(id))
 				return false;
@@ -50,6 +45,19 @@ namespace ICD.Connect.Routing.Mock.Switcher
 
 		#endregion
 
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(MockSwitcherDeviceSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new MockRouteSwitcherControl(this, 0));
+		}
+
 		#region Console
 
 		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
@@ -58,7 +66,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 				yield return command;
 
 			yield return
-				new GenericConsoleCommand<int>("AddSwitcherControl", "AddSwitcherControl <ID>", id => AddSourceControl(id));
+				new GenericConsoleCommand<int>("AddSwitcherControl", "AddSwitcherControl <ID>", id => AddSwitcherControl(id));
 			yield return
 				new GenericConsoleCommand<int>("RemoveSwitcherControl", "RemoveSourceControl <ID>", id => RemoveSourceControl(id));
 		}

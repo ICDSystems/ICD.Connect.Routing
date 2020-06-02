@@ -6,6 +6,7 @@ using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass;
@@ -90,8 +91,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 
 			m_SwitcherCache = new SwitcherCache();
 			Subscribe(m_SwitcherCache);
-
-			Controls.Add(new RouteSwitcherControl(this, 0));
 		}
 
 		/// <summary>
@@ -345,6 +344,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 			base.ApplySettingsFinal(settings, factory);
 
 			BuildEndpointCache();
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new RouteSwitcherControl(this, 0));
 		}
 
 		#endregion

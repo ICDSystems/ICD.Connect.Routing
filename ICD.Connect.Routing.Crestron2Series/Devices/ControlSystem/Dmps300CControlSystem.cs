@@ -1,4 +1,6 @@
-﻿using ICD.Connect.Settings;
+﻿using System;
+using ICD.Connect.Devices.Controls;
+using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 {
@@ -8,14 +10,6 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 		private const ushort SERIAL_COMSPEC_JOIN = 317;
         private const ushort START_DIGITAL_INPUT_JOIN = 695;
 	    private const ushort START_RELAY_OUT_JOIN = 695;
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public Dmps300CControlSystem()
-		{
-			Controls.Add(new Dmps300CControlSystemSwitcherControl(this));
-		}
 
 		/// <summary>
 		/// Gets the com spec join for the device.
@@ -70,6 +64,19 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.ControlSystem
 
 			Address = settings.Address;
 			Port = PORT;
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(Dmps300CControlSystemSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new Dmps300CControlSystemSwitcherControl(this));
 		}
 
 		#endregion

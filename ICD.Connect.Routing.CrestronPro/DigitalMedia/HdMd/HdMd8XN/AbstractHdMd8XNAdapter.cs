@@ -1,6 +1,8 @@
-﻿#if SIMPLSHARP
+﻿using System;
+using ICD.Connect.Devices.Controls;
+using ICD.Connect.Settings;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM;
-
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
@@ -16,16 +18,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 
 #if SIMPLSHARP
 		HdMd8xN IHdMd8XNAdapter.Switcher { get { return Switcher; } }
-#endif
 
 		/// <summary>
-		/// Constructor.
+		/// Override to add controls to the device.
 		/// </summary>
-		protected AbstractHdMd8XNAdapter()
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
 		{
-#if SIMPLSHARP
-			Controls.Add(new HdMd8XNSwitcherControl(this));
-#endif
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new HdMd8XNSwitcherControl(this));
 		}
+#endif
 	}
 }

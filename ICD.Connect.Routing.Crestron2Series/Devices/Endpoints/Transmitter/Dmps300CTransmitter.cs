@@ -1,3 +1,5 @@
+using System;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
@@ -10,14 +12,11 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 
 		private int m_DmInput;
 
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		public Dmps300CTransmitter()
-		{
-			Controls.Add(new Dmps300CTransmitterSourceControl(this));
-		}
+		#region Settings
 
+		/// <summary>
+		/// Override to clear the instance settings.
+		/// </summary>
 		protected override void ClearSettingsFinal()
 		{
 			base.ClearSettingsFinal();
@@ -25,6 +24,10 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 			m_DmInput = 0;
 		}
 
+		/// <summary>
+		/// Override to apply properties to the settings instance.
+		/// </summary>
+		/// <param name="settings"></param>
 		protected override void CopySettingsFinal(Dmps300CTransmitterSettings settings)
 		{
 			base.CopySettingsFinal(settings);
@@ -32,6 +35,11 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 			settings.DmInput = m_DmInput;
 		}
 
+		/// <summary>
+		/// Override to apply settings to the instance.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
 		protected override void ApplySettingsFinal(Dmps300CTransmitterSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
@@ -39,5 +47,20 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices.Endpoints.Transmitter
 			m_DmInput = settings.DmInput;
 			Port = (ushort)(START_PORT + PORT_INCREMENT * (m_DmInput - START_DM_INPUT));
 		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(Dmps300CTransmitterSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new Dmps300CTransmitterSourceControl(this));
+		}
+
+		#endregion
 	}
 }

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -16,11 +18,16 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.DmcHdo
 	public sealed class DmcHdoAdapter : AbstractOutputCardAdapter<DmcHdoSingle, DmcHdoAdapterSettings>, IPortParent
 	{
 		/// <summary>
-		/// Constructor.
+		/// Override to add controls to the device.
 		/// </summary>
-		public DmcHdoAdapter()
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(DmcHdoAdapterSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
 		{
-			Controls.Add(new DmcHdoAdapterRoutingControl(this, 0));
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new DmcHdoAdapterRoutingControl(this, 0));
 		}
 
 		/// <summary>

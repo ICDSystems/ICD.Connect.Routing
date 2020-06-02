@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Settings;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DM.Streaming;
@@ -25,17 +27,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// Gets the configured device mode (i.e. Transmit or Receive)
 		/// </summary>
 		public eDeviceMode DeviceMode { get { return m_DeviceMode; } }
-
-		/// <summary>
-		/// Constructor.
-		/// </summary>
-		protected AbstractDmNvxBaseClassAdapter()
-		{
-#if SIMPLSHARP
-			Controls.Add(new DmNvxBaseClassSwitcherControl(this, 0));
-			Controls.Add(new DmNvxBaseClassVolumeControl(this, 1));
-#endif
-		}
 
 		/// <summary>
 		/// Configures the current device mode.
@@ -85,6 +76,22 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			base.ApplySettingsFinal(settings, factory);
 
 			SetDeviceMode(settings.DeviceMode);
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+#if SIMPLSHARP
+			addControl(new DmNvxBaseClassSwitcherControl(this, 0));
+			addControl(new DmNvxBaseClassVolumeControl(this, 1));
+#endif
 		}
 
 		#endregion
