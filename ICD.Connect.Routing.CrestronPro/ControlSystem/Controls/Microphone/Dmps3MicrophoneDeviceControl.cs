@@ -1,4 +1,5 @@
-﻿using ICD.Connect.Audio.Controls.Microphone;
+﻿using System;
+using ICD.Connect.Audio.Controls.Microphone;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
@@ -24,10 +25,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
+		/// <param name="uuid"></param>
 		/// <param name="name"></param>
 		/// <param name="inputAddress"></param>
-		public Dmps3MicrophoneDeviceControl(ControlSystemDevice parent, int id, string name, uint inputAddress)
-			: base(parent, id)
+		public Dmps3MicrophoneDeviceControl(ControlSystemDevice parent, int id, Guid uuid, string name, uint inputAddress)
+			: base(parent, id, uuid)
 		{
 			m_Name = name;
 #if SIMPLSHARP

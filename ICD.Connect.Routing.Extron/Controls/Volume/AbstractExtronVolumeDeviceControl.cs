@@ -15,10 +15,12 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
+		/// <param name="uuid"></param>
 		/// <param name="name"></param>
 		/// <param name="volumeType"></param>
-		protected AbstractExtronVolumeDeviceControl(IDtpCrosspointDevice parent, int id, string name, eExtronVolumeType volumeType)
-			: base(parent, id)
+		protected AbstractExtronVolumeDeviceControl(IDtpCrosspointDevice parent, int id, Guid uuid, string name,
+		                                            eExtronVolumeType volumeType)
+			: base(parent, id, uuid)
 		{
 			m_Name = name;
 			m_VolumeType = volumeType;

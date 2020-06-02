@@ -1,5 +1,6 @@
 ﻿using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
+using ICD.Connect.Devices.Utils;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints;
 #if SIMPLSHARP
@@ -81,13 +82,23 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			int id = XmlUtils.GetAttributeAsInt(controlElement, "id");
 			eDmps3ControlType type = XmlUtils.GetAttributeAsEnum<eDmps3ControlType>(controlElement, "type", true);
 			string name = XmlUtils.GetAttribute(controlElement, "name");
+			Guid uuid;
+
+			try
+			{
+				uuid = XmlUtils.GetAttributeAsGuid(controlElement, "uuid");
+			}
+			catch (Exception)
+			{
+				uuid = DeviceControlUtils.GenerateUuid(parent, id);
+			}
 
 			switch (type)
 			{
 				case eDmps3ControlType.Volume:
 				{
 					IDmps3Crosspoint crosspoint = InstantiateCrosspointFromXml(controlElement, parent);
-					Dmps3CrosspointVolumeControl output = new Dmps3CrosspointVolumeControl(parent, id, name, crosspoint);
+					Dmps3CrosspointVolumeControl output = new Dmps3CrosspointVolumeControl(parent, id, uuid, name, crosspoint);
 					SetVolumeDefaultsFromXml(output, controlElement);
 					return output;
 				}
@@ -95,7 +106,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				case eDmps3ControlType.Microphone:
 				{
 					uint micInputId = XmlUtils.ReadChildElementContentAsUint(controlElement, "Address");
-					Dmps3MicrophoneDeviceControl output = new Dmps3MicrophoneDeviceControl(parent, id, name, micInputId);
+					Dmps3MicrophoneDeviceControl output = new Dmps3MicrophoneDeviceControl(parent, id, uuid, name, micInputId);
 					SetMicrophoneDefaultsFromXml(output, controlElement);
 					return output;
 				}

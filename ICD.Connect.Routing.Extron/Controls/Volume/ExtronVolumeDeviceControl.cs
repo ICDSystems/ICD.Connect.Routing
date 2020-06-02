@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Audio.Controls.Volume;
 using ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint;
@@ -17,10 +18,11 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
+		/// <param name="uuid"></param>
 		/// <param name="name"></param>
 		/// <param name="volumeObject"></param>
-		public ExtronVolumeDeviceControl(IDtpCrosspointDevice parent, int id, string name, eExtronVolumeObject volumeObject)
-			: base(parent, id, name, ExtronVolumeUtils.GetVolumeTypeForObject(volumeObject))
+		public ExtronVolumeDeviceControl(IDtpCrosspointDevice parent, int id, Guid uuid, string name, eExtronVolumeObject volumeObject)
+			: base(parent, id, uuid, name, ExtronVolumeUtils.GetVolumeTypeForObject(volumeObject))
 		{
 			m_VolumeObject = volumeObject;
 

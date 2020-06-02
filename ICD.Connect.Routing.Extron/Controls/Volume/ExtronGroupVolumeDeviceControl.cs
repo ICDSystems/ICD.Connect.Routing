@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Text.RegularExpressions;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Audio.Controls.Volume;
@@ -18,13 +19,13 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
+		/// <param name="uuid"></param>
 		/// <param name="name"></param>
 		/// <param name="volumeType"></param>
 		/// <param name="volumeGroupId"></param>
 		/// <param name="muteGroupId"></param>
-		public ExtronGroupVolumeDeviceControl(IDtpCrosspointDevice parent, int id, string name,
-		                                      eExtronVolumeType volumeType, int? volumeGroupId, int? muteGroupId)
-			: base(parent, id, name, volumeType)
+		public ExtronGroupVolumeDeviceControl(IDtpCrosspointDevice parent, int id, Guid uuid, string name, eExtronVolumeType volumeType, int? volumeGroupId, int? muteGroupId)
+			: base(parent, id, uuid, name, volumeType)
 		{
 			m_VolumeGroupId = volumeGroupId;
 			m_MuteGroupId = muteGroupId;

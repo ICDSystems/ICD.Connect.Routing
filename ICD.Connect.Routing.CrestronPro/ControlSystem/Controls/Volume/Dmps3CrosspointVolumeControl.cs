@@ -36,10 +36,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
+		/// <param name="uuid"></param>
 		/// <param name="name"></param>
 		/// <param name="crosspoint"></param>
-		public Dmps3CrosspointVolumeControl(ControlSystemDevice parent, int id, string name, IDmps3Crosspoint crosspoint)
-			: base(parent, id)
+		public Dmps3CrosspointVolumeControl(ControlSystemDevice parent, int id, Guid uuid, string name, IDmps3Crosspoint crosspoint)
+			: base(parent, id, uuid)
 		{
 			m_Name = name;
 			m_Crosspoint = crosspoint;
