@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [16.0.0] - 2020-06-19
 ### Added
  - Added DestinationGroupString to Destinations, to be used to create DestinationGroups at runtime
  - Added EnableWhenOffline property/event to SourceDestinationBaseCommon
+ - Added AVPro AUHD switchers
+ - Added Crestron NVX encoders and decoders
+ - Control UUIDs are loaded from DSP configs
 
 ### Changed
  - MockDestinationDevice now inherits from AbstractMockDevice
@@ -17,6 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - MockSourceDevice now inherits from AbstractMockDevice
  - MockSwitcherDevice now inherits from AbstractMockDevice
  - Using new logging context
+ - Fixed a bug where switcher telemetry would fail to build due to missing members
 
 ## [15.3.0] - 2020-03-20
 ### Added
