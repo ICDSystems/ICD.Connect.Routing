@@ -261,7 +261,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		void Unroute(ISource source, EndpointInfo destination, eConnectionType type, int roomId);
+		void Unroute([NotNull] ISource source, EndpointInfo destination, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Searches for switchers currently routing the source and unroutes them.
@@ -270,7 +270,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns></returns>
-		void Unroute(IRouteSourceControl sourceControl, eConnectionType type, int roomId);
+		void Unroute([NotNull] IRouteSourceControl sourceControl, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Unroutes every path from the given source to the destination.
@@ -280,8 +280,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if the devices could not be unrouted.</returns>
-		void Unroute(IRouteSourceControl sourceControl, IRouteDestinationControl destinationControl, eConnectionType type,
-		             int roomId);
+		void Unroute([NotNull] IRouteSourceControl sourceControl, [NotNull] IRouteDestinationControl destinationControl,
+		             eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Unroutes the given connection path.
@@ -289,7 +289,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="path"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-		void Unroute(Connection[] path, eConnectionType type, int roomId);
+		void Unroute([NotNull] Connection[] path, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Unroutes all switchers routing the active source to the given destination.
@@ -297,7 +297,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="destination"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-		void Unroute(IDestination destination, eConnectionType type, int roomId);
+		void Unroute([NotNull] IDestination destination, eConnectionType type, int roomId);
 
 		/// <summary>
 		/// Unroutes all switchers routing the active source to the given endpoint.
@@ -379,7 +379,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="endpoint"></param>
 		/// <returns></returns>
 		[NotNull]
-		public static T GetControl<T>(this IRoutingGraph extends, EndpointInfo endpoint)
+		public static T GetControl<T>([NotNull] this IRoutingGraph extends, EndpointInfo endpoint)
 			where T : class, IRouteControl
 		{
 			if (extends == null)
@@ -395,7 +395,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="destination"></param>
 		/// <returns></returns>
 		[NotNull]
-		public static IRouteDestinationControl GetDestinationControl(this IRoutingGraph extends, IDestination destination)
+		public static IRouteDestinationControl GetDestinationControl([NotNull] this IRoutingGraph extends, [NotNull] IDestination destination)
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");
@@ -413,7 +413,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="connection"></param>
 		/// <returns></returns>
 		[NotNull]
-		public static IRouteDestinationControl GetDestinationControl(this IRoutingGraph extends, Connection connection)
+		public static IRouteDestinationControl GetDestinationControl([NotNull] this IRoutingGraph extends, [NotNull] Connection connection)
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");
@@ -431,7 +431,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="endpoint"></param>
 		/// <returns></returns>
 		[NotNull]
-		public static IRouteDestinationControl GetDestinationControl(this IRoutingGraph extends, EndpointInfo endpoint)
+		public static IRouteDestinationControl GetDestinationControl([NotNull] this IRoutingGraph extends, EndpointInfo endpoint)
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");
@@ -446,7 +446,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="source"></param>
 		/// <returns></returns>
 		[NotNull]
-		public static IRouteSourceControl GetSourceControl(this IRoutingGraph extends, ISource source)
+		public static IRouteSourceControl GetSourceControl([NotNull] this IRoutingGraph extends, [NotNull] ISource source)
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");
@@ -464,7 +464,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="connection"></param>
 		/// <returns></returns>
 		[NotNull]
-		public static IRouteSourceControl GetSourceControl(this IRoutingGraph extends, Connection connection)
+		public static IRouteSourceControl GetSourceControl([NotNull] this IRoutingGraph extends, [NotNull] Connection connection)
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");
@@ -482,7 +482,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="endpoint"></param>
 		/// <returns></returns>
 		[NotNull]
-		public static IRouteSourceControl GetSourceControl(this IRoutingGraph extends, EndpointInfo endpoint)
+		public static IRouteSourceControl GetSourceControl([NotNull] this IRoutingGraph extends, EndpointInfo endpoint)
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");

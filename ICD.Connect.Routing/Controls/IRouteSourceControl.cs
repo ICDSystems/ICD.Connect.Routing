@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.Routing.Connections;
@@ -60,7 +61,7 @@ namespace ICD.Connect.Routing.Controls
 		/// <param name="extends"></param>
 		/// <param name="output"></param>
 		/// <returns></returns>
-		public static EndpointInfo GetOutputEndpointInfo(this IRouteSourceControl extends, int output)
+		public static EndpointInfo GetOutputEndpointInfo([NotNull] this IRouteSourceControl extends, int output)
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");

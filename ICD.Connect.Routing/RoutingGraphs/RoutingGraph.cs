@@ -876,9 +876,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if the devices could not be unrouted.</returns>
-		private void Unroute(IRouteSourceControl sourceControl, int sourceAddress,
-		                             IRouteDestinationControl destinationControl,
-		                             int destinationAddress, eConnectionType type, int roomId)
+		private void Unroute([NotNull] IRouteSourceControl sourceControl, int sourceAddress,
+		                     [NotNull] IRouteDestinationControl destinationControl,
+		                     int destinationAddress, eConnectionType type, int roomId)
 		{
 			if (sourceControl == null)
 				throw new ArgumentNullException("sourceControl");
@@ -901,9 +901,9 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if the devices could not be unrouted.</returns>
-		private void Unroute(IRouteSourceControl sourceControl, int sourceAddress,
-		                             IRouteDestinationControl destinationControl,
-		                             eConnectionType type, int roomId)
+		private void Unroute([NotNull] IRouteSourceControl sourceControl, int sourceAddress,
+		                     [NotNull] IRouteDestinationControl destinationControl,
+		                     eConnectionType type, int roomId)
 		{
 			if (sourceControl == null)
 				throw new ArgumentNullException("sourceControl");
@@ -923,7 +923,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if the devices could not be unrouted.</returns>
-		public override void Unroute(IRouteSourceControl sourceControl, IRouteDestinationControl destinationControl,
+		public override void Unroute([NotNull] IRouteSourceControl sourceControl, [NotNull] IRouteDestinationControl destinationControl,
 		                             eConnectionType type, int roomId)
 		{
 			if (sourceControl == null)
@@ -970,7 +970,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="destination"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-		public override void Unroute(IDestination destination, eConnectionType type, int roomId)
+		public override void Unroute([NotNull] IDestination destination, eConnectionType type, int roomId)
 		{
 			if (destination == null)
 				throw new ArgumentNullException("destination");
@@ -1000,7 +1000,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="path"></param>
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
-		public override void Unroute(Connection[] path, eConnectionType type, int roomId)
+		public override void Unroute([NotNull] Connection[] path, eConnectionType type, int roomId)
 		{
 			if (path == null)
 				throw new ArgumentNullException("path");
@@ -1033,7 +1033,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if unauthorized to unroute the connections</returns>
-		private bool Unroute(Connection incomingConnection, Connection outgoingConnection, eConnectionType type, int roomId)
+		private bool Unroute([NotNull] Connection incomingConnection, [NotNull] Connection outgoingConnection, eConnectionType type, int roomId)
 		{
 			if (incomingConnection == null)
 				throw new ArgumentNullException("incomingConnection");
@@ -1065,7 +1065,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <param name="type"></param>
 		/// <param name="roomId"></param>
 		/// <returns>False if unauthorized to unroute the connections</returns>
-		private bool Unroute(IRouteSwitcherControl switcher, int input, int output, eConnectionType type, int roomId)
+		private bool Unroute([NotNull] IRouteSwitcherControl switcher, int input, int output, eConnectionType type, int roomId)
 		{
 			if (switcher == null)
 				throw new ArgumentNullException("switcher");

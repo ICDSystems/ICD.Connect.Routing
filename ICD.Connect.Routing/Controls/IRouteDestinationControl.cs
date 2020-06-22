@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.Routing.Connections;
@@ -75,7 +76,7 @@ namespace ICD.Connect.Routing.Controls
 		/// <param name="extends"></param>
 		/// <param name="input"></param>
 		/// <returns></returns>
-		public static EndpointInfo GetInputEndpointInfo(this IRouteDestinationControl extends, int input)
+		public static EndpointInfo GetInputEndpointInfo([NotNull] this IRouteDestinationControl extends, int input)
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");
@@ -88,7 +89,7 @@ namespace ICD.Connect.Routing.Controls
 		/// For example, a display might return the input that is currently on screen,
 		/// while a switcher may return the inputs that are currently routed.
 		/// </summary>
-		public static IEnumerable<ConnectorInfo> GetActiveInputs(this IRouteDestinationControl extends, eConnectionType type)
+		public static IEnumerable<ConnectorInfo> GetActiveInputs([NotNull] this IRouteDestinationControl extends, eConnectionType type)
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");
@@ -102,7 +103,7 @@ namespace ICD.Connect.Routing.Controls
 		/// <param name="extends"></param>
 		/// <param name="type"></param>
 		/// <returns></returns>
-		public static IEnumerable<ConnectorInfo> GetInputs(this IRouteDestinationControl extends, eConnectionType type)
+		public static IEnumerable<ConnectorInfo> GetInputs([NotNull] this IRouteDestinationControl extends, eConnectionType type)
 		{
 			if (extends == null)
 				throw new ArgumentNullException("extends");
