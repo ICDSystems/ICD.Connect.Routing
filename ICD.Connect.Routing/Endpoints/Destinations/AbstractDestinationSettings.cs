@@ -4,9 +4,12 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 {
 	public abstract class AbstractDestinationSettings : AbstractSourceDestinationCommonSettings, IDestinationSettings
 	{
-		private const string DESTINATION_GROUP_STRING_ELEMENT = "DestinationGroupString";
+		private const string GROUP_ELEMENT = "Group";
 
-		public string DestinationGroupString { get; set; }
+		/// <summary>
+		/// Gets/sets the group name that is used when the core loads to generate destination groups.
+		/// </summary>
+		public string Group { get; set; }
 
 		#region XML
 
@@ -18,7 +21,7 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 		{
 			base.ParseXml(xml);
 
-			DestinationGroupString = XmlUtils.TryReadChildElementContentAsString(xml, DESTINATION_GROUP_STRING_ELEMENT);
+			Group = XmlUtils.TryReadChildElementContentAsString(xml, GROUP_ELEMENT);
 		}
 
 		/// <summary>
@@ -29,7 +32,7 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 		{
 			base.WriteElements(writer);
 
-			writer.WriteElementString(DESTINATION_GROUP_STRING_ELEMENT, IcdXmlConvert.ToString(DestinationGroupString));
+			writer.WriteElementString(GROUP_ELEMENT, IcdXmlConvert.ToString(Group));
 		}
 
 		#endregion

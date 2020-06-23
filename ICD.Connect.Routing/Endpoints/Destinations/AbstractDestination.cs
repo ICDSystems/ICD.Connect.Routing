@@ -15,7 +15,10 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 		/// </summary>
 		public override string Category { get { return "Destination"; } }
 
-		public string DestinationGroupString { get; private set; }
+		/// <summary>
+		/// Gets the group name that is used when the core loads to generate destination groups.
+		/// </summary>
+		public string Group { get; private set; }
 
 		#endregion
 
@@ -49,7 +52,7 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-			DestinationGroupString = settings.DestinationGroupString;
+			Group = settings.Group;
 		}
 
 		/// <summary>
@@ -60,7 +63,7 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 		{
 			base.CopySettingsFinal(settings);
 
-			settings.DestinationGroupString = DestinationGroupString;
+			settings.Group = Group;
 		}
 
 		/// <summary>
@@ -70,7 +73,7 @@ namespace ICD.Connect.Routing.Endpoints.Destinations
 		{
 			base.ClearSettingsFinal();
 
-			DestinationGroupString = null;
+			Group = null;
 		}
 
 		#endregion

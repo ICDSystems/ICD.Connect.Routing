@@ -2,8 +2,9 @@
 {
 	public interface IDestinationSettings : ISourceDestinationCommonSettings
 	{
-
-		string DestinationGroupString { get; set; }
-
+		/// <summary>
+		/// Gets/sets the group name that is used when the core loads to generate destination groups.
+		/// </summary>
+		string Group { get; set; }
 	}
 }
