@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [15.4.0] - 2020-06-30
 ### Added
  - Added stream switching support - StreamSwitcherDevice, StreamSourceDevice, MockStreamDestination and associated controls
 

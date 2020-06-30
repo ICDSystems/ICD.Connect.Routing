@@ -4,4 +4,4 @@ using System.Reflection;
 [assembly: AssemblyCompany("ICD Systems")]
 [assembly: AssemblyProduct("ICD.Connect.Routing.Atlona")]
 [assembly: AssemblyCopyright("Copyright © ICD Systems 2020")]
-[assembly: AssemblyVersion("15.3.0.0")]
+[assembly: AssemblyVersion("15.4.0.0")]
