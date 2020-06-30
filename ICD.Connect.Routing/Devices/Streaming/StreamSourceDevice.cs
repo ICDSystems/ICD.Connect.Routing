@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Properties;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
@@ -7,6 +8,7 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Devices.Streaming
@@ -28,16 +30,10 @@ namespace ICD.Connect.Routing.Devices.Streaming
 					return;
 
 				m_StreamUri = value;
-				Log(eSeverity.Informational, "Stream Uri changed to - {0}", m_StreamUri);
+				Logger.LogSetTo(eSeverity.Informational, "Stream Uri", m_StreamUri);
 				OnStreamUriChanged.Raise(this, new GenericEventArgs<Uri>(m_StreamUri));
 		    }
 	    }
-
-	    public StreamSourceDevice()
-	    {
-			Controls.Add(new StreamSourceDeviceRoutingControl(this, 0));
-	    }
-
 
 	    protected override bool GetIsOnlineStatus()
 	    {
@@ -55,7 +51,7 @@ namespace ICD.Connect.Routing.Devices.Streaming
 		    }
 		    catch (Exception e)
 		    {
-				Log(eSeverity.Error, "Failed to parse Stream Uri - {0}", e.Message);
+				Logger.Log(eSeverity.Error, "Failed to parse Stream Uri - {0}", e.Message);
 				StreamUri = null;
 		    }
 	    }
@@ -72,6 +68,19 @@ namespace ICD.Connect.Routing.Devices.Streaming
 		    base.ClearSettingsFinal();
 
 		    StreamUri = null;
+	    }
+
+	    /// <summary>
+	    /// Override to add controls to the device.
+	    /// </summary>
+	    /// <param name="settings"></param>
+	    /// <param name="factory"></param>
+	    /// <param name="addControl"></param>
+	    protected override void AddControls(StreamSourceDeviceSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+	    {
+		    base.AddControls(settings, factory, addControl);
+
+			addControl(new StreamSourceDeviceRoutingControl(this, 0));
 	    }
 
 	    #endregion

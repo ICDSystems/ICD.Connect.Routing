@@ -304,7 +304,7 @@ namespace ICD.Connect.Routing.Devices.Streaming
 
 					if (control == null)
 					{
-						Log(eSeverity.Error, "Unable to support connection from {0}", sourceEndpoint);
+						Logger.Log(eSeverity.Error, "Unable to support connection from {0}", sourceEndpoint);
 						continue;
 					}
 
@@ -335,7 +335,7 @@ namespace ICD.Connect.Routing.Devices.Streaming
 
 					if (control == null)
 					{
-						Log(eSeverity.Error, "Unable to support connection to {0}", destinationEndpoint);
+						Logger.Log(eSeverity.Error, "Unable to support connection to {0}", destinationEndpoint);
 						continue;
 					}
 
@@ -377,8 +377,9 @@ namespace ICD.Connect.Routing.Devices.Streaming
 		private IStreamRouteSourceControl GetSourceControl(Connection inputConnection)
 		{
 			return Core.Originators
-					   .GetChild<IDeviceBase>(inputConnection.Source.Device)
-					   .Controls.GetControl<IStreamRouteSourceControl>(inputConnection.Source.Control);
+					   .GetChild<IDevice>(inputConnection.Source.Device)
+					   .Controls
+					   .GetControl<IStreamRouteSourceControl>(inputConnection.Source.Control);
 		}
 
 		/// <summary>
@@ -389,8 +390,9 @@ namespace ICD.Connect.Routing.Devices.Streaming
 		private IStreamRouteDestinationControl GetDestinationControl(Connection outputConnection)
 		{
 			return Core.Originators
-					   .GetChild<IDeviceBase>(outputConnection.Destination.Device)
-					   .Controls.GetControl<IStreamRouteDestinationControl>(outputConnection.Destination.Control);
+					   .GetChild<IDevice>(outputConnection.Destination.Device)
+					   .Controls
+					   .GetControl<IStreamRouteDestinationControl>(outputConnection.Destination.Control);
 		}
 
 		/// <summary>

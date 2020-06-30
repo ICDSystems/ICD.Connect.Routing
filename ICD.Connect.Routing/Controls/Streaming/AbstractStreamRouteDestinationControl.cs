@@ -8,7 +8,7 @@ using ICD.Connect.Routing.EventArguments;
 namespace ICD.Connect.Routing.Controls.Streaming
 {
 	public abstract class AbstractStreamRouteDestinationControl<T> : AbstractRouteDestinationControl<T>, IStreamRouteDestinationControl
-		where T : IDeviceBase
+		where T : IDevice
 	{
 		public abstract event EventHandler<StreamUriEventArgs> OnInputStreamUriChanged;
 

@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using ICD.Connect.Devices;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
 
@@ -13,11 +15,6 @@ namespace ICD.Connect.Routing.Devices.Streaming
 			{
 				return Controls.GetControls<StreamSwitcherDeviceRoutingControl>().FirstOrDefault();
 			}
-		}
-
-		public StreamSwitcherDevice()
-		{
-			Controls.Add(new StreamSwitcherDeviceRoutingControl(this, 0));
 		}
 
 		protected override bool GetIsOnlineStatus()
@@ -59,6 +56,19 @@ namespace ICD.Connect.Routing.Devices.Streaming
 			}
 
 			RoutingControl.BuildEndpointCache();
+		}
+
+		/// <summary>
+		/// Override to add controls to the device.
+		/// </summary>
+		/// <param name="settings"></param>
+		/// <param name="factory"></param>
+		/// <param name="addControl"></param>
+		protected override void AddControls(StreamSwitcherDeviceSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		{
+			base.AddControls(settings, factory, addControl);
+
+			addControl(new StreamSwitcherDeviceRoutingControl(this, 0));
 		}
 
 		#endregion

@@ -8,7 +8,7 @@ using ICD.Connect.Routing.EventArguments;
 namespace ICD.Connect.Routing.Controls.Streaming
 {
 	public abstract class AbstractStreamRouteSourceControl<T> : AbstractRouteSourceControl<T>, IStreamRouteSourceControl
-		where T : IDeviceBase
+		where T : IDevice
 	{
 		#region Events
 
