@@ -36,16 +36,16 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		string ProcessorHostname { get; }
 
 		[EventTelemetry(DeviceTelemetryNames.DEVICE_UPTIME_CHANGED)]
-		event EventHandler<StringEventArgs> OnProcessorUptimeChanged;
+		event EventHandler<GenericEventArgs<TimeSpan>> OnProcessorUptimeChanged;
 
 		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_UPTIME, null, DeviceTelemetryNames.DEVICE_UPTIME_CHANGED)]
-		string ProcessorUptime { get; }
+		TimeSpan ProcessorUptime { get; }
 
 		[EventTelemetry(ControlSystemExternalTelemetryNames.PROGRAM_UPTIME_CHANGED)]
-		event EventHandler<StringEventArgs> OnProgramUptimeChanged;
+		event EventHandler<GenericEventArgs<TimeSpan>> OnProgramUptimeChanged;
 
 		[PropertyTelemetry(ControlSystemExternalTelemetryNames.PROGRAM_UPTIME, null, ControlSystemExternalTelemetryNames.PROGRAM_UPTIME_CHANGED)]
-		string ProgramUptime { get; }
+		TimeSpan ProgramUptime { get; }
 
 		[PropertyTelemetry(ControlSystemExternalTelemetryNames.PROGRAMMER_NAME, null, null)]
 		string ProgrammerName { get; }

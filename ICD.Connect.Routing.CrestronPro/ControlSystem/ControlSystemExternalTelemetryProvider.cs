@@ -32,8 +32,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public event EventHandler<StringEventArgs> OnSystemNameChanged;
 		public event EventHandler<StringEventArgs> OnIpAddressSecondaryChanged;
 		public event EventHandler<StringEventArgs> OnProcessorHostnameCustomChanged;
-		public event EventHandler<StringEventArgs> OnProcessorUptimeChanged;
-		public event EventHandler<StringEventArgs> OnProgramUptimeChanged;
+		public event EventHandler<GenericEventArgs<TimeSpan>> OnProcessorUptimeChanged;
+		public event EventHandler<GenericEventArgs<TimeSpan>> OnProgramUptimeChanged;
 
 		public bool DhcpStatus { get { return !string.IsNullOrEmpty(IcdEnvironment.DhcpStatus) && IcdEnvironment.DhcpStatus.Equals(DHCP_ON_TEXT, StringComparison.OrdinalIgnoreCase); } }
 
@@ -43,33 +43,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		public string ProcessorIpAddress { get { return GetPrimaryIp(); } }
 		public string ProcessorHostname { get { return GetPrimaryHostname(); } }
 
-		public string ProcessorUptime
-		{
-			get
-			{
-				TimeSpan time = ProcessorUtils.GetSystemUptime();
-				return string.Format("{0} days {1:D2}:{2:D2}:{3:D2}.{4:D3}",
-				                     time.Days,
-				                     time.Hours,
-				                     time.Minutes,
-				                     time.Seconds,
-				                     time.Milliseconds);
-			}
-		}
-
-		public string ProgramUptime
-		{
-			get
-			{
-				TimeSpan time = ProcessorUtils.GetProgramUptime();
-				return string.Format("{0} days {1:D2}:{2:D2}:{3:D2}.{4:D3}",
-									 time.Days,
-									 time.Hours,
-									 time.Minutes,
-									 time.Seconds,
-									 time.Milliseconds);
-			}
-		}
+		public TimeSpan ProcessorUptime { get { return ProcessorUtils.GetSystemUptime(); } }
+		public TimeSpan ProgramUptime { get { return ProcessorUtils.GetProgramUptime(); } }
 
 		public string ProgrammerName { get { return PROGRAMMER_NAME; } }
 		public string SystemName { get { return SYSTEM_NAME; } }
@@ -90,8 +65,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		private void UptimeUpdateTimerOnElapsed(object sender, EventArgs eventArgs)
 		{
-			OnProcessorUptimeChanged.Raise(this, new StringEventArgs(ProcessorUptime));
-			OnProgramUptimeChanged.Raise(this, new StringEventArgs(ProgramUptime));
+			OnProcessorUptimeChanged.Raise(this, new GenericEventArgs<TimeSpan>(ProcessorUptime));
+			OnProgramUptimeChanged.Raise(this, new GenericEventArgs<TimeSpan>(ProgramUptime));
 			m_UptimeUpdateTimer.Restart(UPTIME_UPDATE_TIMER_INTERVAL);
 		}
 
