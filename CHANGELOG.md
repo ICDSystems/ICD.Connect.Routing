@@ -23,6 +23,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Using new logging context
  - Fixed a bug where switcher telemetry would fail to build due to missing members
 
+## [15.4.0] - 2020-06-30
+### Added
+ - Added stream switching support - StreamSwitcherDevice, StreamSourceDevice, MockStreamDestination and associated controls
+
 ## [15.3.0] - 2020-03-20
 ### Added
  - Added Dmc4kzHdoAdapter

@@ -76,8 +76,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			                                                                       (a, b, c, d) =>
 			                                                                       RouteConsoleCommand(instance, a, b, c, d));
 
-			yield return new GenericConsoleCommand<int, int, int, int>("RouteAB",
-																	   "RouteAB <SourceDeviceId> <SourceAddress> <DestinationDeviceId> <DestinationAddress>",
+			yield return new GenericConsoleCommand<int, int, int, int>("AB",
+																	   "AB <SourceDeviceId> <SourceAddress> <DestinationDeviceId> <DestinationAddress>",
 			                                                           (a, b, c, d) => RouteDevicesConsoleCommand(instance, a, b, c, d));
 		}
 
