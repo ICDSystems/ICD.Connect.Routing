@@ -15,10 +15,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		bool DhcpStatus { get; }
 
 		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_FIRMWARE_VERSION, null, null)]
-		string ProcessorFirmwareVersion { get; }
+		Version ProcessorFirmwareVersion { get; }
 
 		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_FIRMWARE_DATE, null, null)]
-		string ProcessorFirmwareDate { get; }
+		DateTime ProcessorFirmwareDate { get; }
 
 		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_MAC_ADDRESS, null, null)]
 		string ProcessorMacAddress { get; }
@@ -60,18 +60,18 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		string ProgramSourceFile { get; }
 
 		[PropertyTelemetry(ControlSystemExternalTelemetryNames.PROGRAM_COMPLIE_DATE, null, null)]
-		string ProgramCompileDate { get; }
+		DateTime ProgramCompileDate { get; }
 
 		[EventTelemetry(DeviceTelemetryNames.DEVICE_IP_ADDRESS_SECONDARY_CHANGED)]
-		event EventHandler<StringEventArgs> OnIpAddressSecondaryChanged; 
+		event EventHandler<StringEventArgs> OnProcessorIpAddressSecondaryChanged; 
 
 		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_IP_ADDRESS_SECONDARY, null, DeviceTelemetryNames.DEVICE_IP_ADDRESS_SECONDARY_CHANGED)]
 		string ProcessorIpAddressSecondary { get; }
 
 		[EventTelemetry(DeviceTelemetryNames.DEVICE_HOSTNAME_SECONDARY_CHANGED)]
-		event EventHandler<StringEventArgs> OnProcessorHostnameCustomChanged; 
+		event EventHandler<StringEventArgs> OnProcessorHostnameSecondaryChanged; 
 
 		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_HOSTNAME_SECONDARY, null, DeviceTelemetryNames.DEVICE_HOSTNAME_SECONDARY_CHANGED)]
-		string ProcessorHostnameCustom { get; }
+		string ProcessorHostnameSecondary { get; }
 	}
 }
