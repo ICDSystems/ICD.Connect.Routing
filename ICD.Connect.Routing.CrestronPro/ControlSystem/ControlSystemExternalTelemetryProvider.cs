@@ -12,9 +12,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 	[UsedImplicitly]
 	public sealed class ControlSystemExternalTelemetryProvider : AbstractExternalTelemetryProvider<IControlSystemDevice>, IControlSystemExternalTelemetryProvider
 	{
-		// Drew said to make these constants for now.
 		private const string PROGRAMMER_NAME = "ICD Systems";
-		private const string SYSTEM_NAME = "Metlife.RoomOS";
+		private const string SYSTEM_NAME = "ICD.Connect";
 
 		private const long UPTIME_UPDATE_TIMER_INTERVAL = 10 * 60 * 1000;
 
