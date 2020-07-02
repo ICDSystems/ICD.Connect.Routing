@@ -240,7 +240,6 @@
     <Compile Include="ControlSystem\Controls\Volume\Crosspoints\IDmps3Crosspoint.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Dmps3CrosspointVolumeControl.cs" />
     <Compile Include="ControlSystem\IControlSystemDevice.cs" />
-    <Compile Include="ControlSystem\IControlSystemExternalTelemetryProvider.cs" />
     <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
