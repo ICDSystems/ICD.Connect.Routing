@@ -437,7 +437,7 @@
     <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd4X24kE\HdMd4X24kEAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd4X24kE\HdMd4X24kEAdapterSettings.cs" />
-    <None Include="ObfuscationSettings.cs" />
+    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Transmitters\DmTx201S\AbstractDmTx201SAdapter.cs" />
     <Compile Include="Transmitters\DmTx201S\DmTx201S2Adapter.cs" />
     <Compile Include="Transmitters\DmTx201S\DmTx201SAdapter.cs" />

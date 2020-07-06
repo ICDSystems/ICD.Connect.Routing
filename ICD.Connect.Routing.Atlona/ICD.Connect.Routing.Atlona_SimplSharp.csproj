@@ -67,7 +67,7 @@
     <Compile Include="AtUhdHdvs300SwitcherControl.cs" />
     <Compile Include="KrangPlugin.cs" />
     <None Include="AT-UHD-HDVS-300-KIT_API.pdf" />
-    <None Include="ObfuscationSettings.cs" />
+    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>

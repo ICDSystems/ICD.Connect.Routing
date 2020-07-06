@@ -97,7 +97,7 @@
     <Compile Include="Controls\Volume\ExtronVolumeDeviceControl.cs" />
     <Compile Include="Controls\Volume\ExtronGroupVolumeDeviceControl.cs" />
     <None Include="Devices\Switchers\DtpCrosspoint\DtpCrosspoint84\DTPCrossPoint84.pdf" />
-    <None Include="ObfuscationSettings.cs" />
+    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Devices\Switchers\IExtronSwitcherDevice.cs" />
     <Compile Include="Devices\Switchers\IExtronSwitcherDeviceSettings.cs" />
     <Compile Include="Devices\Switchers\SwHd4K\AbstractSwHd4KDevice.cs" />

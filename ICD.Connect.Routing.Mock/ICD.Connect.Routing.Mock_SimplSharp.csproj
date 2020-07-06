@@ -73,7 +73,7 @@
     <Compile Include="Destination\MockDestinationDeviceSettings.cs" />
     <Compile Include="Destination\MockRouteDestinationControl.cs" />
     <Compile Include="KrangPlugin.cs" />
-    <None Include="ObfuscationSettings.cs" />
+    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Midpoint\MockMidpointDevice.cs" />
     <Compile Include="Midpoint\MockMidpointDeviceSettings.cs" />
     <Compile Include="Midpoint\MockRouteMidpointControl.cs" />

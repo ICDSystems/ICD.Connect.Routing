@@ -83,7 +83,7 @@
     <Compile Include="Devices\IDmps300CDigitalInputPortDevice.cs" />
     <Compile Include="Devices\IDmps300CRelayPortDevice.cs" />
     <Compile Include="KrangPlugin.cs" />
-    <None Include="ObfuscationSettings.cs" />
+    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Ports\ComPort\Dmps300CComPort.cs" />
     <Compile Include="Ports\ComPort\Dmps300CComPortSettings.cs" />
     <Compile Include="Ports\DigitalInputPort\Dmps300CDigitalInputPort.cs" />

@@ -187,7 +187,7 @@
     <Compile Include="RoutingGraphs\ConnectionsCollection.cs" />
     <Compile Include="RoutingGraphs\FilteredConnectionLookupKey.cs" />
     <Compile Include="RoutingGraphs\IRoutingGraph.cs" />
-    <None Include="ObfuscationSettings.cs" />
+    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="RoutingGraphs\IRoutingGraphSettings.cs" />
     <Compile Include="KrangPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
