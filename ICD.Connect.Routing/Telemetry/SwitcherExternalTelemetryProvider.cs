@@ -1,39 +1,51 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Utils.Collections;
 using ICD.Connect.Routing.Controls;
-using ICD.Connect.Telemetry.Providers;
+using ICD.Connect.Telemetry.Attributes;
+using ICD.Connect.Telemetry.Providers.External;
 
 namespace ICD.Connect.Routing.Telemetry
 {
-	public sealed class SwitcherExternalTelemetryProvider : ISwitcherExternalTelemetryProvider
+	public sealed class SwitcherExternalTelemetryProvider : AbstractExternalTelemetryProvider<IRouteSwitcherControl>
 	{
 		private readonly IcdHashSet<InputPort> m_InputPorts = new IcdHashSet<InputPort>();
 		private readonly IcdHashSet<OutputPort> m_OutputPorts = new IcdHashSet<OutputPort>();
 
-		private IRouteSwitcherControl m_Parent;
-
 		#region Properties
 
+		[CollectionTelemetry(SwitcherTelemetryNames.INPUT_PORTS)]
 		public IEnumerable<InputPort> SwitcherInputPorts { get { return m_InputPorts; } }
+
+		[CollectionTelemetry(SwitcherTelemetryNames.OUTPUT_PORTS)]
 		public IEnumerable<OutputPort> SwitcherOutputPorts { get { return m_OutputPorts; } }
 
 		#endregion
 
 		#region Provider Callbacks
 
-		public void SetParent(ITelemetryProvider provider)
+		/// <summary>
+		/// Initializes the current telemetry state.
+		/// </summary>
+		public override void InitializeTelemetry()
 		{
-			var switcherControl = provider as IRouteSwitcherControl;
-			if (switcherControl == null)
-				throw new ArgumentException("Provider for Switcher Telemetry must be IRouteSwitcherControl.");
+			base.InitializeTelemetry();
 
-			m_Parent = switcherControl;
+			IEnumerable<InputPort> inputPorts =
+				Parent == null
+					? Enumerable.Empty<InputPort>()
+					: Parent.GetInputPorts();
+
+			IEnumerable<OutputPort> outputPorts =
+				Parent == null
+					? Enumerable.Empty<OutputPort>()
+					: Parent.GetOutputPorts();
+
 			m_InputPorts.Clear();
-			m_OutputPorts.Clear();
-			m_InputPorts.AddRange(m_Parent.GetInputPorts());
-			m_OutputPorts.AddRange(m_Parent.GetOutputPorts());
+			m_InputPorts.AddRange(inputPorts);
 
+			m_OutputPorts.Clear();
+			m_OutputPorts.AddRange(outputPorts);
 		}
 
 		#endregion

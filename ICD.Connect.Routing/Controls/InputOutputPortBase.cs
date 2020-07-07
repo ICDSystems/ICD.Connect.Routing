@@ -1,4 +1,3 @@
-using System;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Telemetry.Providers;
 
@@ -6,8 +5,6 @@ namespace ICD.Connect.Routing.Controls
 {
 	public abstract class InputOutputPortBase : ITelemetryProvider
 	{
-		public event EventHandler OnRequestTelemetryRebuild;
-
 		/// <summary>
 		/// Gets the port connection type.
 		/// </summary>
@@ -34,6 +31,13 @@ namespace ICD.Connect.Routing.Controls
 		{
 			ConnectionType = connector.ConnectionType;
 			Address = connector.Address;
+		}
+
+		/// <summary>
+		/// Initializes the current telemetry state.
+		/// </summary>
+		public void InitializeTelemetry()
+		{
 		}
 	}
 }
