@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [16.1.0] - 2020-07-14
 ### Changed
  - ControlSystem uptime telemetry is raised as original TimeSpan data
+ - Simplified external telemetry providers
+ - Fixed system name telemetry
 
 ## [16.0.0] - 2020-06-19
 ### Added
