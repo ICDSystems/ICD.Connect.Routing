@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Utils.Services;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Xml;
@@ -96,14 +97,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		private void AddSettingsLogDuplicates(SettingsCollection collection, IEnumerable<ISettings> settings)
 		{
-			foreach (ISettings item in settings)
-			{
-				if (collection.Add(item))
-					continue;
-
-				ServiceProvider.GetService<ILoggerService>()
-				               .AddEntry(eSeverity.Error, "{0} failed to add duplicate {1}", GetType().Name, item);
-			}
+			foreach (ISettings item in settings.Where(item => !collection.Add(item)))
+				Logger.AddEntry(eSeverity.Error, "{0} failed to add duplicate {1}", GetType().Name, item);
 		}
 
 		#endregion
