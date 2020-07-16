@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Fixed a bug where DMPS3 microphone and volume controls would throw an exception on disposal
+
 ## [15.4.0] - 2020-06-30
 ### Added
  - Added stream switching support - StreamSwitcherDevice, StreamSourceDevice, MockStreamDestination and associated controls

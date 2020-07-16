@@ -140,6 +140,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 		/// <param name="crosspoint"></param>
 		private void Subscribe(IDmps3Crosspoint crosspoint)
 		{
+			if (crosspoint == null)
+				return;
+
 			crosspoint.OnVolumeLevelChanged += CrosspointOnVolumeLevelChanged;
 			crosspoint.OnMuteStateChanged += CrosspointOnMuteStateChanged;
 		}
@@ -150,6 +153,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume
 		/// <param name="crosspoint"></param>
 		private void Unsubscribe(IDmps3Crosspoint crosspoint)
 		{
+			if (crosspoint == null)
+				return;
+
 			crosspoint.OnVolumeLevelChanged -= CrosspointOnVolumeLevelChanged;
 			crosspoint.OnMuteStateChanged -= CrosspointOnMuteStateChanged;
 		}
