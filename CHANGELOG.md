@@ -71,6 +71,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.14.1] - 2020-08-06
+### Changed
+ - Moved ControlSystemExternalTelemetryNames from CrestronPro to Routing to fix downstream dependency issues
+
 ## [13.14.0] - 2020-04-30
 ### Changed
  - ControlSystemExternalTelemetry - Fixed DHCP state telemetry to properly parse DHCP Off state
