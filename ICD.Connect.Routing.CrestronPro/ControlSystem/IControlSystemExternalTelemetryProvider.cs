@@ -1,6 +1,7 @@
 ﻿using System;
 using ICD.Common.Utils.EventArguments;
 using ICD.Connect.Devices;
+using ICD.Connect.Routing.Telemetry;
 using ICD.Connect.Telemetry;
 using ICD.Connect.Telemetry.Attributes;
 

@@ -172,7 +172,6 @@
     <Compile Include="Cards\ICardSettings.cs" />
     <Compile Include="ControlSystem\ControlSystemDevice.cs" />
     <Compile Include="ControlSystem\ControlSystemDeviceSettings.cs" />
-    <Compile Include="ControlSystem\ControlSystemExternalTelemetryNames.cs" />
     <Compile Include="ControlSystem\ControlSystemExternalTelemetryProvider.cs" />
     <Compile Include="ControlSystem\Controls\Microphone\Dmps3MicrophoneDeviceControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\AbstractControlSystemTouchScreenControl.cs" />
