@@ -6,6 +6,7 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Timers;
 using ICD.Connect.Devices;
+using ICD.Connect.Routing.Telemetry;
 using ICD.Connect.Telemetry.Attributes;
 using ICD.Connect.Telemetry.Providers.External;
 
