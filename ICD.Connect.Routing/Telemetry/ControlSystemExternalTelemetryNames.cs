@@ -1,4 +1,4 @@
-﻿namespace ICD.Connect.Routing.CrestronPro.ControlSystem
+﻿namespace ICD.Connect.Routing.Telemetry
 {
 	public static class ControlSystemExternalTelemetryNames
 	{
