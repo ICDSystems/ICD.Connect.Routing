@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added method to Source and Destination collections for getting items by device id
 
+## [15.1.1] - 2020-08-13
+### Changed
+ - Order and Disabled settings are managed by the Originator abstractions
+
 ## [15.1.0] - 2019-09-16
 ### Added
  - Added Source/Destination groups, Source/Destination group collections, and settings
