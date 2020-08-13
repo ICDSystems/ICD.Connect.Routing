@@ -189,8 +189,6 @@ namespace ICD.Connect.Routing.Endpoints
 
 			Device = 0;
 			Control = 0;
-			Order = 0;
-			Disable = false;
 			ConnectionType = default(eConnectionType);
 
 			SetAddresses(Enumerable.Empty<int>());
@@ -206,8 +204,6 @@ namespace ICD.Connect.Routing.Endpoints
 
 			settings.Device = Device;
 			settings.Control = Control;
-			settings.Order = Order;
-			settings.Disable = Disable;
 			settings.ConnectionType = ConnectionType;
 
 			settings.SetAddresses(GetAddresses());
@@ -226,8 +222,6 @@ namespace ICD.Connect.Routing.Endpoints
 
 			Device = settings.Device;
 			Control = settings.Control;
-			Order = settings.Order;
-			Disable = settings.Disable;
 			ConnectionType = settings.ConnectionType;
 
 			SetAddresses(settings.GetAddresses());
