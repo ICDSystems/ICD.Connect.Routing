@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [16.1.1] - 2020-08-13
+### Changed
+ - Telemetry namespace change
+
 ## [16.1.0] - 2020-07-14
 ### Changed
  - ControlSystem uptime telemetry is raised as original TimeSpan data
