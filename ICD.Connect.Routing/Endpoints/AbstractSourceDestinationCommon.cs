@@ -205,8 +205,6 @@ namespace ICD.Connect.Routing.Endpoints
 
 			Device = 0;
 			Control = 0;
-			Order = 0;
-			Disable = false;
 			ConnectionType = default(eConnectionType);
 			EnableWhenOffline = false;
 
@@ -223,8 +221,6 @@ namespace ICD.Connect.Routing.Endpoints
 
 			settings.Device = Device;
 			settings.Control = Control;
-			settings.Order = Order;
-			settings.Disable = Disable;
 			settings.ConnectionType = ConnectionType;
 			settings.EnableWhenOffline = EnableWhenOffline;
 
@@ -244,8 +240,6 @@ namespace ICD.Connect.Routing.Endpoints
 
 			Device = settings.Device;
 			Control = settings.Control;
-			Order = settings.Order;
-			Disable = settings.Disable;
 			ConnectionType = settings.ConnectionType;
 			EnableWhenOffline = settings.EnableWhenOffline;
 
