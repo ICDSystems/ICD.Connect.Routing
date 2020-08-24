@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Controls;
-using ICD.Connect.Devices.Simpl;
+using ICD.Connect.Devices.CrestronSPlus.Devices.SPlus;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.Controls;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.EventArgs;
@@ -12,7 +12,7 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 {
-	public sealed class SPlusSwitcherDevice : AbstractSimplDevice<SPlusSwitcherDeviceSettings>, ISPlusSwitcher
+	public sealed class SPlusSwitcherDevice : AbstractSPlusDevice<SPlusSwitcherDeviceSettings>, ISPlusSwitcher
 	{
 		private const int SWITCHER_CONTROL_ID = 0;
 

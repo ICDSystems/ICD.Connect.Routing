@@ -1,12 +1,12 @@
 ﻿using ICD.Common.Utils.Xml;
-using ICD.Connect.Devices.Simpl;
+using ICD.Connect.Devices.CrestronSPlus.Devices.SPlus;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Device
 {
 	[KrangSettings("SPlusSwitcherDevice", typeof(SPlusSwitcherDevice))]
-	public sealed class SPlusSwitcherDeviceSettings : AbstractSimplDeviceSettings
+	public sealed class SPlusSwitcherDeviceSettings : AbstractSPlusDeviceSettings
 	{
 
 		#region Consts

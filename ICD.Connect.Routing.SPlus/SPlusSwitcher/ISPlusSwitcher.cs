@@ -1,6 +1,6 @@
 ﻿using System;
 using ICD.Connect.API.Attributes;
-using ICD.Connect.Devices.Simpl;
+using ICD.Connect.Devices.CrestronSPlus.Devices.SPlus;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.EventArgs;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.Proxy;
@@ -8,7 +8,7 @@ using ICD.Connect.Routing.SPlus.SPlusSwitcher.State;
 
 namespace ICD.Connect.Routing.SPlus.SPlusSwitcher
 {
-	public interface ISPlusSwitcher : ISimplDevice
+	public interface ISPlusSwitcher : ISPlusDevice
 	{
 
 		#region Events

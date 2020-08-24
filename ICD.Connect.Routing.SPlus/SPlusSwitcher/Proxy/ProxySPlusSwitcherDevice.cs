@@ -2,14 +2,14 @@
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.API;
 using ICD.Connect.API.Info;
-using ICD.Connect.Devices.Simpl;
+using ICD.Connect.Devices.CrestronSPlus.Devices.SPlus;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.EventArgs;
 using ICD.Connect.Routing.SPlus.SPlusSwitcher.State;
 
 namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.Proxy
 {
-	public sealed class ProxySPlusSwitcherDevice : AbstractSimplProxyDevice<ProxySPlusSwitcherDeviceSettings>, ISPlusSwitcher
+	public sealed class ProxySPlusSwitcherDevice : AbstractSPlusProxyDevice<ProxySPlusSwitcherDeviceSettings>, ISPlusSwitcher
 	{
 
 		#region ISPlusSwitcher

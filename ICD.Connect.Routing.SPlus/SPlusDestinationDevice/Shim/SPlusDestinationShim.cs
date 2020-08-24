@@ -2,7 +2,7 @@
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Controls;
-using ICD.Connect.Devices.SPlusShims;
+using ICD.Connect.Devices.CrestronSPlus.SPlusShims;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Shim

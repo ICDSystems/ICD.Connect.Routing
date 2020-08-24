@@ -1,11 +1,11 @@
 ﻿using ICD.Common.Utils.Xml;
-using ICD.Connect.Devices.Simpl;
+using ICD.Connect.Devices.CrestronSPlus.Devices.SPlus;
 using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 {
 	[KrangSettings("SPlusDestinationDevice", typeof(SPlusDestinationDevice))]
-	public sealed class SPlusDestinationDeviceSettings : AbstractSimplDeviceSettings
+	public sealed class SPlusDestinationDeviceSettings : AbstractSPlusDeviceSettings
 	{
 
 		#region Consts

@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Controls;
-using ICD.Connect.Devices.Simpl;
+using ICD.Connect.Devices.CrestronSPlus.Devices.SPlus;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 {
-	public sealed class SPlusDestinationDevice : AbstractSimplDevice<SPlusDestinationDeviceSettings>, ISPlusDestinationDevice
+	public sealed class SPlusDestinationDevice : AbstractSPlusDevice<SPlusDestinationDeviceSettings>, ISPlusDestinationDevice
 	{
 		#region Consts
 		
