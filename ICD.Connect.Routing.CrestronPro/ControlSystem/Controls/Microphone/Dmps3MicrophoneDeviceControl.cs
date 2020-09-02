@@ -96,6 +96,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		{
 			base.Subscribe(parent);
 
+			if (parent == null)
+				return;
+
 #if SIMPLSHARP
 			parent.ControlSystem.MicrophoneChange += ControlSystemOnMicrophoneChange;
 #endif
@@ -108,6 +111,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		protected override void Unsubscribe(ControlSystemDevice parent)
 		{
 			base.Unsubscribe(parent);
+
+			if (parent == null)
+				return;
 
 #if SIMPLSHARP
 			parent.ControlSystem.MicrophoneChange -= ControlSystemOnMicrophoneChange;
