@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [15.4.1] - 2020-09-02
 ### Changed
  - Fixed a bug where DMPS3 microphone and volume controls would throw an exception on disposal
 
