@@ -91,19 +91,25 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			get { return m_ProximityDetected; }
 			private set
 			{
-				if (value == m_ProximityDetected)
-					return;
+				try
+				{
+					if (value == m_ProximityDetected)
+						return;
 
-				m_ProximityDetected = value;
+					m_ProximityDetected = value;
 
-				Logger.LogSetTo(eSeverity.Informational, "ProximityDetected", m_ProximityDetected);
-				Activities.LogActivity(m_ProximityDetected
-					                   ? new Activity(Activity.ePriority.Low, "Proximity Detected", "Proximity Detected",
-					                                  eSeverity.Informational)
-					                   : new Activity(Activity.ePriority.Low, "Proximity Detected", "Proximity Not Detected",
-					                                  eSeverity.Informational));
+					Logger.LogSetTo(eSeverity.Informational, "ProximityDetected", m_ProximityDetected);
 
-				OnProximityDetectedStateChange.Raise(this, new BoolEventArgs(m_ProximityDetected));
+					OnProximityDetectedStateChange.Raise(this, new BoolEventArgs(m_ProximityDetected));
+				}
+				finally
+				{
+					Activities.LogActivity(m_ProximityDetected
+						                       ? new Activity(Activity.ePriority.Low, "Proximity Detected", "Proximity Detected",
+						                                      eSeverity.Informational)
+						                       : new Activity(Activity.ePriority.Low, "Proximity Detected", "Proximity Not Detected",
+						                                      eSeverity.Informational));
+				}
 			}
 		}
 
@@ -194,6 +200,8 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		protected AbstractMPC3x101TouchScreenControl(ControlSystemDevice parent, int id)
 			: base(parent, id)
 		{
+			// Initialize activities
+			ProximityDetected = false;
 		}
 
 		/// <summary>
