@@ -185,6 +185,9 @@
     <Compile Include="ControlSystem\Controls\TouchScreens\TPCSTouchScreenControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\TSCW730TouchScreenControl.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Crosspoints\AbstractDmps3Crosspoint.cs" />
+    <Compile Include="ControlSystem\Controls\Volume\Crosspoints\AbstractDmps3OutputBaseCrosspoint.cs" />
+    <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3AudioOutputStreamCrosspoint.cs" />
+    <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3DmHdmiOutputStreamCrosspoint.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3HdmiDmBackEndCrosspoint.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3AuxOut2Crosspoint.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Crosspoints\Dmps3AuxOut1Crosspoint.cs" />
