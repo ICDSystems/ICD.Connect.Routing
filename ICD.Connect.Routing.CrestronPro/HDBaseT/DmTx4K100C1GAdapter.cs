@@ -66,7 +66,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 
 			try
 			{
-				// DMPS3 4K
+				// DMPS3 4K & DM-CPU3
 				return new DmTx4K100C1G(input);
 			}
 			catch (Exception)

@@ -1,5 +1,4 @@
 ﻿#if SIMPLSHARP
-using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Connect.Misc.CrestronPro.Extensions;
 #else
@@ -8,7 +7,7 @@ using System;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints
 {
-	public sealed class Dmps3ProgramCrosspoint : AbstractDmps3Crosspoint
+	public sealed class Dmps3ProgramCrosspoint : AbstractDmps3OutputBaseCrosspoint
 	{
 #if SIMPLSHARP
 		private Card.Dmps3ProgramOutput ProgramOutputVolumeObject { get { return VolumeObject as Card.Dmps3ProgramOutput; } }
@@ -73,27 +72,23 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		#endregion
 
 #if SIMPLSHARP
+
 		/// <summary>
-		/// Called when the control system raises a DM output change event.
+		/// Updates the volume/mute states with the Codec 1 volume values
 		/// </summary>
-		/// <param name="device"></param>
-		/// <param name="args"></param>
-		protected override void ControlSystemOnDmOutputChange(Switch device, DMOutputEventArgs args)
+		protected override void UpdateCodec1Volume()
 		{
-			base.ControlSystemOnDmOutputChange(device, args);
+			VolumeLevel = ProgramOutputVolumeObject.Codec1LevelFeedback.GetShortValueOrDefault();
+			VolumeIsMuted = ProgramOutputVolumeObject.CodecMute1OnFeedback.GetBoolValueOrDefault();
+		}
 
-			switch (InputType)
-			{
-				case eDmps3InputType.Codec1:
-					VolumeLevel = ProgramOutputVolumeObject.Codec1LevelFeedback.GetShortValueOrDefault();
-					VolumeIsMuted = ProgramOutputVolumeObject.CodecMute1OnFeedback.GetBoolValueOrDefault();
-					break;
-
-				case eDmps3InputType.Codec2:
-					VolumeLevel = ProgramOutputVolumeObject.Codec1LevelFeedback.GetShortValueOrDefault();
-					VolumeIsMuted = ProgramOutputVolumeObject.CodecMute1OnFeedback.GetBoolValueOrDefault();
-					break;
-			}
+		/// <summary>
+		/// Updates the volume/mute states with the Codec 2 volume values
+		/// </summary>
+		protected override void UpdateCodec2Volume()
+		{
+			VolumeLevel = ProgramOutputVolumeObject.Codec1LevelFeedback.GetShortValueOrDefault();
+			VolumeIsMuted = ProgramOutputVolumeObject.CodecMute1OnFeedback.GetBoolValueOrDefault();
 		}
 #endif
 	}
