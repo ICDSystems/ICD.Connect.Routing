@@ -1,10 +1,10 @@
 ﻿using System;
+using ICD.Common.Properties;
+using ICD.Connect.Misc.CrestronPro.Extensions;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
-using ICD.Common.Properties;
-using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints

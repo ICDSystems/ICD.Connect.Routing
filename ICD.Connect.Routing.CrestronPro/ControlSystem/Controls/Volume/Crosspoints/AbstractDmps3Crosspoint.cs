@@ -1,7 +1,9 @@
 ﻿using System;
-using Crestron.SimplSharpPro.DM;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+#if SIMPLSHARP
+using Crestron.SimplSharpPro.DM;
+#endif
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints
 {
@@ -191,11 +193,20 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			throw new NotSupportedException();
 		}
 
-		protected abstract void SetMasterVolumeLevel(short volume);
+		protected virtual void SetMasterVolumeLevel(short volume)
+		{
+			throw new NotSupportedException();
+		}
 
-		protected abstract void SetSourceLevel(short volume);
+		protected virtual void SetSourceLevel(short volume)
+		{
+			throw new NotSupportedException();
+		}
 
-		protected abstract void SetMicrophoneLevel(ushort inputAddress, short volume);
+		protected virtual void SetMicrophoneLevel(ushort inputAddress, short volume)
+		{
+			throw new NotSupportedException();
+		}
 
 
 		/// <summary>
@@ -236,11 +247,20 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			throw new NotSupportedException();
 		}
 
-	protected abstract void SetMicrophoneMute(ushort inputAddress, bool mute);
+		protected virtual void SetMicrophoneMute(ushort inputAddress, bool mute)
+		{
+			throw new NotSupportedException();
+		}
 
-		protected abstract void SetMasterVolumeMute(bool mute);
+		protected virtual void SetMasterVolumeMute(bool mute)
+		{
+			throw new NotSupportedException();
+		}
 
-		protected abstract void SetSourceMute(bool mute);
+		protected virtual void SetSourceMute(bool mute)
+		{
+			throw new NotSupportedException();
+		}
 
 		protected virtual void SetCodec2Mute(bool parse)
 		{

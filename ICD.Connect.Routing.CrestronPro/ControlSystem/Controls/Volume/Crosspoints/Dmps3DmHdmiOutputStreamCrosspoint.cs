@@ -1,23 +1,47 @@
 ﻿using System;
+#if SIMPLSHARP
 using Crestron.SimplSharpPro.DM.Cards;
+#endif
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints
 {
 	public sealed class Dmps3DmHdmiOutputStreamCrosspoint : AbstractDmps3Crosspoint
 	{
-
+#if SIMPLSHARP
 		private readonly Card.Dmps3HdmiAudioOutput.Dmps3DmHdmiOutputStream m_Output;
+#endif
 
 		/// <summary>
 		/// Gets the minimum crosspoint volume level.
 		/// </summary>
-		public override short VolumeLevelMin { get { return m_Output.OutputMixer.MinVolumeFeedback.ShortValue; } }
+		public override short VolumeLevelMin
+		{
+			get
+			{
+#if SIMPLSHARP
+				return m_Output.OutputMixer.MinVolumeFeedback.ShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
 
 		/// <summary>
 		/// Gets the maximum crosspoint volume level.
 		/// </summary>
-		public override short VolumeLevelMax { get { return m_Output.OutputMixer.MaxVolumeFeedback.ShortValue; } }
+		public override short VolumeLevelMax
+		{
+			get
+			{
+#if SIMPLSHARP
+		return m_Output.OutputMixer.MaxVolumeFeedback.ShortValue;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
 
+#if SIMPLSHARP
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -111,5 +135,15 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			VolumeLevel = m_Output.OutputMixer.MicLevelFeedback[microphone].ShortValue;
 			VolumeIsMuted = m_Output.OutputMixer.MicMuteOnFeedback[microphone].BoolValue;
 		}
+#endif
+		protected override bool MicrophoneSupported(ushort microphone)
+		{
+#if SIMPLSHARP
+			return m_Output.OutputMixer != null && m_Output.OutputMixer.MicLevel.Contains(microphone) && m_Output.OutputMixer.MicLevel[microphone].Supported;
+#else
+			return false;
+#endif
+		}
+
 	}
 }
