@@ -1,13 +1,9 @@
 ﻿using System;
-#if SIMPLSHARP
-using Crestron.SimplSharpPro;
-using Crestron.SimplSharpPro.DM;
-using Crestron.SimplSharpPro.DM.Cards;
-using ICD.Common.Properties;
-using ICD.Connect.Misc.CrestronPro.Extensions;
-#endif
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+#if SIMPLSHARP
+using Crestron.SimplSharpPro.DM;
+#endif
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints
 {
@@ -31,37 +27,19 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		private short m_VolumeLevel;
 
 #if SIMPLSHARP
-		private readonly Card.Dmps3OutputBase m_VolumeObject;
-
-		[NotNull]
-		protected Card.Dmps3OutputBase VolumeObject { get { return m_VolumeObject; } }
-
-		[CanBeNull]
-		protected CrestronControlSystem.Dmps3OutputMixer VolumeOutputMixer
-		{
-			get { return ((IOutputMixer)VolumeObject).OutputMixer as CrestronControlSystem.Dmps3OutputMixer; }
-		}
-#endif
-
-#if SIMPLSHARP
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
-		/// <param name="output"></param>
 		/// <param name="inputType"></param>
 		/// <param name="inputAddress"></param>
-		protected AbstractDmps3Crosspoint(ControlSystemDevice parent, Card.Dmps3OutputBase output, eDmps3InputType inputType,
+		protected AbstractDmps3Crosspoint(ControlSystemDevice parent, eDmps3InputType inputType,
 		                                  uint inputAddress)
 		{
 			if (parent == null)
 				throw new ArgumentNullException("parent");
 
-			if (output == null)
-				throw new ArgumentNullException("output");
-
 			m_Parent = parent;
-			m_VolumeObject = output;
 			m_InputType = inputType;
 			m_InputAddress = inputAddress;
 
@@ -81,6 +59,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		}
 
 		#region Properties
+
+		/// <summary>
+		/// Gets the maximum crosspoint volume level.
+		/// </summary>
+		public abstract short VolumeLevelMax { get; }
 
 		/// <summary>
 		/// Gets the crosspoint mute state.
@@ -119,40 +102,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		/// <summary>
 		/// Gets the minimum crosspoint volume level.
 		/// </summary>
-		public virtual short VolumeLevelMin
-		{
-			get
-			{
-#if SIMPLSHARP
-				if (VolumeOutputMixer == null)
-					throw new ArgumentNullException("VolumeOutputMixer");
-
-				return VolumeOutputMixer.MinVolumeFeedback.GetShortValueOrDefault() != 0
-					       ? VolumeOutputMixer.MinVolumeFeedback.GetShortValueOrDefault()
-					       : (short)-800;
-#else
-				throw new NotSupportedException();
-#endif
-			}
-		}
-
-		/// <summary>
-		/// Gets the maximum crosspoint volume level.
-		/// </summary>
-		public virtual short VolumeLevelMax
-		{
-			get
-			{
-#if SIMPLSHARP
-				if (VolumeOutputMixer == null)
-					throw new ArgumentNullException("VolumeOutputMixer");
-
-				return VolumeOutputMixer.MaxVolumeFeedback.GetShortValueOrDefault();
-#else
-				throw new NotSupportedException();
-#endif
-			}
-		}
+		public abstract short VolumeLevelMin { get; }
 
 		public eDmps3InputType InputType { get { return m_InputType; } }
 
@@ -168,39 +118,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		public void VolumeMuteToggle()
 		{
 			SetVolumeMute(!VolumeIsMuted);
-		}
-
-		public virtual void SetMicrophoneMute(ushort microphone, bool mute)
-		{
-#if SIMPLSHARP
-			if (VolumeOutputMixer == null)
-				throw new ArgumentNullException("VolumeOutputMixer");
-
-			if (!MicrophoneSupported(microphone))
-				throw new NotSupportedException(string.Format("Microphone {0} is not supported", microphone));
-
-			if (mute)
-				VolumeOutputMixer.MicMuteOn(microphone);
-			else
-				VolumeOutputMixer.MicMuteOff(microphone);
-#else
-			throw new NotSupportedException();
-#endif
-		}
-
-		public virtual void SetMicrophoneLevel(ushort microphone, short gainLevel)
-		{
-#if SIMPLSHARP
-			if (VolumeOutputMixer == null)
-				throw new ArgumentNullException("VolumeOutputMixer");
-
-			if (!MicrophoneSupported(microphone))
-				throw new NotSupportedException(string.Format("Microphone {0} is not supported", microphone));
-
-			VolumeOutputMixer.MicLevel[microphone].ShortValue = gainLevel;
-#else
-			throw new NotSupportedException();
-#endif
 		}
 
 		/// <summary>
@@ -236,68 +153,61 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			}
 		}
 
-		public virtual void SetMicMasterMute(bool mute)
+		public void UpdateState()
 		{
-#if SIMPLSHARP
-			if (mute)
-				VolumeObject.MicMasterMuteOn();
-			else
-				VolumeObject.MicMasterMuteOff();
-#else
-			throw new NotSupportedException();
-#endif
+			switch (InputType)
+			{
+				case eDmps3InputType.Master:
+					UpdateMasterVolume();
+					break;
+
+				case eDmps3InputType.Microphone:
+					UpdateMicVolume(InputAddress);
+					break;
+
+				case eDmps3InputType.MicrophoneMaster:
+					UpdateMicMasterVolume();
+					break;
+
+				case eDmps3InputType.Source:
+					UpdateSourceVolume();
+					break;
+
+				case eDmps3InputType.Codec1:
+					UpdateCodec1Volume();
+					break;
+				case eDmps3InputType.Codec2:
+					UpdateCodec2Volume();
+					break;
+			}
 		}
 
-		public virtual void SetMicMasterLevel(short gainLevel)
+		#endregion
+
+		#region Protected Methods
+
+		protected abstract bool MicrophoneSupported(ushort microphone);
+
+		protected virtual void SetMicMasterLevel(short volume)
 		{
-#if SIMPLSHARP
-			VolumeObject.MicMasterLevel.ShortValue = gainLevel;
-#else
 			throw new NotSupportedException();
-#endif
 		}
 
-		public virtual void SetSourceLevel(short gainLevel)
+		protected virtual void SetMasterVolumeLevel(short volume)
 		{
-#if SIMPLSHARP
-			VolumeObject.SourceLevel.ShortValue = gainLevel;
-#else
 			throw new NotSupportedException();
-#endif
 		}
 
-		public virtual void SetSourceMute(bool mute)
+		protected virtual void SetSourceLevel(short volume)
 		{
-#if SIMPLSHARP
-			if (mute)
-				VolumeObject.SourceMuteOn();
-			else
-				VolumeObject.SourceMuteOff();
-#else
 			throw new NotSupportedException();
-#endif
 		}
 
-		public virtual void SetMasterVolumeLevel(short gainLevel)
+		protected virtual void SetMicrophoneLevel(ushort inputAddress, short volume)
 		{
-#if SIMPLSHARP
-			VolumeObject.MasterVolume.ShortValue = gainLevel;
-#else
 			throw new NotSupportedException();
-#endif
 		}
 
-		public virtual void SetMasterVolumeMute(bool mute)
-		{
-#if SIMPLSHARP
-			if (mute)
-				VolumeObject.MasterMuteOn();
-			else
-				VolumeObject.MasterMuteOff();
-#else
-			throw new NotSupportedException();
-#endif
-		}
 
 		/// <summary>
 		/// Sets the crosspoint mute state.
@@ -332,6 +242,26 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			}
 		}
 
+		protected virtual void SetMicMasterMute(bool mute)
+		{
+			throw new NotSupportedException();
+		}
+
+		protected virtual void SetMicrophoneMute(ushort inputAddress, bool mute)
+		{
+			throw new NotSupportedException();
+		}
+
+		protected virtual void SetMasterVolumeMute(bool mute)
+		{
+			throw new NotSupportedException();
+		}
+
+		protected virtual void SetSourceMute(bool mute)
+		{
+			throw new NotSupportedException();
+		}
+
 		protected virtual void SetCodec2Mute(bool parse)
 		{
 			throw new NotSupportedException();
@@ -352,24 +282,53 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			throw new NotSupportedException();
 		}
 
-		#endregion
-
-		#region Private Methods
+		/// <summary>
+		/// Updates the volume/mute state with the master volume values
+		/// </summary>
+		protected virtual void UpdateMasterVolume()
+		{
+			throw new NotSupportedException();
+		}
 
 		/// <summary>
-		/// Returns true if there is a microphone at the given address and the microphone is supported.
+		/// Updates the volume/mute states with the source volume values
+		/// </summary>
+		protected virtual void UpdateSourceVolume()
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Updates the volume/mute states with the Codec 1 volume values
+		/// </summary>
+		protected virtual void UpdateCodec1Volume()
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Updates the volume/mute states with the Codec 2 volume values
+		/// </summary>
+		protected virtual void UpdateCodec2Volume()
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Updates the volume/mute states with the Mic Master volume values
+		/// </summary>
+		protected virtual void UpdateMicMasterVolume()
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Updates the volume/mute states with the values for the given microphone
 		/// </summary>
 		/// <param name="microphone"></param>
-		/// <returns></returns>
-		private bool MicrophoneSupported(ushort microphone)
+		protected virtual void UpdateMicVolume(uint microphone)
 		{
-#if SIMPLSHARP
-			return VolumeOutputMixer != null &&
-			       VolumeOutputMixer.MicLevel.Contains(microphone) &&
-				   VolumeOutputMixer.MicLevel[microphone].Supported;
-#else
-			return false;
-#endif
+			throw new NotSupportedException();
 		}
 
 		#endregion
@@ -405,33 +364,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		/// </summary>
 		/// <param name="device"></param>
 		/// <param name="args"></param>
-		protected virtual void ControlSystemOnDmOutputChange(Switch device, DMOutputEventArgs args)
+		private void ControlSystemOnDmOutputChange(Switch device, DMOutputEventArgs args)
 		{
-			switch (InputType)
-			{
-				case eDmps3InputType.Master:
-					VolumeLevel = VolumeObject.MasterVolumeFeedBack.GetShortValueOrDefault();
-					VolumeIsMuted = VolumeObject.MasterMuteOnFeedBack.GetBoolValueOrDefault();
-					break;
-
-				case eDmps3InputType.Microphone:
-					if (VolumeOutputMixer != null)
-					{
-						VolumeLevel = VolumeOutputMixer.MicLevel[InputAddress].ShortValue;
-						VolumeIsMuted = VolumeOutputMixer.MicMuteOnFeedback[InputAddress].GetBoolValueOrDefault();
-					}
-					break;
-
-				case eDmps3InputType.MicrophoneMaster:
-					VolumeLevel = VolumeObject.MicMasterLevelFeedBack.GetShortValueOrDefault();
-					VolumeIsMuted = VolumeObject.MicMasterMuteOnFeedBack.GetBoolValueOrDefault();
-					break;
-
-				case eDmps3InputType.Source:
-					VolumeLevel = VolumeObject.SourceLevelFeedBack.GetShortValueOrDefault();
-					VolumeIsMuted = VolumeObject.SourceMuteOnFeedBack.GetBoolValueOrDefault();
-					break;
-			}
+			UpdateState();
 		}
 #endif
 

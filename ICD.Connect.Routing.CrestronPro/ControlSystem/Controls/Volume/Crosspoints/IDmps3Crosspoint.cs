@@ -51,5 +51,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		/// </summary>
 		/// <param name="mute"></param>
 		void SetVolumeMute(bool mute);
+
+		/// <summary>
+		/// Updates the crosspoint with the current state from the device
+		/// </summary>
+		void UpdateState();
 	}
 }
