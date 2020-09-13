@@ -8,7 +8,7 @@ using System;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints
 {
-	public sealed class Dmps3AuxOut2Crosspoint : AbstractDmps3Crosspoint
+	public sealed class Dmps3AuxOut2Crosspoint : AbstractDmps3OutputBaseCrosspoint
 	{
 #if SIMPLSHARP
 		private Card.Dmps3Aux2Output Aux2OutputVolumeObject { get { return VolumeObject as Card.Dmps3Aux2Output; } }
@@ -55,18 +55,16 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		#endregion
 
 #if SIMPLSHARP
-		protected override void ControlSystemOnDmOutputChange(Switch device, DMOutputEventArgs args)
-		{
-			base.ControlSystemOnDmOutputChange(device, args);
 
-			switch (InputType)
-			{
-				case eDmps3InputType.Codec1:
-					VolumeLevel = Aux2OutputVolumeObject.Codec1LevelFeedback.GetShortValueOrDefault();
-					VolumeIsMuted = Aux2OutputVolumeObject.CodecMute1OnFeedback.GetBoolValueOrDefault();
-					break;
-			}
+		/// <summary>
+		/// Updates the volume/mute states with the Codec 1 volume values
+		/// </summary>
+		protected override void UpdateCodec1Volume()
+		{
+			VolumeLevel = Aux2OutputVolumeObject.Codec1LevelFeedback.GetShortValueOrDefault();
+			VolumeIsMuted = Aux2OutputVolumeObject.CodecMute1OnFeedback.GetBoolValueOrDefault();
 		}
+
 #endif
 	}
 }

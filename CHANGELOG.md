@@ -126,6 +126,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
  - Added port configuration features to routing devices
 
+## [13.14.2] - 2020-09-11
+### Changed
+ - Fixed issue with DMPS3-4k-150-C volume crosspoint controls
+ - Fixed issue where DMPS3 volume crosspoints didn't get the current state initially
+ - Fixed issue instantiating DM 4K 1G endpoints on some switchers
+
 ## [13.14.1] - 2020-08-06
 ### Changed
  - Moved ControlSystemExternalTelemetryNames from CrestronPro to Routing to fix downstream dependency issues
