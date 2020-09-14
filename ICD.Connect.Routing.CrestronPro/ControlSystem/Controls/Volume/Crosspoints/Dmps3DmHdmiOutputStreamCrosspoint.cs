@@ -100,11 +100,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 				m_Output.SourceMuteOff();
 		}
 
-		protected override bool MicrophoneSupported(ushort microphone)
-		{
-			return m_Output.OutputMixer != null && m_Output.OutputMixer.MicLevel.Contains(microphone) && m_Output.OutputMixer.MicLevel[microphone].Supported;
-		}
-
 		/// <summary>
 		/// Updates the volume/mute state with the master volume values
 		/// </summary>
