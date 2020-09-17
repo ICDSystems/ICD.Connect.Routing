@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.Controls.Power;
 using ICD.Connect.Devices.SPlusShims;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs;
