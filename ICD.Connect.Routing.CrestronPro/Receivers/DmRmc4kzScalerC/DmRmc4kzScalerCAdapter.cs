@@ -21,10 +21,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 		AbstractDmRmc4KScalerCAdapter
 			<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC, DmRmc4kzScalerCAdapterSettings>, IRouteSwitcherDevice
 	{
-		private const int DM_INPUT_ADDRESS = 1;
-		private const int HDMI_INPUT_ADDRESS = 2;
-		private const int OUTPUT_ADDRESS = 1;
-
+		private const int HDMI_INPUT_ADDRESS = 2;      
 
 		private readonly SwitcherCache m_SwitcherCache;
 
@@ -90,7 +87,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			Unsubscribe(m_SwitcherCache);
 		}
 
-	#region IO
+	#region Ports
 
 		/// <summary>
 		/// Gets the port at the given address.

@@ -29,7 +29,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 			if (Receiver == null)
 				throw new InvalidOperationException("No scaler instantiated");
 
-			if (io == eInputOuptut.Input && address == 1)
+			if (io == eInputOuptut.Input && address == DM_INPUT_ADDRESS)
 				return Receiver.DmInput.StreamCec;
 
 			return base.GetCecPort(io, address);

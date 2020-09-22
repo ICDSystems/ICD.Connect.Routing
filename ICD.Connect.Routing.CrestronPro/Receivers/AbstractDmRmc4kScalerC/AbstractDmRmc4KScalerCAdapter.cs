@@ -37,7 +37,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC
 			if (Receiver == null)
 				throw new InvalidOperationException("No DmRx instantiated");
 
-			if (io == eInputOuptut.Input && address == 1)
+			if (io == eInputOuptut.Input && address == DM_INPUT_ADDRESS)
 				return Receiver.DmInput.StreamCec;
 
 			return base.GetCecPort(io, address);
