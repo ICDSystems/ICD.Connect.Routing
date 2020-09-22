@@ -324,7 +324,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// Subscribe to the scaler events.
 		/// </summary>
 		/// <param name="scaler"></param>
-		private void Subscribe(EndpointReceiverBase scaler)
+		protected virtual void Subscribe(TReceiver scaler)
 		{
 			if (scaler == null)
 				return;
@@ -336,7 +336,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// Unsubscribes from the scaler events.
 		/// </summary>
 		/// <param name="scaler"></param>
-		private void Unsubscribe(EndpointReceiverBase scaler)
+		protected virtual void Unsubscribe(TReceiver scaler)
 		{
 			if (scaler == null)
 				return;
