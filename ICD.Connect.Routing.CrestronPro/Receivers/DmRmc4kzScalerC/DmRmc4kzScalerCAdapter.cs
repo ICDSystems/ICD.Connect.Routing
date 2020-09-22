@@ -1,0 +1,320 @@
+﻿using System;
+using System.Collections.Generic;
+using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro.DM.Endpoints;
+using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Controls;
+using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC;
+using ICD.Connect.Routing.Devices;
+using ICD.Connect.Routing.EventArguments;
+using ICD.Connect.Routing.Utils;
+
+namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
+{
+	// ReSharper disable once InconsistentNaming
+	public sealed class DmRmc4kzScalerCAdapter :
+		AbstractDmRmc4KScalerCAdapter
+			<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC, DmRmc4kzScalerCAdapterSettings>, IRouteSwitcherDevice
+	{
+		private const int DM_INPUT_ADDRESS = 1;
+		private const int HDMI_INPUT_ADDRESS = 2;
+		private const int OUTPUT_ADDRESS = 1;
+
+
+		private readonly SwitcherCache m_SwitcherCache;
+
+		public DmRmc4kzScalerCAdapter()
+		{
+			m_SwitcherCache = new SwitcherCache();
+			Subscribe(m_SwitcherCache);
+		}
+
+		#region Instantiate Receiver
+
+		/// <summary>
+		/// Instantiates the receiver with the given IPID against the control system.
+		/// </summary>
+		/// <param name="ipid"></param>
+		/// <param name="controlSystem"></param>
+		/// <returns></returns>
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC InstantiateReceiver(byte ipid, CrestronControlSystem controlSystem)
+		{
+			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC(ipid, controlSystem);
+		}
+
+		/// <summary>
+		/// Instantiates the receiver against the given DM Ouptut and configures it with the given IPID.
+		/// </summary>
+		/// <param name="ipid"></param>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC InstantiateReceiver(byte ipid, DMOutput output)
+		{
+			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC(ipid, output);
+		}
+
+		/// <summary>
+		/// Instantiates the receiver against the given DM Output.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC InstantiateReceiver(DMOutput output)
+		{
+			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC(output);
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Override to add additional/different controls (ie RouteSwitcherControl) to the device
+		/// <remarks>This is called from the abstract contructor, so the concrete constructor
+		/// will not have been called yet. Use with caution.</remarks>
+		/// </summary>
+		protected override void AddControls()
+		{
+			Controls.Add(new RouteSwitcherControl(this, 0));
+		}
+
+		/// <summary>
+		/// Release resources
+		/// </summary>
+		protected override void DisposeFinal(bool disposing)
+		{
+			base.DisposeFinal(disposing);
+
+			Unsubscribe(m_SwitcherCache);
+		}
+
+		#region IO
+
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="io"></param>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override Cec GetCecPort(eInputOuptut io, int address)
+		{
+			if (Receiver == null)
+				throw new InvalidOperationException("No DmRx instantiated");
+
+			if (io == eInputOuptut.Input && address == HDMI_INPUT_ADDRESS)
+				return Receiver.HdmiIn.StreamCec;
+
+			return base.GetCecPort(io, address);
+		}
+
+		#endregion
+
+		#region IRouteSwitcherDevice
+
+		/// <summary>
+		/// Performs the given route operation.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <returns></returns>
+		public bool Route(RouteOperation info)
+		{
+			if (!ContainsInput(info.LocalInput))
+				throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
+			if (!ContainsOutput(info.LocalOutput))
+				throw new IndexOutOfRangeException(string.Format("No output at address {0}", info.LocalOutput));
+
+			Receiver.AudioVideoSource = InputAddressToAudioVideoSource(info.LocalInput);
+			return true;
+		}
+
+		/// <summary>
+		/// Stops routing to the given output.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns>True if successfully cleared.</returns>
+		public bool ClearOutput(int output, eConnectionType type)
+		{
+			Receiver.AudioVideoSource = Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC.eAudioVideoSource.NoSource;
+			return true;
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			return input == HDMI_INPUT_ADDRESS || base.ContainsInput(input);
+		}
+
+		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			if (input == HDMI_INPUT_ADDRESS)
+				return new ConnectorInfo(HDMI_INPUT_ADDRESS, eConnectionType.Audio | eConnectionType.Video);
+
+			return base.GetInput(input);
+		}
+
+		/// <summary>
+		/// Returns the inputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetInputs()
+		{
+			foreach (ConnectorInfo input in GetBaseInputs())
+				yield return input;
+
+			yield return GetInput(HDMI_INPUT_ADDRESS);
+		}
+
+		private IEnumerable<ConnectorInfo> GetBaseInputs()
+		{
+			return base.GetInputs();
+		}
+
+		#endregion
+
+		#region Recevier Callbacks
+
+		/// <summary>
+		/// Subscribe to the scaler events.
+		/// </summary>
+		/// <param name="scaler"></param>
+		protected override void Subscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC scaler)
+		{
+			base.Subscribe(scaler);
+
+			if (scaler == null)
+				return;
+
+			scaler.BaseEvent += ScalerOnBaseEvent;
+			scaler.DmInput.InputStreamChange += DmInputOnInputStreamChange;
+			scaler.HdmiIn.InputStreamChange += HdmiInOnInputStreamChange;
+		}
+
+		/// <summary>
+		/// Subscribe to the scaler events.
+		/// </summary>
+		/// <param name="scaler"></param>
+		protected override void Unsubscribe(Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC scaler)
+		{
+			base.Subscribe(scaler);
+
+			if (scaler == null)
+				return;
+
+			scaler.BaseEvent -= ScalerOnBaseEvent;
+			scaler.DmInput.InputStreamChange -= DmInputOnInputStreamChange;
+			scaler.HdmiIn.InputStreamChange -= HdmiInOnInputStreamChange;
+		}
+
+		private void ScalerOnBaseEvent(GenericBase device, BaseEventArgs args)
+		{
+			if (args.EventId == EndpointOutputStreamEventIds.SelectedSourceFeedbackEventId)
+				m_SwitcherCache.SetInputForOutput(OUTPUT_ADDRESS, AudioVideoSourceToInputAddress(Receiver.AudioVideoSourceFeedback),
+				                                  eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		private void DmInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
+		{
+			if (args.EventId == EndpointInputStreamEventIds.SyncDetectedFeedbackEventId)
+				m_SwitcherCache.SetSourceDetectedState(DM_INPUT_ADDRESS, eConnectionType.Audio | eConnectionType.Video,
+				                                       Receiver.DmInput.SyncDetectedFeedback.BoolValue);
+		}
+
+		private void HdmiInOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
+		{
+			if (args.EventId == EndpointInputStreamEventIds.SyncDetectedFeedbackEventId)
+				m_SwitcherCache.SetSourceDetectedState(HDMI_INPUT_ADDRESS, eConnectionType.Audio | eConnectionType.Video,
+				                                       Receiver.HdmiIn.SyncDetectedFeedback.BoolValue);
+		}
+
+		#endregion
+
+		#region Switcher Cache Callbacks
+
+		private void Subscribe(SwitcherCache switcherCache)
+		{
+			if (switcherCache == null)
+				return;
+
+			switcherCache.OnActiveInputsChanged += SwitcherCacheOnActiveInputsChanged;
+			switcherCache.OnActiveTransmissionStateChanged += SwitcherCacheOnActiveTransmissionStateChanged;
+			switcherCache.OnRouteChange += SwitcherCacheOnRouteChange;
+			switcherCache.OnSourceDetectionStateChange += SwitcherCacheOnSourceDetectionStateChange;
+		}
+
+		private void Unsubscribe(SwitcherCache switcherCache)
+		{
+			if (switcherCache == null)
+				return;
+
+			switcherCache.OnActiveInputsChanged -= SwitcherCacheOnActiveInputsChanged;
+			switcherCache.OnActiveTransmissionStateChanged -= SwitcherCacheOnActiveTransmissionStateChanged;
+			switcherCache.OnRouteChange -= SwitcherCacheOnRouteChange;
+			switcherCache.OnSourceDetectionStateChange -= SwitcherCacheOnSourceDetectionStateChange;
+		}
+
+		private void SwitcherCacheOnActiveInputsChanged(object sender, ActiveInputStateChangeEventArgs args)
+		{
+			RaiseActiveInputsChanged(args.Input, args.Type, args.Active);
+		}
+
+		private void SwitcherCacheOnActiveTransmissionStateChanged(object sender, TransmissionStateEventArgs args)
+		{
+			RaiseActiveTransmissionStateChanged(args.Output, args.Type, args.State);
+		}
+
+		private void SwitcherCacheOnRouteChange(object sender, RouteChangeEventArgs args)
+		{
+			RaiseRouteChange(args.OldInput, args.NewInput, args.Output, args.Type);
+		}
+
+		private void SwitcherCacheOnSourceDetectionStateChange(object sender, SourceDetectionStateChangeEventArgs args)
+		{
+			RaiseSourceDetectionStateChange(args.Input, args.Type, args.State);
+		}
+
+		#endregion
+
+		#region Private Methodds
+
+		private static Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC.eAudioVideoSource InputAddressToAudioVideoSource
+			(int input)
+		{
+			switch (input)
+			{
+				case DM_INPUT_ADDRESS:
+					return Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC.eAudioVideoSource.DM;
+				case HDMI_INPUT_ADDRESS:
+					return Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC.eAudioVideoSource.HDMI;
+				default:
+					throw new ArgumentOutOfRangeException("input", string.Format("No source for input address {0}", input));
+			}
+		}
+
+		private static int? AudioVideoSourceToInputAddress(
+			Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC.eAudioVideoSource source)
+		{
+			switch (source)
+			{
+				case Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC.eAudioVideoSource.NoSource:
+					return null;
+				case Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC.eAudioVideoSource.DM:
+					return DM_INPUT_ADDRESS;
+				case Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC.eAudioVideoSource.HDMI:
+					return HDMI_INPUT_ADDRESS;
+				default:
+					throw new ArgumentOutOfRangeException("source");
+			}
+		}
+
+		#endregion
+	}
+}

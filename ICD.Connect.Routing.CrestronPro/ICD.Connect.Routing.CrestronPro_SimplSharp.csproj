@@ -397,6 +397,8 @@
     <Compile Include="Receivers\AbstractDmRmcScalerC\AbstractDmRmcScalerCAdapter.cs" />
     <Compile Include="Receivers\AbstractDmRmcScalerC\IDmRmcScalerCAdapterSettings.cs" />
     <Compile Include="Receivers\AbstractDmRmcScalerC\IDmRmcScalerCAdapter.cs" />
+    <Compile Include="Receivers\DmRmc4kzScalerC\DmRmc4kzScalerCAdapter.cs" />
+    <Compile Include="Receivers\DmRmc4kzScalerC\DmRmc4kzScalerCAdapterSettings.cs" />
     <Compile Include="Receivers\IEndpointReceiverBaseAdapter.cs" />
     <Compile Include="Receivers\IEndpointReceiverBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapterSettings.cs" />
