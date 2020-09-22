@@ -25,21 +25,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC
 	{
 
 #if SIMPLSHARP
-		/// <summary>
-		/// Gets the port at the given address.
-		/// </summary>
-		/// <param name="address"></param>
-		/// <returns></returns>
-		public override Relay GetRelayPort(int address)
-		{
-			if (Receiver == null)
-				throw new InvalidOperationException("No scaler instantiated");
-
-			if (address >= 1 && address <= Receiver.NumberOfRelayPorts)
-				return Receiver.RelayPorts[(uint)address];
-
-			return base.GetRelayPort(address);
-		}
 
 		/// <summary>
 		/// Gets the port at the given address.
