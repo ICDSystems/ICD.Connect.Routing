@@ -1,6 +1,8 @@
 ﻿using System;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils;
+using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Settings;
@@ -146,6 +148,11 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 			UpdateCachedOnlineStatus();
 		}
 #endif
+
+		protected void RaiseRouteChange(int? oldInput, int? newInput, int output, eConnectionType type)
+		{
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(oldInput, newInput, output, type));
+		}
 
 		#endregion
 

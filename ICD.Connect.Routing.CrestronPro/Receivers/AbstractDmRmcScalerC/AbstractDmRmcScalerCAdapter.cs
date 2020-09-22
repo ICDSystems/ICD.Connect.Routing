@@ -300,5 +300,26 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 					throw new ArgumentException("type");
 			}
 		}
+
+		#endregion
+
+		#region Event Invocation
+
+		protected void RaiseSourceDetectionStateChange(int input, eConnectionType type, bool state)
+		{
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, type, state));
+		}
+
+		protected void RaiseActiveInputsChanged(int input, eConnectionType type, bool active)
+		{
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(input, type, active));
+		}
+
+		protected void RaiseActiveTransmissionStateChanged(int output, eConnectionType type, bool state)
+		{
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, type, state));
+		}
+
+		#endregion
 	}
 }
