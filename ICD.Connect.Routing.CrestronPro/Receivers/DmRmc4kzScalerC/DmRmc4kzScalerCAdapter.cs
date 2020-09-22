@@ -185,19 +185,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 		}
 
 		/// <summary>
-		/// Gets the input at the given address.
-		/// </summary>
-		/// <param name="input"></param>
-		/// <returns></returns>
-		public override ConnectorInfo GetInput(int input)
-		{
-			if (input == HDMI_INPUT_ADDRESS)
-				return new ConnectorInfo(HDMI_INPUT_ADDRESS, eConnectionType.Audio | eConnectionType.Video);
-
-			return base.GetInput(input);
-		}
-
-		/// <summary>
 		/// Returns the inputs.
 		/// </summary>
 		/// <returns></returns>
