@@ -55,7 +55,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 	}
 
 #else
-    public sealed class DmRmc4kScalerCDspAdapter : AbstractDmRmc4kScalerCAdapter<DmRmc4kScalerCDspAdapterSettings>
+    public sealed class DmRmc4kScalerCDspAdapter : AbstractDmRmcScalerCAdapter<DmRmc4kScalerCDspAdapterSettings>
     {
     }
 #endif

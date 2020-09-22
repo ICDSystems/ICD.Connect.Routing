@@ -7,7 +7,6 @@ using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
 #if SIMPLSHARP
-using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
 

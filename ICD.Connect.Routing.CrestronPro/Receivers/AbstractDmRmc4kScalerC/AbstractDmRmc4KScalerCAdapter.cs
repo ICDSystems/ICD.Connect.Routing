@@ -1,9 +1,9 @@
 ﻿using System;
-using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DM;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC

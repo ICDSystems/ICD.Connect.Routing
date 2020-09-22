@@ -1,18 +1,21 @@
-﻿using System;
+﻿using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC;
+#if SIMPLSHARP
+using System;
 using System.Collections.Generic;
-using Crestron.SimplSharpPro;
-using Crestron.SimplSharpPro.DM;
-using Crestron.SimplSharpPro.DM.Endpoints;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
-using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC;
 using ICD.Connect.Routing.Devices;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
+using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro.DM.Endpoints;
+#endif
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 {
+#if SIMPLSHARP
 	// ReSharper disable once InconsistentNaming
 	public sealed class DmRmc4kzScalerCAdapter :
 		AbstractDmRmc4KScalerCAdapter
@@ -31,7 +34,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			Subscribe(m_SwitcherCache);
 		}
 
-		#region Instantiate Receiver
+	#region Instantiate Receiver
 
 		/// <summary>
 		/// Instantiates the receiver with the given IPID against the control system.
@@ -65,7 +68,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			return new Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC(output);
 		}
 
-		#endregion
+	#endregion
 
 		/// <summary>
 		/// Override to add additional/different controls (ie RouteSwitcherControl) to the device
@@ -87,7 +90,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			Unsubscribe(m_SwitcherCache);
 		}
 
-		#region IO
+	#region IO
 
 		/// <summary>
 		/// Gets the port at the given address.
@@ -106,9 +109,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			return base.GetCecPort(io, address);
 		}
 
-		#endregion
+	#endregion
 
-		#region IRouteSwitcherDevice
+	#region IRouteSwitcherDevice
 
 		/// <summary>
 		/// Performs the given route operation.
@@ -178,9 +181,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			return base.GetInputs();
 		}
 
-		#endregion
+	#endregion
 
-		#region Recevier Callbacks
+	#region Recevier Callbacks
 
 		/// <summary>
 		/// Subscribe to the scaler events.
@@ -235,9 +238,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 				                                       Receiver.HdmiIn.SyncDetectedFeedback.BoolValue);
 		}
 
-		#endregion
+	#endregion
 
-		#region Switcher Cache Callbacks
+	#region Switcher Cache Callbacks
 
 		private void Subscribe(SwitcherCache switcherCache)
 		{
@@ -281,9 +284,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			RaiseSourceDetectionStateChange(args.Input, args.Type, args.State);
 		}
 
-		#endregion
+	#endregion
 
-		#region Private Methodds
+	#region Private Methodds
 
 		private static Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC.eAudioVideoSource InputAddressToAudioVideoSource
 			(int input)
@@ -315,6 +318,11 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			}
 		}
 
-		#endregion
+	#endregion
 	}
+#else
+	// ReSharper disable once InconsistentNaming
+	public sealed class DmRmc4kzScalerCAdapter : AbstractDmRmc4kScalerCAdapter<DmRmc4kzScalerCAdapterSettings>
+	{ }
+#endif
 }
