@@ -54,6 +54,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 
 #if SIMPLSHARP
 
+		#region Ports
+
 		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
@@ -100,10 +102,13 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 			if (io == eInputOuptut.Output && address == 1)
 				return Receiver.HdmiOutput.StreamCec;
 
-			string message = string.Format("No CecPort at address {1}:{2} for device {0}", this, io, address);
-			throw new InvalidOperationException(message);
+			return base.GetCecPort(io, address);
 		}
+
+		#endregion
 #endif
+
+		#region Routing
 
 		/// <summary>
 		/// Returns true if a signal is detected at the given input.
