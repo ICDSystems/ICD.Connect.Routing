@@ -1,4 +1,6 @@
 ﻿using System;
+using Crestron.SimplSharpPro.DM;
+using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
@@ -14,7 +16,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC
 #if SIMPLSHARP
 	// ReSharper disable once InconsistentNaming
 	public abstract class AbstractDmRmc4KScalerCAdapter<TScaler, TSettings> : AbstractDmRmcScalerCAdapter<TScaler, TSettings>, IDmRmc4kScalerCAdapter
-		where TScaler : Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC, IRelayPorts
+		where TScaler : Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC, IRelayPorts
 #else
 	// ReSharper disable once InconsistentNaming
 	public abstract class AbstractDmRmc4kScalerCAdapter<TSettings> : AbstractDmRmcScalerCAdapter<TSettings>, IDmRmc4kScalerCAdapter
@@ -30,15 +32,30 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC
 		/// <returns></returns>
 		public override Relay GetRelayPort(int address)
 		{
+			if (Receiver == null)
+				throw new InvalidOperationException("No scaler instantiated");
 
-			if (address < 1 || address > Receiver.NumberOfRelayPorts)
-			{
-				string message = string.Format("{0} has no {1}", this, typeof(Relay).Name);
-				throw new ArgumentOutOfRangeException("address", message);
-			}
+			if (address >= 1 && address <= Receiver.NumberOfRelayPorts)
+				return Receiver.RelayPorts[(uint)address];
 
-			return Receiver.RelayPorts[(uint)address];
+			return base.GetRelayPort(address);
+		}
 
+		/// <summary>
+		/// Gets the port at the given address.
+		/// </summary>
+		/// <param name="io"></param>
+		/// <param name="address"></param>
+		/// <returns></returns>
+		public override Cec GetCecPort(eInputOuptut io, int address)
+		{
+			if (Receiver == null)
+				throw new InvalidOperationException("No DmRx instantiated");
+
+			if (io == eInputOuptut.Input && address == 1)
+				return Receiver.DmInput.StreamCec;
+
+			return base.GetCecPort(io, address);
 		}
 #endif
 
