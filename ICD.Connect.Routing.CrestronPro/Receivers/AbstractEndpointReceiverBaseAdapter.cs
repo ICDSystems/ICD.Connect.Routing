@@ -86,10 +86,21 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// </summary>
 		protected AbstractEndpointReceiverBaseAdapter()
 		{
-			Controls.Add(new RouteMidpointControl(this, 0));
+			// ReSharper disable once DoNotCallOverridableMethodsInConstructor
+			AddControls();
 		}
 
 		#region Methods
+
+		/// <summary>
+		/// Override to add additional/different controls (ie RouteSwitcherControl) to the device
+		/// <remarks>This is called from the abstract contructor, so the concrete constructor
+		/// will not have been called yet. Use with caution.</remarks>
+		/// </summary>
+		protected virtual void AddControls()
+		{
+			Controls.Add(new RouteMidpointControl(this, 0));
+		}
 
 		/// <summary>
 		/// Release resources
