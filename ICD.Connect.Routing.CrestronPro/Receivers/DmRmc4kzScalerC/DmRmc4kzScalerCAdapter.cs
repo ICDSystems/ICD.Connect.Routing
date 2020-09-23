@@ -96,12 +96,11 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			if (Receiver == null)
 				return;
 
-			if (Receiver.HdmiOutput.BlankEnabledFeedback.BoolValue)
-				m_SwitcherCache.SetInputForOutput(OUTPUT_ADDRESS, null,
-				                                  eConnectionType.Audio | eConnectionType.Video);
-			else
-				m_SwitcherCache.SetInputForOutput(OUTPUT_ADDRESS, AudioVideoSourceToInputAddress(Receiver.AudioVideoSourceFeedback),
-				                                  eConnectionType.Audio | eConnectionType.Video);
+			m_SwitcherCache.SetInputForOutput(OUTPUT_ADDRESS,
+			                                  Receiver.HdmiOutput.BlankEnabledFeedback.BoolValue
+				                                  ? null
+				                                  : AudioVideoSourceToInputAddress(Receiver.AudioVideoSourceFeedback),
+			                                  eConnectionType.Audio | eConnectionType.Video);
 		}
 
 		#region Ports
