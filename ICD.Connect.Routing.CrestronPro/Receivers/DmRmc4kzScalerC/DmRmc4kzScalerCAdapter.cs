@@ -87,7 +87,24 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			Unsubscribe(m_SwitcherCache);
 		}
 
-	#region Ports
+		/// <summary>
+		/// Caculates the source currently routed to the output
+		/// Since this device doesn't have a clear output option, we blank it instead
+		/// </summary>
+		private void UpdateOutputRoute()
+		{
+			if (Receiver == null)
+				return;
+
+			if (Receiver.HdmiOutput.BlankEnabledFeedback.BoolValue)
+				m_SwitcherCache.SetInputForOutput(OUTPUT_ADDRESS, null,
+				                                  eConnectionType.Audio | eConnectionType.Video);
+			else
+				m_SwitcherCache.SetInputForOutput(OUTPUT_ADDRESS, AudioVideoSourceToInputAddress(Receiver.AudioVideoSourceFeedback),
+				                                  eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		#region Ports
 
 		/// <summary>
 		/// Gets the port at the given address.
@@ -158,6 +175,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			if (!ContainsOutput(info.LocalOutput))
 				throw new IndexOutOfRangeException(string.Format("No output at address {0}", info.LocalOutput));
 
+			// Disable blank to un-clear the output
+			Receiver.HdmiOutput.BlankDisabled();
 			Receiver.AudioVideoSource = InputAddressToAudioVideoSource(info.LocalInput);
 			return true;
 		}
@@ -170,7 +189,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 		/// <returns>True if successfully cleared.</returns>
 		public bool ClearOutput(int output, eConnectionType type)
 		{
-			Receiver.AudioVideoSource = Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC.eAudioVideoSource.NoSource;
+			// This device doesn't support clearing its output, so we blank it instead
+			Receiver.HdmiOutput.BlankEnabled();
 			return true;
 		}
 
@@ -219,6 +239,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			scaler.BaseEvent += ScalerOnBaseEvent;
 			scaler.DmInput.InputStreamChange += DmInputOnInputStreamChange;
 			scaler.HdmiIn.InputStreamChange += HdmiInOnInputStreamChange;
+			scaler.HdmiOutput.OutputStreamChange += HdmiOutputOnOutputStreamChange;
 		}
 
 		/// <summary>
@@ -239,9 +260,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 
 		private void ScalerOnBaseEvent(GenericBase device, BaseEventArgs args)
 		{
-			if (args.EventId == EndpointOutputStreamEventIds.SelectedSourceFeedbackEventId)
-				m_SwitcherCache.SetInputForOutput(OUTPUT_ADDRESS, AudioVideoSourceToInputAddress(Receiver.AudioVideoSourceFeedback),
-				                                  eConnectionType.Audio | eConnectionType.Video);
+			if (args.EventId == EndpointOutputStreamEventIds.SelectedSourceFeedbackEventId ||
+			    args.EventId == EndpointOutputStreamEventIds.AudioVideoSourceFeedbackEventId)
+				UpdateOutputRoute();
 		}
 
 		private void DmInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
@@ -258,7 +279,14 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 				                                       Receiver.HdmiIn.SyncDetectedFeedback.BoolValue);
 		}
 
-	#endregion
+		private void HdmiOutputOnOutputStreamChange(EndpointOutputStream outputStream, EndpointOutputStreamEventArgs args)
+		{
+			if (args.EventId == EndpointOutputStreamEventIds.BlankEnabledFeedbackEventId ||
+			    args.EventId == EndpointOutputStreamEventIds.BlankDisabledFeedbackEventId)
+				UpdateOutputRoute();
+		}
+
+		#endregion
 
 	#region Switcher Cache Callbacks
 
