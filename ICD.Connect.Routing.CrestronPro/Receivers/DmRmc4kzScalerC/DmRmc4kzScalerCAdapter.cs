@@ -174,6 +174,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			if (!ContainsOutput(info.LocalOutput))
 				throw new IndexOutOfRangeException(string.Format("No output at address {0}", info.LocalOutput));
 
+			if (Receiver == null)
+				throw new InvalidOperationException("No DmRx instantiated");
+
 			// Disable blank to un-clear the output
 			Receiver.HdmiOutput.BlankDisabled();
 			Receiver.AudioVideoSource = InputAddressToAudioVideoSource(info.LocalInput);
@@ -188,6 +191,9 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 		/// <returns>True if successfully cleared.</returns>
 		public bool ClearOutput(int output, eConnectionType type)
 		{
+			if (Receiver == null)
+				throw new InvalidOperationException("No DmRx instantiated");
+
 			// This device doesn't support clearing its output, so we blank it instead
 			Receiver.HdmiOutput.BlankEnabled();
 			return true;
