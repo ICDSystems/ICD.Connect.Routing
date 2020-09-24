@@ -52,38 +52,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100CBase
 
 #if SIMPLSHARP
 		/// <summary>
-		/// Gets the port at the given addres.
-		/// </summary>
-		/// <param name="address"></param>
-		/// <returns></returns>
-		public override ComPort GetComPort(int address)
-		{
-			if (Receiver == null)
-				throw new InvalidOperationException("No scaler instantiated");
-
-			if (address >= 1 && address <= Receiver.NumberOfComPorts)
-				return Receiver.ComPorts[(uint)address];
-
-			return base.GetComPort(address);
-		}
-
-		/// <summary>
-		/// Gets the port at the given addres.
-		/// </summary>
-		/// <param name="address"></param>
-		/// <returns></returns>
-		public override IROutputPort GetIrOutputPort(int address)
-		{
-			if (Receiver == null)
-				throw new InvalidOperationException("No scaler instantiated");
-
-			if (address >= 1 && address <= Receiver.NumberOfIROutputPorts)
-				return Receiver.IROutputPorts[(uint)address];
-
-			return base.GetIrOutputPort(address);
-		}
-
-		/// <summary>
 		/// Gets the port at the given address.
 		/// </summary>
 		/// <param name="io"></param>

@@ -7,7 +7,6 @@ using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
 #if SIMPLSHARP
-using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
 
@@ -25,6 +24,10 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 #endif
 		where TSettings : IDmRmcScalerCAdapterSettings, new()
 	{
+
+		protected const int DM_INPUT_ADDRESS = 1;
+		protected const int OUTPUT_ADDRESS = 1;
+
 		/// <summary>
 		/// Raised when an input source status changes.
 		/// </summary>
@@ -54,37 +57,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 
 #if SIMPLSHARP
 
-		/// <summary>
-		/// Gets the port at the given addres.
-		/// </summary>
-		/// <param name="address"></param>
-		/// <returns></returns>
-		public override ComPort GetComPort(int address)
-		{
-			if (Receiver == null)
-				throw new InvalidOperationException("No scaler instantiated");
-
-			if (address >= 1 && address <= Receiver.NumberOfComPorts)
-				return Receiver.ComPorts[(uint)address];
-
-			return base.GetComPort(address);
-		}
-
-		/// <summary>
-		/// Gets the port at the given addres.
-		/// </summary>
-		/// <param name="address"></param>
-		/// <returns></returns>
-		public override IROutputPort GetIrOutputPort(int address)
-		{
-			if (Receiver == null)
-				throw new InvalidOperationException("No scaler instantiated");
-
-			if (address >= 1 && address <= Receiver.NumberOfIROutputPorts)
-				return Receiver.IROutputPorts[(uint)address];
-
-			return base.GetIrOutputPort(address);
-		}
+		#region Ports
 
 		/// <summary>
 		/// Gets the port at the given address.
@@ -97,13 +70,16 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 			if (Receiver == null)
 				throw new InvalidOperationException("No DmRx instantiated");
 
-			if (io == eInputOuptut.Output && address == 1)
+			if (io == eInputOuptut.Output && address == OUTPUT_ADDRESS)
 				return Receiver.HdmiOutput.StreamCec;
 
-			string message = string.Format("No CecPort at address {1}:{2} for device {0}", this, io, address);
-			throw new InvalidOperationException(message);
+			return base.GetCecPort(io, address);
 		}
+
+		#endregion
 #endif
+
+		#region Routing
 
 		/// <summary>
 		/// Returns true if a signal is detected at the given input.
@@ -160,7 +136,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			yield return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+			yield return GetInput(DM_INPUT_ADDRESS);
 		}
 
 		/// <summary>
@@ -170,10 +146,10 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 		/// <returns></returns>
 		public override ConnectorInfo GetInput(int input)
 		{
-			if (input != 1)
+			if (!ContainsInput(input))
 				throw new ArgumentOutOfRangeException("input");
 
-			return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+			return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
 		}
 
 		/// <summary>
@@ -183,7 +159,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 		/// <returns></returns>
 		public override bool ContainsInput(int input)
 		{
-			return input == 1;
+			return input == DM_INPUT_ADDRESS;
 		}
 
 		/// <summary>
@@ -228,7 +204,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			yield return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+			yield return GetOutput(OUTPUT_ADDRESS);
 		}
 
 		/// <summary>
@@ -238,10 +214,10 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 		/// <returns></returns>
 		public override ConnectorInfo GetOutput(int output)
 		{
-			if (output != 1)
+			if (!ContainsOutput(output))
 				throw new ArgumentOutOfRangeException("output");
 
-			return new ConnectorInfo(1, eConnectionType.Audio | eConnectionType.Video);
+			return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
 		}
 
 		/// <summary>
@@ -251,7 +227,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 		/// <returns></returns>
 		public override bool ContainsOutput(int output)
 		{
-			return output == 1;
+			return output == OUTPUT_ADDRESS;
 		}
 
 		/// <summary>
@@ -300,5 +276,26 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 					throw new ArgumentException("type");
 			}
 		}
+
+		#endregion
+
+		#region Event Invocation
+
+		protected void RaiseSourceDetectionStateChange(int input, eConnectionType type, bool state)
+		{
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, type, state));
+		}
+
+		protected void RaiseActiveInputsChanged(int input, eConnectionType type, bool active)
+		{
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(input, type, active));
+		}
+
+		protected void RaiseActiveTransmissionStateChanged(int output, eConnectionType type, bool state)
+		{
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, type, state));
+		}
+
+		#endregion
 	}
 }
