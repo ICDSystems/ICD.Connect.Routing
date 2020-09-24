@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [16.1.2] - 2020-09-24
+### Changed
+ - Fixed a bug where default crestron activities were not being initialized
+
 ## [16.1.1] - 2020-08-13
 ### Changed
  - Telemetry namespace change
