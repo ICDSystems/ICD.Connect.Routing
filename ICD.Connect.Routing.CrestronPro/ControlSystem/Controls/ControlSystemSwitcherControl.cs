@@ -507,7 +507,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 		/// <returns></returns>
 		private eDmps34KAudioOutSourceDevice GetUnusedMixer()
 		{
-			IcdHashSet<eDmps34KAudioOutSourceDevice> avaliableMixers = new IcdHashSet<eDmps34KAudioOutSourceDevice>
+			IcdHashSet<eDmps34KAudioOutSourceDevice> availableMixers = new IcdHashSet<eDmps34KAudioOutSourceDevice>
 			{
 				eDmps34KAudioOutSourceDevice.DigitalMixer1,
 				eDmps34KAudioOutSourceDevice.DigitalMixer2
@@ -517,16 +517,16 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 			Parent.ControlSystem
 						  .SwitcherOutputs
 						  .OfType<Card.Dmps3HdmiOutputBackend>()
-						  .ForEach(c => avaliableMixers.Remove(c.AudioOutSourceDeviceFeedback));
+						  .ForEach(c => availableMixers.Remove(c.AudioOutSourceDeviceFeedback));
 
 			// Check DM outputs for used mixers
 			Parent.ControlSystem
 						.SwitcherOutputs
 						.OfType<Card.Dmps3DmOutputBackend>()
-						.ForEach(c => avaliableMixers.Remove(c.AudioOutSourceDeviceFeedback));
+						.ForEach(c => availableMixers.Remove(c.AudioOutSourceDeviceFeedback));
 
-			if (avaliableMixers.Count > 0)
-				return avaliableMixers.First();
+			if (availableMixers.Count > 0)
+				return availableMixers.First();
 
 			// No available mixers
 			throw new InvalidOperationException("No unused mixers available");

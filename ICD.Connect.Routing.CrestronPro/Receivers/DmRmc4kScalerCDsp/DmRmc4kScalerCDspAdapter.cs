@@ -1,5 +1,6 @@
 ﻿using System;
-using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC;
+using ICD.Connect.Misc.CrestronPro.Devices;
+using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -13,23 +14,25 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 #if SIMPLSHARP
 // ReSharper disable once InconsistentNaming
 	public sealed class DmRmc4kScalerCDspAdapter :
-		AbstractDmRmc4KScalerCAdapter
+		AbstractDmRmcScalerCAdapter
 			<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp, DmRmc4kScalerCDspAdapterSettings>
 	{
+
 		/// <summary>
 		/// Gets the port at the given address.
 		/// </summary>
+		/// <param name="io"></param>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public override Relay GetRelayPort(int address)
+		public override Cec GetCecPort(eInputOuptut io, int address)
 		{
 			if (Receiver == null)
 				throw new InvalidOperationException("No scaler instantiated");
 
-			if (address == 1)
-				return Receiver.RelayPorts[1];
+			if (io == eInputOuptut.Input && address == DM_INPUT_ADDRESS)
+				return Receiver.DmInput.StreamCec;
 
-			return base.GetRelayPort(address);
+			return base.GetCecPort(io, address);
 		}
 
 		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerCDsp InstantiateReceiver(byte ipid,
@@ -52,7 +55,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kScalerCDsp
 	}
 
 #else
-    public sealed class DmRmc4kScalerCDspAdapter : AbstractDmRmc4kScalerCAdapter<DmRmc4kScalerCDspAdapterSettings>
+    public sealed class DmRmc4kScalerCDspAdapter : AbstractDmRmcScalerCAdapter<DmRmc4kScalerCDspAdapterSettings>
     {
     }
 #endif

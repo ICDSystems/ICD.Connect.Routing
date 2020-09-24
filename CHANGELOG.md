@@ -33,6 +33,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Using new logging context
  - Fixed a bug where switcher telemetry would fail to build due to missing members
 
+## [15.5.0] - 2020-09-23
+### Added
+ - Added support for DM-RMC-4KZ-SCALER-C as a switcher device
+
+### Changed
+ - Changed GetPort methods for DM Receiver endpoints to be more universal (except CEC)
+ - Fixed inheritance issues with DM-RMC-4K-SCALER-C and DM-RMC-4K-SCALER-C-DSP
+
 ## [15.4.1] - 2020-09-02
 ### Changed
  - Fixed a bug where DMPS3 microphone and volume controls would throw an exception on disposal

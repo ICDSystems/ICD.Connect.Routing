@@ -1,22 +1,24 @@
 ﻿using System;
 using ICD.Connect.Devices.Controls;
+using ICD.Common.Utils.Extensions;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils;
+using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Settings;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Routing.Devices;
 using ICD.Connect.Routing.EventArguments;
+using ICD.Common.Properties;
+using ICD.Common.Utils;
+using ICD.Connect.API.Nodes;
+using ICD.Common.Utils.Services.Logging;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
 using Crestron.SimplSharpPro.DM.Endpoints.Receivers;
-using ICD.Common.Properties;
-using ICD.Common.Utils;
-using ICD.Connect.API.Nodes;
-using ICD.Common.Utils.Services.Logging;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers
@@ -129,6 +131,11 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		}
 #endif
 
+		protected void RaiseRouteChange(int? oldInput, int? newInput, int output, eConnectionType type)
+		{
+			OnRouteChange.Raise(this, new RouteChangeEventArgs(oldInput, newInput, output, type));
+		}
+
 		#endregion
 
 		#region IO
@@ -139,8 +146,13 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public virtual ComPort GetComPort(int address)
+		public ComPort GetComPort(int address)
 		{
+			IComPorts comPort = Receiver as IComPorts;
+
+			if (comPort != null && address >= 1 && address <= comPort.NumberOfComPorts)
+				return comPort.ComPorts[(uint)address];
+
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(ComPort).Name, address);
 			throw new ArgumentOutOfRangeException("address", message);
 		}
@@ -150,8 +162,13 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public virtual IROutputPort GetIrOutputPort(int address)
+		public IROutputPort GetIrOutputPort(int address)
 		{
+			IIROutputPorts irPort = Receiver as IIROutputPorts;
+
+			if (irPort != null && address >= 1 && address <= irPort.NumberOfIROutputPorts)
+				return irPort.IROutputPorts[(uint)address];
+
 			string message = string.Format("{0} has no {1} with address {2}", this, typeof(IROutputPort).Name, address);
 			throw new ArgumentOutOfRangeException("address", message);
 		}
@@ -161,8 +178,13 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
-		public virtual Relay GetRelayPort(int address)
+		public Relay GetRelayPort(int address)
 		{
+			IRelayPorts relayPort = Receiver as IRelayPorts;
+
+			if (relayPort != null && address >= 1 && address <= relayPort.NumberOfRelayPorts)
+				return relayPort.RelayPorts[(uint)address];
+
 			string message = string.Format("{0} has no {1}", this, typeof(Relay).Name);
 			throw new ArgumentOutOfRangeException("address", message);
 		}
@@ -174,6 +196,17 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// <returns></returns>
 		public virtual Versiport GetIoPort(int address)
 		{
+			// No DM endpoints currently implement versiports, but added for future use
+			
+			// ReSharper disable once ExpressionIsAlwaysNull
+			// ReSharper disable once SuspiciousTypeConversion.Global
+			IIOPorts ioPorts = Receiver as IIOPorts;
+
+			// ReSharper disable once ConditionIsAlwaysTrueOrFalse
+			if (ioPorts != null && address >= 1 && address <= ioPorts.NumberOfVersiPorts)
+				// ReSharper disable once HeuristicUnreachableCode
+				return ioPorts.VersiPorts[(uint)address];
+
 			string message = string.Format("{0} has no {1}", this, typeof(Versiport).Name);
 			throw new ArgumentOutOfRangeException("address", message);
 		}
@@ -185,6 +218,11 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// <returns></returns>
 		public DigitalInput GetDigitalInputPort(int address)
 		{
+			IDigitalInputPorts ioPorts = Receiver as IDigitalInputPorts;
+
+			if (ioPorts != null && address >= 1 && address <= ioPorts.NumberOfDigitalInputPorts)
+				return ioPorts.DigitalInputPorts[(uint)address];
+
 			string message = string.Format("{0} has no {1}", this, typeof(DigitalInput).Name);
 			throw new ArgumentOutOfRangeException("address", message);
 		}
@@ -266,6 +304,16 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		}
 
 		/// <summary>
+		/// Override to add additional/different controls (ie RouteSwitcherControl) to the device
+		/// <remarks>This is called from the abstract contructor, so the concrete constructor
+		/// will not have been called yet. Use with caution.</remarks>
+		/// </summary>
+		protected virtual IRouteMidpointControl CreateRouteControl()
+		{
+			return new RouteMidpointControl(this, 0);
+		}
+
+		/// <summary>
 		/// Override to add controls to the device.
 		/// </summary>
 		/// <param name="settings"></param>
@@ -275,7 +323,8 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		{
 			base.AddControls(settings, factory, addControl);
 
-			addControl(new RouteMidpointControl(this, 0));
+			IRouteMidpointControl control = CreateRouteControl();
+			addControl(control);
 		}
 
 #if SIMPLSHARP
@@ -312,7 +361,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// Subscribe to the scaler events.
 		/// </summary>
 		/// <param name="scaler"></param>
-		private void Subscribe(EndpointReceiverBase scaler)
+		protected virtual void Subscribe(TReceiver scaler)
 		{
 			if (scaler == null)
 				return;
@@ -324,7 +373,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// Unsubscribes from the scaler events.
 		/// </summary>
 		/// <param name="scaler"></param>
-		private void Unsubscribe(EndpointReceiverBase scaler)
+		protected virtual void Unsubscribe(TReceiver scaler)
 		{
 			if (scaler == null)
 				return;
