@@ -1,4 +1,4 @@
-﻿using ICD.Connect.Devices.Controls;
+﻿using ICD.Connect.Devices.Controls.Power;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 {

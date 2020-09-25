@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using ICD.Connect.API.Attributes;
 using ICD.Connect.Devices;
-using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.CrestronSPlus.Devices.SPlus;
+using ICD.Connect.Devices.Controls.Power;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Proxy;
 

@@ -174,18 +174,24 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			get { return m_ServerUrl; }
 			private set
 			{
-				if (value == m_ServerUrl)
-					return;
+				try
+				{
+					if (value == m_ServerUrl)
+						return;
 
-				m_ServerUrl = value;
+					m_ServerUrl = value;
 
-				Logger.LogSetTo(eSeverity.Informational, "ServerUrl", m_ServerUrl);
-				Activities.LogActivity(string.IsNullOrEmpty(m_ServerUrl)
-					                   ? new Activity(Activity.ePriority.Medium, "Server URL", "Streaming from " + m_ServerUrl,
-					                                  eSeverity.Informational)
-					                   : new Activity(Activity.ePriority.High, "Server URL", "No Server URL", eSeverity.Error));
+					Logger.LogSetTo(eSeverity.Informational, "ServerUrl", m_ServerUrl);
 
-				OnServerUrlChange.Raise(this, new StringEventArgs(m_ServerUrl));
+					OnServerUrlChange.Raise(this, new StringEventArgs(m_ServerUrl));
+				}
+				finally
+				{
+					Activities.LogActivity(string.IsNullOrEmpty(m_ServerUrl)
+						                       ? new Activity(Activity.ePriority.Medium, "Server URL", "Streaming from " + m_ServerUrl,
+						                                      eSeverity.Informational)
+						                       : new Activity(Activity.ePriority.High, "Server URL", "No Server URL", eSeverity.Error));
+				}
 			}
 		}
 
@@ -285,6 +291,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			SetStreamer(parent.Streamer as Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass);
 #endif
+
+			// Initialize activities
+			ServerUrl = null;
 		}
 
 		/// <summary>

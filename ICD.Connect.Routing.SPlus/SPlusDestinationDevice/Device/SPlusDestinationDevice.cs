@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.CrestronSPlus.Devices.SPlus;
+using ICD.Connect.Devices.Controls.Power;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs;
 using ICD.Connect.Settings;
