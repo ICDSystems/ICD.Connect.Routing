@@ -8,6 +8,7 @@ using ICD.Connect.Devices;
 using ICD.Connect.Protocol;
 using ICD.Connect.Protocol.EventArguments;
 using ICD.Connect.Protocol.Network.Ports.Tcp;
+using ICD.Connect.Protocol.Ports;
 using ICD.Connect.Protocol.SerialBuffers;
 using ICD.Connect.Protocol.XSig;
 
@@ -50,7 +51,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 			m_ConnectionStateManager.OnIsOnlineStateChanged += ClientOnIsOnlineStateChanged;
 			m_ConnectionStateManager.OnSerialDataReceived += ClientOnSerialDataReceived;
 			
-			m_ConnectionStateManager.SetPort(m_Client);
+			SetPort(m_Client);
 		}
 
 		/// <summary>
@@ -64,7 +65,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 
 			Unsubscribe(m_Buffer);
 
-			m_ConnectionStateManager.SetPort(null);
+			SetPort(null);
 			m_ConnectionStateManager.OnIsOnlineStateChanged -= ClientOnIsOnlineStateChanged;
 			m_ConnectionStateManager.OnSerialDataReceived -= ClientOnSerialDataReceived;
             m_ConnectionStateManager.Dispose();
@@ -91,6 +92,11 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		{
 			string data = StringUtils.ToString(sig.Data);
 			return m_ConnectionStateManager.Send(data);
+		}
+
+		private void SetPort(ISerialPort port)
+		{
+			m_ConnectionStateManager.SetPort(port, false);
 		}
 
 		#endregion
@@ -148,6 +154,21 @@ namespace ICD.Connect.Routing.Crestron2Series.Devices
 		{
 			IXSig sig = XSigParser.Parse(stringEventArgs.Data);
 			OnSigEvent.Raise(this, new XSigEventArgs(sig));
+		}
+
+		#endregion
+
+		#region Settings
+
+		/// <summary>
+		/// Override to add actions on StartSettings
+		/// This should be used to start communications with devices and perform initial actions
+		/// </summary>
+		protected override void StartSettingsFinal()
+		{
+			base.StartSettingsFinal();
+
+			m_ConnectionStateManager.Start();
 		}
 
 		#endregion

@@ -4,7 +4,6 @@ using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Common.Utils.Timers;
-using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Protocol;
@@ -176,6 +175,11 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			SendCommand("W{0}CV", (ushort)verbosity);
 		}
 
+		private void SetPort(ISerialPort port)
+		{
+			m_ConnectionStateManager.SetPort(port, false);
+		}
+
 		#endregion
 
 		#region Buffer Callbacks
@@ -320,7 +324,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 			m_ComSpecProperties.ClearComSpecProperties();
 			m_NetworkProperties.ClearNetworkProperties();
 
-			m_ConnectionStateManager.SetPort(null);
+			SetPort(null);
 		}
 
 		/// <summary>
@@ -366,7 +370,18 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers
 				}
 			}
 
-			m_ConnectionStateManager.SetPort(port);
+			SetPort(port);
+		}
+
+		/// <summary>
+		/// Override to add actions on StartSettings
+		/// This should be used to start communications with devices and perform initial actions
+		/// </summary>
+		protected override void StartSettingsFinal()
+		{
+			base.StartSettingsFinal();
+
+			m_ConnectionStateManager.Start();
 		}
 
 		#endregion
