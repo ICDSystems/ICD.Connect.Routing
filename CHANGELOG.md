@@ -5,8 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [15.6.0] - 2020-10-06
 ### Changed
- - AtUhdHdvs300,Dmps300CDevice (2 Series), ExtronSwitchers, ExtronDtpComPort  - Implemeted StartSettings to start communications with device
+ - AtUhdHdvs300,Dmps300CDevice (2 Series), ExtronSwitchers, ExtronDtpComPort - Implemeted StartSettings to start communications with device
 
 ## [15.5.0] - 2020-09-23
 ### Added
