@@ -105,6 +105,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 		{
 			m_Parent.InitializeComPort(comSpec.BaudRate, comSpec.NumberOfDataBits, comSpec.ParityType, comSpec.NumberOfStopBits);
 
+			//todo: Is this correct?  Can't set comspec on the network port?
 			IComPort comPort = m_Port as IComPort;
 			if (comPort != null)
 				comPort.SetComPortSpec(comSpec);
@@ -127,7 +128,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 			if (m_ConnectionStateManager.PortNumber == null)
 			{
 				m_Port = m_Parent.GetSerialInsertionPort();
-				m_ConnectionStateManager.SetPort(m_Port);
+				m_ConnectionStateManager.SetPort(m_Port, true);
 			}
 
 			m_ConnectionStateManager.Connect();
