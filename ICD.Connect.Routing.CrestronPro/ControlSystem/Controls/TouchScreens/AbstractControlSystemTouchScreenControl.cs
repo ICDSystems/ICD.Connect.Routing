@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Panels.SigCollections;
@@ -37,6 +38,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		private readonly DeviceBooleanInputCollectionAdapter m_BooleanInput;
 		private readonly DeviceUShortInputCollectionAdapter m_UShortInput;
 		private readonly DeviceStringInputCollectionAdapter m_StringInput;
+		private readonly DeviceBooleanOutputCollectionAdapter m_BooleanOutput;
+		private readonly DeviceUShortOutputCollectionAdapter m_UShortOutput;
+		private readonly DeviceStringOutputCollectionAdapter m_StringOutput;
 		private readonly SmartObjectCollectionAdapter m_SmartObjects;
 #endif
 
@@ -113,6 +117,51 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		}
 
 		/// <summary>
+		/// Collection of Boolean Outputs sent to the panel.
+		/// </summary>
+		public IDeviceBooleanOutputCollection BooleanOutput
+		{
+			get
+			{
+#if SIMPLSHARP
+				return m_BooleanOutput;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Collection of Integer Outputs sent to the panel.
+		/// </summary>
+		public IDeviceUShortOutputCollection UShortOutput
+		{
+			get
+			{
+#if SIMPLSHARP
+				return m_UShortOutput;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
+		/// Collection of String Outputs sent to the panel.
+		/// </summary>
+		public IDeviceStringOutputCollection StringOutput
+		{
+			get
+			{
+#if SIMPLSHARP
+				return m_StringOutput;
+#else
+				throw new NotSupportedException();
+#endif
+			}
+		}
+
+		/// <summary>
 		/// Collection containing the loaded SmartObjects of this panel.
 		/// </summary>
 		public override ISmartObjectCollection SmartObjects
@@ -162,6 +211,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			m_BooleanInput = new DeviceBooleanInputCollectionAdapter(m_TouchScreen.BooleanInput);
 			m_UShortInput = new DeviceUShortInputCollectionAdapter(m_TouchScreen.UShortInput);
 			m_StringInput = new DeviceStringInputCollectionAdapter(m_TouchScreen.StringInput);
+			m_BooleanOutput = new DeviceBooleanOutputCollectionAdapter(m_TouchScreen.BooleanOutput);
+			m_UShortOutput = new DeviceUShortOutputCollectionAdapter(m_TouchScreen.UShortOutput);
+			m_StringOutput = new DeviceStringOutputCollectionAdapter(m_TouchScreen.StringOutput);
 
 			Subscribe(m_SmartObjects);
 #endif
@@ -183,38 +235,39 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 #endif
 		}
 
-#region Private Methods
+		#region Methods
 
 		/// <summary>
-		/// Raises the callbacks registered with the signature.
+		/// Gets the created input sigs.
 		/// </summary>
-		/// <param name="sigInfo"></param>
-		private void RaiseOutputSigChangeCallback(SigInfo sigInfo)
+		/// <returns></returns>
+		public override IEnumerable<SigInfo> GetInputSigInfo()
 		{
-			m_SigCallbacks.RaiseSigChangeCallback(sigInfo);
+			foreach (IBoolInputSig item in BooleanInput)
+				yield return new SigInfo(item, 0);
+
+			foreach (IUShortInputSig item in UShortInput)
+				yield return new SigInfo(item, 0);
+
+			foreach (IStringInputSig item in StringInput)
+				yield return new SigInfo(item, 0);
 		}
 
 		/// <summary>
-		/// Called when a sig changes state.
+		/// Gets the created output sigs.
 		/// </summary>
-		/// <param name="sender"></param>
-		/// <param name="sigInfoEventArgs"></param>
-		private void SigCallbacksOnAnyCallback(object sender, SigInfoEventArgs sigInfoEventArgs)
+		/// <returns></returns>
+		public override IEnumerable<SigInfo> GetOutputSigInfo()
 		{
-			RaiseOnAnyOutput(sigInfoEventArgs.Data);
+			foreach (IBoolOutputSig item in BooleanOutput)
+				yield return new SigInfo(item, 0);
+
+			foreach (IUShortOutputSig item in UShortOutput)
+				yield return new SigInfo(item, 0);
+
+			foreach (IStringOutputSig item in StringOutput)
+				yield return new SigInfo(item, 0);
 		}
-
-		/// <summary>
-		/// Raises the OnAnyOutput event.
-		/// </summary>
-		private void RaiseOnAnyOutput(SigInfo sigInfo)
-		{
-			OnAnyOutput.Raise(this, new SigInfoEventArgs(sigInfo));
-		}
-
-#endregion
-
-#region Panel Methods
 
 		/// <summary>
 		/// Clears the assigned input sig values.
@@ -311,7 +364,38 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 
 #endregion
 
-#region Panel Callbacks
+		#region Private Methods
+
+		/// <summary>
+		/// Raises the callbacks registered with the signature.
+		/// </summary>
+		/// <param name="sigInfo"></param>
+		private void RaiseOutputSigChangeCallback(SigInfo sigInfo)
+		{
+			m_SigCallbacks.RaiseSigChangeCallback(sigInfo);
+		}
+
+		/// <summary>
+		/// Called when a sig changes state.
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="sigInfoEventArgs"></param>
+		private void SigCallbacksOnAnyCallback(object sender, SigInfoEventArgs sigInfoEventArgs)
+		{
+			RaiseOnAnyOutput(sigInfoEventArgs.Data);
+		}
+
+		/// <summary>
+		/// Raises the OnAnyOutput event.
+		/// </summary>
+		private void RaiseOnAnyOutput(SigInfo sigInfo)
+		{
+			OnAnyOutput.Raise(this, new SigInfoEventArgs(sigInfo));
+		}
+
+		#endregion
+
+		#region Panel Callbacks
 
 #if SIMPLSHARP
 		/// <summary>
