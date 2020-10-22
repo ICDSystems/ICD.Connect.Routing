@@ -136,7 +136,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			m_Cache = new RoutingCache(this);
 
-			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
+			m_Connections.OnCollectionChanged += ConnectionsOnConnectionsChanged;
 		}
 
 		/// <summary>
@@ -1449,7 +1449,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		protected override void ClearSettingsFinal()
 		{
-			m_Connections.OnChildrenChanged -= ConnectionsOnConnectionsChanged;
+			m_Connections.OnCollectionChanged -= ConnectionsOnConnectionsChanged;
 
 			base.ClearSettingsFinal();
 
@@ -1464,7 +1464,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			SubscribeDestinationControls();
 			SubscribeSourceControls();
 
-			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
+			m_Connections.OnCollectionChanged += ConnectionsOnConnectionsChanged;
 		}
 
 		protected override void CopySettingsFinal(RoutingGraphSettings settings)
@@ -1490,7 +1490,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 		protected override void ApplySettingsFinal(RoutingGraphSettings settings, IDeviceFactory factory)
 		{
-			m_Connections.OnChildrenChanged -= ConnectionsOnConnectionsChanged;
+			m_Connections.OnCollectionChanged -= ConnectionsOnConnectionsChanged;
 
 			// First load in all of the devices
 			factory.LoadOriginators<IDeviceBase>();
@@ -1522,7 +1522,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			m_Cache.RebuildCache();
 
-			m_Connections.OnChildrenChanged += ConnectionsOnConnectionsChanged;
+			m_Connections.OnCollectionChanged += ConnectionsOnConnectionsChanged;
 		}
 
 		private IEnumerable<T> GetOriginatorsSkipExceptions<T>(IEnumerable<ISettings> originatorSettings,
