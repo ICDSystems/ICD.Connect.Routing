@@ -29,6 +29,10 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 		{
 			m_SwitcherCache = new SwitcherCache();
 			Subscribe(m_SwitcherCache);
+
+			//Set detected to true for all inputs
+			foreach (ConnectorInfo input in GetInputs())
+				m_SwitcherCache.SetSourceDetectedState(input.Address, input.ConnectionType, true);
 		}
 
 	#region Instantiate Receiver
@@ -242,8 +246,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 				return;
 
 			scaler.BaseEvent += ScalerOnBaseEvent;
-			scaler.DmInput.InputStreamChange += DmInputOnInputStreamChange;
-			scaler.HdmiIn.InputStreamChange += HdmiInOnInputStreamChange;
 			scaler.HdmiOutput.OutputStreamChange += HdmiOutputOnOutputStreamChange;
 		}
 
@@ -259,8 +261,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 				return;
 
 			scaler.BaseEvent -= ScalerOnBaseEvent;
-			scaler.DmInput.InputStreamChange -= DmInputOnInputStreamChange;
-			scaler.HdmiIn.InputStreamChange -= HdmiInOnInputStreamChange;
+			scaler.HdmiOutput.OutputStreamChange -= HdmiOutputOnOutputStreamChange;
 		}
 
 		private void ScalerOnBaseEvent(GenericBase device, BaseEventArgs args)
@@ -268,20 +269,6 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			if (args.EventId == EndpointOutputStreamEventIds.SelectedSourceFeedbackEventId ||
 			    args.EventId == EndpointOutputStreamEventIds.AudioVideoSourceFeedbackEventId)
 				UpdateOutputRoute();
-		}
-
-		private void DmInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
-		{
-			if (args.EventId == EndpointInputStreamEventIds.SyncDetectedFeedbackEventId)
-				m_SwitcherCache.SetSourceDetectedState(DM_INPUT_ADDRESS, eConnectionType.Audio | eConnectionType.Video,
-				                                       Receiver.DmInput.SyncDetectedFeedback.BoolValue);
-		}
-
-		private void HdmiInOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
-		{
-			if (args.EventId == EndpointInputStreamEventIds.SyncDetectedFeedbackEventId)
-				m_SwitcherCache.SetSourceDetectedState(HDMI_INPUT_ADDRESS, eConnectionType.Audio | eConnectionType.Video,
-				                                       Receiver.HdmiIn.SyncDetectedFeedback.BoolValue);
 		}
 
 		private void HdmiOutputOnOutputStreamChange(EndpointOutputStream outputStream, EndpointOutputStreamEventArgs args)
