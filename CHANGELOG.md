@@ -37,6 +37,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Using new logging context
  - Fixed a bug where switcher telemetry would fail to build due to missing members
 
+## [15.6.1] - 2020-11-16
+### Changed
+ - Set inputs on 4kzScalerC to always detected, since they don't work well from Crestron
+ - Inputs on DmBaseT endpoints are always detected
+
 ## [15.6.0] - 2020-10-06
 ### Changed
  - AtUhdHdvs300,Dmps300CDevice (2 Series), ExtronSwitchers, ExtronDtpComPort - Implemeted StartSettings to start communications with device

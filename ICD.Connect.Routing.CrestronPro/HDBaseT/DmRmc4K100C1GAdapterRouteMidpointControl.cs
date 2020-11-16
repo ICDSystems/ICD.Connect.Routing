@@ -47,17 +47,15 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 			return new ConnectorInfo(address, eConnectionType.Audio | eConnectionType.Video);
 		}
 
-		#endregion
-
 		protected override void UpdateCache(SwitcherCache cache)
 		{
 			base.UpdateCache(cache);
 
-			DMInput input = Device == null ? null : Device.DMInputOutput as DMInput;
-			bool detected = input != null && input.VideoDetectedFeedback.BoolValue;
-
-			cache.SetSourceDetectedState(1, eConnectionType.Audio | eConnectionType.Video | eConnectionType.Usb, detected);
+			//Always detected, cause this device won't report detection anyway
+			cache.SetSourceDetectedState(1, eConnectionType.Audio | eConnectionType.Video | eConnectionType.Usb, true);
 		}
+
+		#endregion
 	}
 }
 #endif
