@@ -1,4 +1,5 @@
-﻿#if SIMPLSHARP
+﻿using ICD.Connect.Routing.Utils;
+#if SIMPLSHARP
 using System;
 using ICD.Connect.Routing.Connections;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
@@ -43,6 +44,14 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 				throw new ArgumentOutOfRangeException("address");
 
 			return new ConnectorInfo(address, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		protected override void UpdateCache(SwitcherCache cache)
+		{
+			base.UpdateCache(cache);
+
+			//Always detected, cause this device won't report detection anyway
+			cache.SetSourceDetectedState(1, eConnectionType.Audio | eConnectionType.Video, true);
 		}
 
 		#endregion
