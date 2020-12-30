@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
@@ -75,6 +76,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			                                                                       "Routes source to destination. Usage: Route <sourceId> <destId> <connType> <roomId>",
 			                                                                       (a, b, c, d) =>
 			                                                                       RouteConsoleCommand(instance, a, b, c, d));
+
+			yield return new GenericConsoleCommand<int, int, eConnectionType, int>("TestRoute",
+																							   "Prints route path, but doesn't execute it. Usage: TestRoute <sourceId> <destId> <connType> <roomId>",
+																							   (a, b, c, d) =>
+																							   TestRouteConsoleCommand(instance, a, b, c, d));
+
 
 			yield return new GenericConsoleCommand<int, int, int, int>("AB",
 																	   "AB <SourceDeviceId> <SourceAddress> <DestinationDeviceId> <DestinationAddress>",
@@ -307,6 +314,35 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			}
 		}
 
+		private static string TestRouteConsoleCommand(IRoutingGraph instance, int source, int destination,
+		                                              eConnectionType connectionType, int roomId)
+		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+
+			if (!instance.Sources.ContainsChild(source) || !instance.Destinations.ContainsChild(destination))
+				return "There is no source or destination with that id";
+
+			IEnumerable<ConnectionPath> paths = GetConnectionPaths(instance, source, destination, connectionType, roomId);
+
+			TableBuilder response = new TableBuilder("Type", "SourceDevice","SourceControl", "SourceAddress", "DestDevice", "DestControl", "DestAddress");
+
+			foreach (ConnectionPath path in paths)
+			{
+				response.AddHeader("", "", "", "", "", "", "");
+				response.AddRow(path.ConnectionType,
+					path.SourceEndpoint.Device, path.SourceEndpoint.Control, path.SourceEndpoint.Address,
+				    path.DestinationEndpoint.Device, path.DestinationEndpoint.Control, path.DestinationEndpoint.Address);
+				response.AddSeparator();
+				foreach (Connection connection in path)
+					response.AddRow(connection.ConnectionType, connection.Source.Device, connection.Source.Control,
+					                connection.Source.Address, connection.Destination.Device, connection.Destination.Control,
+					                connection.Destination.Address);
+			}
+
+			return response.ToString();
+		}
+
 		private static string RouteConsoleCommand(IRoutingGraph instance, int source, int destination, eConnectionType connectionType, int roomId)
 		{
 			if (instance == null)
@@ -315,18 +351,22 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			if (!instance.Sources.ContainsChild(source) || !instance.Destinations.ContainsChild(destination))
 				return "There is no source or destination with that id";
 
-			IPathFinder pathFinder = new DefaultPathFinder(instance, roomId);
-
-			IEnumerable<ConnectionPath> paths =
-				PathBuilder.FindPaths()
-				           .From(instance.Sources.GetChild(source))
-				           .To(instance.Destinations.GetChild(destination))
-				           .OfType(connectionType)
-				           .With(pathFinder);
-
+			IEnumerable<ConnectionPath> paths = GetConnectionPaths(instance, source, destination, connectionType, roomId);
 			instance.RoutePaths(paths, roomId);
 
 			return "Sucessfully executed route command";
+		}
+
+		private static IEnumerable<ConnectionPath> GetConnectionPaths(IRoutingGraph instance, int source, int destination,
+		                                                              eConnectionType connectionType, int roomId)
+		{
+			IPathFinder pathFinder = new DefaultPathFinder(instance, roomId);
+
+			return PathBuilder.FindPaths()
+						   .From(instance.Sources.GetChild(source))
+						   .To(instance.Destinations.GetChild(destination))
+						   .OfType(connectionType)
+						   .With(pathFinder);
 		}
 
 		private static string RouteDevicesConsoleCommand(IRoutingGraph instance, int sourceDeviceId, int sourceAddress,
