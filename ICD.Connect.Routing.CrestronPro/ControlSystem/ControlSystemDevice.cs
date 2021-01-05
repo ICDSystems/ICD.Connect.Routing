@@ -42,6 +42,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 	{
 		private readonly List<IDeviceControl> m_LoadedControls;
 		private string m_ConfigPath;
+		private readonly ControlSystemDeviceTelemetryComponent m_TelemetryComponent;
 
 		#region Properties
 
@@ -69,8 +70,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 #endif
 			m_LoadedControls = new List<IDeviceControl>();
 
-			Model = ProcessorUtils.ModelName;
-			SerialNumber = ProcessorUtils.ProcessorSerialNumber;
+			m_TelemetryComponent = new ControlSystemDeviceTelemetryComponent(this);
 		}
 
 #if SIMPLSHARP
