@@ -20,25 +20,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		private const long UPTIME_UPDATE_TIMER_INTERVAL = 10 * 60 * 1000;
 
-		#region Events
-
-		[EventTelemetry(DeviceTelemetryNames.DEVICE_UPTIME_CHANGED)]
-		public event EventHandler<GenericEventArgs<TimeSpan>> OnProcessorUptimeChanged;
-
-		[EventTelemetry(ControlSystemExternalTelemetryNames.PROGRAM_UPTIME_CHANGED)]
-		public event EventHandler<GenericEventArgs<TimeSpan>> OnProgramUptimeChanged;
-
-		#endregion
-
 		private readonly IcdTimer m_UptimeUpdateTimer;
 
 		#region Properties
 
-		[PropertyTelemetry(DeviceTelemetryNames.DEVICE_UPTIME, null, DeviceTelemetryNames.DEVICE_UPTIME_CHANGED)]
-		public TimeSpan ProcessorUptime { get { return ProcessorUtils.GetSystemUptime(); } }
-
-		[PropertyTelemetry(ControlSystemExternalTelemetryNames.PROGRAM_UPTIME, null, ControlSystemExternalTelemetryNames.PROGRAM_UPTIME_CHANGED)]
-		public TimeSpan ProgramUptime { get { return ProcessorUtils.GetProgramUptime(); } }
+		[PropertyTelemetry(ControlSystemExternalTelemetryNames.PROGRAM_START_TIME, null, null)]
+		public DateTime? ProgramUptime { get { return ProcessorUtils.GetProgramStartTime(); } }
 
 		[PropertyTelemetry(ControlSystemExternalTelemetryNames.PROGRAMMER_NAME, null, null)]
 		public string ProgrammerName { get { return PROGRAMMER_NAME; } }
@@ -56,21 +43,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		public ControlSystemExternalTelemetryProvider()
 		{
-			// Adjust the uptime counter every 10 minutes
-			m_UptimeUpdateTimer = new IcdTimer();
-			m_UptimeUpdateTimer.OnElapsed += UptimeUpdateTimerOnElapsed;
-			m_UptimeUpdateTimer.Restart(UPTIME_UPDATE_TIMER_INTERVAL);
 		}
-
-		#region Private Methods
-
-		private void UptimeUpdateTimerOnElapsed(object sender, EventArgs eventArgs)
-		{
-			OnProcessorUptimeChanged.Raise(this, new GenericEventArgs<TimeSpan>(ProcessorUptime));
-			OnProgramUptimeChanged.Raise(this, new GenericEventArgs<TimeSpan>(ProgramUptime));
-			m_UptimeUpdateTimer.Restart(UPTIME_UPDATE_TIMER_INTERVAL);
-		}
-
-		#endregion
 	}
 }

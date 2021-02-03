@@ -2,8 +2,7 @@
 {
 	public static class ControlSystemExternalTelemetryNames
 	{
-		public const string PROGRAM_UPTIME = "Program Uptime";
-		public const string PROGRAM_UPTIME_CHANGED = "Program Uptime Changed";
+		public const string PROGRAM_START_TIME = "Program Start Time";
 
 		public const string PROGRAMMER_NAME = "Programmer Name";
 		public const string SYSTEM_NAME = "System Name";
