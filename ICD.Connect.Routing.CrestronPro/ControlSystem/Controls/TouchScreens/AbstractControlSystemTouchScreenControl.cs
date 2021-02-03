@@ -9,7 +9,7 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using ICD.Connect.Misc.CrestronPro.Extensions;
 using ICD.Connect.Misc.CrestronPro.Sigs;
-using ICD.Connect.Panels.CrestronPro.TriListAdapters;
+using ICD.Connect.Panels.CrestronPro.TriListAdapters.SmartObjects;
 #endif
 using System;
 using ICD.Connect.Panels;
