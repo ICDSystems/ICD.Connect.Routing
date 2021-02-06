@@ -425,6 +425,8 @@
     <Compile Include="Receivers\IEndpointReceiverBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4Kz100C1G\DmTx4Kz100C1GAdapter.cs" />
+    <Compile Include="Transmitters\DmTx4Kz100C1G\DmTx4Kz100C1GAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx4Kz202C\DmTx4Kz202CAdapter.cs" />
     <Compile Include="Transmitters\DmTx4Kz202C\DmTx4Kz202CAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx4kz302C\DmTx4Kz302CAdapter.cs" />
