@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+ - HdMd8x84kzE device driver
+ - HdMd8x44kzE device driver
+ - HdMd4x44kzE device driver
+ - HdMd4x24kzE device driver
+ - HdMd4x14kzE device driver
+ - DmTx4Kz100C1G device driver
 
 ## [16.2.1] - 2021-02-04
 ### Changed
