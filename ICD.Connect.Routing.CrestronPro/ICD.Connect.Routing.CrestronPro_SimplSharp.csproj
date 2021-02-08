@@ -338,12 +338,18 @@
     <Compile Include="DigitalMedia\HdMd\HdMd4x14kzE\HdMd4x14kzEAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd4x24kzE\HdMd4x24kzEAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd4x24kzE\HdMd4x24kzEAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4x44kzE\HdMd4x44kzEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4x44kzE\HdMd4x44kzEAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd4xX4kzE\AbstractHdMd4xX4kzEAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd4xX4kzE\AbstractHdMd4xX4kzEAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8X14k\HdMd8X14kAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8X14k\HdMd8X14kAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8X1\HdMd8X1Adapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8X1\HdMd8X1AdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8x44kzE\HdMd8x44kzEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8x44kzE\HdMd8x44kzEAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8x84kzE\HdMd8x84kzEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8x84kzE\HdMd8x84kzEAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8XN\AbstractHdMd8XNAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8XN\AbstractHdMd8XNAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8XN\HdMd8XNSwitcherControl.cs" />
@@ -353,6 +359,8 @@
     <Compile Include="DigitalMedia\HdMd\HdMd4X14kE\HdMd4X14kEAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8XN\IHdMd8XNAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8XN\IHdMd8XNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8xX4kzE\AbstractHdMd8xX4kzEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd8xX4kzE\AbstractHdMd8xX4kzEAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMdNxM4kzE\AbstractHdMdNxM4kzEAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMdNxM4kzE\AbstractHdMdNxM4kzEAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMdNxM4kzE\HdMdNxM4kzESwitcherControl.cs" />
