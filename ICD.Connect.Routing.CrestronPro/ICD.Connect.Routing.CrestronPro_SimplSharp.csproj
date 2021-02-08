@@ -334,6 +334,12 @@
     <Compile Include="DigitalMedia\HdMd\HdMd300Ce\HdMd300CeAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd400Ce\HdMd400CeAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd400Ce\HdMd400CeAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4x14kzE\HdMd4x14kzEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4x14kzE\HdMd4x14kzEAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4x24kzE\HdMd4x24kzEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4x24kzE\HdMd4x24kzEAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4xX4kzE\AbstractHdMd4xX4kzEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMd4xX4kzE\AbstractHdMd4xX4kzEAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8X14k\HdMd8X14kAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8X14k\HdMd8X14kAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8X1\HdMd8X1Adapter.cs" />
