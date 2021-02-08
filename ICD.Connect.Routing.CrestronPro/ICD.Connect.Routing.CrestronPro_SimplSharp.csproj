@@ -347,6 +347,11 @@
     <Compile Include="DigitalMedia\HdMd\HdMd4X14kE\HdMd4X14kEAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8XN\IHdMd8XNAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd8XN\IHdMd8XNAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdNxM4kzE\AbstractHdMdNxM4kzEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdNxM4kzE\AbstractHdMdNxM4kzEAdapterSettings.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdNxM4kzE\HdMdNxM4kzESwitcherControl.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdNxM4kzE\IHdMdNxM4kzEAdapter.cs" />
+    <Compile Include="DigitalMedia\HdMd\HdMdNxM4kzE\IHdMdNxM4kzEAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMdNXM\AbstractHdMdNXMAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMdNXM\AbstractHdMdNXMAdapterSettings.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMdNXM\HdMdNXMSwitcherControl.cs" />
