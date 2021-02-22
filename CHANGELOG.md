@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - HdMd4x14kzE device driver
  - DmTx4Kz100C1G device driver
 
+### Changed
+ - Better configure Mock Midpoint's input for output on start up
+
 ## [16.2.1] - 2021-02-04
 ### Changed
  - ControlSystem - Changed Uptime to StartTime for Program/System

@@ -72,7 +72,6 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 			OnRouteChange = null;
 			OnActiveInputsChanged = null;
 			OnSourceDetectionStateChange = null;
-			OnActiveInputsChanged = null;
 
 			base.DisposeFinal(disposing);
 

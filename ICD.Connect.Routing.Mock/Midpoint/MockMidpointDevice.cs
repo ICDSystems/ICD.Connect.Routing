@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using ICD.Common.Properties;
+using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.Mock;
+using ICD.Connect.Routing.Connections;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Mock.Midpoint
@@ -56,6 +59,25 @@ namespace ICD.Connect.Routing.Mock.Midpoint
 			base.AddControls(settings, factory, addControl);
 
 			addControl(new MockRouteMidpointControl(this, 0));
+		}
+
+		/// <summary>
+		/// Override to add actions on StartSettings
+		/// This should be used to start communications with devices and perform initial actions
+		/// </summary>
+		protected override void StartSettingsFinal()
+		{
+			base.StartSettingsFinal();
+
+			MockRouteMidpointControl control = Controls.GetControl<MockRouteMidpointControl>();
+			if (control == null || control.GetInputs().Count() != 1 || control.GetOutputs().Count() != 1)
+				return;
+
+			ConnectorInfo input = control.GetInputs().First();
+			ConnectorInfo output = control.GetOutputs().First();
+			eConnectionType intersection = EnumUtils.GetFlagsIntersection(input.ConnectionType, output.ConnectionType);
+
+			control.SetInputForOutput(output.Address, input.Address, intersection);
 		}
 
 		#region Console
