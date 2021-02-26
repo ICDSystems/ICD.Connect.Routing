@@ -1,12 +1,12 @@
 using ICD.Common.Utils.Xml;
-using ICD.Connect.Devices;
+using ICD.Connect.Misc.ControlSystems;
 using ICD.Connect.Settings.Attributes;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 {
 	[KrangSettings("ControlSystem", typeof(ControlSystemDevice))]
-	public sealed class ControlSystemDeviceSettings : AbstractDeviceSettings
+	public sealed class ControlSystemDeviceSettings : AbstractControlSystemDeviceSettings
 	{
 		private const string ELEMENT_CONFIG = "Config";
 		private const string ELEMENT_OUTPUT_1_MIXER_MODE = "Output1MixerMode";
@@ -35,7 +35,6 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			writer.WriteElementString(ELEMENT_OUTPUT_2_MIXER_MODE, IcdXmlConvert.ToString(Output2MixerMode));
 			writer.WriteElementString(ELEMENT_OUTPUT_3_MIXER_MODE, IcdXmlConvert.ToString(Output3MixerMode));
 			writer.WriteElementString(ELEMENT_OUTPUT_4_MIXER_MODE, IcdXmlConvert.ToString(Output4MixerMode));
-
 		}
 
 		/// <summary>

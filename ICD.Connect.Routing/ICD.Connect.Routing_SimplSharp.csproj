@@ -153,7 +153,6 @@
     <Compile Include="Endpoints\Destinations\CoreDestinationCollection.cs" />
     <Compile Include="EventArguments\SwitcherRouteChangeEventArgs.cs" />
     <Compile Include="EventArguments\SourceDestinationBaseDisabledStateChangedEventArgs.cs" />
-    <Compile Include="Telemetry\ControlSystemExternalTelemetryNames.cs" />
     <Compile Include="PathFinding\AbstractPathFinder.cs" />
     <Compile Include="PathFinding\DefaultPathFinder.cs" />
     <Compile Include="PathFinding\IPathFinder.cs" />

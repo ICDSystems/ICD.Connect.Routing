@@ -217,8 +217,6 @@
     <Compile Include="Cards\ICardSettings.cs" />
     <Compile Include="ControlSystem\ControlSystemDevice.cs" />
     <Compile Include="ControlSystem\ControlSystemDeviceSettings.cs" />
-    <Compile Include="ControlSystem\ControlSystemDeviceTelemetryComponent.cs" />
-    <Compile Include="ControlSystem\ControlSystemExternalTelemetryProvider.cs" />
     <Compile Include="ControlSystem\Controls\Microphone\Dmps3MicrophoneDeviceControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\AbstractControlSystemTouchScreenControl.cs" />
     <Compile Include="ControlSystem\Controls\TouchScreens\AbstractMPC3BasicTouchScreenControl.cs" />
@@ -242,7 +240,6 @@
     <Compile Include="ControlSystem\Controls\Dmps3XmlUtils.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Crosspoints\IDmps3Crosspoint.cs" />
     <Compile Include="ControlSystem\Controls\Volume\Dmps3CrosspointVolumeControl.cs" />
-    <Compile Include="ControlSystem\IControlSystemDevice.cs" />
     <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapter.cs" />
     <Compile Include="DigitalMedia\DmMd\BladeSwitch\AbstractCrestronBladeSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapter.cs" />
