@@ -2,7 +2,6 @@
 using System;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Utils;
-using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Receivers;
 
 namespace ICD.Connect.Routing.CrestronPro.HDBaseT
