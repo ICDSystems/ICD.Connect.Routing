@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - HdMd4x24kzE device driver
  - HdMd4x14kzE device driver
  - DmTx4Kz100C1G device driver
+ - IStreamSourceDevice interface
 
 ### Changed
  - Better configure Mock Midpoint's input for output on start up

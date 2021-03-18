@@ -13,26 +13,31 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Devices.Streaming
 {
-    public sealed class StreamSourceDevice : AbstractDevice<StreamSourceDeviceSettings>
+    public sealed class StreamSourceDevice : AbstractDevice<StreamSourceDeviceSettings>, IStreamSourceDevice
     {
 	    public event EventHandler<GenericEventArgs<Uri>> OnStreamUriChanged; 
 
 		[CanBeNull]
 	    private Uri m_StreamUri;
 
-		[CanBeNull]
+	    [CanBeNull]
 	    public Uri StreamUri
 	    {
 		    get { return m_StreamUri; }
-		    set
+		    private set
 		    {
-				if (m_StreamUri == value)
-					return;
+			    if (m_StreamUri == value)
+				    return;
 
-				m_StreamUri = value;
-				Logger.LogSetTo(eSeverity.Informational, "Stream Uri", m_StreamUri);
-				OnStreamUriChanged.Raise(this, new GenericEventArgs<Uri>(m_StreamUri));
-		    }
+			    m_StreamUri = value;
+			    Logger.LogSetTo(eSeverity.Informational, "Stream Uri", m_StreamUri);
+			    OnStreamUriChanged.Raise(this, new GenericEventArgs<Uri>(m_StreamUri));
+			}
+	    }
+
+	    public void SetStreamUri([CanBeNull] Uri value)
+	    {
+		    StreamUri = value;
 	    }
 
 	    protected override bool GetIsOnlineStatus()
@@ -47,12 +52,12 @@ namespace ICD.Connect.Routing.Devices.Streaming
 		    base.ApplySettingsFinal(settings, factory);
 		    try
 		    {
-			    StreamUri = new Uri(settings.StreamUri);
+			    SetStreamUri(new Uri(settings.StreamUri));
 		    }
 		    catch (Exception e)
 		    {
 				Logger.Log(eSeverity.Error, "Failed to parse Stream Uri - {0}", e.Message);
-				StreamUri = null;
+				SetStreamUri(null);
 		    }
 	    }
 
@@ -67,7 +72,7 @@ namespace ICD.Connect.Routing.Devices.Streaming
 	    {
 		    base.ClearSettingsFinal();
 
-		    StreamUri = null;
+		    SetStreamUri(null);
 	    }
 
 	    /// <summary>
@@ -98,7 +103,7 @@ namespace ICD.Connect.Routing.Devices.Streaming
 			    yield return baseConsoleCommand;
 
 		    yield return new GenericConsoleCommand<string>("SetStreamUri", "Changes the stream uri",
-		                                                   s => StreamUri = new Uri(s));
+		                                                   s => SetStreamUri(new Uri(s)));
 	    }
 
 	    private IEnumerable<IConsoleCommand> GetBaseConsoleCommands()

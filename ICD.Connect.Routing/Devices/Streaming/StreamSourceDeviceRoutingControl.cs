@@ -5,13 +5,15 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Devices;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls.Streaming;
 using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Devices.Streaming
 {
-	public sealed class StreamSourceDeviceRoutingControl : AbstractStreamRouteSourceControl<StreamSourceDevice>
+	public sealed class StreamSourceDeviceRoutingControl : AbstractStreamRouteSourceControl<IStreamSourceDevice>
 	{
 		#region Events
 
@@ -36,8 +38,8 @@ namespace ICD.Connect.Routing.Devices.Streaming
 				ActiveTransmissionState = m_StreamUri != null;
 
 				OnOutputStreamUriChanged.Raise(this,
-				                         new StreamUriEventArgs(eConnectionType.Audio | eConnectionType.Video, 1,
-				                                                m_StreamUri));
+				                               new StreamUriEventArgs(eConnectionType.Audio | eConnectionType.Video, 1,
+				                                                      m_StreamUri));
 			}
 		}
 
@@ -59,7 +61,7 @@ namespace ICD.Connect.Routing.Devices.Streaming
 			}
 		}
 
-		public StreamSourceDeviceRoutingControl(StreamSourceDevice parent, int id)
+		public StreamSourceDeviceRoutingControl(IStreamSourceDevice parent, int id)
 			: base(parent, id)
 		{
 			UpdateStreamUri();
@@ -132,14 +134,14 @@ namespace ICD.Connect.Routing.Devices.Streaming
 
 		#region Parent Callbacks
 
-		protected override void Subscribe(StreamSourceDevice parent)
+		protected override void Subscribe(IStreamSourceDevice parent)
 		{
 			base.Subscribe(parent);
 
 			parent.OnStreamUriChanged += ParentOnStreamUriChanged;
 		}
 
-		protected override void Unsubscribe(StreamSourceDevice parent)
+		protected override void Unsubscribe(IStreamSourceDevice parent)
 		{
 			base.Unsubscribe(parent);
 

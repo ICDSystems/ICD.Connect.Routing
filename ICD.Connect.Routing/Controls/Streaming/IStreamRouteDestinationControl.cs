@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Common.Properties;
 using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.Controls.Streaming
@@ -7,8 +8,9 @@ namespace ICD.Connect.Routing.Controls.Streaming
 	{
 		event EventHandler<StreamUriEventArgs> OnInputStreamUriChanged;
 
-		bool SetStreamForInput(int input, Uri stream);
+		bool SetStreamForInput(int input, [CanBeNull] Uri stream);
 
+		[CanBeNull]
 		Uri GetStreamForInput(int input);
     }
 }
