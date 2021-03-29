@@ -42,8 +42,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// </summary>
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
-		private readonly IcdOrderedDictionary<int, NvxEndpointInfo> m_InputEndpoints;
-		private readonly IcdOrderedDictionary<int, NvxEndpointInfo> m_OutputEndpoints;
+		private readonly IcdSortedDictionary<int, NvxEndpointInfo> m_InputEndpoints;
+		private readonly IcdSortedDictionary<int, NvxEndpointInfo> m_OutputEndpoints;
 		private readonly Dictionary<DmNvxBaseClassSwitcherControl, NvxEndpointInfo> m_SwitcherToEndpoint;
 		private readonly Dictionary<DmNvxBaseClassSwitcherControl, string> m_SwitcherToCachedMulticastAddress;
 		private readonly Dictionary<string, IcdHashSet<DmNvxBaseClassSwitcherControl>> m_MulticastAddressToRx;
@@ -80,8 +80,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// </summary>
 		protected AbstractDmNvxStreamSwitcherDevice()
 		{
-			m_InputEndpoints = new IcdOrderedDictionary<int, NvxEndpointInfo>();
-			m_OutputEndpoints = new IcdOrderedDictionary<int, NvxEndpointInfo>();
+			m_InputEndpoints = new IcdSortedDictionary<int, NvxEndpointInfo>();
+			m_OutputEndpoints = new IcdSortedDictionary<int, NvxEndpointInfo>();
 			m_SwitcherToEndpoint = new Dictionary<DmNvxBaseClassSwitcherControl, NvxEndpointInfo>();
 			m_SwitcherToCachedMulticastAddress = new Dictionary<DmNvxBaseClassSwitcherControl, string>();
 			m_MulticastAddressToRx = new Dictionary<string, IcdHashSet<DmNvxBaseClassSwitcherControl>>();

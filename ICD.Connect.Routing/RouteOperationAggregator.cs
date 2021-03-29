@@ -10,14 +10,14 @@ namespace ICD.Connect.Routing
 	/// </summary>
 	public sealed class RouteOperationAggregator : IEnumerable<RouteOperation>
 	{
-		private readonly IcdOrderedDictionary<RouteOperationAggregatorKey, RouteOperation> m_Operations;
+		private readonly IcdSortedDictionary<RouteOperationAggregatorKey, RouteOperation> m_Operations;
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		public RouteOperationAggregator()
 		{
-			m_Operations = new IcdOrderedDictionary<RouteOperationAggregatorKey, RouteOperation>();
+			m_Operations = new IcdSortedDictionary<RouteOperationAggregatorKey, RouteOperation>();
 		}
 
 		/// <summary>

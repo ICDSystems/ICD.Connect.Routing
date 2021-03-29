@@ -46,8 +46,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		public const int OUTPUT_STREAM = 3;
 		public const int OUTPUT_SECONDARY_AUDIO_STREAM = 4;
 
-		private static readonly IcdOrderedDictionary<int, ConnectorInfo> s_InputConnectors =
-			new IcdOrderedDictionary<int, ConnectorInfo>
+		private static readonly IcdSortedDictionary<int, ConnectorInfo> s_InputConnectors =
+			new IcdSortedDictionary<int, ConnectorInfo>
 			{
 				{INPUT_HDMI_1, new ConnectorInfo(INPUT_HDMI_1, eConnectionType.Audio | eConnectionType.Video)},
 				{INPUT_HDMI_2, new ConnectorInfo(INPUT_HDMI_2, eConnectionType.Audio | eConnectionType.Video)},
@@ -56,8 +56,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				{INPUT_SECONDARY_AUDIO_STREAM, new ConnectorInfo(INPUT_SECONDARY_AUDIO_STREAM, eConnectionType.Audio)}
 			};
 
-		private static readonly IcdOrderedDictionary<int, string> s_InputConnectorInputTypes =
-			new IcdOrderedDictionary<int, string>
+		private static readonly IcdSortedDictionary<int, string> s_InputConnectorInputTypes =
+			new IcdSortedDictionary<int, string>
 			{
 				{INPUT_HDMI_1, "HDMI"},
 				{INPUT_HDMI_2, "HDMI"},
@@ -66,8 +66,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				{INPUT_SECONDARY_AUDIO_STREAM, "Audio Stream"}
 			};
 
-		private static readonly IcdOrderedDictionary<int, ConnectorInfo> s_OutputConnectors =
-			new IcdOrderedDictionary<int, ConnectorInfo>
+		private static readonly IcdSortedDictionary<int, ConnectorInfo> s_OutputConnectors =
+			new IcdSortedDictionary<int, ConnectorInfo>
 			{
 				{OUTPUT_HDMI, new ConnectorInfo(OUTPUT_HDMI, eConnectionType.Audio | eConnectionType.Video)},
 				{OUTPUT_ANALOG_AUDIO, new ConnectorInfo(OUTPUT_ANALOG_AUDIO, eConnectionType.Audio)},
@@ -75,8 +75,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				{OUTPUT_SECONDARY_AUDIO_STREAM, new ConnectorInfo(OUTPUT_SECONDARY_AUDIO_STREAM, eConnectionType.Audio)}
 			};
 
-		private static readonly IcdOrderedDictionary<int, string> s_OutputConnectorOutputTypes =
-			new IcdOrderedDictionary<int, string>
+		private static readonly IcdSortedDictionary<int, string> s_OutputConnectorOutputTypes =
+			new IcdSortedDictionary<int, string>
 			{
 				{OUTPUT_HDMI, "HDMI"},
 				{OUTPUT_ANALOG_AUDIO, "Audio"},

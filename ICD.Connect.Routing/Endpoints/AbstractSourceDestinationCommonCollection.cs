@@ -21,9 +21,9 @@ namespace ICD.Connect.Routing.Endpoints
 		/// </summary>
 		public event EventHandler<SourceDestinationBaseDisabledStateChangedEventArgs> OnSourceDestinationBaseDisabledStateChanged;
 
-		private readonly IcdOrderedDictionary<int, List<T>> m_DeviceCache;
-		private readonly IcdOrderedDictionary<EndpointInfo, List<T>> m_EndpointCache;
-		private readonly IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, List<T>>> m_EndpointTypeCache;
+		private readonly IcdSortedDictionary<int, List<T>> m_DeviceCache;
+		private readonly IcdSortedDictionary<EndpointInfo, List<T>> m_EndpointCache;
+		private readonly IcdSortedDictionary<EndpointInfo, IcdSortedDictionary<eConnectionType, List<T>>> m_EndpointTypeCache;
 		private readonly SafeCriticalSection m_CacheSection;
 
 		private readonly PredicateComparer<T, int> m_ChildIdComparer;
@@ -33,9 +33,9 @@ namespace ICD.Connect.Routing.Endpoints
 		/// </summary>
 		protected AbstractSourceDestinationCommonCollection()
 		{
-			m_DeviceCache = new IcdOrderedDictionary<int, List<T>>();
-			m_EndpointCache = new IcdOrderedDictionary<EndpointInfo, List<T>>();
-			m_EndpointTypeCache = new IcdOrderedDictionary<EndpointInfo, IcdOrderedDictionary<eConnectionType, List<T>>>();
+			m_DeviceCache = new IcdSortedDictionary<int, List<T>>();
+			m_EndpointCache = new IcdSortedDictionary<EndpointInfo, List<T>>();
+			m_EndpointTypeCache = new IcdSortedDictionary<EndpointInfo, IcdSortedDictionary<eConnectionType, List<T>>>();
 			m_CacheSection = new SafeCriticalSection();
 			m_ChildIdComparer = new PredicateComparer<T, int>(c => c.Id);
 		}
@@ -74,7 +74,7 @@ namespace ICD.Connect.Routing.Endpoints
 
 			try
 			{
-				IcdOrderedDictionary<eConnectionType, List<T>> types;
+				IcdSortedDictionary<eConnectionType, List<T>> types;
 				if (!m_EndpointTypeCache.TryGetValue(endpoint, out types))
 					return Enumerable.Empty<T>();
 
@@ -166,7 +166,7 @@ namespace ICD.Connect.Routing.Endpoints
 						m_EndpointCache.GetOrAddNew(endpoint).InsertSorted(child, m_ChildIdComparer);
 
 						// Endpoint Typed Cache
-						IcdOrderedDictionary<eConnectionType, List<T>> types = m_EndpointTypeCache.GetOrAddNew(endpoint);
+						IcdSortedDictionary<eConnectionType, List<T>> types = m_EndpointTypeCache.GetOrAddNew(endpoint);
 						foreach (eConnectionType combination in EnumUtils.GetAllFlagCombinationsExceptNone(child.ConnectionType))
 							types.GetOrAddNew(combination).InsertSorted(child, m_ChildIdComparer);
 					}

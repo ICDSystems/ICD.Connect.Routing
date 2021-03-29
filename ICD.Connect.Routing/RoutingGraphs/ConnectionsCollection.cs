@@ -22,12 +22,12 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		/// <summary>
 		/// Maps Control -> Address -> outgoing connections.
 		/// </summary>
-		private readonly Dictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> m_OutputConnectionLookup;
+		private readonly Dictionary<DeviceControlInfo, IcdSortedDictionary<int, Connection>> m_OutputConnectionLookup;
 
 		/// <summary>
 		/// Maps Control -> Address -> incoming connections.
 		/// </summary>
-		private readonly Dictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>> m_InputConnectionLookup;
+		private readonly Dictionary<DeviceControlInfo, IcdSortedDictionary<int, Connection>> m_InputConnectionLookup;
 
 		/// <summary>
 		/// Maps Source + Final Destination + Type -> Connection.
@@ -44,8 +44,8 @@ namespace ICD.Connect.Routing.RoutingGraphs
 		{
 			m_RoutingGraph = routingGraph;
 
-			m_OutputConnectionLookup = new Dictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>>();
-			m_InputConnectionLookup = new Dictionary<DeviceControlInfo, IcdOrderedDictionary<int, Connection>>();
+			m_OutputConnectionLookup = new Dictionary<DeviceControlInfo, IcdSortedDictionary<int, Connection>>();
+			m_InputConnectionLookup = new Dictionary<DeviceControlInfo, IcdSortedDictionary<int, Connection>>();
 			m_FilteredConnectionLookup = new Dictionary<FilteredConnectionLookupKey, Connection>();
 
 			m_ConnectionsSection = new SafeCriticalSection();
@@ -67,7 +67,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				IcdOrderedDictionary<int, Connection> map;
+				IcdSortedDictionary<int, Connection> map;
 				return m_InputConnectionLookup.TryGetValue(key, out map)
 					       ? map.GetDefault(destination.Address)
 					       : null;
@@ -126,7 +126,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				IcdOrderedDictionary<int, Connection> map;
+				IcdSortedDictionary<int, Connection> map;
 				return m_InputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values
 					            .Where(c => EnumUtils.HasFlags(c.ConnectionType, type))
@@ -153,7 +153,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				IcdOrderedDictionary<int, Connection> map;
+				IcdSortedDictionary<int, Connection> map;
 				return m_InputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values.ToArray(map.Count)
 					       : Enumerable.Empty<Connection>();
@@ -180,7 +180,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				IcdOrderedDictionary<int, Connection> map;
+				IcdSortedDictionary<int, Connection> map;
 				return m_InputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values
 					            .Where(c => EnumUtils.HasAnyFlags(c.ConnectionType, type))
@@ -207,7 +207,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				IcdOrderedDictionary<int, Connection> map;
+				IcdSortedDictionary<int, Connection> map;
 				return m_OutputConnectionLookup.TryGetValue(key, out map)
 					       ? map.GetDefault(source.Address)
 					       : null;
@@ -265,7 +265,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				IcdOrderedDictionary<int, Connection> map;
+				IcdSortedDictionary<int, Connection> map;
 				return m_OutputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values.ToArray(map.Count)
 					       : Enumerable.Empty<Connection>();
@@ -291,7 +291,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				IcdOrderedDictionary<int, Connection> map;
+				IcdSortedDictionary<int, Connection> map;
 				return m_OutputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values
 					            .Where(c => c.ConnectionType.HasFlag(flag))
@@ -319,7 +319,7 @@ namespace ICD.Connect.Routing.RoutingGraphs
 
 			try
 			{
-				IcdOrderedDictionary<int, Connection> map;
+				IcdSortedDictionary<int, Connection> map;
 				return m_OutputConnectionLookup.TryGetValue(info, out map)
 					       ? map.Values
 					            .Where(c => EnumUtils.HasAnyFlags(c.ConnectionType, type))

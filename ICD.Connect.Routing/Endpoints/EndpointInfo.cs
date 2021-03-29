@@ -80,8 +80,8 @@ namespace ICD.Connect.Routing.Endpoints
 			if (endpoints == null)
 				throw new ArgumentNullException("endpoints");
 
-			IcdOrderedDictionary<DeviceControlInfo, List<int>> deviceControlAddresses =
-				new IcdOrderedDictionary<DeviceControlInfo, List<int>>();
+			IcdSortedDictionary<DeviceControlInfo, List<int>> deviceControlAddresses =
+				new IcdSortedDictionary<DeviceControlInfo, List<int>>();
 
 			foreach (EndpointInfo endpoint in endpoints)
 			{
