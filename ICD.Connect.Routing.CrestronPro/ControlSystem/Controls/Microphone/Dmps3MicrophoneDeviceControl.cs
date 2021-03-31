@@ -1,11 +1,10 @@
 ﻿using System;
 using ICD.Connect.Audio.Controls.Microphone;
+using ICD.Connect.Audio.Controls.Volume;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Extensions;
-#else
-using System;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
@@ -18,7 +17,21 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		private readonly Dmps3Microphone m_Microphone;
 #endif
 
+		#region Properties
+
 		public override string Name { get { return string.IsNullOrEmpty(m_Name) ? base.Name : m_Name; } }
+
+		/// <summary>
+		/// Gets the minimum supported volume level.
+		/// </summary>
+		public override float VolumeLevelMin { get { return 0; } }
+
+		/// <summary>
+		/// Gets the maximum supported volume level.
+		/// </summary>
+		public override float VolumeLevelMax { get { return 0; } }
+
+		#endregion
 
 		/// <summary>
 		/// Constructor.
@@ -31,6 +44,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		public Dmps3MicrophoneDeviceControl(ControlSystemDevice parent, int id, Guid uuid, string name, uint inputAddress)
 			: base(parent, id, uuid)
 		{
+			SupportedVolumeFeatures = eVolumeFeatures.Mute |
+			                          eVolumeFeatures.MuteAssignment |
+			                          eVolumeFeatures.MuteFeedback;
+
 			m_Name = name;
 #if SIMPLSHARP
 			m_Microphone = Parent.ControlSystem.Microphones[inputAddress] as Dmps3Microphone;
@@ -42,11 +59,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		/// <summary>
 		/// Sets the gain level.
 		/// </summary>
-		/// <param name="volume"></param>
-		public override void SetGainLevel(float volume)
+		/// <param name="level"></param>
+		public override void SetAnalogGainLevel(float level)
 		{
 #if SIMPLSHARP
-			m_Microphone.Gain.ShortValue = (short)(volume * 10);
+			m_Microphone.Gain.ShortValue = (short)(level * 10);
 #else
 			throw new NotSupportedException();
 #endif
@@ -56,7 +73,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		/// Sets the muted state.
 		/// </summary>
 		/// <param name="mute"></param>
-		public override void SetMuted(bool mute)
+		public override void SetIsMuted(bool mute)
 		{
 #if SIMPLSHARP
 			if (mute)
@@ -66,6 +83,60 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 #else
 			throw new NotSupportedException();
 #endif
+		}
+
+		/// <summary>
+		/// Toggles the current mute state.
+		/// </summary>
+		public override void ToggleIsMuted()
+		{
+			SetIsMuted(!IsMuted);
+		}
+
+		/// <summary>
+		/// Sets the raw volume level in the device volume representation.
+		/// </summary>
+		/// <param name="level"></param>
+		public override void SetVolumeLevel(float level)
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Raises the volume one time
+		/// Amount of the change varies between implementations - typically "1" raw unit
+		/// </summary>
+		public override void VolumeIncrement()
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Lowers the volume one time
+		/// Amount of the change varies between implementations - typically "1" raw unit
+		/// </summary>
+		public override void VolumeDecrement()
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Starts ramping the volume, and continues until stop is called or the timeout is reached.
+		/// If already ramping the current timeout is updated to the new timeout duration.
+		/// </summary>
+		/// <param name="increment">Increments the volume if true, otherwise decrements.</param>
+		/// <param name="timeout"></param>
+		public override void VolumeRamp(bool increment, long timeout)
+		{
+			throw new NotSupportedException();
+		}
+
+		/// <summary>
+		/// Stops any current ramp up/down in progress.
+		/// </summary>
+		public override void VolumeRampStop()
+		{
+			throw new NotSupportedException();
 		}
 
 		/// <summary>
@@ -133,7 +204,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 
 			IsMuted = m_Microphone.MuteOnFeedBack.GetBoolValueOrDefault();
 			PhantomPower = m_Microphone.PhantomPowerOnFeedBack.GetBoolValueOrDefault();
-			GainLevel = m_Microphone.GainFeedBack.GetShortValueOrDefault() / 10.0f;
+			AnalogGainLevel = m_Microphone.GainFeedBack.GetShortValueOrDefault() / 10.0f;
 		}
 #endif
 

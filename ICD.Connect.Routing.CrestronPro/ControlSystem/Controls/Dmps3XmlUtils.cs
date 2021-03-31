@@ -240,7 +240,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 				XmlUtils.TryReadChildElementContentAsEnum<eDmps3DefaultPower>(controlElement, "DefaultPower", true) ?? eDmps3DefaultPower.NoChange;
 
 			if (defaultGain.HasValue)
-				control.SetGainLevel(defaultGain.Value);
+				control.SetAnalogGainLevel(defaultGain.Value);
 
 			switch (defaultMute)
 			{
@@ -248,11 +248,11 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 					break;
 
 				case eDmps3DefaultMute.Muted:
-					control.SetMuted(true);
+					control.SetIsMuted(true);
 					break;
 
 				case eDmps3DefaultMute.Unmuted:
-					control.SetMuted(false);
+					control.SetIsMuted(false);
 					break;
 
 				default:
