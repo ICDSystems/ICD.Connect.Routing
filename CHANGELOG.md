@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - IStreamSourceDevice interface
 
 ### Changed
+ - Crestron DM Transmitters now support switcher functionality
  - Better configure Mock Midpoint's input for output on start up
 
 ## [16.2.1] - 2021-02-04

@@ -12,7 +12,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 	public delegate void TransmitterChangeCallback(IEndpointTransmitterBaseAdapter sender, EndpointTransmitterBase transmitter);
 #endif
 
-	public interface IEndpointTransmitterBaseAdapter : IRouteSourceDevice, IPortParent, IDmEndpoint
+	public interface IEndpointTransmitterBaseAdapter : IRouteMidpointDevice, IPortParent, IDmEndpoint
 	{
 #if SIMPLSHARP
 		/// <summary>

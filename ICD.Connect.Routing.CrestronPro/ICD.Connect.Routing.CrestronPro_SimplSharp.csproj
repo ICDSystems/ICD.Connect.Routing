@@ -439,8 +439,10 @@
     <Compile Include="Receivers\DmRmc4kzScalerC\DmRmc4kzScalerCAdapterSettings.cs" />
     <Compile Include="Receivers\IEndpointReceiverBaseAdapter.cs" />
     <Compile Include="Receivers\IEndpointReceiverBaseAdapterSettings.cs" />
-    <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapter.cs" />
+    <Compile Include="Transmitters\AbstractEndpointTransmitterBaseAdapterSettings.cs" />
+    <Compile Include="Transmitters\AbstractEndpointTransmitterSwitcherBaseAdapter.cs" />
+    <Compile Include="Transmitters\AbstractEndpointTransmitterSwitcherBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx4Kz100C1G\DmTx4Kz100C1GAdapter.cs" />
     <Compile Include="Transmitters\DmTx4Kz100C1G\DmTx4Kz100C1GAdapterSettings.cs" />
     <Compile Include="Transmitters\DmTx4Kz202C\DmTx4Kz202CAdapter.cs" />
@@ -477,6 +479,8 @@
     <Compile Include="Transmitters\DmTx4KzX02CBase\IDmTx4kzX02CBaseAdapterSettings.cs" />
     <Compile Include="Transmitters\IEndpointTransmitterBaseAdapter.cs" />
     <Compile Include="Transmitters\IEndpointTransmitterBaseAdapterSettings.cs" />
+    <Compile Include="Transmitters\IEndpointTransmitterSwitcherBaseAdapter.cs" />
+    <Compile Include="Transmitters\IEndpointTransmitterSwitcherBaseAdapterSettings.cs" />
     <Compile Include="Utils\DmEndpointFactoryUtils.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>

@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Linq;
 using ICD.Common.Utils.Extensions;
-using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Routing.Connections;
-using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards;
+using ICD.Connect.Routing.Extensions;
+using ICD.Connect.Routing.RoutingGraphs;
 using ICD.Connect.Settings;
 using ICD.Connect.Routing.Devices;
 using ICD.Connect.Routing.EventArguments;
@@ -28,19 +29,17 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 	/// <typeparam name="TSettings"></typeparam>
 #if SIMPLSHARP
 	/// <typeparam name="TTransmitter"></typeparam>
-	public abstract class AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings> : AbstractRouteSourceDevice<TSettings>,
+	public abstract class AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings> : AbstractRouteMidpointDevice<TSettings>,
 	                                                                                        IEndpointTransmitterBaseAdapter<TTransmitter>
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.EndpointTransmitterBase
 #else
-	public abstract class AbstractEndpointTransmitterBaseAdapter<TSettings> : AbstractRouteSourceDevice<TSettings>, IEndpointTransmitterBaseAdapter
+	public abstract class AbstractEndpointTransmitterBaseAdapter<TSettings> : AbstractRouteMidpointDevice<TSettings>, IEndpointTransmitterBaseAdapter
 #endif
 		where TSettings : IEndpointTransmitterBaseAdapterSettings, new()
 	{
-		/// <summary>
-		/// Raised when the device starts/stops actively transmitting on an output.
-		/// </summary>
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
-
+		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
+		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
 #if SIMPLSHARP
 		/// <summary>
 		/// Raised when the wrapped transmitter changes.
@@ -52,6 +51,12 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 #endif
 
 		#region Properties
+
+		/// <summary>
+		/// Used to determine if transmitters should enable auto routing.
+		/// Set in start settings final.
+		/// </summary>
+		protected bool UseAutoRouting { get; private set; }
 
 #if SIMPLSHARP
 		/// <summary>
@@ -89,23 +94,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 		#endregion
 
-		/// <summary>
-		/// Release resources.
-		/// </summary>
-		protected override void DisposeFinal(bool disposing)
-		{
-#if SIMPLSHARP
-			OnTransmitterChanged = null;
-#endif
-
-			base.DisposeFinal(disposing);
-
-#if SIMPLSHARP
-			// Unsubscribe and unregister.
-			SetTransmitter(null, null);
-#endif
-		}
-
 		#region Methods
 
 #if SIMPLSHARP
@@ -136,33 +124,26 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			UpdateCachedOnlineStatus();
 		}
 #endif
-
-		/// <summary>
-		/// Gets the output at the given address.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <returns></returns>
-		public override ConnectorInfo GetOutput(int output)
-		{
-			if (output != 1)
-				throw new ArgumentOutOfRangeException("output");
-
-			return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
-		}
-
-		/// <summary>
-		/// Returns true if the source contains an output at the given address.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <returns></returns>
-		public override bool ContainsOutput(int output)
-		{
-			return output == 1;
-		}
-
 		#endregion
 
-		#region Private Methods 
+		#region Private Methods
+
+		/// <summary>
+		/// Release resources.
+		/// </summary>
+		protected override void DisposeFinal(bool disposing)
+		{
+#if SIMPLSHARP
+			OnTransmitterChanged = null;
+#endif
+
+			base.DisposeFinal(disposing);
+
+#if SIMPLSHARP
+			// Unsubscribe and unregister.
+			SetTransmitter(null, null);
+#endif
+		}
 
 #if SIMPLSHARP
 		/// <summary>
@@ -172,6 +153,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		protected virtual void ConfigureTransmitter(TTransmitter transmitter)
 		{
 		}
+
 #endif
 
 		#endregion
@@ -310,20 +292,23 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 #endif
 		}
 
+#if SIMPLSHARP
 		/// <summary>
-		/// Override to add controls to the device.
+		/// Override to add actions on StartSettings
+		/// This should be used to start communications with devices and perform initial actions
 		/// </summary>
-		/// <param name="settings"></param>
-		/// <param name="factory"></param>
-		/// <param name="addControl"></param>
-		protected override void AddControls(TSettings settings, IDeviceFactory factory, Action<IDeviceControl> addControl)
+		protected override void StartSettingsFinal()
 		{
-			base.AddControls(settings, factory, addControl);
+			base.StartSettingsFinal();
 
-			addControl(new RouteSourceControl(this, 0));
+			// If there are no input connections in the routing graph transmitters should use auto routing.
+			IRoutingGraph routingGraph;
+			if (Core.TryGetRoutingGraph(out routingGraph) && routingGraph != null)
+				UseAutoRouting = routingGraph.Connections.All(c => c.Destination.Device != Id);
+			else
+				UseAutoRouting = true;
 		}
 
-#if SIMPLSHARP
 		/// <summary>
 		/// Instantiates the transmitter with the given IPID against the control system.
 		/// </summary>
@@ -405,15 +390,23 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		}
 #endif
 
-		/// <summary>
-		/// Raises the OnActiveTransmissionStateChanged event.
-		/// </summary>
-		/// <param name="output"></param>
-		/// <param name="type"></param>
-		/// <param name="transmitting"></param>
-		protected void RaiseOnActiveTransmissionStateChanged(int output, eConnectionType type, bool transmitting)
+		#endregion
+
+		#region Event Invocation
+
+		protected void RaiseSourceDetectionStateChange(int input, eConnectionType type, bool state)
 		{
-			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, type, transmitting));
+			OnSourceDetectionStateChange.Raise(this, new SourceDetectionStateChangeEventArgs(input, type, state));
+		}
+
+		protected void RaiseActiveInputsChanged(int input, eConnectionType type, bool active)
+		{
+			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(input, type, active));
+		}
+
+		protected void RaiseActiveTransmissionStateChanged(int output, eConnectionType type, bool state)
+		{
+			OnActiveTransmissionStateChanged.Raise(this, new TransmissionStateEventArgs(output, type, state));
 		}
 
 		#endregion

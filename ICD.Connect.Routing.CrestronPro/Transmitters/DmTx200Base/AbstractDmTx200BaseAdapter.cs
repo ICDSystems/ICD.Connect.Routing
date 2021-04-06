@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using ICD.Connect.Misc.CrestronPro.Devices;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
+using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 using ICD.Common.Properties;
@@ -23,14 +23,16 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 #if SIMPLSHARP
 	/// <typeparam name="TTransmitter"></typeparam>
 	public abstract class AbstractDmTx200BaseAdapter<TTransmitter, TSettings> :
-		AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings>, IDmTx200BaseAdapter
+		AbstractEndpointTransmitterSwitcherBaseAdapter<TTransmitter, TSettings>, IDmTx200BaseAdapter
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base
 #else
-	public abstract class AbstractDmTx200BaseAdapter<TSettings> : AbstractEndpointTransmitterBaseAdapter<TSettings>, IDmTx200BaseAdapter
+	public abstract class AbstractDmTx200BaseAdapter<TSettings> : AbstractEndpointTransmitterSwitcherBaseAdapter<TSettings>, IDmTx200BaseAdapter
 #endif
 		where TSettings : IDmTx200BaseAdapterSettings, new()
 	{
-		private const int OUTPUT_HDMI = 1;
+		protected const int INPUT_HDMI = 1;
+		protected const int INPUT_VGA = 2;
+		private const int OUTPUT_DM = 1;
 
 		private bool m_ActiveTransmissionState;
 
@@ -81,11 +83,13 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 
 				m_ActiveTransmissionState = value;
 
-				RaiseOnActiveTransmissionStateChanged(OUTPUT_HDMI, eConnectionType.Audio | eConnectionType.Video, m_ActiveTransmissionState);
+				RaiseActiveTransmissionStateChanged(OUTPUT_DM, eConnectionType.Audio | eConnectionType.Video, m_ActiveTransmissionState);
 			}
 		}
 
-#endregion
+		#endregion
+
+		#region Methods
 
 #if SIMPLSHARP
 		/// <summary>
@@ -119,11 +123,121 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		}
 #endif
 
-#region Methods
+		/// <summary>
+		/// Returns true if a signal is detected at the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override bool GetSignalDetectedState(int input, eConnectionType type)
+		{
+			if (!ContainsInput(input))
+				throw new ArgumentOutOfRangeException("input");
+
+			return SwitcherCache.GetSourceDetectedState(input, type);
+		}
+
+		/// <summary>
+		/// Gets the input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetInput(int input)
+		{
+			if (input != INPUT_HDMI && input != INPUT_VGA)
+				throw new ArgumentOutOfRangeException("input");
+
+			return new ConnectorInfo(input, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Gets the input routed to the given output matching the given type.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		/// <exception cref="InvalidOperationException">Type has multiple flags.</exception>
+		public override ConnectorInfo? GetInput(int output, eConnectionType type)
+		{
+			if (!ContainsOutput(output))
+				throw new ArgumentException(string.Format("{0} has no output at address {1}", this, output));
+
+			if (EnumUtils.HasMultipleFlags(type))
+				throw new ArgumentException("Type must have a single flag", "type");
+
+			return SwitcherCache.GetInputConnectorInfoForOutput(output, type);
+		}
+
+		/// <summary>
+		/// Returns true if the destination contains an input at the given address.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <returns></returns>
+		public override bool ContainsInput(int input)
+		{
+			return input == INPUT_HDMI || input == INPUT_VGA;
+		}
+
+		/// <summary>
+		/// Returns the inputs.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetInputs()
+		{
+			yield return GetInput(INPUT_HDMI);
+			yield return GetInput(INPUT_VGA);
+		}
+
+		/// <summary>
+		/// Gets the output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override ConnectorInfo GetOutput(int output)
+		{
+			if (output != OUTPUT_DM)
+				throw new ArgumentOutOfRangeException("output");
+
+			return new ConnectorInfo(output, eConnectionType.Audio | eConnectionType.Video);
+		}
+
+		/// <summary>
+		/// Returns true if the source contains an output at the given address.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <returns></returns>
+		public override bool ContainsOutput(int output)
+		{
+			return output == OUTPUT_DM;
+		}
+
+		/// <summary>
+		/// Gets the outputs for the given input.
+		/// </summary>
+		/// <param name="input"></param>
+		/// <param name="type"></param>
+		/// <returns></returns>
+		public override IEnumerable<ConnectorInfo> GetOutputs(int input, eConnectionType type)
+		{
+			if (!ContainsInput(input))
+				throw new ArgumentException(string.Format("{0} has no output at address {1}", this, input));
+
+			switch (type)
+			{
+				case eConnectionType.Audio:
+				case eConnectionType.Video:
+				case eConnectionType.Audio | eConnectionType.Video:
+					yield return GetOutput(OUTPUT_DM);
+					break;
+
+				default:
+					throw new ArgumentException("type");
+			}
+		}
 
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			yield return new ConnectorInfo(1, (eConnectionType.Audio | eConnectionType.Video));
+			yield return new ConnectorInfo(OUTPUT_DM, (eConnectionType.Audio | eConnectionType.Video));
 		}
 
 		public override bool GetActiveTransmissionState(int output, eConnectionType type)
@@ -135,7 +249,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 				                .Unanimous(false);
 			}
 
-			if (output != 1)
+			if (!ContainsOutput(output))
 			{
 				string message = string.Format("{0} has no {1} output at address {2}", this, type, output);
 				throw new ArgumentOutOfRangeException("output", message);
@@ -152,6 +266,86 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			}
 		}
 
+		/// <summary>
+		/// Performs the given route operation.
+		/// </summary>
+		/// <param name="info"></param>
+		/// <returns></returns>
+		public override bool Route(RouteOperation info)
+		{
+			if (!ContainsInput(info.LocalInput))
+				throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
+			if (!ContainsOutput(info.LocalOutput))
+				throw new IndexOutOfRangeException(string.Format("No output at address {0}", info.LocalOutput));
+#if SIMPLSHARP
+			if (Transmitter == null)
+				throw new InvalidOperationException("No DmTx instantiated");
+
+			foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(info.ConnectionType))
+			{
+				switch (type)
+				{
+					case eConnectionType.Audio:
+						switch (info.LocalInput)
+						{
+							case INPUT_HDMI:
+								Transmitter.AudioSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital;
+								break;
+
+							case INPUT_VGA:
+								Transmitter.AudioSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Analog;
+								break;
+
+							default:
+								throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
+						}
+						break;
+					case eConnectionType.Video:
+						switch (info.LocalInput)
+						{
+							case INPUT_HDMI:
+								Transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital;
+								break;
+
+							case INPUT_VGA:
+								Transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Analog;
+								break;
+
+							default:
+								throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
+						}
+						break;
+					default:
+						throw new InvalidOperationException("Connection type unsupported");
+				}
+			}
+			return true;
+#endif
+			return false;
+		}
+
+		/// <summary>
+		/// Stops routing to the given output.
+		/// </summary>
+		/// <param name="output"></param>
+		/// <param name="type"></param>
+		/// <returns>True if successfully cleared.</returns>
+		public override bool ClearOutput(int output, eConnectionType type)
+		{
+#if SIMPLSHARP
+			if (Transmitter == null)
+				throw new InvalidOperationException("No DmTx instantiated");
+
+			Transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Disable;
+			Transmitter.AudioSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Disable;
+			return true;
+#endif
+			return false;
+		}
+
+		#endregion
+
+		#region Transmitter Callbacks
 #if SIMPLSHARP
 		/// <summary>
 		/// Subscribes to the transmitter events.
@@ -193,6 +387,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		private void VgaInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
 			UpdateActiveTransmissionState();
+
+			SwitcherCache.SetSourceDetectedState(INPUT_VGA, eConnectionType.Video, VgaDetected);
+			SwitcherCache.SetSourceDetectedState(INPUT_VGA, eConnectionType.Audio, VgaDetected);
 		}
 
 		/// <summary>
@@ -203,6 +400,9 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		private void HdmiInputOnInputStreamChange(EndpointInputStream inputStream, EndpointInputStreamEventArgs args)
 		{
 			UpdateActiveTransmissionState();
+
+			SwitcherCache.SetSourceDetectedState(INPUT_HDMI, eConnectionType.Video, HdmiDetected);
+			SwitcherCache.SetSourceDetectedState(INPUT_HDMI, eConnectionType.Audio, HdmiDetected);
 		}
 
 		private void UpdateActiveTransmissionState()
@@ -215,26 +415,62 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// </summary>
 		/// <param name="device"></param>
 		/// <param name="args"></param>
-		private void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
+		protected virtual void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
 		{
 			if (args.EventId == EndpointTransmitterBase.AudioSourceFeedbackEventId ||
 				args.EventId == EndpointTransmitterBase.VideoSourceFeedbackEventId)
 				UpdateActiveTransmissionState();
 
-			if (args.EventId != DMOutputEventIds.ContentLanModeEventId)
-				return;
-
 			TTransmitter transmitter = device as TTransmitter;
 			if (transmitter == null)
 				return;
 
-			// Ensure the device stays in auto routing mode
-			transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
-			// Disable Free-Run
-			transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
+			if (args.EventId == DMOutputEventIds.ContentLanModeEventId)
+			{
+				// Disable Free-Run
+				transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
+			}
+
+			// Ensure auto-routing if applicable
+			if (UseAutoRouting)
+			{
+				transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
+				transmitter.AudioSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
+			}
+
+			switch (transmitter.VideoSourceFeedback)
+			{
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital:
+					SwitcherCache.SetInputForOutput(OUTPUT_DM, INPUT_HDMI, eConnectionType.Video);
+					break;
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Analog:
+					SwitcherCache.SetInputForOutput(OUTPUT_DM, INPUT_VGA, eConnectionType.Video);
+					break;
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto:
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Disable:
+					SwitcherCache.SetInputForOutput(OUTPUT_DM, null, eConnectionType.Video);
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+			switch (transmitter.AudioSourceFeedback)
+			{
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital:
+					SwitcherCache.SetInputForOutput(OUTPUT_DM, INPUT_HDMI, eConnectionType.Audio);
+					break;
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Analog:
+					SwitcherCache.SetInputForOutput(OUTPUT_DM, INPUT_VGA, eConnectionType.Audio);
+					break;
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto:
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Disable:
+					SwitcherCache.SetInputForOutput(OUTPUT_DM, null, eConnectionType.Audio);
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
 		}
 #endif
+		#endregion
 
-#endregion
 	}
 }
