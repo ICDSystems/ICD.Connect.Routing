@@ -1,6 +1,6 @@
 ﻿using System;
 using ICD.Connect.Devices.Controls;
-using ICD.Connect.Routing.Extron.Controls;
+using ICD.Connect.Routing.Extron.Controls.Routing;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Extron.Devices.Switchers.SwHd4K.Sw8Hd4K
@@ -17,7 +17,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.SwHd4K.Sw8Hd4K
 		{
 			base.AddControls(settings, factory, addControl);
 
-			addControl(new ExtronSwitcherControl(this, 0, 8, 1, false));
+			addControl(new GenericExtronSwitcherControl(this, 0, 8, 1, false));
 		}
 	}
 }

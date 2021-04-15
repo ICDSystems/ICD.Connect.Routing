@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Common.Utils.Collections;
 using ICD.Connect.Protocol.Ports.ComPort;
-using ICD.Connect.Routing.Extron.Controls;
+using ICD.Connect.Routing.Extron.Controls.Routing;
 using ICD.Connect.Routing.Extron.Devices.Endpoints;
 
 namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint

@@ -1,6 +1,6 @@
 ﻿using System;
 using ICD.Connect.Devices.Controls;
-using ICD.Connect.Routing.Extron.Controls;
+using ICD.Connect.Routing.Extron.Controls.Routing;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint.DtpCrosspoint84
@@ -21,7 +21,7 @@ namespace ICD.Connect.Routing.Extron.Devices.Switchers.DtpCrosspoint.DtpCrosspoi
 		{
 			base.AddControls(settings, factory, addControl);
 
-			addControl(new ExtronSwitcherControl(this, 0, 8, 4, true));
+			addControl(new GenericExtronSwitcherControl(this, 0, 8, 4, true));
 		}
 	}
 }

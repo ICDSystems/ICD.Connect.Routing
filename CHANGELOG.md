@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 ### Added
+ - IN1804 device driver
+ - IN1804DI device driver
+ - IN1804DO device driver
+ - IN1804DI/DO device driver
  - HdMd8x84kzE device driver
  - HdMd8x44kzE device driver
  - HdMd4x44kzE device driver
