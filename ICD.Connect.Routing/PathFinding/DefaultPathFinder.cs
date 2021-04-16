@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
+using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.Connections;
+using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
+using ICD.Connect.Routing.Extensions;
 using ICD.Connect.Routing.RoutingGraphs;
 
 namespace ICD.Connect.Routing.PathFinding
@@ -63,7 +67,7 @@ namespace ICD.Connect.Routing.PathFinding
 		/// </summary>
 		/// <param name="query"></param>
 		/// <returns></returns>
-		private bool HasPaths(PathBuilderQuery query)
+		private bool HasPaths([NotNull] PathBuilderQuery query)
 		{
 			if (query == null)
 				throw new ArgumentNullException("query");
@@ -87,7 +91,7 @@ namespace ICD.Connect.Routing.PathFinding
 		/// <param name="destinations"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		private bool HasPaths(EndpointInfo[] source, EndpointInfo[][] destinations, eConnectionType flag)
+		private bool HasPaths([NotNull] EndpointInfo[] source, [NotNull] EndpointInfo[][] destinations, eConnectionType flag)
 		{
 			if (source == null)
 				throw new ArgumentNullException("source");
@@ -131,7 +135,8 @@ namespace ICD.Connect.Routing.PathFinding
 		/// </summary>
 		/// <param name="query"></param>
 		/// <returns></returns>
-		private IEnumerable<ConnectionPath> FindPaths(PathBuilderQuery query)
+		[NotNull]
+		private IEnumerable<ConnectionPath> FindPaths([NotNull] PathBuilderQuery query)
 		{
 			if (query == null)
 				throw new ArgumentNullException("query");
@@ -154,7 +159,9 @@ namespace ICD.Connect.Routing.PathFinding
 		/// <param name="destinations"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		private IEnumerable<ConnectionPath> FindPaths(EndpointInfo[] source, EndpointInfo[][] destinations, eConnectionType flag)
+		[NotNull]
+		private IEnumerable<ConnectionPath> FindPaths([NotNull] EndpointInfo[] source,
+		                                              [NotNull] EndpointInfo[][] destinations, eConnectionType flag)
 		{
 			if (source == null)
 				throw new ArgumentNullException("source");
@@ -168,16 +175,16 @@ namespace ICD.Connect.Routing.PathFinding
 			// Get the output connections for the source
 			Connection[] sourceConnections =
 				source.Select(e => m_Connections.GetOutputConnection(e, flag))
-					  .Where(c => c != null)
-					  .ToArray();
+				      .Where(c => c != null)
+				      .ToArray();
 
 			foreach (EndpointInfo[] destination in destinations)
 			{
 				// Get the input connections for the destination
 				Connection[] destinationConnections =
 					destination.Select(e => m_Connections.GetInputConnection(e, flag))
-							   .Where(c => c != null)
-							   .ToArray();
+					           .Where(c => c != null)
+					           .ToArray();
 
 				foreach (Connection sourceConnection in sourceConnections)
 				{
@@ -191,8 +198,10 @@ namespace ICD.Connect.Routing.PathFinding
 			}
 		}
 
-		private ConnectionPath GetConnectionPath(Connection sourceConnection, IEnumerable<Connection> destinationConnections,
-		                                         IEnumerable<EndpointInfo> destination, eConnectionType flag)
+		[CanBeNull]
+		private ConnectionPath GetConnectionPath([NotNull] Connection sourceConnection,
+		                                         [NotNull] IEnumerable<Connection> destinationConnections,
+		                                         [NotNull] IEnumerable<EndpointInfo> destination, eConnectionType flag)
 		{
 			if (sourceConnection == null)
 				throw new ArgumentNullException("sourceConnection");
@@ -200,16 +209,37 @@ namespace ICD.Connect.Routing.PathFinding
 			if (destinationConnections == null)
 				throw new ArgumentNullException("destinationConnections");
 
+			if (destination == null)
+				throw new ArgumentNullException("destination");
+
 			IList<EndpointInfo> destinationCollection = destination as IList<EndpointInfo> ?? destination.ToArray();
+			if (destinationCollection.Count == 0)
+				return null;
 
+			// We are recursing over the EDGES of the graph, rather than the NODES.
+			// We start by using sourceConnection as our entry point, but it hasn't been validated yet.
+			IRouteDestinationControl immediate =
+				sourceConnection.Core
+				                .GetRoutingGraph()
+				                .GetDestinationControl(sourceConnection);
+
+			// Is the immediate node our destination?
+			if (destinationCollection[0].GetDeviceControlInfo() == immediate.GetDeviceControlInfo())
+				return new ConnectionPath(sourceConnection.Yield(), flag);
+
+			// Can't path through the immediate node
+			if (!(immediate is IRouteMidpointControl))
+				return null;
+
+			// First connection is good, continue regular pathfinding
 			KeyValuePair<Connection, IEnumerable<Connection>> kvp;
-
 			bool found =
 				RecursionUtils
-					.BreadthFirstSearchPathManyDestinations(sourceConnection, destinationConnections,
+					.BreadthFirstSearchPathManyDestinations(sourceConnection,
+					                                        destinationConnections,
 					                                        c =>
-						                                        GetConnectionChildren(sourceConnection.Source, destinationCollection, c,
-						                                                              flag))
+					                                        GetConnectionChildren(sourceConnection.Source, destinationCollection, c,
+					                                                              flag))
 					.TryFirst(out kvp);
 
 			return found ? new ConnectionPath(kvp.Value, flag) : null;
@@ -223,8 +253,11 @@ namespace ICD.Connect.Routing.PathFinding
 		/// <param name="sourceOutputConnection"></param>
 		/// <param name="flag"></param>
 		/// <returns></returns>
-		private IEnumerable<Connection> GetConnectionChildren(EndpointInfo source, IEnumerable<EndpointInfo> finalDestinations,
-															  Connection sourceOutputConnection, eConnectionType flag)
+		[NotNull]
+		private IEnumerable<Connection> GetConnectionChildren(EndpointInfo source,
+		                                                      [NotNull] IEnumerable<EndpointInfo> finalDestinations,
+		                                                      [NotNull] Connection sourceOutputConnection,
+		                                                      eConnectionType flag)
 		{
 			if (sourceOutputConnection == null)
 				throw new ArgumentNullException("sourceOutputConnection");
