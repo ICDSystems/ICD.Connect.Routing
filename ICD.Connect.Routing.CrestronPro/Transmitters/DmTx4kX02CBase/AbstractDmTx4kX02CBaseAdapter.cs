@@ -402,11 +402,23 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 		/// </summary>
 		/// <param name="device"></param>
 		/// <param name="args"></param>
-		protected virtual void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
+		private void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
 		{
-			if (args.EventId != EndpointTransmitterBase.VideoSourceFeedbackEventId || args.EventId != EndpointTransmitterBase.AudioSourceFeedbackEventId)
-				return;
+			if (args.EventId == EndpointTransmitterBase.VideoSourceFeedbackEventId)
+				TransmitterOnVideoSourceFeedbackEvent(device, args);
 
+			if (args.EventId == EndpointTransmitterBase.AudioSourceFeedbackEventId)
+				TransmitterOnAudioSourceFeedbackEvent(device, args);
+		}
+
+
+		/// <summary>
+		/// Called when the transmitter raises the VideoSourceFeedback event
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="args"></param>
+		protected virtual void TransmitterOnVideoSourceFeedbackEvent(GenericBase device, BaseEventArgs args)
+		{
 			switch (Transmitter.VideoSourceFeedback)
 			{
 				case eX02VideoSourceType.Hdmi1:
@@ -418,7 +430,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, HDMI_INPUT_2, eConnectionType.Video);
 					break;
 				case eX02VideoSourceType.Auto:
-				case eX02VideoSourceType.Vga:
 				case eX02VideoSourceType.AllDisabled:
 					SwitcherCache.SetInputForOutput(DM_OUTPUT, null, eConnectionType.Video);
 					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, null, eConnectionType.Video);
@@ -426,7 +437,15 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+		}
 
+		/// <summary>
+		/// Called when the transmitter raises the AudioSourceFeedback event
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="args"></param>
+		protected virtual void TransmitterOnAudioSourceFeedbackEvent(GenericBase device, BaseEventArgs args)
+		{
 			switch (Transmitter.AudioSourceFeedback)
 			{
 				case eX02AudioSourceType.Hdmi1:
@@ -438,7 +457,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, HDMI_INPUT_2, eConnectionType.Audio);
 					break;
 				case eX02AudioSourceType.Auto:
-				case eX02AudioSourceType.AudioIn:
 				case eX02AudioSourceType.AllDisabled:
 					SwitcherCache.SetInputForOutput(DM_OUTPUT, null, eConnectionType.Audio);
 					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, null, eConnectionType.Audio);
@@ -447,6 +465,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 					throw new ArgumentOutOfRangeException();
 			}
 		}
+
+
 
 #endregion
 

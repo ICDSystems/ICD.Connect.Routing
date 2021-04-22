@@ -449,23 +449,47 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// </summary>
 		/// <param name="device"></param>
 		/// <param name="args"></param>
-		protected virtual void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
+		private void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
 		{
-			if (args.EventId == EndpointTransmitterBase.AudioSourceFeedbackEventId ||
-				args.EventId == EndpointTransmitterBase.VideoSourceFeedbackEventId)
-				UpdateActiveTransmissionState();
-
 			TTransmitter transmitter = device as TTransmitter;
 			if (transmitter == null)
 				return;
 
-			if (args.EventId == DMOutputEventIds.ContentLanModeEventId)
+			if (args.EventId == EndpointTransmitterBase.VideoSourceFeedbackEventId)
 			{
-				// Disable Free-Run
-				transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
+				TransmitterOnVideoSourceFeedbackEvent(device, args);
+				UpdateActiveTransmissionState();
 			}
 
-			switch (transmitter.VideoSourceFeedback)
+			if (args.EventId == EndpointTransmitterBase.AudioSourceFeedbackEventId)
+			{
+				TransmitterOnAudioSourceFeedbackEvent(device, args);
+				UpdateActiveTransmissionState();
+			}
+		}
+
+		protected virtual void TransmitterOnAudioSourceFeedbackEvent(GenericBase device, BaseEventArgs args)
+		{
+			switch (Transmitter.AudioSourceFeedback)
+			{
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital:
+					SwitcherCache.SetInputForOutput(OUTPUT_DM, INPUT_HDMI, eConnectionType.Audio);
+					break;
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Analog:
+					SwitcherCache.SetInputForOutput(OUTPUT_DM, INPUT_VGA, eConnectionType.Audio);
+					break;
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto:
+				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Disable:
+					SwitcherCache.SetInputForOutput(OUTPUT_DM, null, eConnectionType.Audio);
+					break;
+				default:
+					throw new ArgumentOutOfRangeException();
+			}
+		}
+
+		protected virtual void TransmitterOnVideoSourceFeedbackEvent(GenericBase device, BaseEventArgs args)
+		{
+			switch (Transmitter.VideoSourceFeedback)
 			{
 				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital:
 					SwitcherCache.SetInputForOutput(OUTPUT_DM, INPUT_HDMI, eConnectionType.Video);
@@ -480,20 +504,21 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
-			switch (transmitter.AudioSourceFeedback)
+		}
+
+		/// <summary>
+		/// Called when the device goes online/offline.
+		/// </summary>
+		/// <param name="currentDevice"/><param name="args"/>
+		protected override void TransmitterOnlineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
+		{
+			base.TransmitterOnlineStatusChange(currentDevice, args);
+
+			// Disable Free-Run
+			if (IsOnline && Transmitter != null && Transmitter.VgaInput.FreeRunFeedback != eDmFreeRunSetting.Disabled)
 			{
-				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital:
-					SwitcherCache.SetInputForOutput(OUTPUT_DM, INPUT_HDMI, eConnectionType.Audio);
-					break;
-				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Analog:
-					SwitcherCache.SetInputForOutput(OUTPUT_DM, INPUT_VGA, eConnectionType.Audio);
-					break;
-				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto:
-				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Disable:
-					SwitcherCache.SetInputForOutput(OUTPUT_DM, null, eConnectionType.Audio);
-					break;
-				default:
-					throw new ArgumentOutOfRangeException();
+				Transmitter.VgaInput.FreeRun = Transmitter.VgaInput.FreeRunFeedback;
+				Transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
 			}
 		}
 #endif

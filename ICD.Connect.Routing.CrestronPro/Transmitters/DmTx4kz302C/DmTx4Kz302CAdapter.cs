@@ -5,7 +5,6 @@ using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
-using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
 #endif
@@ -158,42 +157,21 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 		}
 
 		/// <summary>
-		/// Called when the the transmitter raises an event.
+		/// Called when the transmitter raises the VideoSourceFeedback event
 		/// </summary>
 		/// <param name="device"></param>
 		/// <param name="args"></param>
-		protected override void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
+		protected override void TransmitterOnVideoSourceFeedbackEvent(GenericBase device, BaseEventArgs args)
 		{
-			if (args.EventId != EndpointTransmitterBase.VideoSourceFeedbackEventId)
-				return;
-
-			// Ensure the device stays in auto routing mode if applicable.
-			if (UseAutoRouting)
-			{
-				Transmitter.VideoSource = eX02VideoSourceType.Auto;
-			}
-
 			switch (Transmitter.VideoSourceFeedback)
 			{
-				case eX02VideoSourceType.Auto:
-				case eX02VideoSourceType.AllDisabled:
-					SwitcherCache.SetInputForOutput(DM_OUTPUT, null, eConnectionType.Audio | eConnectionType.Video);
-					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, null, eConnectionType.Audio | eConnectionType.Video);
-					break;
-				case eX02VideoSourceType.Hdmi1:
-					SwitcherCache.SetInputForOutput(DM_OUTPUT, HDMI_INPUT_1, eConnectionType.Audio | eConnectionType.Video);
-					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, HDMI_INPUT_1, eConnectionType.Audio | eConnectionType.Video);
-					break;
-				case eX02VideoSourceType.Hdmi2:
-					SwitcherCache.SetInputForOutput(DM_OUTPUT, HDMI_INPUT_2, eConnectionType.Audio | eConnectionType.Video);
-					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, HDMI_INPUT_2, eConnectionType.Audio | eConnectionType.Video);
-					break;
-				case eX02VideoSourceType.Vga:
+				case eX02VideoSourceType.DisplayPort:
 					SwitcherCache.SetInputForOutput(DM_OUTPUT, DISPLAY_PORT_INPUT, eConnectionType.Audio | eConnectionType.Video);
 					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, DISPLAY_PORT_INPUT, eConnectionType.Audio | eConnectionType.Video);
 					break;
 				default:
-					throw new ArgumentOutOfRangeException();
+					base.TransmitterOnVideoSourceFeedbackEvent(device, args);
+					break;
 			}
 		}
 

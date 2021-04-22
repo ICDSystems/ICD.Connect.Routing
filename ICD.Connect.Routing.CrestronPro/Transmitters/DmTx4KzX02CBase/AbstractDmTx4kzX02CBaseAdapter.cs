@@ -19,6 +19,7 @@ using ICD.Connect.Routing.Connections;
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 {
 #if SIMPLSHARP
+// ReSharper disable once InconsistentNaming
 	public abstract class AbstractDmTx4kzX02CBaseAdapter<TTransmitter, TSettings> :
 		AbstractEndpointTransmitterSwitcherBaseAdapter<TTransmitter, TSettings>, IDmTx4kzX02CBaseAdapter
 		where TTransmitter : DmTx4kzX02CBase
@@ -382,11 +383,19 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 		/// </summary>
 		/// <param name="device"></param>
 		/// <param name="args"></param>
-		protected virtual void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
+		private void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
 		{
-			if (args.EventId != EndpointTransmitterBase.VideoSourceFeedbackEventId)
-				return;
+			if (args.EventId == EndpointTransmitterBase.VideoSourceFeedbackEventId)
+				TransmitterOnVideoSourceFeedbackEvent(device, args);
+		}
 
+		/// <summary>
+		/// Called when the transmitter raises the VideoSourceFeedback event
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="args"></param>
+		protected virtual void TransmitterOnVideoSourceFeedbackEvent(GenericBase device, BaseEventArgs args)
+		{
 			switch (Transmitter.VideoSourceFeedback)
 			{
 				case eX02VideoSourceType.Hdmi1:
@@ -398,7 +407,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, HDMI_INPUT_2, eConnectionType.Audio | eConnectionType.Video);
 					break;
 				case eX02VideoSourceType.Auto:
-				case eX02VideoSourceType.Vga:
 				case eX02VideoSourceType.AllDisabled:
 					SwitcherCache.SetInputForOutput(DM_OUTPUT, null, eConnectionType.Audio | eConnectionType.Video);
 					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, null, eConnectionType.Audio | eConnectionType.Video);

@@ -206,67 +206,59 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		}
 
 		/// <summary>
-		/// Called when the the transmitter raises an event.
+		/// Called when the transmitter raises the VideoSourceFeedback event
 		/// </summary>
 		/// <param name="device"></param>
 		/// <param name="args"></param>
-		protected override void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
+		protected override void TransmitterOnVideoSourceFeedbackEvent(GenericBase device, BaseEventArgs args)
 		{
-			base.TransmitterOnBaseEvent(device, args);
-
-			if (args.EventId == DMOutputEventIds.ContentLanModeEventId)
-				// Disable Free-Run
-				Transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
-
-			if (args.EventId != EndpointTransmitterBase.VideoSourceFeedbackEventId || args.EventId != EndpointTransmitterBase.AudioSourceFeedbackEventId)
-				return;
-
 			switch (Transmitter.VideoSourceFeedback)
 			{
-				case eX02VideoSourceType.Hdmi1:
-					SwitcherCache.SetInputForOutput(DM_OUTPUT, HDMI_INPUT_1, eConnectionType.Video);
-					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, HDMI_INPUT_1, eConnectionType.Video);
-					break;
-				case eX02VideoSourceType.Hdmi2:
-					SwitcherCache.SetInputForOutput(DM_OUTPUT, HDMI_INPUT_2, eConnectionType.Video);
-					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, HDMI_INPUT_2, eConnectionType.Video);
-					break;
 				case eX02VideoSourceType.Vga:
 					SwitcherCache.SetInputForOutput(DM_OUTPUT, VGA_INPUT, eConnectionType.Video);
 					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, VGA_INPUT, eConnectionType.Video);
 					break;
-				case eX02VideoSourceType.Auto:
-				case eX02VideoSourceType.AllDisabled:
-					SwitcherCache.SetInputForOutput(DM_OUTPUT, null, eConnectionType.Video);
-					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, null, eConnectionType.Video);
-					break;
 				default:
-					throw new ArgumentOutOfRangeException();
+					base.TransmitterOnVideoSourceFeedbackEvent(device, args);
+					break;
 			}
+		}
 
+		/// <summary>
+		/// Called when the transmitter raises the AudioSourceFeedback event
+		/// </summary>
+		/// <param name="device"></param>
+		/// <param name="args"></param>
+		protected override void TransmitterOnAudioSourceFeedbackEvent(GenericBase device, BaseEventArgs args)
+		{
 			switch (Transmitter.AudioSourceFeedback)
 			{
-				case eX02AudioSourceType.Hdmi1:
-					SwitcherCache.SetInputForOutput(DM_OUTPUT, HDMI_INPUT_1, eConnectionType.Audio);
-					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, HDMI_INPUT_1, eConnectionType.Audio);
-					break;
-				case eX02AudioSourceType.Hdmi2:
-					SwitcherCache.SetInputForOutput(DM_OUTPUT, HDMI_INPUT_2, eConnectionType.Audio);
-					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, HDMI_INPUT_2, eConnectionType.Audio);
-					break;
 				case eX02AudioSourceType.AudioIn:
 					SwitcherCache.SetInputForOutput(DM_OUTPUT, VGA_INPUT, eConnectionType.Audio);
 					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, VGA_INPUT, eConnectionType.Audio);
 					break;
-				case eX02AudioSourceType.Auto:
-				case eX02AudioSourceType.AllDisabled:
-					SwitcherCache.SetInputForOutput(DM_OUTPUT, null, eConnectionType.Audio);
-					SwitcherCache.SetInputForOutput(HDMI_OUTPUT, null, eConnectionType.Audio);
-					break;
 				default:
-					throw new ArgumentOutOfRangeException();
+					base.TransmitterOnAudioSourceFeedbackEvent(device, args);
+					break;
 			}
 		}
+
+		/// <summary>
+		/// Called when the device goes online/offline.
+		/// </summary>
+		/// <param name="currentDevice"/><param name="args"/>
+		protected override void TransmitterOnlineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
+		{
+			base.TransmitterOnlineStatusChange(currentDevice, args);
+
+			//Disable Free-Run
+			if (Transmitter != null && Transmitter.VgaInput.FreeRunFeedback != eDmFreeRunSetting.Disabled)
+			{
+				Transmitter.VgaInput.FreeRun = Transmitter.VgaInput.FreeRunFeedback;
+				Transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
+			}
+		}
+
 #endif
 
 #endregion

@@ -127,14 +127,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 			}
 		}
 #if SIMPLSHARP
-		/// <summary>
-		/// Called when the the transmitter raises an event.
-		/// </summary>
-		/// <param name="device"></param>
-		/// <param name="args"></param>
-		protected override void TransmitterOnBaseEvent(GenericBase device, BaseEventArgs args)
+
+		protected override void TransmitterOnVideoSourceFeedbackEvent(GenericBase device, BaseEventArgs args)
 		{
-			base.TransmitterOnBaseEvent(device, args);
+			base.TransmitterOnVideoSourceFeedbackEvent(device, args);
 
 			switch (Transmitter.VideoSourceFeedback)
 			{
@@ -151,6 +147,12 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 				default:
 					throw new ArgumentOutOfRangeException();
 			}
+		}
+
+		protected override void TransmitterOnAudioSourceFeedbackEvent(GenericBase device, BaseEventArgs args)
+		{
+			base.TransmitterOnAudioSourceFeedbackEvent(device, args);
+
 			switch (Transmitter.AudioSourceFeedback)
 			{
 				case Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital:
