@@ -106,6 +106,14 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4Kz100C1G
 		}
 
 		/// <summary>
+		/// Override to implement AutoRouting on the transmitter
+		/// </summary>
+		protected override void SetTransmitterAutoRoutingFinal()
+		{
+			//No Switching on this Tx
+		}
+
+		/// <summary>
 		/// Gets the port at the given address.
 		/// </summary>
 		/// <param name="io"></param>

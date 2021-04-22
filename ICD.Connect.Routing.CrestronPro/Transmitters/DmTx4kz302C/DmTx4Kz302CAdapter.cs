@@ -115,20 +115,12 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 
 			switch (info.LocalInput)
 			{
-				case HDMI_INPUT_1:
-					Transmitter.VideoSource = eX02VideoSourceType.Hdmi1;
-					break;
-
-				case HDMI_INPUT_2:
-					Transmitter.VideoSource = eX02VideoSourceType.Hdmi2;
-					break;
-
 				case DISPLAY_PORT_INPUT:
-					Transmitter.VideoSource = eX02VideoSourceType.DisplayPort;
+					SetVideoSource(eX02VideoSourceType.DisplayPort);
 					break;
 
 				default:
-					throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
+					return base.Route(info);
 			}
 			return true;
 		}

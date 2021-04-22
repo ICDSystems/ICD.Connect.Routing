@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Linq;
 using ICD.Common.Utils.Extensions;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.CrestronPro.Cards;
-using ICD.Connect.Routing.Extensions;
-using ICD.Connect.Routing.RoutingGraphs;
 using ICD.Connect.Settings;
 using ICD.Connect.Routing.Devices;
 using ICD.Connect.Routing.EventArguments;
@@ -50,13 +47,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		private int? m_ParentId;
 #endif
 
-		#region Properties
-
-		/// <summary>
-		/// Used to determine if transmitters should enable auto routing.
-		/// Set in start settings final.
-		/// </summary>
-		protected bool UseAutoRouting { get; private set; }
+		#region Propertie
 
 #if SIMPLSHARP
 		/// <summary>
@@ -293,21 +284,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		}
 
 #if SIMPLSHARP
-		/// <summary>
-		/// Override to add actions on StartSettings
-		/// This should be used to start communications with devices and perform initial actions
-		/// </summary>
-		protected override void StartSettingsFinal()
-		{
-			base.StartSettingsFinal();
-
-			// If there are no input connections in the routing graph transmitters should use auto routing.
-			IRoutingGraph routingGraph;
-			if (Core.TryGetRoutingGraph(out routingGraph) && routingGraph != null)
-				UseAutoRouting = routingGraph.Connections.All(c => c.Destination.Device != Id);
-			else
-				UseAutoRouting = true;
-		}
 
 		/// <summary>
 		/// Instantiates the transmitter with the given IPID against the control system.
@@ -384,7 +360,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// </summary>
 		/// <param name="currentDevice"></param>
 		/// <param name="args"></param>
-		private void TransmitterOnlineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
+		protected virtual void TransmitterOnlineStatusChange(GenericBase currentDevice, OnlineOfflineEventArgs args)
 		{
 			UpdateCachedOnlineStatus();
 		}

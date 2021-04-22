@@ -113,6 +113,8 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 			if (Transmitter == null)
 				throw new InvalidOperationException("No DmTx instantiated");
 
+			bool success = true;
+
 			foreach (eConnectionType type in EnumUtils.GetFlagsExceptNone(info.ConnectionType))
 			{
 				switch (type)
@@ -120,46 +122,35 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 					case eConnectionType.Audio:
 						switch (info.LocalInput)
 						{
-							case HDMI_INPUT_1:
-								Transmitter.AudioSource = eX02AudioSourceType.Hdmi1;
-								break;
-
-							case HDMI_INPUT_2:
-								Transmitter.AudioSource = eX02AudioSourceType.Hdmi2;
-								break;
-
 							case VGA_INPUT:
-								Transmitter.AudioSource = eX02AudioSourceType.AudioIn;
+								SetAudioSource(eX02AudioSourceType.AudioIn);
 								break;
 
 							default:
-								throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
+								success &= base.Route(info);
+								break;
 						}
 						break;
 					case eConnectionType.Video:
 						switch (info.LocalInput)
 						{
-							case HDMI_INPUT_1:
-								Transmitter.VideoSource = eX02VideoSourceType.Hdmi1;
-								break;
 
-							case HDMI_INPUT_2:
-								Transmitter.VideoSource = eX02VideoSourceType.Hdmi2;
-								break;
 
 							case VGA_INPUT:
-								Transmitter.VideoSource = eX02VideoSourceType.DisplayPort;
+								SetVideoSource(eX02VideoSourceType.Vga);
 								break;
 
 							default:
-								throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
+								success &= base.Route(info);
+								break;
 						}
 						break;
 					default:
-						throw new InvalidOperationException("Connection type unsupported");
+						success &= base.Route(info);
+						break;
 				}
 			}
-			return true;
+			return success;
 #endif
 			return false;
 		}
@@ -229,13 +220,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 
 			if (args.EventId != EndpointTransmitterBase.VideoSourceFeedbackEventId || args.EventId != EndpointTransmitterBase.AudioSourceFeedbackEventId)
 				return;
-
-			// Ensure the device stays in auto routing mode if applicable
-			if (UseAutoRouting)
-			{
-				Transmitter.VideoSource = eX02VideoSourceType.Auto;
-				Transmitter.AudioSource = eX02AudioSourceType.Auto;
-			}
 
 			switch (Transmitter.VideoSourceFeedback)
 			{

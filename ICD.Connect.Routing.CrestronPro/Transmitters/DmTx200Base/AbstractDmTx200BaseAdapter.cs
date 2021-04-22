@@ -289,11 +289,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 						switch (info.LocalInput)
 						{
 							case INPUT_HDMI:
-								Transmitter.AudioSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital;
+								SetAudioSource( Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital);
 								break;
 
 							case INPUT_VGA:
-								Transmitter.AudioSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Analog;
+								SetAudioSource( Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Analog);
 								break;
 
 							default:
@@ -304,11 +304,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 						switch (info.LocalInput)
 						{
 							case INPUT_HDMI:
-								Transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital;
+								SetVideoSource( Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Digital);
 								break;
 
 							case INPUT_VGA:
-								Transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Analog;
+								SetVideoSource( Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Analog);
 								break;
 
 							default:
@@ -336,12 +336,46 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			if (Transmitter == null)
 				throw new InvalidOperationException("No DmTx instantiated");
 
-			Transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Disable;
-			Transmitter.AudioSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Disable;
+			SetAudioSource(Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Disable);
+			SetVideoSource(Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Disable);
 			return true;
 #endif
 			return false;
 		}
+
+
+#if SIMPLSHARP
+
+		protected void SetAudioSource(Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection source)
+		{
+			if (Transmitter == null || Transmitter.AudioSourceFeedback == source)
+				return;
+
+			//Because Crestron
+			Transmitter.AudioSource = Transmitter.AudioSourceFeedback;
+			Transmitter.AudioSource = source;
+
+		}
+
+		protected void SetVideoSource(Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection source)
+		{
+			if (Transmitter == null || Transmitter.VideoSourceFeedback == source)
+				return;
+
+			//Because Crestron
+			Transmitter.VideoSource = Transmitter.VideoSourceFeedback;
+			Transmitter.VideoSource = source;
+		}
+
+		/// <summary>
+		/// Override to implement AutoRouting on the transmitter
+		/// </summary>
+		protected override void SetTransmitterAutoRoutingFinal()
+		{
+			SetAudioSource(Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto);
+			SetVideoSource(Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto);
+		}
+#endif
 
 		#endregion
 
@@ -429,13 +463,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 			{
 				// Disable Free-Run
 				transmitter.VgaInput.FreeRun = eDmFreeRunSetting.Disabled;
-			}
-
-			// Ensure auto-routing if applicable
-			if (UseAutoRouting)
-			{
-				transmitter.VideoSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
-				transmitter.AudioSource = Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection.Auto;
 			}
 
 			switch (transmitter.VideoSourceFeedback)
