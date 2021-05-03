@@ -17,10 +17,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - HdMd4x14kzE device driver
  - DmTx4Kz100C1G device driver
  - IStreamSourceDevice interface
+ - RoutingGraphConnectionComponent for Source, Destination, and Midpoint to pull connections from routing graph
 
 ### Changed
  - Crestron DM Transmitters now support switcher functionality
  - Better configure Mock Midpoint's input for output on start up
+ - Changed mock routing controls to use RoutingGraphConnectionComponents
 
 ## [16.2.1] - 2021-02-04
 ### Changed

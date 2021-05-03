@@ -83,6 +83,9 @@
     <Compile Include="Controls\RouteSwitcherControl.cs" />
     <Compile Include="Controls\RouteSwitcherControlConsole.cs" />
     <Compile Include="Controls\RouteSourceControl.cs" />
+    <Compile Include="Controls\RoutingGraphDestinationConnectionComponent.cs" />
+    <Compile Include="Controls\RoutingGraphMidpointConnectionComponent.cs" />
+    <Compile Include="Controls\RoutingGraphSourceConnectionComponent.cs" />
     <Compile Include="Controls\Streaming\AbstractStreamRouteDestinationControl.cs" />
     <Compile Include="Controls\Streaming\AbstractStreamRouteSourceControl.cs" />
     <Compile Include="Controls\Streaming\IStreamRouteDestinationControl.cs" />

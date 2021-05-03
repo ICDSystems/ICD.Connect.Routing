@@ -4,14 +4,11 @@ using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
-using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.EventArguments;
-using ICD.Connect.Routing.RoutingGraphs;
 using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Mock.Destination
@@ -30,16 +27,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 
 		private readonly Dictionary<int, ConnectorInfo> m_Inputs;
 		private readonly SwitcherCache m_Cache;
-
-		private IRoutingGraph m_CachedRoutingGraph;
-
-		/// <summary>
-		/// Gets the routing graph.
-		/// </summary>
-		public IRoutingGraph RoutingGraph
-		{
-			get { return m_CachedRoutingGraph = m_CachedRoutingGraph ?? ServiceProvider.GetService<IRoutingGraph>(); }
-		}
+		private readonly RoutingGraphDestinationConnectionComponent m_DestinationComponent;
 
 		/// <summary>
 		/// Constructor.
@@ -49,6 +37,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 		public MockRouteDestinationControl(IDevice parent, int id)
 			: base(parent, id)
 		{
+			m_DestinationComponent = new RoutingGraphDestinationConnectionComponent(this);
 			m_Cache = new SwitcherCache();
 			m_Cache.OnActiveInputsChanged += CacheOnActiveInputsChanged;
 			m_Cache.OnSourceDetectionStateChange += CacheOnSourceDetectionStateChange;
@@ -115,11 +104,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 		/// <returns></returns>
 		public override ConnectorInfo GetInput(int input)
 		{
-			Connection connection = RoutingGraph.Connections.GetInputConnection(new EndpointInfo(Parent.Id, Id, input));
-			if (connection == null)
-				throw new ArgumentOutOfRangeException("input");
-
-			return new ConnectorInfo(connection.Destination.Address, connection.ConnectionType);
+			return m_DestinationComponent.GetInput(input);
 		}
 
 		/// <summary>
@@ -129,7 +114,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 		/// <returns></returns>
 		public override bool ContainsInput(int input)
 		{
-			return RoutingGraph.Connections.GetInputConnection(new EndpointInfo(Parent.Id, Id, input)) != null;
+			return m_DestinationComponent.ContainsInput(input);
 		}
 
 		/// <summary>
@@ -138,9 +123,7 @@ namespace ICD.Connect.Routing.Mock.Destination
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			return RoutingGraph.Connections
-							   .GetInputConnections(Parent.Id, Id)
-							   .Select(c => new ConnectorInfo(c.Destination.Address, c.ConnectionType));
+			return m_DestinationComponent.GetInputs();
 		}
 
 		/// <summary>

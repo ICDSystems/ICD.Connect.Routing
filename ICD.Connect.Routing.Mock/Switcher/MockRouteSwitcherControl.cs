@@ -39,15 +39,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 
 		private readonly SwitcherCache m_Cache;
 
-		private IRoutingGraph m_CachedRoutingGraph;
-
-		/// <summary>
-		/// Gets the routing graph.
-		/// </summary>
-		public IRoutingGraph RoutingGraph
-		{
-			get { return m_CachedRoutingGraph = m_CachedRoutingGraph ?? ServiceProvider.GetService<IRoutingGraph>(); }
-		}
+		private readonly RoutingGraphMidpointConnectionComponent m_MidpointComponent;
 
 		/// <summary>
 		/// Constructor.
@@ -58,6 +50,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
+			m_MidpointComponent = new RoutingGraphMidpointConnectionComponent(this);
 			Subscribe(m_Cache);
 			AudioBreakawayEnabled = true;
 		}
@@ -152,11 +145,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// <returns></returns>
 		public override ConnectorInfo GetOutput(int address)
 		{
-			Connection connection = RoutingGraph.Connections.GetOutputConnection(new EndpointInfo(Parent.Id, Id, address));
-			if (connection == null)
-				throw new ArgumentOutOfRangeException("address");
-
-			return new ConnectorInfo(connection.Source.Address, connection.ConnectionType);
+			return m_MidpointComponent.GetOutput(address);
 		}
 
 		/// <summary>
@@ -166,7 +155,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// <returns></returns>
 		public override bool ContainsOutput(int output)
 		{
-			return RoutingGraph.Connections.GetOutputConnection(new EndpointInfo(Parent.Id, Id, output)) != null;
+			return m_MidpointComponent.ContainsOutput(output);
 		}
 
 		/// <summary>
@@ -175,9 +164,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			return RoutingGraph.Connections
-			                   .GetOutputConnections(Parent.Id, Id)
-			                   .Select(c => new ConnectorInfo(c.Source.Address, c.ConnectionType));
+			return m_MidpointComponent.GetOutputs();
 		}
 
 		/// <summary>
@@ -210,11 +197,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// <returns></returns>
 		public override ConnectorInfo GetInput(int input)
 		{
-			Connection connection = RoutingGraph.Connections.GetInputConnection(new EndpointInfo(Parent.Id, Id, input));
-			if (connection == null)
-				throw new ArgumentOutOfRangeException("input");
-
-			return new ConnectorInfo(connection.Destination.Address, connection.ConnectionType);
+			return m_MidpointComponent.GetInput(input);
 		}
 
 		/// <summary>
@@ -224,7 +207,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// <returns></returns>
 		public override bool ContainsInput(int input)
 		{
-			return RoutingGraph.Connections.GetInputConnection(new EndpointInfo(Parent.Id, Id, input)) != null;
+			return m_MidpointComponent.ContainsInput(input);
 		}
 
 		/// <summary>
@@ -233,9 +216,7 @@ namespace ICD.Connect.Routing.Mock.Switcher
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetInputs()
 		{
-			return RoutingGraph.Connections
-							   .GetInputConnections(Parent.Id, Id)
-							   .Select(c => new ConnectorInfo(c.Destination.Address, c.ConnectionType));
+			return m_MidpointComponent.GetInputs();
 		}
 
 		/// <summary>

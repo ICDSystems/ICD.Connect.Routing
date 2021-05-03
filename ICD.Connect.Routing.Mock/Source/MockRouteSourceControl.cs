@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
-using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.EventArguments;
-using ICD.Connect.Routing.RoutingGraphs;
 
 namespace ICD.Connect.Routing.Mock.Source
 {
@@ -24,15 +20,7 @@ namespace ICD.Connect.Routing.Mock.Source
 
 		private readonly Dictionary<int, Dictionary<eConnectionType, bool>> m_TransmissionStates;
 
-		private IRoutingGraph m_CachedRoutingGraph;
-
-		/// <summary>
-		/// Gets the routing graph.
-		/// </summary>
-		public IRoutingGraph RoutingGraph
-		{
-			get { return m_CachedRoutingGraph = m_CachedRoutingGraph ?? ServiceProvider.GetService<IRoutingGraph>(); }
-		}
+		private readonly RoutingGraphSourceConnectionComponent m_SourceComponent;
 
 		/// <summary>
 		/// Constructor.
@@ -43,6 +31,7 @@ namespace ICD.Connect.Routing.Mock.Source
 			: base(parent, id)
 		{
 			m_TransmissionStates = new Dictionary<int, Dictionary<eConnectionType, bool>>();
+			m_SourceComponent = new RoutingGraphSourceConnectionComponent(this);
 		}
 
 		/// <summary>
@@ -79,11 +68,7 @@ namespace ICD.Connect.Routing.Mock.Source
 		/// <returns></returns>
 		public override ConnectorInfo GetOutput(int address)
 		{
-			Connection connection = RoutingGraph.Connections.GetOutputConnection(new EndpointInfo(Parent.Id, Id, address));
-			if (connection == null)
-				throw new ArgumentOutOfRangeException("address");
-
-			return new ConnectorInfo(connection.Source.Address, connection.ConnectionType);
+			return m_SourceComponent.GetOutput(address);
 		}
 
 		/// <summary>
@@ -93,7 +78,7 @@ namespace ICD.Connect.Routing.Mock.Source
 		/// <returns></returns>
 		public override bool ContainsOutput(int output)
 		{
-			return RoutingGraph.Connections.GetOutputConnection(new EndpointInfo(Parent.Id, Id, output)) != null;
+			return m_SourceComponent.ContainsOutput(output);
 		}
 
 		/// <summary>
@@ -102,9 +87,7 @@ namespace ICD.Connect.Routing.Mock.Source
 		/// <returns></returns>
 		public override IEnumerable<ConnectorInfo> GetOutputs()
 		{
-			return RoutingGraph.Connections
-							   .GetOutputConnections(Parent.Id, Id)
-							   .Select(c => new ConnectorInfo(c.Source.Address, c.ConnectionType));
+			return m_SourceComponent.GetOutputs();
 		}
 
 		/// <summary>
