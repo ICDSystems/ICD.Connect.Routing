@@ -150,7 +150,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		#endregion
 
 		#region Transmitter Callbacks
-
+#if SIMPLSHARP
 		protected override void TransmitterOnlineStatusChange(Crestron.SimplSharpPro.GenericBase currentDevice, Crestron.SimplSharpPro.OnlineOfflineEventArgs args)
 		{
 			base.TransmitterOnlineStatusChange(currentDevice, args);
@@ -158,7 +158,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 			if (IsOnline)
 				SetTransmitterAutoRouting();
 		}
-
+#endif
 		#endregion
 
 		#region Event Invocation
