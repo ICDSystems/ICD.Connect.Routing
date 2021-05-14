@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [17.0.0] - 2021-05-14
 ### Added
  - IN1804 device driver
  - IN1804DI device driver
@@ -23,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Crestron DM Transmitters now support switcher functionality
  - Better configure Mock Midpoint's input for output on start up
  - Changed mock routing controls to use RoutingGraphConnectionComponents
+ - Fixed a bug where the first connection during pathfinding would not be validated
 
 ## [16.2.1] - 2021-02-04
 ### Changed
