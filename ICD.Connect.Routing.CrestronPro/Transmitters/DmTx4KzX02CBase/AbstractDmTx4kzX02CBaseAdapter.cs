@@ -251,12 +251,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 			{
 				case HDMI_INPUT_1:
 					SetVideoSource(eX02VideoSourceType.Hdmi1);
-					SetAudioSource(eX02AudioSourceType.Hdmi1);
 					break;
 
 				case HDMI_INPUT_2:
 					SetVideoSource(eX02VideoSourceType.Hdmi2);
-					SetAudioSource(eX02AudioSourceType.Hdmi2);
 					break;
 
 				default:
@@ -280,24 +278,12 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 				throw new InvalidOperationException("No DmTx instantiated");
 
 			SetVideoSource(eX02VideoSourceType.AllDisabled);
-			SetAudioSource(eX02AudioSourceType.AllDisabled);
 			return true;
 #endif
 			return false;
 		}
 
 #if SIMPLSHARP
-
-		protected void SetAudioSource(eX02AudioSourceType source)
-		{
-			if (Transmitter == null || Transmitter.AudioSourceFeedback == source)
-				return;
-
-			Transmitter.AudioSource = Transmitter.AudioSourceFeedback;
-			Transmitter.AudioSource = source;
-
-
-		}
 
 		protected void SetVideoSource(eX02VideoSourceType source)
 		{
@@ -313,7 +299,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 		/// </summary>
 		protected override void SetTransmitterAutoRoutingFinal()
 		{
-			SetAudioSource(eX02AudioSourceType.Auto);
 			SetVideoSource(eX02VideoSourceType.Auto);
 		}
 #endif
