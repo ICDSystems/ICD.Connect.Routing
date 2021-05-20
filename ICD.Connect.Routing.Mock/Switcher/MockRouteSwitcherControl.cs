@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using ICD.Common.Properties;
 using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Services;
 using ICD.Connect.API.Commands;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
-using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.EventArguments;
-using ICD.Connect.Routing.RoutingGraphs;
 using ICD.Connect.Routing.Utils;
 
 namespace ICD.Connect.Routing.Mock.Switcher
