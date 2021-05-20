@@ -55,7 +55,7 @@ namespace ICD.Connect.Routing.PathFinding
 			if (queries == null)
 				throw new ArgumentNullException("queries");
 
-			return queries.All(q => HasPaths(q));
+			return queries.All(HasPaths);
 		}
 
 		#endregion

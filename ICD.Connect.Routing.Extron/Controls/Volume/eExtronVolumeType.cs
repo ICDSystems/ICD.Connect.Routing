@@ -46,7 +46,7 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 	/// Specifies the valid range of IDs for a volume type
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Field, AllowMultiple = true)]
-	internal class ExtronObjectIdRangeAttribute : Attribute
+	internal sealed class ExtronObjectIdRangeAttribute : Attribute
 	{
 		public int RangeMin { get; private set; }
 		public int RangeMax { get; private set; }
@@ -62,7 +62,7 @@ namespace ICD.Connect.Routing.Extron.Controls.Volume
 	/// Specifies the valid range of values for this volume type in dB
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Field)]
-	internal class ExtronVolumeRangeAttribute : Attribute
+	internal sealed class ExtronVolumeRangeAttribute : Attribute
 	{
 		public float VolumeMin { get; private set; }
 		public float VolumeMax { get; private set; }
