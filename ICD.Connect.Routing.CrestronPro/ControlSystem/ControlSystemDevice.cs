@@ -258,7 +258,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		/// <returns></returns>
 		public DigitalInput GetDigitalInputPort(int address)
 		{
-			if (ControlSystem.ComPorts == null)
+			if (ControlSystem.DigitalInputPorts == null)
 				throw new NotSupportedException("Control System has no DigitalInputPorts");
 
 			if (address < 0 || !ControlSystem.DigitalInputPorts.Contains((uint)address))
