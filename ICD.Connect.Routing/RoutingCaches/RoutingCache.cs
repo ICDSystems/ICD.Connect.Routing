@@ -255,9 +255,6 @@ namespace ICD.Connect.Routing.RoutingCaches
 		/// <returns></returns>
 		public bool GetSourceEndpointTransmitting(EndpointInfo sourceEndpoint, eConnectionType flag)
 		{
-			if (sourceEndpoint == null)
-				throw new ArgumentNullException("source");
-
 			if (!EnumUtils.HasSingleFlag(flag))
 				throw new ArgumentException("type cannot have multiple flags", "flag");
 
