@@ -92,6 +92,8 @@
     <Compile Include="Controls\Streaming\IStreamRouteSourceControl.cs" />
     <Compile Include="Controls\Streaming\StreamRouteDestinationControlConsole.cs" />
     <Compile Include="Controls\Streaming\StreamRouteSourceControlConsole.cs" />
+    <Compile Include="Devices\RelaySwitcher\RelaySwitcherDevice.cs" />
+    <Compile Include="Devices\RelaySwitcher\RelaySwitcherDeviceSettings.cs" />
     <Compile Include="Devices\IoToggleSwitcher\IoToggleSwitcherDevice.cs" />
     <Compile Include="Devices\IoToggleSwitcher\IoToggleSwitcherDeviceSettings.cs" />
     <Compile Include="Devices\Streaming\IStreamSourceDevice.cs" />
