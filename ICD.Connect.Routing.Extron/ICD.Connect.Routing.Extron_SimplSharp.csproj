@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controls\Routing\AbstractExtronSwitcherControl.cs" />
+    <Compile Include="Controls\Routing\GenericExtronUsbSwitcherControl.cs" />
     <Compile Include="Controls\Routing\In1804SwitcherControl.cs" />
     <Compile Include="Controls\Volume\AbstractExtronVolumeDeviceControl.cs" />
     <Compile Include="Devices\Endpoints\eDtpInputOuput.cs" />
@@ -111,6 +112,14 @@
     <Compile Include="Devices\Switchers\In1804\In1804Do\In1804DoDeviceSettings.cs" />
     <Compile Include="Devices\Switchers\In1804\In1804\In1804Device.cs" />
     <Compile Include="Devices\Switchers\In1804\In1804\In1804DeviceSettings.cs" />
+    <Compile Include="Devices\Switchers\SwUsb\AbstractSwUsbDevice.cs" />
+    <Compile Include="Devices\Switchers\SwUsb\AbstractSwUsbSettings.cs" />
+    <Compile Include="Devices\Switchers\SwUsb\ISwUsbSettings.cs" />
+    <Compile Include="Devices\Switchers\SwUsb\ISwUsbDevice.cs" />
+    <Compile Include="Devices\Switchers\SwUsb\Sw2Usb\Sw2UsbDevice.cs" />
+    <Compile Include="Devices\Switchers\SwUsb\Sw2Usb\Sw2UsbSettings.cs" />
+    <Compile Include="Devices\Switchers\SwUsb\Sw4Usb\Sw4UsbDevice.cs" />
+    <Compile Include="Devices\Switchers\SwUsb\Sw4Usb\Sw4UsbSettings.cs" />
     <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Devices\Switchers\IExtronSwitcherDevice.cs" />
     <Compile Include="Devices\Switchers\IExtronSwitcherDeviceSettings.cs" />
@@ -133,6 +142,7 @@
     <Compile Include="Ports\DtpCrosspointComPortSettings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="Devices\Switchers\In1804\In1804Series.pdf" />
+    <None Include="Devices\Switchers\SwUsb\68-1517-01_G_SW_USB_UG.pdf" />
     <None Include="Properties\ControlSystem.cfg" />
     <None Include="Devices\Switchers\SwHd4K\SWHD4KSeries.pdf" />
   </ItemGroup>

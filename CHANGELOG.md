@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 ### Added
  - Added generic relay switcher device for 2x1 switching
+ - Added Extron SW2USB and SW4USB drivers
 
 ### Changed
  - Fixed bad check when getting digital input ports from ControlSystem devices
