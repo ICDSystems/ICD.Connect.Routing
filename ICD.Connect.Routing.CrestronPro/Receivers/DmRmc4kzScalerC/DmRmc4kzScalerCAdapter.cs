@@ -1,4 +1,6 @@
-﻿using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC;
+﻿using ICD.Connect.API.Commands;
+using ICD.Connect.API.Nodes;
+using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC;
 #if SIMPLSHARP
 using System;
 using System.Collections.Generic;
@@ -92,6 +94,18 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 		}
 
 		/// <summary>
+		/// Updates the cached online status and raises the OnIsOnlineStateChanged event if the cache changes.
+		/// </summary>
+		protected override void UpdateCachedOnlineStatus()
+		{
+			base.UpdateCachedOnlineStatus();
+
+			// Update the state from the receiver when it comes online so we get proper feedback
+			if (IsOnline)
+				UpdateOutputRoute();
+		}
+
+		/// <summary>
 		/// Caculates the source currently routed to the output
 		/// Since this device doesn't have a clear output option, we blank it instead
 		/// </summary>
@@ -103,7 +117,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 			m_SwitcherCache.SetInputForOutput(OUTPUT_ADDRESS,
 			                                  Receiver.HdmiOutput.BlankEnabledFeedback.BoolValue
 				                                  ? null
-				                                  : AudioVideoSourceToInputAddress(Receiver.AudioVideoSourceFeedback),
+												  : AudioVideoSourceToInputAddress(Receiver.AudioVideoSourceFeedback),
 			                                  eConnectionType.Audio | eConnectionType.Video);
 		}
 
@@ -183,6 +197,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 
 			// Disable blank to un-clear the output
 			Receiver.HdmiOutput.BlankDisabled();
+			Receiver.AudioVideoSource = Receiver.AudioVideoSourceFeedback;
 			Receiver.AudioVideoSource = InputAddressToAudioVideoSource(info.LocalInput);
 			return true;
 		}
@@ -199,6 +214,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 				throw new InvalidOperationException("No DmRx instantiated");
 
 			// This device doesn't support clearing its output, so we blank it instead
+			Receiver.AudioVideoSource = Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kzScalerC.eAudioVideoSource.NoSource;                
 			Receiver.HdmiOutput.BlankEnabled();
 			return true;
 		}
@@ -359,6 +375,58 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 		}
 
 	#endregion
+
+		#region Console
+
+		/// <summary>
+		/// Calls the delegate for each console status item.
+		/// </summary>
+		/// <param name="addRow"></param>
+		public override void BuildConsoleStatus(AddStatusRowDelegate addRow)
+		{
+			base.BuildConsoleStatus(addRow);
+
+			if (Receiver == null)
+				return;
+			addRow("Blank Enabled", Receiver.HdmiOutput.BlankEnabledFeedback.BoolValue);
+			addRow("AudioVideoSourceFeedback", Receiver.AudioVideoSourceFeedback);
+			addRow("SelectedSourceFeedback", Receiver.SelectedSourceFeedback);
+		}
+
+		/// <summary>
+		/// Gets the child console commands.
+		/// </summary>
+		/// <returns></returns>
+		public override IEnumerable<IConsoleCommand> GetConsoleCommands()
+		{
+			foreach (IConsoleCommand command in GetBaseConsoleCommnands())
+				yield return command;
+
+			yield return new ConsoleCommand("UpdateRoute", "Updates the cached route info from the device", () => UpdateOutputRoute());
+		}
+
+		private IEnumerable<IConsoleCommand> GetBaseConsoleCommnands()
+		{
+			return base.GetConsoleCommands();
+		}
+
+		#endregion
+
+		#region Settings
+
+		/// <summary>
+		/// Override to add actions on StartSettings
+		/// This should be used to start communications with devices and perform initial actions
+		/// </summary>
+		protected override void StartSettingsFinal()
+		{
+			base.StartSettingsFinal();
+
+			UpdateOutputRoute();
+		}
+
+		#endregion
+
 	}
 #else
 	// ReSharper disable once InconsistentNaming

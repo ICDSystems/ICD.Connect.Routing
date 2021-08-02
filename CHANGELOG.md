@@ -33,6 +33,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Changed mock routing controls to use RoutingGraphConnectionComponents
  - Fixed a bug where the first connection during pathfinding would not be validated
 
+## [16.2.2] - 2021-08-02
+### Changed
+ - Crestron DmRmc4kzScalerC - added code to work around initial state Crestron bugs, additional console status and commands
+
 ## [16.2.1] - 2021-02-04
 ### Changed
  - ControlSystem - Changed Uptime to StartTime for Program/System
