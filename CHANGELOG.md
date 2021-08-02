@@ -5,6 +5,8 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Changed
+ - Crestron DmRmc4kzScalerC - added code to work around initial state Crestron bugs, additional console status and commands
 
 ## [16.2.1] - 2021-02-04
 ### Changed
