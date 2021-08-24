@@ -9,9 +9,6 @@ using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Routing.Endpoints.Destinations;
 using ICD.Connect.Routing.Endpoints.Sources;
-using ICD.Connect.Routing.Groups.Endpoints;
-using ICD.Connect.Routing.Groups.Endpoints.Destinations;
-using ICD.Connect.Routing.Groups.Endpoints.Sources;
 using ICD.Connect.Routing.PathFinding;
 using ICD.Connect.Routing.Utils;
 using ICD.Connect.Settings.Originators;
@@ -31,6 +28,11 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentNullException("instance");
 
 			yield return instance.RoutingCache;
+			yield return ConsoleNodeGroup.KeyNodeMap("Connections", instance.Connections, c => (uint)c.Id);
+			yield return ConsoleNodeGroup.KeyNodeMap("Sources", instance.Sources, s => (uint)s.Id);
+			yield return ConsoleNodeGroup.KeyNodeMap("Destinations", instance.Destinations, d => (uint)d.Id);
+			yield return ConsoleNodeGroup.KeyNodeMap("SourceGroups", instance.SourceGroups, s => (uint)s.Id);
+			yield return ConsoleNodeGroup.KeyNodeMap("DestinationGroups", instance.DestinationGroups, d => (uint)d.Id);
 		}
 
 		/// <summary>
@@ -58,12 +60,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				new ConsoleCommand("PrintTable", "Prints a table of the routed devices and their input/output information.",
 				                   () => PrintTable(instance));
 
-			yield return new ConsoleCommand("PrintConnections", "Prints the list of all connections.", () => PrintConnections(instance));
-			yield return new ConsoleCommand("PrintSources", "Prints the list of Sources", () => PrintSources(instance));
-			yield return new ConsoleCommand("PrintDestinations", "Prints the list of Destinations", () => PrintDestinations(instance));
-			yield return new ConsoleCommand("PrintSourceGroups", "Prints the list of Source Groups", () => PrintSourceGroups(instance));
-			yield return new ConsoleCommand("PrintDestinationGroups", "Prints the list of Destination Groups", () => PrintDestinationGroups(instance));
-
 			yield return
 				new ConsoleCommand("PrintPathable", "Prints a table of sources to routable destinations",
 				                   () => PrintPathable(instance));
@@ -87,86 +83,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 			                                                           (a, b, c, d) => RouteDevicesConsoleCommand(instance, a, b, c, d));
 		}
 
-		private static string PrintSources(IRoutingGraph instance)
-		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-
-			TableBuilder builder = new TableBuilder("Id", "Source");
-
-			foreach (ISource source in instance.Sources.GetChildren().OrderBy(c => c.Id))
-				builder.AddRow(source.Id, source);
-
-			return builder.ToString();
-		}
-
-		private static string PrintDestinations(IRoutingGraph instance)
-		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-
-			TableBuilder builder = new TableBuilder("Id", "Destination");
-
-			foreach (IDestination destination in instance.Destinations.GetChildren().OrderBy(c => c.Id))
-				builder.AddRow(destination.Id, destination);
-
-			return builder.ToString();
-		}
-
-		private static string PrintSourceGroups(IRoutingGraph instance)
-		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-
-			TableBuilder builder = new TableBuilder("Id", "SourceGroup", "Sources");
-
-			foreach (ISourceGroup group in instance.SourceGroups.GetChildren().OrderBy(g => g.Id))
-				PrintSourceDestinationBaseGroup(group, builder);
-
-			return builder.ToString();
-		}
-
-		private static string PrintDestinationGroups(IRoutingGraph instance)
-		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-
-			TableBuilder builder = new TableBuilder("Id", "DestinationGroup", "Destinations");
-
-			foreach (IDestinationGroup group in instance.DestinationGroups.GetChildren().OrderBy(g => g.Id))
-				PrintSourceDestinationBaseGroup(group, builder);
-
-			return builder.ToString();
-		}
-
-		private static void PrintSourceDestinationBaseGroup(ISourceDestinationGroupCommon group, TableBuilder builder)
-		{
-			if (group == null)
-				throw new ArgumentNullException("group");
-
-			if (builder == null)
-				throw new ArgumentNullException("builder");
-
-			if (group.Count == 0)
-			{
-				builder.AddRow(group.Id, group, null);
-				return;
-			}
-
-			bool first = true;
-
-			foreach (IOriginator item in group.GetItems())
-			{
-				string id = first ? group.Id.ToString() : null;
-				string name = first ? group.ToString() : null;
-				string endpoint = item.ToString();
-
-				first = false;
-
-				builder.AddRow(id, name, endpoint);
-			}
-		}
-
 		/// <summary>
 		/// Loop over the devices, build a table of inputs, outputs, and their statuses.
 		/// </summary>
@@ -176,19 +92,6 @@ namespace ICD.Connect.Routing.RoutingGraphs
 				throw new ArgumentNullException("instance");
 
 			return new RoutingGraphTableBuilder(instance).ToString();
-		}
-
-		private static string PrintConnections(IRoutingGraph instance)
-		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
-
-			TableBuilder builder = new TableBuilder("Source", "Destination", "Type");
-
-			foreach (Connection con in instance.Connections.GetChildren().OrderBy(c => c.Source.Device).ThenBy(c => c.Source.Address))
-				builder.AddRow(con.Source, con.Destination, con.ConnectionType);
-
-			return builder.ToString();
 		}
 
 		private static string PrintPathable(IRoutingGraph instance)

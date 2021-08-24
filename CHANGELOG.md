@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+ - Replaced RoutingGraph console PrintX commands with regular console collection nodes
+
 ## [17.1.0] - 2021-08-18
 ### Added
  - Added generic relay switcher device for 2x1 switching
