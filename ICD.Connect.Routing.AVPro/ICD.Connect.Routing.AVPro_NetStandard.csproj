@@ -3,7 +3,7 @@
   <Import Condition=" '$(EAZFUSCATOR_NET_HOME)' != '' and Exists('$(EAZFUSCATOR_NET_HOME)\Integration\MSBuild\Eazfuscator.NET.targets') " Project="$(EAZFUSCATOR_NET_HOME)\Integration\MSBuild\Eazfuscator.NET.targets" />
   <PropertyGroup>
     <OutputType>Library</OutputType>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netstandard2.0;net472</TargetFrameworks>
     <RootNamespace>ICD.Connect.Routing.AVPro</RootNamespace>
     <AssemblyName>ICD.Connect.Routing.AVPro</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
@@ -43,14 +43,11 @@
     <ProjectReference Include="..\ICD.Connect.Routing\ICD.Connect.Routing_NetStandard.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <ArchiveToMove Include="$(TargetDir)..\$(AssemblyName).kpz"/>
+    <ArchiveToMove Include="$(TargetDir)..\$(AssemblyName).kpz" />
   </ItemGroup>
   <Target Name="ArchivePlugin" AfterTargets="AfterBuild" Condition="'$(Configuration)|$(OS)' == 'Release|Windows_NT'">
     <Delete Files="$(TargetDir)$(AssemblyName).kpz" />
-    <ZipDirectory DestinationFile="$(TargetDir)..\$(AssemblyName).kpz"
-                  SourceDirectory="$(TargetDir)"
-                  Overwrite="true"/>
-    <Move SourceFiles="$(ArchiveToMove)"
-          DestinationFolder="$(TargetDir)"/>
+    <ZipDirectory DestinationFile="$(TargetDir)..\$(AssemblyName).kpz" SourceDirectory="$(TargetDir)" Overwrite="true" />
+    <Move SourceFiles="$(ArchiveToMove)" DestinationFolder="$(TargetDir)" />
   </Target>
 </Project>
