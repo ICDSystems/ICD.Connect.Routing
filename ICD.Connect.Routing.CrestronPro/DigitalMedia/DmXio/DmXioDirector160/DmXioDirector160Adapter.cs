@@ -3,7 +3,7 @@ using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirector160
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmXioDirector160Adapter :
 		AbstractDmXioDirectorBaseAdapter
 			<Crestron.SimplSharpPro.DM.Streaming.DmXioDirector160, DmXioDirector160AdapterSettings>
@@ -11,7 +11,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirector160
 	public sealed class DmXioDirector160Adapter : AbstractDmXioDirectorBaseAdapter<DmXioDirector160AdapterSettings>
 #endif
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Creates a new instance of the wrapped internal director.
 		/// </summary>

@@ -4,7 +4,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
@@ -16,7 +16,7 @@ using ICD.Connect.Misc.CrestronPro.Extensions;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmTx4K302CAdapter : AbstractDmTx4kX02CBaseAdapter<DmTx4k302C, DmTx4K302CAdapterSettings>
 #else
 	public sealed class DmTx4K302CAdapter : AbstractDmTx4kX02CBaseAdapter<DmTx4K302CAdapterSettings>
@@ -34,7 +34,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return Transmitter.VgaInput.SyncDetectedFeedback.GetBoolValueOrDefault();
 #else
 				return false;
@@ -109,7 +109,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 				throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
 			if (!ContainsOutput(info.LocalOutput))
 				throw new IndexOutOfRangeException(string.Format("No output at address {0}", info.LocalOutput));
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (Transmitter == null)
 				throw new InvalidOperationException("No DmTx instantiated");
 
@@ -159,7 +159,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 
 #region Transmitter Callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribes to the transmitter events.
 		/// </summary>
@@ -265,7 +265,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 
 #region Settings
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		public override DmTx4k302C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
 		{
 			return new DmTx4k302C(ipid, controlSystem);
@@ -285,7 +285,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 #endregion
 
 #region Console
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		/// <summary>
 		/// Calls the delegate for each console status item.

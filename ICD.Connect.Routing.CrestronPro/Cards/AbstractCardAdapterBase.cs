@@ -5,14 +5,14 @@ using ICD.Connect.Settings.Originators;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractCardAdapterBase<TCard, TSettings> : AbstractDevice<TSettings>, ICardAdapter
 #else
     public abstract class AbstractCardAdapterBase<TSettings> : AbstractDevice<TSettings>, ICardAdapter
 #endif
 		where TSettings : ICardSettings, new()
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		public event CardChangeCallback OnCardChanged;
 
 		private TCard m_Card;
@@ -33,7 +33,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		[PublicAPI]
 		public int? SwitcherId { get { return m_SwitcherId; } protected set { m_SwitcherId = value; } }
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the wrapped internal card.
 		/// </summary>
@@ -78,14 +78,14 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 			}
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the wrapped internal card.
 		/// </summary>
 		object ICardAdapter.Card { get { return Card; } }
 #endif
 
-#if !SIMPLSHARP
+#if !!NETSTANDARD
 		protected override bool GetIsOnlineStatus()
 		{
 			return false;
@@ -97,7 +97,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			OnCardChanged = null;
 #endif
 			base.DisposeFinal(disposing);

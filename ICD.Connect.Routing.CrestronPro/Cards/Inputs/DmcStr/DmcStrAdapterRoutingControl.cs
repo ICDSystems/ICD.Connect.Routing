@@ -1,4 +1,4 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcStr
 {

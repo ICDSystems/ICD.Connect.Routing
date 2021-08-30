@@ -2,7 +2,7 @@
 {
 	public interface IDmMd6XNAdapter : ICrestronSwitchAdapter
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		new Crestron.SimplSharpPro.DM.DmMd6XN Switcher { get; }
 #endif
 	}

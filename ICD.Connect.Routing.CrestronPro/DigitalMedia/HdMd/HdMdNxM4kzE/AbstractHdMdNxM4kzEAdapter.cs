@@ -5,7 +5,7 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNxM4kzE
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 // ReSharper disable once InconsistentNaming
 	public abstract class AbstractHdMdNxM4kzEAdapter<TSwitcher, TSettings> : AbstractCrestronSwitchAdapter<TSwitcher, TSettings>, IHdMdNxM4kzEAdapter
 		where TSwitcher : Crestron.SimplSharpPro.DM.HdMdNxM4kzE
@@ -17,7 +17,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNxM4kzE
 	{
 		private string m_Address;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		Crestron.SimplSharpPro.DM.HdMdNxM4kzE IHdMdNxM4kzEAdapter.Switcher { get { return Switcher; } }
 
 		#region Methods
@@ -54,7 +54,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdNxM4kzE
 			m_Address = null;
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Override to control how the switcher is assigned from settings.
 		/// </summary>

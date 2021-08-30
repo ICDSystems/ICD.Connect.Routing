@@ -1,6 +1,6 @@
 ﻿using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.Devices;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
@@ -8,13 +8,13 @@ using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public delegate void TransmitterChangeCallback(IEndpointTransmitterBaseAdapter sender, EndpointTransmitterBase transmitter);
 #endif
 
 	public interface IEndpointTransmitterBaseAdapter : IRouteMidpointDevice, IPortParent, IDmEndpoint
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Raised when the wrapped transmitter changes.
 		/// </summary>
@@ -27,7 +27,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 #endif
 	}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public interface IEndpointTransmitterBaseAdapter<TTransmitter> : IEndpointTransmitterBaseAdapter
 		where TTransmitter : EndpointTransmitterBase
 	{

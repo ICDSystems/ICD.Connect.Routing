@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
 using ICD.Connect.Devices;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM.Cards;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Cards
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public delegate void CardChangeCallback(ICardAdapter sender, object card);
 #endif
 
 	public interface ICardAdapter : IDevice
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		event CardChangeCallback OnCardChanged;
 
 		object Card { get; }
@@ -24,7 +24,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 
 	public interface IInputCardAdapter : ICardAdapter
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the wrapped internal card.
 		/// </summary>
@@ -34,7 +34,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards
 
 	public interface IOutputCardAdapter : ICardAdapter
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the wrapped internal card.
 		/// </summary>

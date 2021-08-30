@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Connect.Audio.Controls.Microphone;
 using ICD.Connect.Audio.Controls.Volume;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Extensions;
@@ -13,7 +13,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 	{
 		private readonly string m_Name;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private readonly Dmps3Microphone m_Microphone;
 #endif
 
@@ -49,7 +49,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 			                          eVolumeFeatures.MuteFeedback;
 
 			m_Name = name;
-#if SIMPLSHARP
+#if !NETSTANDARD
 			m_Microphone = Parent.ControlSystem.Microphones[inputAddress] as Dmps3Microphone;
 #endif
 		}
@@ -62,7 +62,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		/// <param name="level"></param>
 		public override void SetAnalogGainLevel(float level)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			m_Microphone.Gain.ShortValue = (short)(level * 10);
 #else
 			throw new NotSupportedException();
@@ -75,7 +75,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		/// <param name="mute"></param>
 		public override void SetIsMuted(bool mute)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (mute)
 				m_Microphone.MuteOn();
 			else
@@ -145,7 +145,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 		/// <param name="power"></param>
 		public override void SetPhantomPower(bool power)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (power)
 				m_Microphone.PhantomPowerOn();
 			else
@@ -170,7 +170,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 			if (parent == null)
 				return;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			parent.ControlSystem.MicrophoneChange += ControlSystemOnMicrophoneChange;
 #endif
 		}
@@ -186,12 +186,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone
 			if (parent == null)
 				return;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			parent.ControlSystem.MicrophoneChange -= ControlSystemOnMicrophoneChange;
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Called when an microphone change event is raised.
 		/// </summary>

@@ -1,5 +1,5 @@
 ﻿using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
@@ -9,7 +9,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmcScalerC
 	/// <summary>
 	/// DmRmcScalerCAdapter wraps a DmRmcScalerC to provide a routing device.
 	/// </summary>
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmRmcScalerCAdapter :
 		AbstractDmRmcScalerCAdapter<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC, DmRmcScalerCAdapterSettings>
 	{

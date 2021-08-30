@@ -1,4 +1,4 @@
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 #endif
 using ICD.Connect.Devices;
@@ -6,14 +6,14 @@ using ICD.Connect.Misc.CrestronPro.Devices;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public delegate void Dm100XStrBaseChangeCallback(
 		IDm100XStrBaseAdapter sender, Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase streamer);
 #endif
 
 	public interface IDm100XStrBaseAdapter : IDevice, IPortParent
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Raised when the wrapped streamer instance changes.
 		/// </summary>
@@ -26,7 +26,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 #endif
 	}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public interface IDm100XStrBaseAdapter<TStreamer> : IDm100XStrBaseAdapter
 		where TStreamer : Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase
 	{

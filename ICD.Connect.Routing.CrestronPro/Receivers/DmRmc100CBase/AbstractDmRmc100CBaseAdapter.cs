@@ -6,13 +6,13 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100CBase
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractDmRmc100CBaseAdapter<TReceiver, TSettings> :
 		AbstractEndpointReceiverBaseAdapter<TReceiver, TSettings>, IDmRmc100CBaseAdapter
 		where TReceiver : Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100C
@@ -49,7 +49,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100CBase
 			base.DisposeFinal(disposing);
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the port at the given address.
 		/// </summary>

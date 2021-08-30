@@ -1,5 +1,5 @@
 ﻿using System;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 #endif
 using ICD.Connect.Misc.CrestronPro.Devices;
@@ -7,7 +7,7 @@ using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxD3X
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractDmNvxD3XAdapter<TSwitcher, TSettings> :
 		AbstractDmNvxBaseClassAdapter<TSwitcher, TSettings>, IDmNvxD3XAdapter
 		where TSwitcher : Crestron.SimplSharpPro.DM.Streaming.DmNvxD3x
@@ -16,7 +16,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxD3X
 #endif
 		where TSettings : IDmNvxD3XAdapterSettings, new()
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the port at the given address.
 		/// </summary>

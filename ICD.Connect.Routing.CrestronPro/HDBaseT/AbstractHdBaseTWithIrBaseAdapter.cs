@@ -1,12 +1,12 @@
 ﻿using System;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractHdBaseTWithIrBaseAdapter<TDevice, TSettings> : AbstractHdBaseTBaseAdapter<TDevice, TSettings>, IHdBaseTWithIrBaseAdapter
 		where TDevice : HDBaseTWithIrBase
 #else
@@ -14,7 +14,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 #endif
 		where TSettings : IHdBaseTWithIrBaseAdapterSettings, new()
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the port at the given address.
 		/// </summary>

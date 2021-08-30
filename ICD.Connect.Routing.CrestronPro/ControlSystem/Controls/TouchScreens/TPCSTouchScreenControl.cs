@@ -1,12 +1,12 @@
 ﻿using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
 	public sealed class TPCSTouchScreenControl
-#if SIMPLSHARP
+#if !NETSTANDARD
 		: AbstractControlSystemTouchScreenControl<TPCSTouchscreen>, ITPCSTouchScreenControl
 #else
 		: AbstractControlSystemTouchScreenControl, ITPCSTouchScreenControl

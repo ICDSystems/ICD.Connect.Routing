@@ -1,4 +1,4 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using ICD.Connect.Settings;
 ﻿using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
@@ -23,7 +23,7 @@ namespace ICD.Connect.Routing.CrestronPro.Utils
 	/// </summary>
 	public static class DmEndpointFactoryUtils
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Determines the best way to instantiate a card based on the available information.
 		/// Instantiates via parent Switch if specified, otherwise uses the ControlSystem.

@@ -2,7 +2,7 @@ using System;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kCoHdBase;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
 using System.Collections.Generic;
@@ -12,7 +12,7 @@ using ICD.Connect.Misc.CrestronPro.Extensions;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.Dmc4kzCoHd
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	// ReSharper disable once InconsistentNaming
 	public sealed class Dmc4kzCoHdAdapter : AbstractDmc4kCoHdBaseAdapter<Dmc4kzCoHdSingle, Dmc4kzCoHdAdapterSettings>
 	{

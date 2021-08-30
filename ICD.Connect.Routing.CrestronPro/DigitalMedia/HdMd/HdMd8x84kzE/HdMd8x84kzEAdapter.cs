@@ -6,7 +6,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8x84kzE
 	/// <summary>
 	/// HdMd8x84kzEAdapter wraps a HdMd8x84kzE to provide a routing device.
 	/// </summary>
-#if SIMPLSHARP
+#if !NETSTANDARD
 // ReSharper disable once InconsistentNaming
 	public sealed class HdMd8x84kzEAdapter : AbstractHdMd8xX4kzEAdapter<Crestron.SimplSharpPro.DM.HdMd8x84kzE, HdMd8x84kzEAdapterSettings>
 #else
@@ -14,7 +14,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8x84kzE
 	public sealed class HdMd8x84kzEAdapter : AbstractHdMd8xX4kzEAdapter<HdMd8x84kzEAdapterSettings>
 #endif
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Creates a new instance of the wrapped internal switcher.
 		/// </summary>

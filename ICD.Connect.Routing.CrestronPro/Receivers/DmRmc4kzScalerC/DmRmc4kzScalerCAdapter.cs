@@ -1,7 +1,7 @@
 ﻿using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using System;
 using System.Collections.Generic;
 using ICD.Connect.Misc.CrestronPro.Devices;
@@ -17,7 +17,7 @@ using Crestron.SimplSharpPro.DM.Endpoints;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc4kzScalerC
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	// ReSharper disable once InconsistentNaming
 	public sealed class DmRmc4kzScalerCAdapter :
 		AbstractDmRmc4KScalerCAdapter

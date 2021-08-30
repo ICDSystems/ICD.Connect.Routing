@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 #endif
 
@@ -26,7 +26,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		private bool m_IsMuted;
 		private short m_VolumeLevel;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -341,7 +341,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		/// <param name="parent"></param>
 		private void Subscribe(ControlSystemDevice parent)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			parent.ControlSystem.DMOutputChange += ControlSystemOnDmOutputChange;
 #endif
 		}
@@ -352,12 +352,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		/// <param name="parent"></param>
 		private void Unsubscribe(ControlSystemDevice parent)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			parent.ControlSystem.DMOutputChange -= ControlSystemOnDmOutputChange;
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		/// <summary>
 		/// Called when the control system raises a DM output change event.

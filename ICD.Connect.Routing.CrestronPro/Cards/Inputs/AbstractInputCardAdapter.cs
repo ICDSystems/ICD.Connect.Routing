@@ -2,7 +2,7 @@
 using ICD.Common.Properties;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
@@ -12,7 +12,7 @@ using ICD.Connect.Misc.CrestronPro.Extensions;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractInputCardAdapter<TCard, TSettings> : AbstractCardAdapterBase<TCard, TSettings>,
 	                                                                   IInputCardAdapter
 		where TCard : CardDevice
@@ -30,7 +30,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		[PublicAPI]
 		public byte? CresnetId { get { return m_CresnetId; } protected set { m_CresnetId = value; } }
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Sets the wrapped card instance.
 		/// </summary>
@@ -71,7 +71,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 
 		#region Card Callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribe to the card events.
 		/// </summary>
@@ -152,7 +152,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		{
 			base.ClearSettingsFinal();
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetCard(null, null, null, null);
 #endif
 		}
@@ -179,12 +179,12 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetCard(settings, factory);
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private void SetCard(TSettings settings, IDeviceFactory factory)
 		{
 			TCard card = null;

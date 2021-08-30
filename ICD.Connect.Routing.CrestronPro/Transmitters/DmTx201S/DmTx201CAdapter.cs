@@ -1,5 +1,5 @@
 ﻿using ICD.Connect.Settings.Attributes;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
@@ -9,7 +9,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 	/// <summary>
 	/// DmTx201CAdapter wraps a DmTx201C to provide a routing device.
 	/// </summary>
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmTx201CAdapter :
 		AbstractDmTx201SAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201C, DmTx201CAdapterSettings>
 	{

@@ -6,14 +6,14 @@ using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Routing.CrestronPro.Utils;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractDm100XStrBaseAdapter<TStreamer, TSettings> : AbstractDevice<TSettings>,
 	                                                                           IDm100XStrBaseAdapter<TStreamer>
 		where TStreamer : Crestron.SimplSharpPro.DM.Streaming.Dm100xStrBase
@@ -22,7 +22,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 #endif
 		where TSettings : IDm100XStrBaseAdapterSettings, new()
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Raised when the wrapped streamer instance changes.
 		/// </summary>
@@ -33,7 +33,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 
 		#region Properties
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the wrapped streamer.
 		/// </summary>
@@ -65,19 +65,19 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			OnStreamerChanged = null;
 #endif
 
 			base.DisposeFinal(disposing);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			// Unsubscribe and unregister.
 			SetStreamer(null);
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Sets the wrapped streamer.
 		/// </summary>
@@ -106,7 +106,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 
 		#region Ports
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
@@ -181,7 +181,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 		{
 			base.CopySettingsFinal(settings);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			settings.Ipid = Streamer == null ? (byte)0 : (byte)Streamer.ID;
 #else
 			settings.Ipid = 0;
@@ -195,7 +195,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 		{
 			base.ClearSettingsFinal();
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetStreamer(null);
 #endif
 		}
@@ -209,7 +209,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TStreamer streamer = null;
 
 			try
@@ -223,11 +223,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 
 			SetStreamer(streamer);
 #else
-            throw new NotSupportedException();
+			throw new NotSupportedException();
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Creates a new instance of the wrapped internal switcher.
 		/// </summary>
@@ -258,14 +258,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return Streamer != null && Streamer.IsOnline;
 #else
-            return false;
+			return false;
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribe to the switcher events.
 		/// </summary>

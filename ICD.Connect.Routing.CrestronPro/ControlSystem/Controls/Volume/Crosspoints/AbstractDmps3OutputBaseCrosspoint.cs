@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Common.Properties;
 using ICD.Connect.Misc.CrestronPro.Extensions;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
@@ -12,7 +12,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 	public abstract class AbstractDmps3OutputBaseCrosspoint : AbstractDmps3Crosspoint
 	{
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private readonly Card.Dmps3OutputBase m_VolumeObject;
 
 		[NotNull]
@@ -25,7 +25,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		}
 #endif
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -53,7 +53,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				if (VolumeOutputMixer == null)
 					throw new ArgumentNullException("VolumeOutputMixer");
 
@@ -73,7 +73,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				if (VolumeOutputMixer == null)
 					throw new ArgumentNullException("VolumeOutputMixer");
 
@@ -90,7 +90,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMicrophoneMute(ushort microphone, bool mute)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (VolumeOutputMixer == null)
 				throw new ArgumentNullException("VolumeOutputMixer");
 
@@ -108,7 +108,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMicrophoneLevel(ushort microphone, short gainLevel)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (VolumeOutputMixer == null)
 				throw new ArgumentNullException("VolumeOutputMixer");
 
@@ -123,7 +123,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMicMasterMute(bool mute)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (mute)
 				VolumeObject.MicMasterMuteOn();
 			else
@@ -135,7 +135,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMicMasterLevel(short gainLevel)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			VolumeObject.MicMasterLevel.ShortValue = gainLevel;
 #else
 			throw new NotSupportedException();
@@ -144,7 +144,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetSourceLevel(short gainLevel)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			VolumeObject.SourceLevel.ShortValue = gainLevel;
 #else
 			throw new NotSupportedException();
@@ -153,7 +153,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetSourceMute(bool mute)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (mute)
 				VolumeObject.SourceMuteOn();
 			else
@@ -165,7 +165,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMasterVolumeLevel(short gainLevel)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			VolumeObject.MasterVolume.ShortValue = gainLevel;
 #else
 			throw new NotSupportedException();
@@ -174,7 +174,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMasterVolumeMute(bool mute)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (mute)
 				VolumeObject.MasterMuteOn();
 			else
@@ -195,7 +195,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		/// <returns></returns>
 		protected override bool MicrophoneSupported(ushort microphone)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return VolumeOutputMixer != null &&
 			       VolumeOutputMixer.MicLevel.Contains(microphone) &&
 				   VolumeOutputMixer.MicLevel[microphone].Supported;
@@ -208,7 +208,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		#region Parent Callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		/// <summary>
 		/// Updates the volume/mute state with the master volume values

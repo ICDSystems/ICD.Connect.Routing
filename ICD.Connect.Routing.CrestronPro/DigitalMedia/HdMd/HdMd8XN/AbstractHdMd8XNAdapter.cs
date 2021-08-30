@@ -1,13 +1,13 @@
 ﻿using System;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractHdMd8XNAdapter<TSwitch, TSettings> : AbstractCrestronSwitchAdapter<TSwitch, TSettings>, IHdMd8XNAdapter
 		where TSwitch : HdMd8xN
 #else
@@ -16,7 +16,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd8XN
 		where TSettings : IHdMd8XNAdapterSettings, new()
 	{
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		HdMd8xN IHdMd8XNAdapter.Switcher { get { return Switcher; } }
 
 		/// <summary>

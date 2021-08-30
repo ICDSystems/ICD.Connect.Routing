@@ -3,7 +3,7 @@ using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Devices.Utils;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Microphone;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoints;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
 #endif
@@ -140,7 +140,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 
 			switch (outputType)
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				case eDmps3OutputType.HdmiDm:
 
 					var card = parent.ControlSystem.SwitcherOutputs[outputAddress];

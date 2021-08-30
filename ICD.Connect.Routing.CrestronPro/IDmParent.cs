@@ -1,4 +1,4 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 #endif
 using ICD.Common.Properties;
@@ -11,7 +11,7 @@ namespace ICD.Connect.Routing.CrestronPro
 	[PublicAPI]
 	public interface IDmParent
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the DMInput at the given address.
 		/// </summary>

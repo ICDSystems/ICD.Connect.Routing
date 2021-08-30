@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.DmcStro
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	// ReSharper disable once InconsistentNaming
 	public sealed class DmcStroAdapter : AbstractOutputCardAdapter<DmcStroSingle, DmcStroAdapterSettings>
 	{

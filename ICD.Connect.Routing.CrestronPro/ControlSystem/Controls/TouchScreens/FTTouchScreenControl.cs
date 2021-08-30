@@ -1,11 +1,11 @@
 ﻿using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class FTTouchScreenControl : AbstractControlSystemTouchScreenControl<FTTouchscreen>, IFTTouchScreenControl
 #else
 	public sealed class FTTouchScreenControl : AbstractControlSystemTouchScreenControl, IFTTouchScreenControl

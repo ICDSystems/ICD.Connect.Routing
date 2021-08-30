@@ -1,14 +1,14 @@
 using System;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcStr
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmcStrAdapter : AbstractInputCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcStr, DmcStrAdapterSettings>
 	{
 		/// <summary>

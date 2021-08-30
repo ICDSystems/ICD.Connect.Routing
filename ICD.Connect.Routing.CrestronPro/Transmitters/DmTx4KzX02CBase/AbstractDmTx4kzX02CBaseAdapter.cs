@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
@@ -18,7 +18,7 @@ using ICD.Connect.Routing.Connections;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 // ReSharper disable once InconsistentNaming
 	public abstract class AbstractDmTx4kzX02CBaseAdapter<TTransmitter, TSettings> :
 		AbstractEndpointTransmitterSwitcherBaseAdapter<TTransmitter, TSettings>, IDmTx4kzX02CBaseAdapter
@@ -46,7 +46,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return Transmitter.HdmiInputs[HDMI_INPUT_1].SyncDetectedFeedback.BoolValue ||
 					   Transmitter.HdmiInputs[HDMI_INPUT_2].SyncDetectedFeedback.BoolValue;
 #else
@@ -79,7 +79,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 
 		#region Methods
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		protected virtual bool GetActiveTransmissionState()
 		{
@@ -243,7 +243,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 				throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
 			if (!ContainsOutput(info.LocalOutput))
 				throw new IndexOutOfRangeException(string.Format("No output at address {0}", info.LocalOutput));
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (Transmitter == null)
 				throw new InvalidOperationException("No DmTx instantiated");
 
@@ -273,7 +273,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 		/// <returns>True if successfully cleared.</returns>
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (Transmitter == null)
 				throw new InvalidOperationException("No DmTx instantiated");
 
@@ -283,7 +283,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 			return false;
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		protected void SetVideoSource(eX02VideoSourceType source)
 		{
@@ -305,11 +305,11 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 
 #endregion
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 #region Transmitter Callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribes to the transmitter events.
 		/// </summary>
@@ -473,7 +473,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 
 #region Console
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Calls the delegate for each console status item.
 		/// </summary>

@@ -1,5 +1,5 @@
 ﻿using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
@@ -7,7 +7,7 @@ using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K202C
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmTx4K202CAdapter : AbstractDmTx4kX02CBaseAdapter<DmTx4k202C, DmTx4K202CAdapterSettings>
 #else
 	public sealed class DmTx4K202CAdapter : AbstractDmTx4kX02CBaseAdapter<DmTx4K202CAdapterSettings>
@@ -15,7 +15,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K202C
 	{
 		#region Settings
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		public override DmTx4k202C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
 		{
 			return new DmTx4k202C(ipid, controlSystem);

@@ -1,6 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿#if NETFRAMEWORK
+extern alias RealNewtonsoft;
+using RealNewtonsoft.Newtonsoft.Json;
+#else
 using Newtonsoft.Json;
+#endif
+using System.Collections.Generic;
+using System.Linq;
 
 namespace ICD.Connect.Routing.Endpoints.Destinations
 {

@@ -14,7 +14,7 @@ using ICD.Common.Properties;
 using ICD.Common.Utils;
 using ICD.Connect.API.Nodes;
 using ICD.Common.Utils.Services.Logging;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
@@ -26,7 +26,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 	/// <summary>
 	/// EndpointReceiverBaseAdapter wraps a EndpointReceiverBase to provide a routing device.
 	/// </summary>
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractEndpointReceiverBaseAdapter<TReceiver, TSettings> : AbstractRouteMidpointDevice<TSettings>,
 	                                                                                  IEndpointReceiverBaseAdapter
 		                                                                                  <TReceiver>
@@ -41,7 +41,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// </summary>
 		public override event EventHandler<RouteChangeEventArgs> OnRouteChange;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Raised when the wrapped scaler changes.
 		/// </summary>
@@ -54,7 +54,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 
 		#region Properties
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the wrapped scaler.
 		/// </summary>
@@ -92,19 +92,19 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		protected override void DisposeFinal(bool disposing)
 		{
 			OnRouteChange = null;
-#if SIMPLSHARP
+#if !NETSTANDARD
 			OnReceiverChanged = null;
 #endif
 
 			base.DisposeFinal(disposing);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			// Unsbscribe and unregister
 			SetScaler(null, null);
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Sets the wrapped scaler.
 		/// </summary>
@@ -140,7 +140,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 
 		#region IO
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
@@ -252,7 +252,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		{
 			base.CopySettingsFinal(settings);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			DMOutput input = m_Receiver == null ? null : m_Receiver.DMOutput;
 
 			settings.Ipid = m_Receiver == null ? (byte)0 : (byte)m_Receiver.ID;
@@ -271,7 +271,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		{
 			base.ClearSettingsFinal();
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetScaler(null, null);
 #endif
 		}
@@ -287,7 +287,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 
 			base.ApplySettingsFinal(settings, factory);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TReceiver scaler = null;
 
 			try
@@ -327,7 +327,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 			addControl(control);
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Instantiates the receiver with the given IPID against the control system.
 		/// </summary>
@@ -356,7 +356,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 
 		#region Scaler Callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribe to the scaler events.
 		/// </summary>
@@ -398,7 +398,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return Receiver != null && Receiver.IsOnline;
 #else
             return false;
@@ -409,7 +409,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers
 
 		#region Console
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Calls the delegate for each console status item.
 		/// </summary>

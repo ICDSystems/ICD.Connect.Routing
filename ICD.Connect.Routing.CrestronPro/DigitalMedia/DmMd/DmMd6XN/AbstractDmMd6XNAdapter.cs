@@ -4,7 +4,7 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMd6XN
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractDmMd6XNAdapter<TSwitcher, TSettings> : AbstractCrestronSwitchAdapter<TSwitcher, TSettings>, IDmMd6XNAdapter
 		where TSwitcher : Crestron.SimplSharpPro.DM.DmMd6XN
 #else
@@ -12,7 +12,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMd6XN
 #endif
 		where TSettings : IDmMd6XNAdapterSettings, new()
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		Crestron.SimplSharpPro.DM.DmMd6XN IDmMd6XNAdapter.Switcher { get { return Switcher; } }
 
 		/// <summary>

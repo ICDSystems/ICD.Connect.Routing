@@ -6,7 +6,7 @@ using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
@@ -20,7 +20,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4Kz100C1G
 	/// <summary>
 	/// DmTx4Kz100C1GAdapter wraps a DmTx4kz100C1G to provide a routing device.
 	/// </summary>
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmTx4Kz100C1GAdapter : AbstractEndpointTransmitterBaseAdapter<DmTx4kz100C1G, DmTx4Kz100C1GAdapterSettings>
 #else
 	public sealed class DmTx4Kz100C1GAdapter : AbstractEndpointTransmitterBaseAdapter<DmTx4Kz100C1GAdapterSettings>
@@ -43,7 +43,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4Kz100C1G
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return Transmitter != null && Transmitter.HdmiInput.SyncDetectedFeedback.GetBoolValueOrDefault();
 #else
 				return false;
@@ -72,7 +72,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4Kz100C1G
 		#endregion
 
 		#region Methods
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Instantiates the transmitter with the given IPID against the control system.
 		/// </summary>
@@ -260,7 +260,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4Kz100C1G
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return Transmitter.HdmiInput.SyncDetectedFeedback.BoolValue;
 #else
 			return false;
@@ -269,7 +269,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4Kz100C1G
 
 		#endregion
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		#region Transmitter Callbacks
 
 		/// <summary>

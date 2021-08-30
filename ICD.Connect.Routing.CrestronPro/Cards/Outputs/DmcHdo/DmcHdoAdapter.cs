@@ -4,7 +4,7 @@ using System.Linq;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
@@ -13,7 +13,7 @@ using ICD.Connect.Misc.CrestronPro.Extensions;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs.DmcHdo
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	// ReSharper disable once InconsistentNaming
 	public sealed class DmcHdoAdapter : AbstractOutputCardAdapter<DmcHdoSingle, DmcHdoAdapterSettings>, IPortParent
 	{

@@ -1,4 +1,4 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
 #endif
@@ -6,7 +6,7 @@ using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMd8X8
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmMd8X8Adapter : AbstractDmMdMNXNAdapter<DmMd8x8, DmMd8X8AdapterSettings>
 	{
 		/// <summary>

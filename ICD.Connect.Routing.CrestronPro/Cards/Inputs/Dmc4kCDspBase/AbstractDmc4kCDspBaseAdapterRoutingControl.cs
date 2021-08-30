@@ -1,4 +1,4 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kCDspBase
 {
 	public abstract class AbstractDmc4kCDspBaseAdapterRoutingControl<TParent> : AbstractInputCardAdapterRoutingControl<TParent>

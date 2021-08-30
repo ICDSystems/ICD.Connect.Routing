@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Logging.Activities;
 using ICD.Common.Utils.Services.Logging;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
@@ -84,7 +84,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 				{OUTPUT_SECONDARY_AUDIO_STREAM, "Audio Stream"}
 			};
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private static readonly BiDictionary<int, DmNvxControl.eAudioSource> s_AudioSources =
 			new BiDictionary<int, DmNvxControl.eAudioSource>
 			{
@@ -151,7 +151,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 		private readonly SwitcherCache m_Cache;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		[CanBeNull]
 		private Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass m_Streamer;
 		[CanBeNull]
@@ -286,7 +286,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			m_Cache = new SwitcherCache();
 			Subscribe(m_Cache);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			parent.OnStreamerChanged += ParentOnStreamerChanged;
 
 			SetStreamer(parent.Streamer as Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass);
@@ -314,7 +314,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			base.DisposeFinal(disposing);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			Parent.OnStreamerChanged -= ParentOnStreamerChanged;
 
 			Unsubscribe(m_Cache);
@@ -330,7 +330,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <param name="url"></param>
 		public void SetServerUrl(string url)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (m_NvxControl == null)
 				throw new InvalidOperationException("Wrapped streamer is null");
 
@@ -346,7 +346,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <param name="address"></param>
 		public void SetMulticastAddress(string address)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (m_NvxControl == null)
 				throw new InvalidOperationException("Wrapped streamer is null");
 
@@ -362,7 +362,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <param name="address"></param>
 		public void SetSecondaryAudioMulticastAddress(string address)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (m_Streamer == null)
 				throw new InvalidOperationException("Wrapped streamer is null");
 
@@ -538,7 +538,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <returns></returns>
 		public override bool Route(RouteOperation info)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (info == null)
 				throw new ArgumentNullException("info");
 
@@ -594,7 +594,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <returns>True if successfully cleared.</returns>
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (m_Streamer == null)
 				throw new InvalidOperationException("Wrapped streamer is null");
 
@@ -649,7 +649,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 		private string GetVideoInputResolution(ConnectorInfo input)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (m_Streamer == null)
 				return null;
 
@@ -692,7 +692,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 		private string GetVideoOutputSyncType(ConnectorInfo info)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (m_Streamer == null)
 				return null;
 
@@ -719,7 +719,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			                   .Any(result => result);
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private void SetHdcpTransmitterMode(HdmiOutWithColorSpaceMode.eHdcpTransmitterMode mode)
 		{
 			if (m_Streamer == null || mode == m_Streamer.HdmiOut.HdcpTransmitterModeFeedback)
@@ -730,7 +730,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 #endif
 		#endregion
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		#region Streamer Callbacks
 
 		/// <summary>

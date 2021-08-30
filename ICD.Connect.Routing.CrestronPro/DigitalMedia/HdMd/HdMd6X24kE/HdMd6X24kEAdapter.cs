@@ -1,4 +1,4 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
 #endif
@@ -9,13 +9,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd6X24kE
 	/// <summary>
 	/// HdMd6X24kEAdapter wraps a HdMd6X24kE to provide a routing device.
 	/// </summary>
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class HdMd6X24kEAdapter : AbstractHdMdNXMAdapter<HdMd6x24kE, HdMd6X24kEAdapterSettings>
 #else
 	public sealed class HdMd6X24kEAdapter : AbstractHdMdNXMAdapter<HdMd6X24kEAdapterSettings>
 #endif
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Creates a new instance of the wrapped internal switcher.
 		/// </summary>

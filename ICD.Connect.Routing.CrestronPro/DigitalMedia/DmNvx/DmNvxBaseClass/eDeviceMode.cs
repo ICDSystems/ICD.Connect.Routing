@@ -10,7 +10,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 	public static class DeviceModeExtensions
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Converts the Crestron device mode into the common device mode enum.
 		/// </summary>

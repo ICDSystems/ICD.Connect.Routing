@@ -2,7 +2,7 @@
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints.Transmitters;
 #endif
@@ -12,13 +12,13 @@ using ICD.Connect.Settings.Attributes;
 
 namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmTx4K100C1GAdapter : AbstractDmBasedTEndPointAdapter<DmTx4K100C1G, DmTx4K100C1GAdapterSettings>
 #else
 	public sealed class DmTx4K100C1GAdapter : AbstractDmBasedTEndPointAdapter<DmTx4K100C1GAdapterSettings>
 #endif
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Instantiates the device with the given settings.
 		/// </summary>
@@ -99,7 +99,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		{
 			base.CopySettingsFinal(settings);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			DMInputOutputBase output = Device == null ? null : Device.DMInputOutput;
 			settings.DmInputAddress = output == null ? null : (int?)output.Number;
 #else
@@ -117,7 +117,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		{
 			base.AddControls(settings, factory, addControl);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			addControl(new DmTx4K100C1GAdapterRouteMidpointControl(this, 0));
 #endif
 		}

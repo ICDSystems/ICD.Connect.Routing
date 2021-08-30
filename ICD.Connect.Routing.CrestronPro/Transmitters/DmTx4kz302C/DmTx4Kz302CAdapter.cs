@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
@@ -13,7 +13,7 @@ using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmTx4Kz302CAdapter : AbstractDmTx4kzX02CBaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kz302C, DmTx4Kz302CAdapterSettings>
 #else
 	public sealed class DmTx4Kz302CAdapter : AbstractDmTx4kzX02CBaseAdapter<DmTx4Kz302CAdapterSettings>
@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return Transmitter.DisplayPortInput.SyncDetectedFeedback.BoolValue;
 #else
 				return false;
@@ -41,7 +41,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 
 		#endregion
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		#region Methods
 
@@ -192,7 +192,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 
 		#region Settings
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		public override Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kz302C InstantiateTransmitter(byte ipid, CrestronControlSystem controlSystem)
 		{
 			return new Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kz302C(ipid, controlSystem);
@@ -212,7 +212,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 		#endregion
 
 		#region Console
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		/// <summary>
 		/// Calls the delegate for each console status item.

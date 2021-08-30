@@ -1,4 +1,10 @@
-﻿using System;
+﻿#if NETFRAMEWORK
+extern alias RealNewtonsoft;
+using RealNewtonsoft.Newtonsoft.Json;
+#else
+using Newtonsoft.Json;
+#endif
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils;
@@ -7,7 +13,6 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Endpoints;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Originators;
-using Newtonsoft.Json;
 
 namespace ICD.Connect.Routing.Connections
 {

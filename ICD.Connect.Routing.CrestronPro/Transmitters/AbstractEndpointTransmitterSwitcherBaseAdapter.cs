@@ -12,7 +12,7 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractEndpointTransmitterSwitcherBaseAdapter<TTransmitter, TSettings> : AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings>, IEndpointTransmitterSwitcherBaseAdapter
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.EndpointTransmitterBase
 #else
@@ -103,14 +103,14 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// </summary>
 		private void SetTransmitterAutoRouting()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (UseAutoRouting && Transmitter != null && Transmitter.IsOnline)
 				SetTransmitterAutoRoutingFinal();
 #endif
 		}
 
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Override to implement AutoRouting on the transmitter
 		/// </summary>
@@ -150,7 +150,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		#endregion
 
 		#region Transmitter Callbacks
-#if SIMPLSHARP
+#if !NETSTANDARD
 		protected override void TransmitterOnlineStatusChange(Crestron.SimplSharpPro.GenericBase currentDevice, Crestron.SimplSharpPro.OnlineOfflineEventArgs args)
 		{
 			base.TransmitterOnlineStatusChange(currentDevice, args);

@@ -4,7 +4,7 @@ using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractCrestronBladeSwitchAdapter<TSwitch, TSettings> :
 		AbstractCrestronSwitchAdapter<TSwitch, TSettings>, ICrestronBladeSwitchAdapter
 		where TSwitch : Crestron.SimplSharpPro.DM.BladeSwitch
@@ -14,7 +14,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 #endif
 		where TSettings : ICrestronBladeSwitchAdapterSettings, new()
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		Crestron.SimplSharpPro.DM.BladeSwitch ICrestronBladeSwitchAdapter.Switcher { get { return Switcher; } }
 #endif
 
@@ -28,7 +28,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch
 		{
 			base.AddControls(settings, factory, addControl);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			addControl(new BladeSwitchSwitcherControl(this));
 #endif
 		}

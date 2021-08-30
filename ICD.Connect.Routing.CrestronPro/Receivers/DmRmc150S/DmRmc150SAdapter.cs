@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Connect.Misc.CrestronPro.Devices;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
@@ -13,7 +13,7 @@ using ICD.Connect.Routing.EventArguments;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc150S
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmRmc150SAdapter :
 		AbstractEndpointReceiverBaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc150S, DmRmc150SAdapterSettings>
 #else
@@ -47,7 +47,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc150S
 			base.DisposeFinal(disposing);
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the port at the given address.
 		/// </summary>
@@ -255,7 +255,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc150S
 			}
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc150S InstantiateReceiver(byte ipid,
 		                                                                                            CrestronControlSystem

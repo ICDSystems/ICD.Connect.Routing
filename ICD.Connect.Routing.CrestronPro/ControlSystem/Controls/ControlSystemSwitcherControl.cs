@@ -1,6 +1,6 @@
 ﻿using ICD.Common.Properties;
 using ICD.Common.Utils.Collections;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using System;
 using System.Collections.Generic;
 using System.Linq;

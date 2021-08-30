@@ -12,7 +12,7 @@ using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls;
 using ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
@@ -45,7 +45,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		#region Properties
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the wrapped Crestron control system.
 		/// </summary>
@@ -64,13 +64,13 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		/// </summary>
 		public ControlSystemDevice()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetControlSystem(ProgramInfo.ControlSystem);
 #endif
 			m_LoadedControls = new List<IDeviceControl>();
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Creates the touchscreen control instance based on the type of control system.
 		/// </summary>
@@ -112,12 +112,12 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 			base.DisposeFinal(disposing);
 			DisposeLoadedControls();
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetControlSystem(null);
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Sets the wrapped CrestronControlSystem instance.
 		/// </summary>
@@ -202,7 +202,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		#region IO
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
@@ -342,10 +342,10 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return ControlSystem != null;
 #else
-            return false;
+			return false;
 #endif
 		}
 
@@ -371,7 +371,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		private void FrontPanelLockEnable()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (ControlSystem == null)
 				return;
 
@@ -387,7 +387,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 		private void FrontPanelLockDisable()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (ControlSystem == null)
 				return;
 
@@ -405,7 +405,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				if (ControlSystem == null)
 					return null;
 
@@ -471,7 +471,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		{
 			base.AddControls(settings, factory, addControl);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (ControlSystem.SupportsSwitcherInputs || ControlSystem.SupportsSwitcherOutputs)
 				addControl(new ControlSystemSwitcherControl(this, 0));
 

@@ -2,14 +2,14 @@
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public delegate void DmXioDirectorChangeCallback(
 		IDmXioDirectorBaseAdapter sender, Crestron.SimplSharpPro.DM.Streaming.DmXioDirectorBase director);
 #endif
 
 	public interface IDmXioDirectorBaseAdapter : IDevice
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Raised when the wrapped director instance changes.
 		/// </summary>

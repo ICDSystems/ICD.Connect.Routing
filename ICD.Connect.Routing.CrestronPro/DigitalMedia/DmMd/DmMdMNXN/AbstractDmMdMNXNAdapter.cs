@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 #else
 using System;
@@ -9,7 +9,7 @@ using System;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 // ReSharper disable once InconsistentNaming
 	public abstract class AbstractDmMdMNXNAdapter<TSwitcher, TSettings> : AbstractCrestronSwitchAdapter<TSwitcher, TSettings>,
 	                                                                      IDmMdMNXNAdapter
@@ -19,7 +19,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMdMNXN
 #endif
 		where TSettings : IDmMdNXNAdapterSettings, new()
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		DmMDMnxn IDmMdMNXNAdapter.Switcher { get { return Switcher; } }
 
 		/// <summary>

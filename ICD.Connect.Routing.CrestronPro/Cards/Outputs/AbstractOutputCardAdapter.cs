@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Cards;
@@ -13,7 +13,7 @@ using ICD.Connect.Misc.CrestronPro.Extensions;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractOutputCardAdapter<TCard, TSettings> : AbstractCardAdapterBase<TCard, TSettings>,
 	                                                                    IOutputCardAdapter
 		where TCard : DmcOutputSingle
@@ -22,7 +22,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
 #endif
 		where TSettings : IOutputCardSettings, new()
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		public abstract IEnumerable<CardDevice> GetInternalCards();
 
 		/// <summary>
@@ -54,7 +54,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
 
 		#region Card Callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribe to the card events on the internal cards from this output card.
 		/// </summary>
@@ -137,7 +137,7 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
 		{
 			base.ClearSettingsFinal();
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetCard(null, null, null);
 #endif
 		}
@@ -162,12 +162,12 @@ namespace ICD.Connect.Routing.CrestronPro.Cards.Outputs
 		{
 			base.ApplySettingsFinal(settings, factory);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetCard(settings, factory);
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private void SetCard(TSettings settings, IDeviceFactory factory)
 		{
 			TCard card = null;

@@ -1,7 +1,7 @@
 ﻿using System;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
@@ -13,7 +13,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC
 	/// inherits from the DmRmcScalerC and not the DmRmc4kScalerC. The additon of the IRelayPorts
 	/// constraint picks up all scalers with relay ports (which is only 4k Scalers at this time).
 	/// </remarks>
-#if SIMPLSHARP
+#if !NETSTANDARD
 	// ReSharper disable once InconsistentNaming
 	public abstract class AbstractDmRmc4KScalerCAdapter<TScaler, TSettings> : AbstractDmRmcScalerCAdapter<TScaler, TSettings>, IDmRmc4kScalerCAdapter
 		where TScaler : Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc4kScalerC, IRelayPorts
@@ -23,9 +23,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC
 #endif
 		 where TSettings : IDmRmc4kScalerCAdapterSettings, new()
 	{
-
-#if SIMPLSHARP
-
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the port at the given address.
 		/// </summary>
@@ -43,7 +41,5 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmc4kScalerC
 			return base.GetCecPort(io, address);
 		}
 #endif
-
-
 	}
 }

@@ -1,17 +1,20 @@
-﻿using System.Linq;
+﻿#if NETFRAMEWORK
+extern alias RealNewtonsoft;
+using RealNewtonsoft.Newtonsoft.Json;
+#else
+using Newtonsoft.Json;
+#endif
+using System.Linq;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Json;
 using ICD.Connect.Routing.Connections;
-using Newtonsoft.Json;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.RouteState
 {
 	public sealed class RouteStateConverter : AbstractGenericJsonConverter<RouteState>
 	{
-
 		private const string ATTR_INPUTS_DETECTED = "inputsDetected";
 		private const string ATTR_INPUTS_ACTIVE = "inputsActive";
-
 
 		/// <summary>
 		/// Override to write properties to the writer.

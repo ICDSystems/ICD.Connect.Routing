@@ -1,8 +1,14 @@
-﻿using System;
-using ICD.Common.Utils;
-using ICD.Connect.Routing.Connections;
+﻿#if NETFRAMEWORK
+extern alias RealNewtonsoft;
+using RealNewtonsoft.Newtonsoft.Json;
+using RealNewtonsoft.Newtonsoft.Json.Converters;
+#else
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+#endif
+using System;
+using ICD.Common.Utils;
+using ICD.Connect.Routing.Connections;
 
 namespace ICD.Connect.Routing
 {

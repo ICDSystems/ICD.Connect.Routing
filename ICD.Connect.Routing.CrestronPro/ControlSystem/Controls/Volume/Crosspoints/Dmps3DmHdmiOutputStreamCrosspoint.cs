@@ -1,5 +1,5 @@
 ﻿using System;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM.Cards;
 #endif
 
@@ -7,7 +7,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 {
 	public sealed class Dmps3DmHdmiOutputStreamCrosspoint : AbstractDmps3Crosspoint
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private readonly Card.Dmps3HdmiAudioOutput.Dmps3DmHdmiOutputStream m_Output;
 #endif
 
@@ -18,7 +18,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return m_Output.OutputMixer.MinVolumeFeedback.ShortValue;
 #else
 				throw new NotSupportedException();
@@ -33,7 +33,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		return m_Output.OutputMixer.MaxVolumeFeedback.ShortValue;
 #else
 				throw new NotSupportedException();
@@ -41,7 +41,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 			}
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Constructor.
 		/// </summary>
@@ -133,7 +133,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 #endif
 		protected override bool MicrophoneSupported(ushort microphone)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return m_Output.OutputMixer != null && m_Output.OutputMixer.MicLevel.Contains(microphone) && m_Output.OutputMixer.MicLevel[microphone].Supported;
 #else
 			return false;

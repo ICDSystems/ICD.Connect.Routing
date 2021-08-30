@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
@@ -18,7 +18,7 @@ using ICD.Connect.Routing.Connections;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractDmTx4kX02CBaseAdapter<TTransmitter, TSettings> :
 		AbstractEndpointTransmitterSwitcherBaseAdapter<TTransmitter, TSettings>, IDmTx4kX02CBaseAdapter
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx4kX02CBase
@@ -45,7 +45,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return Transmitter.HdmiInputs[HDMI_INPUT_1].SyncDetectedFeedback.GetBoolValueOrDefault() ||
 					   Transmitter.HdmiInputs[HDMI_INPUT_2].SyncDetectedFeedback.GetBoolValueOrDefault();
 #else
@@ -78,7 +78,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 
 		#region Methods
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 #endif
 		/// <summary>
 		/// Returns true if a signal is detected at the given input.
@@ -236,7 +236,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 				throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
 			if (!ContainsOutput(info.LocalOutput))
 				throw new IndexOutOfRangeException(string.Format("No output at address {0}", info.LocalOutput));
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (Transmitter == null)
 				throw new InvalidOperationException("No DmTx instantiated");
 
@@ -291,7 +291,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 		/// <returns>True if successfully cleared.</returns>
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (Transmitter == null)
 				throw new InvalidOperationException("No DmTx instantiated");
 
@@ -307,7 +307,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 			return HdmiDetected;
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		protected void SetAudioSource(eX02AudioSourceType source)
 		{
@@ -341,7 +341,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 
 #endregion
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 #region Transmitter Callbacks
 
 		/// <summary>
@@ -537,7 +537,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kX02CBase
 #endif
 #region Console
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Calls the delegate for each console status item.
 		/// </summary>

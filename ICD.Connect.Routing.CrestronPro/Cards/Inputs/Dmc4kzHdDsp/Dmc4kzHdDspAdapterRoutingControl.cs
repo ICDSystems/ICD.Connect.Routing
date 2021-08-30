@@ -1,6 +1,6 @@
 ﻿using ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdDspBase;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kzHdDsp
 {

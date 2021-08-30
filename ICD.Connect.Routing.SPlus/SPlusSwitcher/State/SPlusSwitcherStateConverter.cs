@@ -1,12 +1,16 @@
-﻿using ICD.Common.Utils.Extensions;
-using ICD.Common.Utils.Json;
+﻿#if NETFRAMEWORK
+extern alias RealNewtonsoft;
+using RealNewtonsoft.Newtonsoft.Json;
+#else
 using Newtonsoft.Json;
+#endif
+using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Json;
 
 namespace ICD.Connect.Routing.SPlus.SPlusSwitcher.State
 {
 	public sealed class SPlusSwitcherStateConverter : AbstractGenericJsonConverter<SPlusSwitcherState>
 	{
-
 		private const string ATTR_INPUTS_DETECTED = "inputsDetected";
 		private const string ATTR_AUDIO_OUTPUT_ROUTING = "audioOutRouting";
 		private const string ATTR_VIDEO_OUTPUT_ROUTING = "videoOutRouting";

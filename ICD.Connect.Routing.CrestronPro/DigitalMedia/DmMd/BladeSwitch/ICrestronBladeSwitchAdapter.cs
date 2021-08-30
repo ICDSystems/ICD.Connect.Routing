@@ -2,7 +2,7 @@
 {
 	public interface ICrestronBladeSwitchAdapter : ICrestronSwitchAdapter
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		new Crestron.SimplSharpPro.DM.BladeSwitch Switcher { get; }
 #endif
 	}

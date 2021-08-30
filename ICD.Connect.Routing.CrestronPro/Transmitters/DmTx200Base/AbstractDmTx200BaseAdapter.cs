@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
@@ -20,7 +20,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 	/// Base class for DmTx200 device adapters.
 	/// </summary>
 	/// <typeparam name="TSettings"></typeparam>
-#if SIMPLSHARP
+#if !NETSTANDARD
 	/// <typeparam name="TTransmitter"></typeparam>
 	public abstract class AbstractDmTx200BaseAdapter<TTransmitter, TSettings> :
 		AbstractEndpointTransmitterSwitcherBaseAdapter<TTransmitter, TSettings>, IDmTx200BaseAdapter
@@ -45,7 +45,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return Transmitter != null && Transmitter.HdmiInput.SyncDetectedFeedback.GetBoolValueOrDefault();
 #else
 				return false;
@@ -61,7 +61,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return Transmitter != null && Transmitter.VgaInput.SyncDetectedFeedback.GetBoolValueOrDefault();
 #else
 				return false;
@@ -91,7 +91,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 
 		#region Methods
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Called when the wrapped transmitter is assigned.
 		/// </summary>
@@ -277,7 +277,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 				throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
 			if (!ContainsOutput(info.LocalOutput))
 				throw new IndexOutOfRangeException(string.Format("No output at address {0}", info.LocalOutput));
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (Transmitter == null)
 				throw new InvalidOperationException("No DmTx instantiated");
 
@@ -332,7 +332,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		/// <returns>True if successfully cleared.</returns>
 		public override bool ClearOutput(int output, eConnectionType type)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (Transmitter == null)
 				throw new InvalidOperationException("No DmTx instantiated");
 
@@ -344,7 +344,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		}
 
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		protected void SetAudioSource(Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx200Base.eSourceSelection source)
 		{
@@ -380,7 +380,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base
 		#endregion
 
 		#region Transmitter Callbacks
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribes to the transmitter events.
 		/// </summary>

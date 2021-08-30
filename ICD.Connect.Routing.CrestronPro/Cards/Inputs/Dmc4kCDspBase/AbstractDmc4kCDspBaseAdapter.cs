@@ -1,6 +1,6 @@
 ﻿namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kCDspBase
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractDmc4kCDspBaseAdapter<TCard, TSettings> : AbstractInputCardAdapter<TCard, TSettings>
 		where TCard : Crestron.SimplSharpPro.DM.Cards.Dmc4kCDspBase
 #else

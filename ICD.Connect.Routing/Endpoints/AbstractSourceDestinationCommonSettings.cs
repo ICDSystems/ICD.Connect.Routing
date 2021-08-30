@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-#if STANDARD
 using System.Linq;
-#endif
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Xml;

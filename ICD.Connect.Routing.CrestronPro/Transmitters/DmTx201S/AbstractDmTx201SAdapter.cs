@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 #endif
 using ICD.Common.Utils;
@@ -11,7 +11,7 @@ using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractDmTx201SAdapter<TTransmitter, TSettings> :
 		AbstractDmTx200BaseAdapter<TTransmitter, TSettings>, IDmTx201SAdapter
 		where TTransmitter : Crestron.SimplSharpPro.DM.Endpoints.Transmitters.DmTx201S
@@ -126,7 +126,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 					throw new ArgumentOutOfRangeException("type");
 			}
 		}
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		protected override void TransmitterOnVideoSourceFeedbackEvent(GenericBase device, BaseEventArgs args)
 		{

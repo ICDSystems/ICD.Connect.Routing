@@ -5,14 +5,14 @@ using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM.Streaming;
 #endif
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractDmNvxBaseClassAdapter<TSwitcher, TSettings> :
 		AbstractDm100XStrBaseAdapter<TSwitcher, TSettings>, IDmNvxBaseClassAdapter
 		where TSwitcher : Crestron.SimplSharpPro.DM.Streaming.DmNvxBaseClass
@@ -36,7 +36,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		{
 			m_DeviceMode = deviceMode;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			DmNvxControl nvxControl = Streamer == null ? null : Streamer.Control;
 			if (nvxControl != null)
 				nvxControl.DeviceMode = m_DeviceMode.ToCrestron();
@@ -88,7 +88,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		{
 			base.AddControls(settings, factory, addControl);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			addControl(new DmNvxBaseClassSwitcherControl(this, 0));
 			addControl(new DmNvxBaseClassVolumeControl(this, 1));
 #endif

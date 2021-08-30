@@ -1,4 +1,4 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using System;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Utils;

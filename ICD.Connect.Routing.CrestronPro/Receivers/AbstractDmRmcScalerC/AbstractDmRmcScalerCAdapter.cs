@@ -6,7 +6,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.Misc.CrestronPro.Devices;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.EventArguments;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 #endif
 
@@ -15,7 +15,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 	/// <summary>
 	/// DmRmcScalerCAdapter wraps a DmRmcScalerC to provide a routing device.
 	/// </summary>
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractDmRmcScalerCAdapter<TScaler, TSettings> : AbstractEndpointReceiverBaseAdapter<TScaler, TSettings>,
 																			IDmRmcScalerCAdapter
 		where TScaler : Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmcScalerC
@@ -55,7 +55,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 			base.DisposeFinal(disposing);
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		#region Ports
 
@@ -89,7 +89,7 @@ namespace ICD.Connect.Routing.CrestronPro.Receivers.AbstractDmRmcScalerC
 		/// <returns></returns>
 		public override bool GetSignalDetectedState(int input, eConnectionType type)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (Receiver == null)
 				throw new InvalidOperationException("Reciever device cannot be null");
 

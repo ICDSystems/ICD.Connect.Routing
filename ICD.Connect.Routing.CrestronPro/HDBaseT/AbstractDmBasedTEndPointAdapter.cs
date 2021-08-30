@@ -1,10 +1,10 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM.Endpoints;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractDmBasedTEndPointAdapter<TDevice, TSettings> : AbstractHdBaseTWithIrBaseAdapter<TDevice, TSettings>, IDmBasedTEndPointAdapter
 		where TDevice : DmHDBasedTEndPoint
 #else

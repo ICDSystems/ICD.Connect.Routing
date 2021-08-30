@@ -1,11 +1,11 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 #endif
 using ICD.Connect.Panels.Crestron.Controls.TouchScreens;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class TSCW730TouchScreenControl : AbstractControlSystemTouchScreenControl<TSCW730TouchScreen>, ITSCW730TouchScreenControl
 #else
 	public sealed class TSCW730TouchScreenControl : AbstractControlSystemTouchScreenControl, ITSCW730TouchScreenControl

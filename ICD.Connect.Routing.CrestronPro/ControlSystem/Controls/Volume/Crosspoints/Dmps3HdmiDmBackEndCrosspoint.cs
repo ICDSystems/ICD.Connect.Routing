@@ -1,6 +1,6 @@
 ﻿using System;
 using ICD.Common.Properties;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharp.Reflection;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
@@ -12,7 +12,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 {
 	public sealed class Dmps3HdmiDmBackEndCrosspoint : AbstractDmps3OutputBaseCrosspoint
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		[CanBeNull]
 		private CrestronControlSystem.Dmps3AttachableOutputMixer AttachableVolumeOutputMixer
 		{
@@ -43,7 +43,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				if (AttachableVolumeOutputMixer == null)
 					return 0;
 
@@ -63,7 +63,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				if (AttachableVolumeOutputMixer == null)
 					return 0;
 
@@ -78,7 +78,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMicrophoneMute(ushort microphone, bool mute)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (!MicrophoneSupported(microphone))
 				throw new NotSupportedException();
 
@@ -96,7 +96,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMicrophoneLevel(ushort microphone, short gainLevel)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (!MicrophoneSupported(microphone))
 				throw new NotSupportedException();
 
@@ -111,7 +111,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMicMasterMute(bool mute)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (AttachableVolumeOutputMixer == null)
 				return;
 
@@ -126,7 +126,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMicMasterLevel(short gainLevel)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 			if (AttachableVolumeOutputMixer == null)
 				return;
@@ -139,7 +139,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetSourceLevel(short gainLevel)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (AttachableVolumeOutputMixer == null)
 				return;
 
@@ -151,7 +151,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetSourceMute(bool mute)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (AttachableVolumeOutputMixer == null)
 				return;
 
@@ -166,7 +166,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMasterVolumeLevel(short gainLevel)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (AttachableVolumeOutputMixer == null)
 				return;
 
@@ -178,7 +178,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetMasterVolumeMute(bool mute)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (AttachableVolumeOutputMixer == null)
 				return;
 
@@ -203,7 +203,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 		/// <returns></returns>
 		protected override bool MicrophoneSupported(ushort microphone)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (AttachableVolumeOutputMixer == null)
 				return false;
 
@@ -218,7 +218,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		#region ControlSystem Feedback
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		/// <summary>
 		/// Updates the volume/mute state with the master volume values

@@ -1,7 +1,12 @@
-﻿using System.Collections.Generic;
+﻿#if NETFRAMEWORK
+extern alias RealNewtonsoft;
+using RealNewtonsoft.Newtonsoft.Json;
+#else
+using Newtonsoft.Json;
+#endif
+using System.Collections.Generic;
 using ICD.Common.Properties;
 using ICD.Connect.Routing.Connections;
-using Newtonsoft.Json;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.RouteState
 {

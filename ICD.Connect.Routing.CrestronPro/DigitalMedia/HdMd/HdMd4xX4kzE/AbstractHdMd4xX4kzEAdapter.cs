@@ -3,7 +3,7 @@
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd4xX4kzE
 {
 	// ReSharper disable once InconsistentNaming
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractHdMd4xX4kzEAdapter<TSwitcher, TSettings> : AbstractHdMdNxM4kzEAdapter<TSwitcher, TSettings>
 		where TSwitcher : Crestron.SimplSharpPro.DM.HdMd4xX4kzE
 #else

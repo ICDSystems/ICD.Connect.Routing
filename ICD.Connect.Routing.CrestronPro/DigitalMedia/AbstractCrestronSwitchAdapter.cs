@@ -6,14 +6,14 @@ using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices;
 using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractCrestronSwitchAdapter<TSwitcher, TSettings> : AbstractDevice<TSettings>, ICrestronSwitchAdapter
 		where TSwitcher : Switch
 #else
@@ -21,7 +21,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 #endif
 		where TSettings : ICrestronSwitchAdapterSettings, new()
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		public event DmSwitcherChangeCallback OnSwitcherChanged;
 
 		private TSwitcher m_Switcher;
@@ -29,7 +29,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 		#region Properties
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the wrapped switcher.
 		/// </summary>
@@ -62,13 +62,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			OnSwitcherChanged = null;
 #endif
 
 			base.DisposeFinal(disposing);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			// Unsubscribe and unregister.
 			SetSwitcher(null);
 #endif
@@ -80,7 +80,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return m_Switcher != null && m_Switcher.IsOnline;
 #else
 			return false;
@@ -89,7 +89,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 		#region Methods
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Sets the wrapped switcher.
 		/// </summary>
@@ -163,7 +163,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 
 		#region Switcher Callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribe to the switcher events.
 		/// </summary>
@@ -211,7 +211,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			base.CopySettingsFinal(settings);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			settings.Ipid = Switcher == null ? (byte)0 : (byte)Switcher.ID;
 #else
 			settings.Ipid = 0;
@@ -225,7 +225,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			base.ClearSettingsFinal();
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetSwitcher(null);
 #endif
 		}
@@ -238,13 +238,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 			SetSwitcher(settings);
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Override to control how the switcher is assigned from settings.
 		/// </summary>
@@ -285,7 +285,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia
 		{
 			base.BuildConsoleStatus(addRow);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			addRow("IPID", Switcher == null ? null : StringUtils.ToIpIdString((byte)Switcher.ID));
 #endif
 		}

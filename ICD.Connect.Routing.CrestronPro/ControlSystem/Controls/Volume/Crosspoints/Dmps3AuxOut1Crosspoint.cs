@@ -1,4 +1,4 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM.Cards;
 using ICD.Connect.Misc.CrestronPro.Extensions;
 #else
@@ -9,7 +9,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 {
 	public sealed class Dmps3AuxOut1Crosspoint : AbstractDmps3OutputBaseCrosspoint
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private Card.Dmps3Aux1Output Aux1OutputVolumeObject { get { return VolumeObject as Card.Dmps3Aux1Output; } }
 
 		public Dmps3AuxOut1Crosspoint(ControlSystemDevice parent, Card.Dmps3Aux1Output output, eDmps3InputType inputType, uint inputAddress)
@@ -22,7 +22,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetCodec2Level(short gainLevel)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			Aux1OutputVolumeObject.Codec2Level.ShortValue = gainLevel;
 #else
 			throw new NotSupportedException();
@@ -31,7 +31,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		protected override void SetCodec2Mute(bool mute)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (mute)
 				Aux1OutputVolumeObject.Codec2MuteOn();
 			else
@@ -43,7 +43,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.Volume.Crosspoi
 
 		#endregion
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		/// <summary>
 		/// Updates the volume/mute states with the Codec 2 volume values

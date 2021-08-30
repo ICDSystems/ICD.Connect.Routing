@@ -1,4 +1,4 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 #endif
@@ -6,14 +6,14 @@ using ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100CBase;
 
 namespace ICD.Connect.Routing.CrestronPro.Receivers.DmRmc100C
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmRmc100CAdapter :
 		AbstractDmRmc100CBaseAdapter<Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100C, DmRmc100CAdapterSettings>
 #else
 	public sealed class DmRmc100CAdapter : AbstractDmRmc100CBaseAdapter<DmRmc100CAdapterSettings>
 #endif
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		public override Crestron.SimplSharpPro.DM.Endpoints.Receivers.DmRmc100C InstantiateReceiver(byte ipid,
 		                                                                                            CrestronControlSystem
 			                                                                                            controlSystem)

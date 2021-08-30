@@ -1,7 +1,7 @@
 using System;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Extensions;
@@ -9,7 +9,7 @@ using ICD.Connect.Misc.CrestronPro.Extensions;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.DmcCat
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmcCatAdapter : AbstractInputCardAdapter<Crestron.SimplSharpPro.DM.Cards.DmcCat, DmcCatAdapterSettings>
 	{
 		/// <summary>

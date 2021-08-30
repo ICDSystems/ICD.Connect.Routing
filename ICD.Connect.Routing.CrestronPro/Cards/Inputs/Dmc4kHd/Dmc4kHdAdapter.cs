@@ -2,7 +2,7 @@
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHdBase;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro.Extensions;
@@ -10,7 +10,7 @@ using ICD.Connect.Misc.CrestronPro.Extensions;
 
 namespace ICD.Connect.Routing.CrestronPro.Cards.Inputs.Dmc4kHd
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class Dmc4kHdAdapter :
 		AbstractDmc4kHdBaseAdapter<Crestron.SimplSharpPro.DM.Cards.Dmc4kHd, Dmc4kHdAdapterSettings>
 	{

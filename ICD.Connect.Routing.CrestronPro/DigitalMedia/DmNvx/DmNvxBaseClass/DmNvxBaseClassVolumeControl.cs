@@ -1,5 +1,5 @@
 ﻿using ICD.Connect.Audio.Controls.Volume;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using System;
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;

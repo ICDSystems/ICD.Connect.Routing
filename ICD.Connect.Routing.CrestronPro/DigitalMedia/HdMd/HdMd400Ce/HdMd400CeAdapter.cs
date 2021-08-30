@@ -1,4 +1,4 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
 #endif
@@ -6,13 +6,13 @@ using ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMd400Ce
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class HdMd400CeAdapter : AbstractHdMdxxxCeAdapter<HdMd400CE, HdMd400CeAdapterSettings>
 #else
 	public sealed class HdMd400CeAdapter : AbstractHdMdxxxCeAdapter<HdMd400CeAdapterSettings>
 #endif
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Creates a new instance of the wrapped internal switcher.
 		/// </summary>

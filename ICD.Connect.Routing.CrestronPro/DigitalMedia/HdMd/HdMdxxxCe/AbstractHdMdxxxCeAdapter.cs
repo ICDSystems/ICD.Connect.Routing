@@ -2,13 +2,13 @@
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 #endif
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractHdMdxxxCeAdapter<TSwitch, TSettings> : AbstractCrestronSwitchAdapter<TSwitch, TSettings>, IHdMdxxxCeAdapter
 		where TSwitch : HdMdxxxCE
 #else
@@ -18,7 +18,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 	{
 		private string m_Address;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		HdMdxxxCE IHdMdxxxCeAdapter.Switcher { get { return Switcher; } }
 
 		/// <summary>
@@ -56,7 +56,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.HdMd.HdMdxxxCe
 			m_Address = null;
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Override to control how the switcher is assigned from settings.
 		/// </summary>

@@ -7,7 +7,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using ICD.Connect.Misc.CrestronPro.Devices.Keypads;
@@ -18,7 +18,7 @@ using eButtonState = ICD.Connect.Misc.Keypads.eButtonState;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractMPC3x101TouchScreenControl<TTouchPanel> : AbstractMPC3BasicTouchScreenControl<TTouchPanel>, IMPC3x101TouchScreenControl
 		where TTouchPanel : MPC3x101Touchscreen
 #else
@@ -44,7 +44,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return ButtonStateConverter.GetButtonState(TouchScreen.VolumeUp);
 #else
 				throw new NotSupportedException();
@@ -59,7 +59,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return ButtonStateConverter.GetButtonState(TouchScreen.VolumeDown);
 #else
 				throw new NotSupportedException();
@@ -75,7 +75,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.ButtonPressBeepingEnabledFeedBack.BoolValue;
 #else
 				throw new NotSupportedException();
@@ -120,7 +120,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.ProximityWakeupEnabledFeedBack.BoolValue;
 #else
 				throw new NotSupportedException();
@@ -135,7 +135,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.VolumeDownButtonEnabledFeedBack.BoolValue;
 #else
 				throw new NotSupportedException();
@@ -150,7 +150,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.VolumeUpButtonEnabledFeedBack.BoolValue;
 #else
 				throw new NotSupportedException();
@@ -166,7 +166,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.ProximityRangeFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -182,7 +182,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.ProximityThresholdFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -222,7 +222,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetVolumeDownButtonEnabled(bool enable)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (enable == m_CachedVolumeDownButtonEnabled)
 				return;
 
@@ -242,7 +242,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetVolumeUpButtonEnabled(bool enable)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (enable == m_CachedVolumeUpButtonEnabled)
 				return;
 
@@ -262,7 +262,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetButtonPressBeepingEnabled(bool enable)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (enable)
 				TouchScreen.EnableButtonPressBeeping();
 			else
@@ -278,7 +278,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetProximityWakeupEnabled(bool enable)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.EnableProximityWakeup.BoolValue = enable;
 #else
 			throw new NotSupportedException();
@@ -291,7 +291,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetProximityThreshold(ushort centimeters)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.ProximityThreshold.UShortValue = centimeters;
 #else
 			throw new NotSupportedException();
@@ -300,7 +300,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 
 		#endregion
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Called when a touchscreen panel state changes.
 		/// </summary>

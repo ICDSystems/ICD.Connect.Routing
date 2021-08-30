@@ -1,18 +1,18 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 #endif
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxE3X;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxE31C
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmNvxE31CAdapter :
 		AbstractDmNvxE3XAdapter<Crestron.SimplSharpPro.DM.Streaming.DmNvxE31C, DmNvxE31CAdapterSettings>
 #else
 	public sealed class DmNvxE31CAdapter : AbstractDmNvxE3XAdapter<DmNvxE31CAdapterSettings>
 #endif
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Creates a new instance of the wrapped internal switcher.
 		/// </summary>

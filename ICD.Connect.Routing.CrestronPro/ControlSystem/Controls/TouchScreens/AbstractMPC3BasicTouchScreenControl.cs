@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using ICD.Common.Utils;
@@ -16,7 +16,7 @@ using eButtonState = ICD.Connect.Misc.Keypads.eButtonState;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractMPC3BasicTouchScreenControl<TTouchScreen> : AbstractControlSystemTouchScreenControl<TTouchScreen>, IMPC3BasicTouchScreenControl
 		where TTouchScreen : MPC3Basic
 #else
@@ -46,7 +46,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.AutoBrightnessEnabledFeedBack.BoolValue;
 #else
 				throw new NotSupportedException();
@@ -61,7 +61,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.MuteButtonEnabledFeedBack.BoolValue;
 #else
 				throw new NotSupportedException();
@@ -76,7 +76,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.PowerButtonEnabledFeedBack.BoolValue;
 #else
 				throw new NotSupportedException();
@@ -92,7 +92,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.ActiveBrightnessFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -108,7 +108,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.StandbyBrightnessFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -123,7 +123,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.ActiveTimeoutFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -138,7 +138,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.StandbyTimeoutFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -154,7 +154,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.LEDBrightnessFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -170,7 +170,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.AmbientLightThresholdForAutoBrightnessAdjustmentFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -186,7 +186,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.ActiveModeAutoBrightnessLowLevelFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -202,7 +202,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.ActiveModeAutoBrightnessHighLevelFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -218,7 +218,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.StandbyModeAutoBrightnessLowLevelFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -234,7 +234,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.StandbyModeAutoBrightnessHighLevelFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -250,7 +250,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return TouchScreen.AmbientLightLevelFeedBack.GetUShortValueOrDefault();
 #else
 				throw new NotSupportedException();
@@ -265,7 +265,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return ButtonStateConverter.GetButtonState(TouchScreen.Mute);
 #else
 				throw new NotSupportedException();
@@ -280,7 +280,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return ButtonStateConverter.GetButtonState(TouchScreen.Power);
 #else
 				throw new NotSupportedException();
@@ -295,7 +295,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return ButtonStateConverter.GetButtonState(TouchScreen.Button1);
 #else
 				throw new NotSupportedException();
@@ -310,7 +310,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return ButtonStateConverter.GetButtonState(TouchScreen.Button2);
 #else
 				throw new NotSupportedException();
@@ -325,7 +325,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return ButtonStateConverter.GetButtonState(TouchScreen.Button3);
 #else
 				throw new NotSupportedException();
@@ -340,7 +340,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return ButtonStateConverter.GetButtonState(TouchScreen.Button4);
 #else
 				throw new NotSupportedException();
@@ -355,7 +355,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return ButtonStateConverter.GetButtonState(TouchScreen.Button5);
 #else
 				throw new NotSupportedException();
@@ -370,7 +370,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return ButtonStateConverter.GetButtonState(TouchScreen.Button6);
 #else
 				throw new NotSupportedException();
@@ -388,7 +388,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		protected AbstractMPC3BasicTouchScreenControl(ControlSystemDevice parent, int id)
 			: base(parent, id)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			m_CachedNumericalButtonSelected = new Dictionary<uint, bool>();
 			m_CachedNumericalButtonEnabled = new Dictionary<uint, bool>();
 
@@ -406,7 +406,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 
 			base.DisposeFinal(disposing);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			Unsubscribe(TouchScreen);
 #endif
 		}
@@ -418,7 +418,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetMuteButtonEnabled(bool enable)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (enable == m_CachedMuteButtonEnabled)
 				return;
 
@@ -438,7 +438,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetMuteButtonSelected(bool select)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (select == m_CachedMuteButtonSelected)
 				return;
 
@@ -456,7 +456,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// <param name="enable"></param>
 		public void SetPowerButtonEnabled(bool enable)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (enable == m_CachedPowerButtonEnabled)
 				return;
 
@@ -477,7 +477,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// <param name="select"></param>
 		public void SetPowerButtonSelected(bool select)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			if (select == m_CachedPowerButtonSelected)
 				return;
 
@@ -497,7 +497,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// <exception cref="T:System.IndexOutOfRangeException">Invalid Button Number specified.</exception>
 		public void SetNumericalButtonEnabled(uint buttonNumber, bool enabled)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			bool cached;
 			if (m_CachedNumericalButtonEnabled.TryGetValue(buttonNumber, out cached) && enabled == cached)
 				return;
@@ -521,7 +521,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// <exception cref="T:System.IndexOutOfRangeException">Invalid Button Number specified.</exception>
 		public void SetNumericalButtonSelected(uint buttonNumber, bool selected)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			bool cached;
 			if (m_CachedNumericalButtonSelected.TryGetValue(buttonNumber, out cached) && selected == cached)
 				return;
@@ -562,7 +562,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetAutoBrightnessEnabled(bool enable)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.AutoBrightnessEnabled.BoolValue = enable;
 #else
 			throw new NotSupportedException();
@@ -574,7 +574,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public bool GetNumericalButtonEnabled(uint buttonNumber)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return TouchScreen.NumericalButtonEnabledFeedBack[buttonNumber].BoolValue;
 #else
 			throw new NotSupportedException();
@@ -588,7 +588,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetActiveBrightness(ushort percent)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.ActiveBrightness.UShortValue = percent;
 #else
 			throw new NotSupportedException();
@@ -602,7 +602,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetStandbyBrightness(ushort percent)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.StandbyBrightness.UShortValue = percent;
 #else
 			throw new NotSupportedException();
@@ -616,7 +616,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetActiveTimeout(ushort minutes)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.ActiveTimeout.UShortValue = minutes;
 #else
 			throw new NotSupportedException();
@@ -630,7 +630,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetStandbyTimeout(ushort minutes)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.StandbyTimeout.UShortValue = minutes;
 #else
 			throw new NotSupportedException();
@@ -643,7 +643,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetLedBrightness(ushort percent)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.LEDBrightness.UShortValue = percent;
 #else
 			throw new NotSupportedException();
@@ -656,7 +656,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetAmbientLightThresholdForAutoBrightnessAdjustment(ushort lux)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.AmbientLightThresholdForAutoBrightnessAdjustment.UShortValue = lux;
 #else
 			throw new NotSupportedException();
@@ -670,7 +670,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetActiveModeAutoBrightnessLowLevel(ushort percent)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.ActiveModeAutoBrightnessLowLevel.UShortValue = percent;
 #else
 			throw new NotSupportedException();
@@ -685,7 +685,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetActiveModeAutoBrightnessHighLevel(ushort percent)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.ActiveModeAutoBrightnessHighLevel.UShortValue = percent;
 #else
 			throw new NotSupportedException();
@@ -700,7 +700,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetStandbyModeAutoBrightnessLowLevel(ushort percent)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.StandbyModeAutoBrightnessLowLevel.UShortValue = percent;
 #else
 			throw new NotSupportedException();
@@ -714,7 +714,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetStandbyModeAutoBrightnessHighLevel(ushort percent)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TouchScreen.StandbyModeAutoBrightnessHighLevel.UShortValue = percent;
 #else
 			throw new NotSupportedException();
@@ -728,7 +728,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public void SetVolumeBargraph(ushort percent)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			// Hack - Bargraph only starts showing values at 15%, should at least show something for 1%.
 			if (percent > 0)
 				percent = (ushort)MathUtils.MapRange(0, ushort.MaxValue, 0.2f * ushort.MaxValue, ushort.MaxValue, percent);
@@ -741,7 +741,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 
 #endregion
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 #region TouchScreen Callbacks
 
 		/// <summary>

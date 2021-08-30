@@ -7,7 +7,7 @@ using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Settings;
 using ICD.Connect.Routing.Devices;
 using ICD.Connect.Routing.EventArguments;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DM;
 using Crestron.SimplSharpPro.DM.Endpoints;
@@ -24,7 +24,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 	/// Base class for EndpointTransmitterBase device adapters.
 	/// </summary>
 	/// <typeparam name="TSettings"></typeparam>
-#if SIMPLSHARP
+#if !NETSTANDARD
 	/// <typeparam name="TTransmitter"></typeparam>
 	public abstract class AbstractEndpointTransmitterBaseAdapter<TTransmitter, TSettings> : AbstractRouteMidpointDevice<TSettings>,
 	                                                                                        IEndpointTransmitterBaseAdapter<TTransmitter>
@@ -37,7 +37,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		public override event EventHandler<TransmissionStateEventArgs> OnActiveTransmissionStateChanged;
 		public override event EventHandler<SourceDetectionStateChangeEventArgs> OnSourceDetectionStateChange;
 		public override event EventHandler<ActiveInputStateChangeEventArgs> OnActiveInputsChanged;
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Raised when the wrapped transmitter changes.
 		/// </summary>
@@ -49,7 +49,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 		#region Propertie
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the transmitter.
 		/// </summary>
@@ -87,7 +87,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 		#region Methods
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Sets the wrapped transmitter.
 		/// </summary>
@@ -124,19 +124,19 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			OnTransmitterChanged = null;
 #endif
 
 			base.DisposeFinal(disposing);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			// Unsubscribe and unregister.
 			SetTransmitter(null, null);
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Called when the wrapped transmitter is assigned.
 		/// </summary>
@@ -151,7 +151,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 		#region IO
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the port at the given addres.
 		/// </summary>
@@ -232,14 +232,14 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		{
 			base.CopySettingsFinal(settings);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			DMInput input = Transmitter == null ? null : Transmitter.DMInput;
 
 			settings.Ipid = Transmitter == null ? (byte?)null : (byte)Transmitter.ID;
 			settings.DmSwitch = m_ParentId;
 			settings.DmInputAddress = input == null ? (int?)null : (int)input.Number;
 #else
-            settings.Ipid = null;
+			settings.Ipid = null;
             settings.DmInputAddress = null;
 #endif
 		}
@@ -251,7 +251,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		{
 			base.ClearSettingsFinal();
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetTransmitter(null, null);
 #endif
 		}
@@ -267,7 +267,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 			base.ApplySettingsFinal(settings, factory);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TTransmitter transmitter = null;
 
 			try
@@ -283,7 +283,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 		/// <summary>
 		/// Instantiates the transmitter with the given IPID against the control system.
@@ -319,10 +319,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return Transmitter != null && Transmitter.IsOnline;
 #else
-            return false;
+			return false;
 #endif
 		}
 
@@ -330,7 +330,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 		#region Transmitter callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribes to the transmitter events.
 		/// </summary>
@@ -389,7 +389,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters
 
 		#region Console
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Calls the delegate for each console status item.
 		/// </summary>

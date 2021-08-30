@@ -1,6 +1,6 @@
 ﻿using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Settings;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using System;
 using Crestron.SimplSharpPro;
 using ICD.Common.Properties;
@@ -12,7 +12,7 @@ using ICD.Connect.Devices;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractDmXioDirectorBaseAdapter<TDirector, TSettings> : AbstractDevice<TSettings>, IDmXioDirectorBaseAdapter
 		where TDirector : Crestron.SimplSharpPro.DM.Streaming.DmXioDirectorBase
 #else
@@ -20,7 +20,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 #endif
 		where TSettings : IDmXioDirectorBaseAdapterSettings, new()
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		public event DmXioDirectorChangeCallback OnDirectorChanged;
 
 		private TDirector m_Director;
@@ -28,7 +28,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 
 #region Properties
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the wrapped director.
 		/// </summary>
@@ -61,13 +61,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			OnDirectorChanged = null;
 #endif
 
 			base.DisposeFinal(disposing);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			// Unsubscribe and unregister.
 			SetDirector(null);
 #endif
@@ -79,7 +79,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return m_Director != null && m_Director.IsOnline;
 #else
 			return false;
@@ -88,7 +88,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 
 #region Methods
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Sets the wrapped switcher.
 		/// </summary>
@@ -130,7 +130,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 
 #region Director Callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribe to the director events.
 		/// </summary>
@@ -178,7 +178,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 		{
 			base.CopySettingsFinal(settings);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			settings.EthernetId = Director == null ? (byte)0 : (byte)Director.ID;
 #else
 			settings.EthernetId = 0;
@@ -192,7 +192,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 		{
 			base.ClearSettingsFinal();
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetDirector(null);
 #endif
 		}
@@ -205,13 +205,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 		protected override void ApplySettingsFinal(TSettings settings, IDeviceFactory factory)
 		{
 			base.ApplySettingsFinal(settings, factory);
-#if SIMPLSHARP
+#if !NETSTANDARD
 
 			SetDirector(settings);
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Override to control how the director is assigned from settings.
 		/// </summary>
@@ -242,7 +242,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase
 		{
 			base.BuildConsoleStatus(addRow);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			addRow("Ethernet ID", Director == null ? null : StringUtils.ToIpIdString((byte)Director.ID));
 #endif
 		}

@@ -4,7 +4,7 @@ using ICD.Common.Utils.Extensions;
 using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.Panels.SigCollections;
 using ICD.Connect.Protocol.Sigs;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using ICD.Connect.Misc.CrestronPro.Extensions;
@@ -21,7 +21,7 @@ using ISmartObject = ICD.Connect.Panels.SmartObjects.ISmartObject;
 
 namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public abstract class AbstractControlSystemTouchScreenControl<TTouchScreen> :
 		AbstractThreeSeriesTouchScreenControl<ControlSystemDevice>
 		where TTouchScreen : ThreeSeriesTouchScreen
@@ -34,7 +34,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		/// </summary>
 		public override event EventHandler<SigInfoEventArgs> OnAnyOutput;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private readonly DeviceBooleanInputCollectionAdapter m_BooleanInput;
 		private readonly DeviceUShortInputCollectionAdapter m_UShortInput;
 		private readonly DeviceStringInputCollectionAdapter m_StringInput;
@@ -78,7 +78,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return m_BooleanInput;
 #else
 				throw new NotSupportedException();
@@ -93,7 +93,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return m_UShortInput;
 #else
 				throw new NotSupportedException();
@@ -108,7 +108,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return m_StringInput;
 #else
 				throw new NotSupportedException();
@@ -123,7 +123,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return m_BooleanOutput;
 #else
 				throw new NotSupportedException();
@@ -138,7 +138,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return m_UShortOutput;
 #else
 				throw new NotSupportedException();
@@ -153,7 +153,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return m_StringOutput;
 #else
 				throw new NotSupportedException();
@@ -168,7 +168,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 		{
 			get
 			{
-#if SIMPLSHARP
+#if !NETSTANDARD
 				return m_SmartObjects;
 #else
 				throw new NotSupportedException();
@@ -176,7 +176,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			}
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		private readonly TTouchScreen m_TouchScreen;
 
 		/// <summary>
@@ -198,7 +198,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 			m_SigCallbacks = new SigCallbackManager();
 			m_SigCallbacks.OnAnyCallback += SigCallbacksOnAnyCallback;
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			m_TouchScreen = parent.ControlSystem.ControllerTouchScreenSlotDevice as TTouchScreen;
 			if (m_TouchScreen == null)
 				throw new InvalidOperationException();
@@ -229,7 +229,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 
 			base.DisposeFinal(disposing);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			Unsubscribe(m_TouchScreen);
 			Unsubscribe(m_SmartObjects);
 #endif
@@ -397,7 +397,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls.TouchScreens
 
 		#region Panel Callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribe to the panel events.
 		/// </summary>

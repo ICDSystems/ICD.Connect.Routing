@@ -1,4 +1,4 @@
-﻿#if SIMPLSHARP
+﻿#if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 using ICD.Connect.Misc.CrestronPro;
 #endif
@@ -6,7 +6,7 @@ using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.BladeSwitch;
 
 namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmMd.DmMd64X64
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public sealed class DmMd64X64Adapter : AbstractCrestronBladeSwitchAdapter<DmMd64x64, DmMd64X64AdapterSettings>
 	{
 		/// <summary>

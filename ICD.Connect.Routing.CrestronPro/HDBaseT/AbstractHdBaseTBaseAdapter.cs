@@ -8,7 +8,7 @@ using ICD.Connect.Misc.CrestronPro.Utils;
 using ICD.Connect.Routing.CrestronPro.Cards;
 using ICD.Connect.Settings;
 using ICD.Connect.Settings.Attributes.SettingsProperties;
-#if SIMPLSHARP
+#if !NETSTANDARD
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Crestron.SimplSharpPro.DM;
@@ -18,7 +18,7 @@ using ICD.Connect.Misc.CrestronPro.Devices;
 
 namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 {
-#if SIMPLSHARP
+#if !NETSTANDARD
 	public delegate void DeviceChangeCallback(IHdBaseTBaseAdapter sender, HDBaseTBase device);
 
 	public abstract class AbstractHdBaseTBaseAdapter<TDevice, TSettings> : AbstractDevice<TSettings>, IHdBaseTBaseAdapter
@@ -28,7 +28,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 #endif
 		where TSettings : IHdBaseTBaseAdapterSettings, new()
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Raised when the wrapped device changes.
 		/// </summary>
@@ -42,7 +42,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 
 		#region Properties
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Gets the wrapped device.
 		/// </summary>
@@ -77,19 +77,19 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		/// </summary>
 		protected override void DisposeFinal(bool disposing)
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			OnDeviceChanged = null;
 #endif
 
 			base.DisposeFinal(disposing);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			// Unsbscribe and unregister
 			SetDevice(null, null, null);
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Sets the wrapped device.
 		/// </summary>
@@ -120,7 +120,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 
 		#endregion
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		#region IO
 
 		/// <summary>
@@ -205,12 +205,12 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		{
 			base.CopySettingsFinal(settings);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			settings.Ipid = m_Device == null ? (byte)0 : (byte)m_Device.ID;
 			settings.DmSwitch = m_ParentId;
 			settings.DmEndpoint = m_EndpointId;
 #else
-            settings.Ipid = 0;
+			settings.Ipid = 0;
 			settings.DmSwitch = null;
 			settings.DmEndpoint = null;
 #endif
@@ -223,7 +223,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		{
 			base.ClearSettingsFinal();
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			SetDevice(null, null, null);
 #endif
 		}
@@ -239,7 +239,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 
 			base.ApplySettingsFinal(settings, factory);
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 			TDevice device = null;
 
 			try
@@ -255,7 +255,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 #endif
 		}
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Instantiates the device with the given settings.
 		/// </summary>
@@ -269,7 +269,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 
 		#region Scaler Callbacks
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Subscribe to the device events.
 		/// </summary>
@@ -311,10 +311,10 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 		/// <returns></returns>
 		protected override bool GetIsOnlineStatus()
 		{
-#if SIMPLSHARP
+#if !NETSTANDARD
 			return Device != null && Device.IsOnline;
 #else
-            return false;
+			return false;
 #endif
 		}
 
@@ -322,7 +322,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 
 		#region Console
 
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Calls the delegate for each console status item.
 		/// </summary>
@@ -387,7 +387,7 @@ namespace ICD.Connect.Routing.CrestronPro.HDBaseT
 
 	public interface IHdBaseTBaseAdapter : IDevice, IPortParent
 	{
-#if SIMPLSHARP
+#if !NETSTANDARD
 		/// <summary>
 		/// Raised when the wrapped device changes.
 		/// </summary>
