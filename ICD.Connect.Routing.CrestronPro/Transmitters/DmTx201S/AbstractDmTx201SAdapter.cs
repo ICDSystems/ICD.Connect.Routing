@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 #endif
-using ICD.Common.Utils;
-using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
 
@@ -101,31 +98,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx201S
 			return base.GetOutputs();
 		}
 
-		public override bool GetActiveTransmissionState(int output, eConnectionType type)
-		{
-			if (EnumUtils.HasMultipleFlags(type))
-			{
-				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(f => GetActiveTransmissionState(output, f))
-								.Unanimous(false);
-			}
-
-			if (!ContainsOutput(output))
-			{
-				string message = string.Format("{0} has no {1} output at address {2}", this, type, output);
-				throw new ArgumentOutOfRangeException("output", message);
-			}
-
-			switch (type)
-			{
-				case eConnectionType.Audio:
-				case eConnectionType.Video:
-					return ActiveTransmissionState;
-
-				default:
-					throw new ArgumentOutOfRangeException("type");
-			}
-		}
 #if SIMPLSHARP
 
 		protected override void TransmitterOnVideoSourceFeedbackEvent(GenericBase device, BaseEventArgs args)

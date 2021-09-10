@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 #if SIMPLSHARP
 using Crestron.SimplSharpPro;
 using Crestron.SimplSharpPro.DeviceSupport;
@@ -13,7 +12,6 @@ using ICD.Connect.Misc.CrestronPro.Extensions;
 #endif
 using ICD.Common.Properties;
 using ICD.Common.Utils;
-using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 
 namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
@@ -34,8 +32,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 		protected const int DM_OUTPUT = 1;
 		protected const int HDMI_OUTPUT = 2;
 
-		private bool m_ActiveTransmissionState;
-
 		#region Properties
 
 		/// <summary>
@@ -55,49 +51,20 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 			}
 		}
 
-		/// <summary>
-		/// Returns true when the device is actively transmitting video.
-		/// </summary>
-		[PublicAPI]
-		public bool ActiveTransmissionState
-		{
-			get { return m_ActiveTransmissionState; }
-			protected set
-			{
-				if (value == m_ActiveTransmissionState)
-					return;
-
-				m_ActiveTransmissionState = value;
-
-				RaiseActiveTransmissionStateChanged(HDMI_OUTPUT,
-													  eConnectionType.Audio | eConnectionType.Video,
-													  m_ActiveTransmissionState);
-			}
-		}
 
 		#endregion
 
 		#region Methods
 
-#if SIMPLSHARP
-
-		protected virtual bool GetActiveTransmissionState()
-		{
-			return HdmiDetected;
-		}
-#endif
-
 		/// <summary>
-		/// Returns true if a signal is detected at the given input.
+		/// Gets the source detect state from the Tx
+		/// This is just a simple "is a laptop detected"
+		/// Used for ActiveTransmission in AutoRouting mode
+		/// Override to support additional inputs on a Tx
 		/// </summary>
-		/// <param name="input"></param>
-		/// <param name="type"></param>
 		/// <returns></returns>
-		public override bool GetSignalDetectedState(int input, eConnectionType type)
+		protected override bool GetSourceDetectionState()
 		{
-			if (!ContainsInput(input))
-				throw new ArgumentOutOfRangeException("input");
-
 			return HdmiDetected;
 		}
 
@@ -204,32 +171,6 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 		{
 			yield return new ConnectorInfo(DM_OUTPUT, (eConnectionType.Audio | eConnectionType.Video));
 			yield return new ConnectorInfo(HDMI_OUTPUT, (eConnectionType.Audio | eConnectionType.Video));
-		}
-
-		public override bool GetActiveTransmissionState(int output, eConnectionType type)
-		{
-			if (EnumUtils.HasMultipleFlags(type))
-			{
-				return EnumUtils.GetFlagsExceptNone(type)
-								.Select(f => GetActiveTransmissionState(output, f))
-								.Unanimous(false);
-			}
-
-			if (!ContainsOutput(output))
-			{
-				string message = string.Format("{0} has no {1} output at address {2}", this, type, output);
-				throw new ArgumentOutOfRangeException("output", message);
-			}
-
-			switch (type)
-			{
-				case eConnectionType.Audio:
-				case eConnectionType.Video:
-					return ActiveTransmissionState;
-
-				default:
-					throw new ArgumentOutOfRangeException("type");
-			}
 		}
 
 		/// <summary>
@@ -351,7 +292,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4KzX02CBase
 		{
 			if (args.EventId == EndpointInputStreamEventIds.SyncDetectedFeedbackEventId)
 			{
-				ActiveTransmissionState = GetActiveTransmissionState();
+				UpdateSourceDetectionState();
 				SwitcherCache.SetSourceDetectedState(HDMI_INPUT_1, eConnectionType.Video,
 				                                     Transmitter.HdmiInputs[HDMI_INPUT_1].SyncDetectedFeedback.BoolValue);
 				SwitcherCache.SetSourceDetectedState(HDMI_INPUT_1, eConnectionType.Audio,

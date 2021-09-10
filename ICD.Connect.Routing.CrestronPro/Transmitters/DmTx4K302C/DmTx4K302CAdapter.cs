@@ -46,23 +46,16 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 
 		#region Methods
 
-		protected override bool GetActiveTransmissionState()
-		{
-			return VgaDetected || base.GetActiveTransmissionState();
-		}
-
 		/// <summary>
-		/// Returns true if a signal is detected at the given input.
+		/// Gets the source detect state from the Tx
+		/// This is just a simple "is a laptop detected"
+		/// Used for ActiveTransmission in AutoRouting mode
+		/// Override to support additional inputs on a Tx
 		/// </summary>
-		/// <param name="input"></param>
-		/// <param name="type"></param>
 		/// <returns></returns>
-		public override bool GetSignalDetectedState(int input, eConnectionType type)
+		protected override bool GetSourceDetectionState()
 		{
-			if (!ContainsInput(input))
-				throw new ArgumentOutOfRangeException("input");
-
-			return SwitcherCache.GetSourceDetectedState(input, type);
+			return VgaDetected || base.GetSourceDetectionState();
 		}
 
 		/// <summary>
@@ -197,7 +190,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4K302C
 		{
 			if (args.EventId == EndpointInputStreamEventIds.SyncDetectedFeedbackEventId)
 			{
-				ActiveTransmissionState = GetActiveTransmissionState();
+				UpdateSourceDetectionState();
 				SwitcherCache.SetSourceDetectedState(VGA_INPUT, eConnectionType.Video,
 				                                     Transmitter.VgaInput.SyncDetectedFeedback.BoolValue);
 				SwitcherCache.SetSourceDetectedState(VGA_INPUT, eConnectionType.Audio,
