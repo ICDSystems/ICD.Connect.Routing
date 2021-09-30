@@ -117,7 +117,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 			}
 			return true;
 #else
-			return false
+			return false;
 #endif
 		}
 
