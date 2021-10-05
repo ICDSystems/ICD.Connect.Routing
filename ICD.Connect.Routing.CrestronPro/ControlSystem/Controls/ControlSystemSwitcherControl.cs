@@ -253,6 +253,9 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem.Controls
 						try
 						{
 							// DMPS 4K - set AudioOutSource and clear the mixer
+							// but Crestron is REAL dumb, so we have to assign a mixer _before_
+							// we can clear the output, which we then clear again :facepalm:
+							AutoAssignMixerForOutput(switcherOutput);
 							switcherOutput.AudioOutSource = GetAudioSourceForInput(null);
 							AutoClearMixerForOutput(switcherOutput);
 						}

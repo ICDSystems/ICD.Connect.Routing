@@ -4,8 +4,6 @@ using System.Linq;
 #if !NETSTANDARD
 using Crestron.SimplSharpPro;
 #endif
-using ICD.Common.Utils;
-using ICD.Common.Utils.Extensions;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.CrestronPro.Transmitters.DmTx200Base;
 

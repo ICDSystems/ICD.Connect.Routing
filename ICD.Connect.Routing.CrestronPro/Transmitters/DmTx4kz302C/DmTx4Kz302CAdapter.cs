@@ -41,27 +41,19 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 
 		#endregion
 
-#if !NETSTANDARD
 
 		#region Methods
 
-		protected override bool GetActiveTransmissionState()
-		{
-			return base.GetActiveTransmissionState() || DisplayPortDetected;
-		}
-
 		/// <summary>
-		/// Returns true if a signal is detected at the given input.
+		/// Gets the source detect state from the Tx
+		/// This is just a simple "is a laptop detected"
+		/// Used for ActiveTransmission in AutoRouting mode
+		/// Override to support additional inputs on a Tx
 		/// </summary>
-		/// <param name="input"></param>
-		/// <param name="type"></param>
 		/// <returns></returns>
-		public override bool GetSignalDetectedState(int input, eConnectionType type)
+		protected override bool GetSourceDetectionState()
 		{
-			if (!ContainsInput(input))
-				throw new ArgumentOutOfRangeException("input");
-
-			return SwitcherCache.GetSourceDetectedState(input, type);
+			return DisplayPortDetected || base.GetSourceDetectionState();
 		}
 
 		/// <summary>
@@ -104,6 +96,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 		/// <returns></returns>
 		public override bool Route(RouteOperation info)
 		{
+#if !NETSTANDARD
 			if (!ContainsInput(info.LocalInput))
 				throw new IndexOutOfRangeException(string.Format("No input at address {0}", info.LocalInput));
 			if (!ContainsOutput(info.LocalOutput))
@@ -122,12 +115,15 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 					return base.Route(info);
 			}
 			return true;
+#else
+			return false;
+#endif
 		}
 
 		#endregion
 
 		#region Transmitter Callbacks
-
+#if SIMPLSHARP
 		/// <summary>
 		/// Subscribes to the transmitter events.
 		/// </summary>
@@ -179,7 +175,7 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 		{
 			if (args.EventId == EndpointInputStreamEventIds.SyncDetectedFeedbackEventId)
 			{
-				ActiveTransmissionState = GetActiveTransmissionState();
+				UpdateSourceDetectionState();
 				SwitcherCache.SetSourceDetectedState(DISPLAY_PORT_INPUT, eConnectionType.Audio,
 				                                     Transmitter.DisplayPortInput.SyncDetectedFeedback.BoolValue);
 				SwitcherCache.SetSourceDetectedState(DISPLAY_PORT_INPUT, eConnectionType.Video,
@@ -187,8 +183,10 @@ namespace ICD.Connect.Routing.CrestronPro.Transmitters.DmTx4kz302C
 			}
 		}
 
-		#endregion
 #endif
+
+		#endregion
+
 
 		#region Settings
 

@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [17.1.1] - 2021-10-04
+### Changed
+ - Fixed issues with Tx active transmission state in switcher and auto switch modes
+ - Fixed issue where DMPS3-4k couldn't unroute an audio output if no mixer is assigned
+
 ### Changed
  - Replaced RoutingGraph console PrintX commands with regular console collection nodes
 
