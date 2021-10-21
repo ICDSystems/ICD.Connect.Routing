@@ -1,6 +1,6 @@
 ﻿#if !NETSTANDARD
 using ICD.Connect.Settings;
-﻿using ICD.Connect.Devices.Extensions;
+using ICD.Connect.Devices.Extensions;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
 using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmXio.DmXioDirectorBase;
 using ICD.Connect.Routing.CrestronPro.Receivers;
