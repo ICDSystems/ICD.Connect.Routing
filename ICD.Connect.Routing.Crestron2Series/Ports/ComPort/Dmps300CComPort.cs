@@ -142,7 +142,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 		/// </summary>
 		protected override bool SendFinal(string data)
 		{
-			PrintTx(data);
+			PrintTx(() => data);
 			return m_Client.Send(data);
 		}
 
@@ -182,7 +182,7 @@ namespace ICD.Connect.Routing.Crestron2Series.Ports.ComPort
 
 		private void ClientOnSerialDataReceived(object sender, StringEventArgs stringEventArgs)
 		{
-			PrintRx(stringEventArgs.Data);
+			PrintRx(() => stringEventArgs.Data);
 			Receive(stringEventArgs.Data);
 		}
 

@@ -116,7 +116,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 		/// </summary>
 		protected override bool SendFinal(string data)
 		{
-			PrintTx(data);
+			PrintTx(() => data);
 			return m_ConnectionStateManager.Send(data);
 		}
 
@@ -262,7 +262,7 @@ namespace ICD.Connect.Routing.Extron.Ports
 		/// <param name="e"></param>
 		private void ConnectionStateManagerOnSerialDataReceived(object sender, StringEventArgs e)
 		{
-			PrintRx(e.Data);
+			PrintRx(() => e.Data);
 			Receive(e.Data);
 		}
 
