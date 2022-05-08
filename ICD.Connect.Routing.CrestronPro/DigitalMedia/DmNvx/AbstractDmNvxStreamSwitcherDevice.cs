@@ -44,10 +44,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 
 		private readonly IcdSortedDictionary<int, NvxEndpointInfo> m_InputEndpoints;
 		private readonly IcdSortedDictionary<int, NvxEndpointInfo> m_OutputEndpoints;
-		private readonly Dictionary<DmNvxBaseClassSwitcherControl, NvxEndpointInfo> m_SwitcherToEndpoint;
-		private readonly Dictionary<DmNvxBaseClassSwitcherControl, string> m_SwitcherToCachedMulticastAddress;
-		private readonly Dictionary<string, IcdHashSet<DmNvxBaseClassSwitcherControl>> m_MulticastAddressToRx;
-		private readonly Dictionary<string, DmNvxBaseClassSwitcherControl> m_MulticastAddressToTx;
+		private readonly Dictionary<IDmNvxSwitcherControl, NvxEndpointInfo> m_SwitcherToEndpoint;
+		private readonly Dictionary<IDmNvxSwitcherControl, string> m_SwitcherToCachedMulticastAddress;
+		private readonly Dictionary<string, IcdHashSet<IDmNvxSwitcherControl>> m_MulticastAddressToRx;
+		private readonly Dictionary<string, IDmNvxSwitcherControl> m_MulticastAddressToTx;
 
 		private readonly SafeCriticalSection m_ConnectorsSection;
 
@@ -82,10 +82,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		{
 			m_InputEndpoints = new IcdSortedDictionary<int, NvxEndpointInfo>();
 			m_OutputEndpoints = new IcdSortedDictionary<int, NvxEndpointInfo>();
-			m_SwitcherToEndpoint = new Dictionary<DmNvxBaseClassSwitcherControl, NvxEndpointInfo>();
-			m_SwitcherToCachedMulticastAddress = new Dictionary<DmNvxBaseClassSwitcherControl, string>();
-			m_MulticastAddressToRx = new Dictionary<string, IcdHashSet<DmNvxBaseClassSwitcherControl>>();
-			m_MulticastAddressToTx = new Dictionary<string, DmNvxBaseClassSwitcherControl>();
+			m_SwitcherToEndpoint = new Dictionary<IDmNvxSwitcherControl, NvxEndpointInfo>();
+			m_SwitcherToCachedMulticastAddress = new Dictionary<IDmNvxSwitcherControl, string>();
+			m_MulticastAddressToRx = new Dictionary<string, IcdHashSet<IDmNvxSwitcherControl>>();
+			m_MulticastAddressToTx = new Dictionary<string, IDmNvxSwitcherControl>();
 
 			m_ConnectorsSection = new SafeCriticalSection();
 
@@ -468,7 +468,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 				{
 					EndpointInfo sourceEndpoint = inputConnection.Source;
 
-					DmNvxBaseClassSwitcherControl switcher = GetSourceControl(inputConnection);
+					IDmNvxSwitcherControl switcher = GetSourceControl(inputConnection);
 					if (switcher == null)
 					{
 						Logger.Log(eSeverity.Error, "Unable to support connection from {0}", sourceEndpoint);
@@ -506,7 +506,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 				{
 					EndpointInfo destinationEndpoint = outputConnection.Destination;
 
-					DmNvxBaseClassSwitcherControl switcher = GetDestinationControl(outputConnection);
+					IDmNvxSwitcherControl switcher = GetDestinationControl(outputConnection);
 					if (switcher == null)
 					{
 						Logger.Log(eSeverity.Error, "Unable to support connection to {0}", destinationEndpoint);
@@ -556,12 +556,12 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// because we are still loading settings.
 		/// </summary>
 		/// <returns></returns>
-		private DmNvxBaseClassSwitcherControl GetSourceControl(Connection inputConnection)
+		private IDmNvxSwitcherControl GetSourceControl(Connection inputConnection)
 		{
 			return Core.Originators
 			           .GetChild<IDevice>(inputConnection.Source.Device)
 			           .Controls
-			           .GetControl<DmNvxBaseClassSwitcherControl>(0);
+			           .GetControl<IDmNvxSwitcherControl>(0);
 		}
 
 		/// <summary>
@@ -569,12 +569,12 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// because we are still loading settings.
 		/// </summary>
 		/// <returns></returns>
-		private DmNvxBaseClassSwitcherControl GetDestinationControl(Connection outputConnection)
+		private IDmNvxSwitcherControl GetDestinationControl(Connection outputConnection)
 		{
 			return Core.Originators
 			           .GetChild<IDevice>(outputConnection.Destination.Device)
 			           .Controls
-			           .GetControl<DmNvxBaseClassSwitcherControl>(0);
+			           .GetControl<IDmNvxSwitcherControl>(0);
 		}
 
 		/// <summary>
@@ -582,7 +582,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// </summary>
 		private void UpdateRouting()
 		{
-			foreach (DmNvxBaseClassSwitcherControl switcher in GetCachedSwitchers())
+			foreach (IDmNvxSwitcherControl switcher in GetCachedSwitchers())
 				UpdateRouting(switcher);
 		}
 
@@ -590,7 +590,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// Updates the routing states for the given switcher.
 		/// </summary>
 		/// <param name="switcher"></param>
-		protected void UpdateRouting(DmNvxBaseClassSwitcherControl switcher)
+		protected void UpdateRouting(IDmNvxSwitcherControl switcher)
 		{
 			if (switcher == null)
 				throw new ArgumentNullException("switcher");
@@ -647,10 +647,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 					m_MulticastAddressToTx[newAddress] = endpointInfo.Switcher;
 
 				// Unroute all of the RXs pointing at the old address
-				IcdHashSet<DmNvxBaseClassSwitcherControl> rxs;
+				IcdHashSet<IDmNvxSwitcherControl> rxs;
 				if (oldAddress != null && m_MulticastAddressToRx.TryGetValue(oldAddress, out rxs))
 				{
-					foreach (DmNvxBaseClassSwitcherControl rx in rxs)
+					foreach (IDmNvxSwitcherControl rx in rxs)
 					{
 						// Get the RX address
 						NvxEndpointInfo rxEndpoint = rx == null ? null : m_SwitcherToEndpoint.GetDefault(rx);
@@ -667,7 +667,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 				// Route all of the RXs pointing at the new address
 				if (newAddress != null && m_MulticastAddressToRx.TryGetValue(newAddress, out rxs))
 				{
-					foreach (DmNvxBaseClassSwitcherControl rx in rxs)
+					foreach (IDmNvxSwitcherControl rx in rxs)
 					{
 						// Get the RX address
 						NvxEndpointInfo rxEndpoint = rx == null ? null : m_SwitcherToEndpoint.GetDefault(rx);
@@ -706,7 +706,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 			try
 			{
 				// Update the cache
-				IcdHashSet<DmNvxBaseClassSwitcherControl> switchers;
+				IcdHashSet<IDmNvxSwitcherControl> switchers;
 				if (oldAddress != null && m_MulticastAddressToRx.TryGetValue(oldAddress, out switchers))
 					switchers.Remove(endpointInfo.Switcher);
 
@@ -714,7 +714,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 				{
 					if (!m_MulticastAddressToRx.TryGetValue(newAddress, out switchers))
 					{
-						switchers = new IcdHashSet<DmNvxBaseClassSwitcherControl>();
+						switchers = new IcdHashSet<IDmNvxSwitcherControl>();
 						m_MulticastAddressToRx.Add(newAddress, switchers);
 					}
 
@@ -725,7 +725,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 				int outputAddress = endpointInfo.LocalStreamAddress;
 
 				// Get the TX address
-				DmNvxBaseClassSwitcherControl tx = newAddress == null ? null : m_MulticastAddressToTx.GetDefault(newAddress);
+				IDmNvxSwitcherControl tx = newAddress == null ? null : m_MulticastAddressToTx.GetDefault(newAddress);
 				NvxEndpointInfo txEndpoint = tx == null ? null : m_SwitcherToEndpoint.GetDefault(tx);
 				int? inputAddress = txEndpoint == null ? (int?)null : txEndpoint.LocalStreamAddress;
 
@@ -747,7 +747,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// </summary>
 		private void SubscribeSwitchers()
 		{
-			foreach (DmNvxBaseClassSwitcherControl switcher in GetCachedSwitchers())
+			foreach (IDmNvxSwitcherControl switcher in GetCachedSwitchers())
 				Subscribe(switcher);
 		}
 
@@ -756,7 +756,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// </summary>
 		private void UnsubscribeSwitchers()
 		{
-			foreach (DmNvxBaseClassSwitcherControl switcher in GetCachedSwitchers())
+			foreach (IDmNvxSwitcherControl switcher in GetCachedSwitchers())
 				Unsubscribe(switcher);
 		}
 
@@ -764,14 +764,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// Gets all of the TX and RX switchers that have been cached.
 		/// </summary>
 		/// <returns></returns>
-		private IEnumerable<DmNvxBaseClassSwitcherControl> GetCachedSwitchers()
+		private IEnumerable<IDmNvxSwitcherControl> GetCachedSwitchers()
 		{
 			m_ConnectorsSection.Enter();
 
 			try
 			{
-				IEnumerable<DmNvxBaseClassSwitcherControl> txs = m_InputEndpoints.Select(e => e.Value.Switcher);
-				IEnumerable<DmNvxBaseClassSwitcherControl> rxs = m_OutputEndpoints.Select(e => e.Value.Switcher);
+				IEnumerable<IDmNvxSwitcherControl> txs = m_InputEndpoints.Select(e => e.Value.Switcher);
+				IEnumerable<IDmNvxSwitcherControl> rxs = m_OutputEndpoints.Select(e => e.Value.Switcher);
 
 				return txs.Concat(rxs).ToArray();
 			}
@@ -785,7 +785,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// Subscribe to the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		protected virtual void Subscribe(DmNvxBaseClassSwitcherControl switcher)
+		protected virtual void Subscribe(IDmNvxSwitcherControl switcher)
 		{
 		}
 
@@ -793,7 +793,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// Unsubscribe from the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		protected virtual void Unsubscribe(DmNvxBaseClassSwitcherControl switcher)
+		protected virtual void Unsubscribe(IDmNvxSwitcherControl switcher)
 		{
 		}
 

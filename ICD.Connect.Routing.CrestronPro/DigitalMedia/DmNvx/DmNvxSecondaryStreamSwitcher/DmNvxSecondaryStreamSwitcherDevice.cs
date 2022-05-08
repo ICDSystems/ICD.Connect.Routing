@@ -48,7 +48,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxSecondaryStrea
 		/// Subscribe to the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		protected override void Subscribe(DmNvxBaseClassSwitcherControl switcher)
+		protected override void Subscribe(IDmNvxSwitcherControl switcher)
 		{
 			base.Subscribe(switcher);
 
@@ -62,7 +62,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxSecondaryStrea
 		/// Unsubscribe from the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		protected override void Unsubscribe(DmNvxBaseClassSwitcherControl switcher)
+		protected override void Unsubscribe(IDmNvxSwitcherControl switcher)
 		{
 			base.Unsubscribe(switcher);
 

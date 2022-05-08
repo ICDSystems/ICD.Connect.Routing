@@ -246,6 +246,9 @@
     <Compile Include="DigitalMedia\AbstractCrestronSwitchAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmNvx\AbstractDmNvxStreamSwitcherDevice.cs" />
     <Compile Include="DigitalMedia\DmNvx\AbstractDmNvxStreamSwitcherSettings.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxE3X\DmNvxE3XSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\DmNvx\IDmNvxSwitcherControl.cs" />
+    <Compile Include="DigitalMedia\DmNvx\DmNvxD3X\DmNvxD3XSwitcherControl.cs" />
     <Compile Include="DigitalMedia\DmNvx\DmNvxE31C\DmNvxE31CAdapter.cs" />
     <Compile Include="DigitalMedia\DmNvx\DmNvxE31C\DmNvxE31CAdapterSettings.cs" />
     <Compile Include="DigitalMedia\DmNvx\DmNvxE31\DmNvxE31Adapter.cs" />

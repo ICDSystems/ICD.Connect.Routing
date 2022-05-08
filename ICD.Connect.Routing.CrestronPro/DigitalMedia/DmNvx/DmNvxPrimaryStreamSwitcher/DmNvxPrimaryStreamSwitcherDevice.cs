@@ -48,7 +48,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxPrimaryStreamS
 		/// Subscribe to the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		protected override void Subscribe(DmNvxBaseClassSwitcherControl switcher)
+		protected override void Subscribe(IDmNvxSwitcherControl switcher)
 		{
 			base.Subscribe(switcher);
 
@@ -62,7 +62,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxPrimaryStreamS
 		/// Unsubscribe from the switcher events.
 		/// </summary>
 		/// <param name="switcher"></param>
-		protected override void Unsubscribe(DmNvxBaseClassSwitcherControl switcher)
+		protected override void Unsubscribe(IDmNvxSwitcherControl switcher)
 		{
 			base.Unsubscribe(switcher);
 
@@ -79,7 +79,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxPrimaryStreamS
 		/// <param name="stringEventArgs"></param>
 		private void SwitcherOnLastKnownMulticastAddressChange(object sender, StringEventArgs stringEventArgs)
 		{
-			DmNvxBaseClassSwitcherControl switcher = sender as DmNvxBaseClassSwitcherControl;
+			IDmNvxSwitcherControl switcher = sender as IDmNvxSwitcherControl;
 			if (switcher == null)
 				return;
 

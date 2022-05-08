@@ -4,6 +4,7 @@ using ICD.Common.Utils;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Devices.Controls;
+using ICD.Connect.Routing.Controls;
 using ICD.Connect.Settings;
 #if !NETSTANDARD
 using Crestron.SimplSharpPro.DM.Streaming;
@@ -89,10 +90,21 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			base.AddControls(settings, factory, addControl);
 
 #if !NETSTANDARD
-			addControl(new DmNvxBaseClassSwitcherControl(this, 0));
+			addControl(GetSwitcherControl());
 			addControl(new DmNvxBaseClassVolumeControl(this, 1));
 #endif
 		}
+
+#if !NETSTANDARD
+		/// <summary>
+		/// Get the switcher control for this device
+		/// </summary>
+		/// <returns></returns>
+		protected virtual IRouteSwitcherControl GetSwitcherControl()
+		{
+			return new DmNvxBaseClassSwitcherControl(this, 0);
+		}
+#endif
 
 		#endregion
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using ICD.Connect.Routing.Controls;
 #if !NETSTANDARD
 using Crestron.SimplSharpPro.DM;
 #endif
@@ -39,6 +40,15 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxE3X
 
 			string message = string.Format("No CecPort at address {1}:{2} for device {0}", this, io, address);
 			throw new InvalidOperationException(message);
+		}
+
+		/// <summary>
+		/// Get the switcher control for this device
+		/// </summary>
+		/// <returns></returns>
+		protected override IRouteSwitcherControl GetSwitcherControl()
+		{
+			return new DmNvxE3XSwitcherControl(this, 0);
 		}
 #endif
 	}

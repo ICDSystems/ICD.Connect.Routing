@@ -2,86 +2,68 @@
 using System.Collections.Generic;
 using System.Linq;
 using ICD.Common.Logging.Activities;
-using ICD.Common.Utils.Services.Logging;
-#if !NETSTANDARD
-using Crestron.SimplSharpPro;
-using Crestron.SimplSharpPro.DeviceSupport;
-using Crestron.SimplSharpPro.DM;
-using Crestron.SimplSharpPro.DM.Streaming;
-using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
-using ICD.Common.Properties;
-using ICD.Connect.Misc.CrestronPro.Extensions;
-#endif
+using ICD.Common.Logging.LoggingContexts;
 using ICD.Common.Utils;
 using ICD.Common.Utils.Collections;
 using ICD.Common.Utils.EventArguments;
 using ICD.Common.Utils.Extensions;
+using ICD.Common.Utils.Services.Logging;
 using ICD.Connect.API.Commands;
 using ICD.Connect.API.Nodes;
 using ICD.Connect.Routing.Connections;
 using ICD.Connect.Routing.Controls;
 using ICD.Connect.Routing.EventArguments;
 using ICD.Connect.Routing.Utils;
-using ICD.Common.Logging.LoggingContexts;
+#if !NETSTANDARD
+using System.Text;
+using ICD.Common.Properties;
+using ICD.Connect.Misc.CrestronPro.Extensions;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.Dm100xStrBase;
+using ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass;
+using Crestron.SimplSharp;
+using Crestron.SimplSharpPro;
+using Crestron.SimplSharpPro.DeviceSupport;
+using Crestron.SimplSharpPro.DM;
+using Crestron.SimplSharpPro.DM.Streaming;
+using eDeviceMode = Crestron.SimplSharpPro.DM.Streaming.eDeviceMode;
+#endif
 
-namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
+namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxE3X
 {
-	/// <summary>
-	/// In TX mode we treat the NVX as a splitter with independent AV: Each selected input for Audio/Video
-	/// is distributed to all outputs.
-	/// 
-	/// In RX mode we treat the NVX as a switch with multiple inputs which may be routed independently to
-	/// the HDMI and Analog Audio outputs.
-	/// </summary>
-	public sealed class DmNvxBaseClassSwitcherControl : AbstractRouteSwitcherControl<IDmNvxBaseClassAdapter>, IDmNvxSwitcherControl
+	public sealed class DmNvxE3XSwitcherControl : AbstractRouteSwitcherControl<IDmNvxE3XAdapter>, IDmNvxSwitcherControl
 	{
 		private const int INPUT_HDMI_1 = 1;
-		private const int INPUT_HDMI_2 = 2;
 		private const int INPUT_ANALOG_AUDIO = 3;
-		public const int INPUT_STREAM = 4;
-		public const int INPUT_SECONDARY_AUDIO_STREAM = 5;
 
-		private const int OUTPUT_HDMI = 1;
 		private const int OUTPUT_ANALOG_AUDIO = 2;
 		public const int OUTPUT_STREAM = 3;
-		public const int OUTPUT_SECONDARY_AUDIO_STREAM = 4;
 
 		private static readonly IcdSortedDictionary<int, ConnectorInfo> s_InputConnectors =
 			new IcdSortedDictionary<int, ConnectorInfo>
 			{
 				{INPUT_HDMI_1, new ConnectorInfo(INPUT_HDMI_1, eConnectionType.Audio | eConnectionType.Video)},
-				{INPUT_HDMI_2, new ConnectorInfo(INPUT_HDMI_2, eConnectionType.Audio | eConnectionType.Video)},
 				{INPUT_ANALOG_AUDIO, new ConnectorInfo(INPUT_ANALOG_AUDIO, eConnectionType.Audio)},
-				{INPUT_STREAM, new ConnectorInfo(INPUT_STREAM, eConnectionType.Audio | eConnectionType.Video)},
-				{INPUT_SECONDARY_AUDIO_STREAM, new ConnectorInfo(INPUT_SECONDARY_AUDIO_STREAM, eConnectionType.Audio)}
 			};
 
 		private static readonly IcdSortedDictionary<int, string> s_InputConnectorInputTypes =
 			new IcdSortedDictionary<int, string>
 			{
 				{INPUT_HDMI_1, "HDMI"},
-				{INPUT_HDMI_2, "HDMI"},
 				{INPUT_ANALOG_AUDIO, "Audio"},
-				{INPUT_STREAM, "Streaming"},
-				{INPUT_SECONDARY_AUDIO_STREAM, "Audio Stream"}
 			};
 
 		private static readonly IcdSortedDictionary<int, ConnectorInfo> s_OutputConnectors =
 			new IcdSortedDictionary<int, ConnectorInfo>
 			{
-				{OUTPUT_HDMI, new ConnectorInfo(OUTPUT_HDMI, eConnectionType.Audio | eConnectionType.Video)},
 				{OUTPUT_ANALOG_AUDIO, new ConnectorInfo(OUTPUT_ANALOG_AUDIO, eConnectionType.Audio)},
-				{OUTPUT_STREAM, new ConnectorInfo(OUTPUT_STREAM, eConnectionType.Audio | eConnectionType.Video)},
-				{OUTPUT_SECONDARY_AUDIO_STREAM, new ConnectorInfo(OUTPUT_SECONDARY_AUDIO_STREAM, eConnectionType.Audio)}
+				{OUTPUT_STREAM, new ConnectorInfo(OUTPUT_STREAM, eConnectionType.Audio | eConnectionType.Video)}
 			};
 
 		private static readonly IcdSortedDictionary<int, string> s_OutputConnectorOutputTypes =
 			new IcdSortedDictionary<int, string>
 			{
-				{OUTPUT_HDMI, "HDMI"},
 				{OUTPUT_ANALOG_AUDIO, "Audio"},
 				{OUTPUT_STREAM, "Streaming"},
-				{OUTPUT_SECONDARY_AUDIO_STREAM, "Audio Stream"}
 			};
 
 #if !NETSTANDARD
@@ -89,18 +71,13 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			new BiDictionary<int, DmNvxControl.eAudioSource>
 			{
 				{INPUT_HDMI_1, DmNvxControl.eAudioSource.Input1},
-				{INPUT_HDMI_2, DmNvxControl.eAudioSource.Input2},
-				{INPUT_ANALOG_AUDIO, DmNvxControl.eAudioSource.AnalogAudio},
-				{INPUT_STREAM, DmNvxControl.eAudioSource.PrimaryStreamAudio},
-				{INPUT_SECONDARY_AUDIO_STREAM, DmNvxControl.eAudioSource.SecondaryStreamAudio},
+				{INPUT_ANALOG_AUDIO, DmNvxControl.eAudioSource.AnalogAudio}
 			};
 
 		private static readonly BiDictionary<int, eSfpVideoSourceTypes> s_VideoSources =
 			new BiDictionary<int, eSfpVideoSourceTypes>
 			{
-				{INPUT_HDMI_1, eSfpVideoSourceTypes.Hdmi1},
-				{INPUT_HDMI_2, eSfpVideoSourceTypes.Hdmi2},
-				{INPUT_STREAM, eSfpVideoSourceTypes.Stream}
+				{INPUT_HDMI_1, eSfpVideoSourceTypes.Hdmi1}
 			};
 #endif
 
@@ -164,7 +141,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		private string m_LastKnownMulticastAddress;
 		private string m_LastKnownSecondaryAudioMulticastAddress;
 
-		#region Properties
+#region Properties
 
 		/// <summary>
 		/// Gets the URL for the stream.
@@ -273,14 +250,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			}
 		}
 
-		#endregion
+#endregion
 
 		/// <summary>
 		/// Constructor.
 		/// </summary>
 		/// <param name="parent"></param>
 		/// <param name="id"></param>
-		public DmNvxBaseClassSwitcherControl(IDmNvxBaseClassAdapter parent, int id)
+		public DmNvxE3XSwitcherControl(IDmNvxE3XAdapter parent, int id)
 			: base(parent, id)
 		{
 			m_Cache = new SwitcherCache();
@@ -294,6 +271,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 
 			// Initialize activities
 			ServerUrl = null;
+			// Video input is always active
+			SetActiveInput(INPUT_HDMI_1, eConnectionType.Video);
 		}
 
 		/// <summary>
@@ -322,7 +301,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 #endif
 		}
 
-		#region Methods
+#region Methods
 
 		/// <summary>
 		/// Sets the URL for the stream.
@@ -430,16 +409,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <returns></returns>
 		public override bool ContainsInput(int input)
 		{
-			if (Parent.DeviceMode == eDeviceMode.Transmitter)
-			{
-				switch (input)
-				{
-					case INPUT_STREAM:
-					case INPUT_SECONDARY_AUDIO_STREAM:
-						return false;
-				}
-			}
-
 			return s_InputConnectors.ContainsKey(input);
 		}
 
@@ -450,16 +419,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 		/// <returns></returns>
 		public override bool ContainsOutput(int output)
 		{
-			if (Parent.DeviceMode == eDeviceMode.Receiver)
-			{
-				switch (output)
-				{
-					case OUTPUT_STREAM:
-					case OUTPUT_SECONDARY_AUDIO_STREAM:
-						return false;
-				}
-			}
-
 			return s_OutputConnectors.ContainsKey(output);
 		}
 
@@ -577,8 +536,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					return SetActiveInput(input, eConnectionType.Audio);
 
 				case eConnectionType.Video:
-					m_NvxControl.VideoSource = s_VideoSources.GetValue(input);
-					return SetActiveInput(input, eConnectionType.Video);
+					// No video routing on this device
+					return true;
 
 				default:
 					// ReSharper disable once NotResolvedInText
@@ -621,8 +580,8 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					return SetActiveInput(null, eConnectionType.Audio);
 
 				case eConnectionType.Video:
-					m_NvxControl.VideoSource = eSfpVideoSourceTypes.Disable;
-					return SetActiveInput(null, eConnectionType.Video);
+					// Unable to clear outputs for video
+					return false;
 
 				default:
 					throw new ArgumentOutOfRangeException("type", string.Format("Unexpected value {0}", type));
@@ -668,14 +627,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					case INPUT_HDMI_1:
 						h = m_Streamer.HdmiIn[0].VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
 						v = m_Streamer.HdmiIn[0].VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
-						break;
-					case INPUT_HDMI_2:
-						h = m_Streamer.HdmiIn[1].VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
-						v = m_Streamer.HdmiIn[1].VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
-						break;
-					case INPUT_STREAM:
-						h = m_Streamer.SourceReceive.VideoAttributes.HorizontalResolutionFeedback.GetUShortValueOrDefault();
-						v = m_Streamer.SourceReceive.VideoAttributes.VerticalResolutionFeedback.GetUShortValueOrDefault();
 						break;
 					default:
 						h = 0;
@@ -732,10 +683,10 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			m_Streamer.HdmiOut.HdcpTransmitterMode = mode;
 		}
 #endif
-		#endregion
+#endregion
 
 #if !NETSTANDARD
-		#region Streamer Callbacks
+#region Streamer Callbacks
 
 		/// <summary>
 		/// Called when the parent wrapped streamer instance changes.
@@ -767,7 +718,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			ConfigureStreamer();
 
 			UpdateAudioRouting();
-			UpdateVideoRouting();
 		}
 
 		/// <summary>
@@ -915,11 +865,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 					UpdateAudioRouting();
 					break;
 
-				case DMInputEventIds.VideoSourceEventId:
-				case DMInputEventIds.ActiveVideoSourceEventId:
-					UpdateVideoRouting();
-					break;
-
 				case DMInputEventIds.AutomaticInitiationDisabledEventId:
 				case DMInputEventIds.AutomaticInputRoutingEnabledEventId:
 					ConfigureStreamer();
@@ -981,28 +926,11 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 									m_NvxControl.AudioSourceFeedback != DmNvxControl.eAudioSource.Automatic;
 		}
 
-		/// <summary>
-		/// Updates the cached state of the video routing to match the device.
-		/// </summary>
-		private void UpdateVideoRouting()
-		{
-			eSfpVideoSourceTypes videoSource =
-				m_NvxControl == null
-					? eSfpVideoSourceTypes.Disable
-					: m_NvxControl.VideoSourceFeedback;
-
-			int videoInput;
-			if (s_VideoSources.TryGetKey(videoSource, out videoInput))
-				SetActiveInput(videoInput, eConnectionType.Video);
-			else
-				SetActiveInput(null, eConnectionType.Video);
-		}
-
-		#endregion
+#endregion
 
 #endif
 
-		#region SwitcherCache Callbacks
+#region SwitcherCache Callbacks
 
 		private void Subscribe(SwitcherCache cache)
 		{
@@ -1051,9 +979,9 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			OnActiveInputsChanged.Raise(this, new ActiveInputStateChangeEventArgs(args));
 		}
 
-		#endregion
+#endregion
 
-		#region Console
+#region Console
 
 		/// <summary>
 		/// Calls the delegate for each console status item.
@@ -1097,6 +1025,6 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx.DmNvxBaseClass
 			return base.GetConsoleCommands();
 		}
 
-		#endregion
+#endregion
 	}
 }

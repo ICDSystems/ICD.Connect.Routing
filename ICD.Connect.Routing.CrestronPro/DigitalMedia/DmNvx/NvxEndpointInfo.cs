@@ -10,14 +10,14 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 	public sealed class NvxEndpointInfo
 	{
 		private readonly Connection m_Connection;
-		private readonly DmNvxBaseClassSwitcherControl m_Switcher;
+		private readonly IDmNvxSwitcherControl m_Switcher;
 
 		#region Properties
 
 		/// <summary>
 		/// Gets the RX/TX switcher control.
 		/// </summary>
-		public DmNvxBaseClassSwitcherControl Switcher { get { return m_Switcher; } }
+		public IDmNvxSwitcherControl Switcher { get { return m_Switcher; } }
 
 		/// <summary>
 		/// Gets the address on the virtual switcher for the endpoint stream connector.
@@ -77,7 +77,7 @@ namespace ICD.Connect.Routing.CrestronPro.DigitalMedia.DmNvx
 		/// <param name="connection"></param>
 		/// <param name="switcher"></param>
 		public NvxEndpointInfo(Connection connection,
-		                        DmNvxBaseClassSwitcherControl switcher)
+								IDmNvxSwitcherControl switcher)
 		{
 			m_Connection = connection;
 			m_Switcher = switcher;
