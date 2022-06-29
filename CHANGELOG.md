@@ -5,6 +5,18 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+ - IDmNvxSwitcherControl for Nvx Switcher Controls
+ - DmNvxD3XSwitcherControl for Nvx D3x's
+ - DmNvxE3XSwitcherControl for Nvx E3x's
+
+
+### Changed
+ - DmNvxStreamSwitchers now use IDmNvxSwitcherControl
+ - NvxEndpointInfo now uses IDmNvxSwitcherControl
+ - DmNvxBaseCalssSwitcherControl better handles NVX endpoints that don't support all features
+ - AbstractDmNvxBaseClassAdapter has a virtual method to get switcher control
+ - NVX E3x and D3x adapters override GetSwitcherControl to provide their correct switcher controls
 
 ## [17.1.1] - 2021-10-04
 ### Changed
