@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - DmNvxD3XSwitcherControl for Nvx D3x's
  - DmNvxE3XSwitcherControl for Nvx E3x's
 
-
 ### Changed
  - DmNvxStreamSwitchers now use IDmNvxSwitcherControl
  - NvxEndpointInfo now uses IDmNvxSwitcherControl
