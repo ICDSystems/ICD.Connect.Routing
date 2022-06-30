@@ -81,7 +81,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		private static IThreeSeriesTouchScreenControl InstantiateTouchScreen(ControlSystemDevice parent, int id)
 		{
 			if (parent == null)
-				throw new ArgumentNullException("controlSystemDevice");
+				throw new ArgumentNullException("parent");
 
 			switch (parent.ControlSystem.TouchscreenType)
 			{
@@ -204,7 +204,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 
 #if !NETSTANDARD
 		/// <summary>
-		/// Gets the port at the given addres.
+		/// Gets the port at the given address.
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
@@ -281,7 +281,7 @@ namespace ICD.Connect.Routing.CrestronPro.ControlSystem
 		}
 
 		/// <summary>
-		/// Gets the port at the given addres.
+		/// Gets the port at the given address.
 		/// </summary>
 		/// <param name="address"></param>
 		/// <returns></returns>
