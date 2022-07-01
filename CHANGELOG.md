@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - DmNvxBaseCalssSwitcherControl better handles NVX endpoints that don't support all features
  - AbstractDmNvxBaseClassAdapter has a virtual method to get switcher control
  - NVX E3x and D3x adapters override GetSwitcherControl to provide their correct switcher controls
+ - Updated Crestron SDK to 2.18.96
 
 ## [17.1.1] - 2021-10-04
 ### Changed
