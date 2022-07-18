@@ -106,6 +106,12 @@
     <Compile Include="SPlusSwitcher\Shim\SPlusSwitcherShim.cs" />
     <Compile Include="SPlusSwitcher\State\SPlusSwitcherState.cs" />
     <Compile Include="SPlusSwitcher\State\SPlusSwitcherStateConverter.cs" />
+    <Compile Include="SPlusVolumeDevice\Device\SPlusVolumeDevice.cs" />
+    <Compile Include="SPlusVolumeDevice\Device\SPlusVolumeDeviceSettings.cs" />
+    <Compile Include="SPlusVolumeDevice\Proxy\ProxySPlusVolumeDevice.cs" />
+    <Compile Include="SPlusVolumeDevice\Proxy\ProxySPlusVolumeDeviceSettings.cs" />
+    <Compile Include="SPlusVolumeDevice\Shim\ISPlusVolumeDeviceShimmable.cs" />
+    <Compile Include="SPlusVolumeDevice\Shim\SPlusVolumeDeviceShim.cs" />
     <None Include="Properties\ControlSystem.cfg" />
   </ItemGroup>
   <ItemGroup>
