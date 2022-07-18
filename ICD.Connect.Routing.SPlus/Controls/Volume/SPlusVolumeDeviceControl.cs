@@ -1,9 +1,9 @@
 ﻿using System;
 using ICD.Connect.Audio.Controls.Volume;
 
-namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
+namespace ICD.Connect.Routing.SPlus.Controls.Volume
 {
-	public sealed class SPlusDestinationVolumeControl : AbstractVolumeDeviceControl<Device.SPlusDestinationDevice>
+	public sealed class SPlusVolumeDeviceControl : AbstractVolumeDeviceControl<ISPlusVolumeDeviceControlParent>
 	{
 		#region Properties
 
@@ -24,7 +24,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls
 		/// </summary>
 		/// <param name="parent">Device this control belongs to</param>
 		/// <param name="id">Id of this control in the device</param>
-		public SPlusDestinationVolumeControl(Device.SPlusDestinationDevice parent, int id)
+		public SPlusVolumeDeviceControl(ISPlusVolumeDeviceControlParent parent, int id)
 			: base(parent, id)
 		{
 			SupportedVolumeFeatures = eVolumeFeatures.Mute |

@@ -4,13 +4,14 @@ using ICD.Common.Utils.Extensions;
 using ICD.Connect.Devices.Controls;
 using ICD.Connect.Devices.CrestronSPlus.Devices.SPlus;
 using ICD.Connect.Devices.Controls.Power;
+using ICD.Connect.Routing.SPlus.Controls.Volume;
+using ICD.Connect.Routing.SPlus.EventArgs;
 using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Controls;
-using ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs;
 using ICD.Connect.Settings;
 
 namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 {
-	public sealed class SPlusDestinationDevice : AbstractSPlusDevice<SPlusDestinationDeviceSettings>, ISPlusDestinationDevice
+	public sealed class SPlusDestinationDevice : AbstractSPlusDevice<SPlusDestinationDeviceSettings>, ISPlusDestinationDevice, ISPlusVolumeDeviceControlParent
 	{
 		#region Consts
 		
@@ -32,9 +33,9 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 			get { return Controls.GetControl<SPlusDestinationPowerControl>(); }
 		}
 
-		private SPlusDestinationVolumeControl VolumeControl
+		private SPlusVolumeDeviceControl VolumeControl
 		{
-			get { return Controls.GetControl<SPlusDestinationVolumeControl>(); }
+			get { return Controls.GetControl<SPlusVolumeDeviceControl>(); }
 		}
 
 		public int? InputCount
@@ -172,17 +173,17 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 
 		#region Methods From Control
 
-		internal void SetVolumeLevel(ushort volume)
+	    public void SetVolumeLevel(ushort volume)
 		{
 			OnSetVolumeLevel.Raise(this, new SetVolumeLevelEventArgs(volume));
 		}
 
-		internal void SetVolumeMuteState(bool state)
+	    public void SetVolumeMuteState(bool state)
 		{
 			OnSetVolumeMuteState.Raise(this, new SetVolumeMuteStateEventArgs(state));
 		}
 
-		internal void VolumeMuteToggle()
+	    public void VolumeMuteToggle()
 		{
 			OnVolumeMuteToggle.Raise(this, new VolumeMuteToggleEventArgs());
 		}
@@ -226,7 +227,7 @@ namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.Device
 			addControl(new SPlusDestinationRouteControl(this, ROUTE_CONTROL_ID, settings.InputCount));
 
 			if (settings.VolumeControl)
-				addControl(new SPlusDestinationVolumeControl(this, VOLUME_CONTROL_ID));
+				addControl(new SPlusVolumeDeviceControl(this, VOLUME_CONTROL_ID));
 		}
 
 		#endregion

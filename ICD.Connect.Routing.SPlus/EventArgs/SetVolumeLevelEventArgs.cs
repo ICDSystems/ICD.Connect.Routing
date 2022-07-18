@@ -1,6 +1,6 @@
 ﻿using ICD.Common.Utils.EventArguments;
 
-namespace ICD.Connect.Routing.SPlus.SPlusDestinationDevice.EventArgs
+namespace ICD.Connect.Routing.SPlus.EventArgs
 {
 	public sealed class SetVolumeLevelEventArgs : GenericEventArgs<ushort>
 	{
