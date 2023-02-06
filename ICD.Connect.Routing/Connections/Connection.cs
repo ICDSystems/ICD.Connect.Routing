@@ -22,7 +22,8 @@ namespace ICD.Connect.Routing.Connections
 		None = 0,
 		Audio = 1,
 		Video = 2,
-		Usb = 4
+		Usb = 4,
+		AudioVideo = Audio | Video
 	}
 
 	/// <summary>
