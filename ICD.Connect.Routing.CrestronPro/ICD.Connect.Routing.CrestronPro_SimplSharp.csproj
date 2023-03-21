@@ -465,7 +465,6 @@
     <Compile Include="Receivers\DmRmcScalerC\DmRmcScalerCAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd4X24kE\HdMd4X24kEAdapter.cs" />
     <Compile Include="DigitalMedia\HdMd\HdMd4X24kE\HdMd4X24kEAdapterSettings.cs" />
-    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Transmitters\DmTx201S\AbstractDmTx201SAdapter.cs" />
     <Compile Include="Transmitters\DmTx201S\DmTx201S2Adapter.cs" />
     <Compile Include="Transmitters\DmTx201S\DmTx201SAdapter.cs" />
@@ -546,10 +545,6 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 5.2 --configuration-file="$(ProjectDir)ObfuscationSettings.cs"
-rem S# Pro preparation will execute after these operations</PostBuildEvent>
-  </PropertyGroup>
   <Target Name="PlatformVerificationTask">
   </Target>
 </Project>

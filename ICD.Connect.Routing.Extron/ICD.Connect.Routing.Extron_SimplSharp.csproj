@@ -120,7 +120,6 @@
     <Compile Include="Devices\Switchers\SwUsb\Sw2Usb\Sw2UsbSettings.cs" />
     <Compile Include="Devices\Switchers\SwUsb\Sw4Usb\Sw4UsbDevice.cs" />
     <Compile Include="Devices\Switchers\SwUsb\Sw4Usb\Sw4UsbSettings.cs" />
-    <Compile Include="ObfuscationSettings.cs" />
     <Compile Include="Devices\Switchers\IExtronSwitcherDevice.cs" />
     <Compile Include="Devices\Switchers\IExtronSwitcherDeviceSettings.cs" />
     <Compile Include="Devices\Switchers\SwHd4K\AbstractSwHd4KDevice.cs" />
@@ -193,8 +192,4 @@
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CompactFramework.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>if /I "$(ConfigurationName)" == "Release" Eazfuscator.NET.exe "$(TargetPath)" --msbuild-project-path "$(ProjectPath)" --msbuild-project-configuration "$(ConfigurationName)" --msbuild-project-platform "$(PlatformName)" --msbuild-solution-path "$(SolutionPath)" -n --newline-flush -v 5.2 --configuration-file="$(ProjectDir)ObfuscationSettings.cs"
-rem S# Pro preparation will execute after these operations</PostBuildEvent>
-  </PropertyGroup>
 </Project>
